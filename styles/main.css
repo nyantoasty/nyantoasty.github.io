@@ -11,7 +11,7 @@ body {
     border: 1px solid black;
     border-radius: 25px;
     box-shadow: 5px 5px 0 0;
-    background-image: ;
+    background-image: url("images/icon.jpg") repeat-y fixed right;
 }
 
 a:focus, a:hover {
@@ -28,6 +28,13 @@ header h2 {
     font-size: 130%;
     color: #800000;
     text-indent: 30px;
+}
+header h3 {
+    margin: 3em 2em 1.5em 2em;
+    border: 5px double blue;
+    border-radius: 20px;
+    box-shadow: 3px 3px 4px  4px blue;
+    padding: 1em;
 }
 
 header img {

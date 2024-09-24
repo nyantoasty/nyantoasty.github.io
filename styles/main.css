@@ -11,7 +11,7 @@ body {
     border: 1px solid black;
     border-radius: 25px;
     box-shadow: 5px 5px 0 0;
-    background: url("../images/portal.JPG") repeat-y fixed right;
+    background: url("../images/icon.JPG") repeat-y fixed right;
 }
 
 a:focus, a:hover {

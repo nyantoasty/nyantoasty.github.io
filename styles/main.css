@@ -16,6 +16,9 @@ body {
     background-position:  right;
     background-attachment: fixed;
 }
+image {
+    margin-left: 15px;
+}
 
 a:focus, a:hover {
     font-style: italic;

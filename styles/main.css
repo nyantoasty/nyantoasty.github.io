@@ -1,5 +1,5 @@
 html {
-    background-image: linear-gradient(to bottom,white 0%,#facd8a 100%)    
+    background-image: linear-gradient(to bottom,white 0%,#492ec2 100%)    
 }    
 body {
     font-family: Arial, Helvetica, sans-serif;
@@ -16,17 +16,17 @@ body {
 
 a:focus, a:hover {
     font-style: italic;
-    color: orangered
+    color: rgb(25, 215, 171)
 }
 
 header h1 {
     font-size: 175%;
-    color: maroon;
+    color: rgb(17, 132, 209);
     text-indent: 30px;
 }
 header h2 {
     font-size: 130%;
-    color: #800000;
+    color: #492ec2;
     text-indent: 30px;
 }
 header h3 {
@@ -41,8 +41,24 @@ header img {
     float: left;
 }
 
+main nav {
+    margin: 1.5em 2em 1.5em;
+    border: 5px dashed blue;
+    border-radius: 20px;
+    box-shadow: 3px 3px 4px 4px cyan;
+    padding: .5em;
+}
+
+div:contact {
+    margin: 1.5em 2em 0em 2em;
+    border: 5px dotted blue;
+    border-radius: 20px;
+    box-shadow: 3px 3px 4px 4px cyan;
+    padding: 1em;
+}
+
 .shadow {
-    text-shadow: 2px 2px 2px rgb(128,0,0);
+    text-shadow: 2px 2px 2px #2e1a87
 }
 
 main {

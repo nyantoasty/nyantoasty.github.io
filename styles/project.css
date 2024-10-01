@@ -107,3 +107,10 @@ footer {
     clear: both;
     border-top: 2px solid darkgreen;
 }
+
+p.fixed {
+    width: auto;
+    float: right;
+    background-color: lightgreen;
+    padding: 1px;
+}

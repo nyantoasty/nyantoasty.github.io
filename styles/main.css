@@ -4,7 +4,7 @@ html {
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;  
-    width: 1000px;
+    width: 100%;
     background-color: ghostwhite;
     margin: 15px auto;
     padding: 15px 1.5em;
@@ -36,7 +36,7 @@ header h2 {
     text-indent: 30px;
 }
 h3 {
-    margin: 3em 1.5em 2em;
+    margin: 3em 2em 1.5em;
     border: 5px double blue;
     border-radius: 20px;
     box-shadow: 3px 3px 4px  4px blue;

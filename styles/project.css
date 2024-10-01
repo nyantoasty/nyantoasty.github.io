@@ -108,7 +108,7 @@ footer {
     border-top: 2px solid darkgreen;
 }
 
-p.fixed {
+body p.fixed {
     width: auto;
     float: right;
     background-color: lightgreen;

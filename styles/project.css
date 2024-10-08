@@ -93,7 +93,7 @@ article p::first-letter{
     font-size: 3em;
     font-weight: bold;
     font-style: italic;
-    color:#492ec2;
+    color: lightgreen;
 }
 
 aside {
@@ -110,7 +110,7 @@ footer {
 }
 
 body p.fixed {
-    width: 20%;
+    width: auto;
     float: right;
     background-color: lightgreen;
     padding: 1em;

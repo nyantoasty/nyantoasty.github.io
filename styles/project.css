@@ -104,6 +104,11 @@ aside {
    
 }
 
+footer p.copyright {
+    text-align: center;
+    font-size: 80%;
+}
+
 footer {
     clear: both;
     border-top: 2px solid darkgreen;

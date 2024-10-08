@@ -101,6 +101,9 @@ aside {
     float: right;
     background-color: slategray;
     padding: 1px;
+    position: absolute;
+    right: 30px;
+    top: 50px
 }
 
 footer {

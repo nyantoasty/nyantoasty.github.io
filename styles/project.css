@@ -113,9 +113,10 @@ body p.fixed {
     width: 20%;
     float: right;
     background-color: lightgreen;
-    padding: 1px;
+    padding: 1em;
     position:absolute;
     right: 3%;
     top: 70%;
+    border: 2px solid darkgreen
 
 }

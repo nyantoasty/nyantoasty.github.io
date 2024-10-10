@@ -47,13 +47,6 @@ img {
     float: left;
 }
 
-main nav {
-    margin: 1em 1em;
-    /*border: 5px dashed blue;
-    border-radius: 20px;
-    box-shadow: 3px 3px 4px 4px cyan;*/
-    padding: .5em;
-}
 
 div.contact {
     margin: 1.5em 2em 0em 2em;

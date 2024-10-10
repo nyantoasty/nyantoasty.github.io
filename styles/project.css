@@ -39,9 +39,6 @@ header h2 {
 }
 h3 {
     margin: 3em 2em 1.5em;
-    border: 5px double blue;
-    border-radius: 20px;
-    box-shadow: 3px 3px 4px  4px blue;
     padding: 1em;
 }
 
@@ -52,9 +49,9 @@ img {
 
 main nav {
     margin: 1.5em 2em 1.5em;
-    border: 5px dashed blue;
+    /*border: 5px dashed blue;
     border-radius: 20px;
-    box-shadow: 3px 3px 4px 4px cyan;
+    box-shadow: 3px 3px 4px 4px cyan;*/
     padding: .5em;
 }
 

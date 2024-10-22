@@ -1,7 +1,7 @@
-aside ul { list-style-type: square; }
-aside ol { list-style-type: upper-roman;}
-aside ul li { float: left; }
-aside ul li a {
+#nam_menu ul { list-style-type: square; }
+#nam_menu ol { list-style-type: upper-roman;}
+#nam_menu ul li { float: left; }
+#nam_menu ul li a {
     text-align: center;
     display: block;
     width: 175px;
@@ -12,5 +12,5 @@ aside ul li a {
     color: white;
     font-weight: bold;
     border-right: 2px solid white; }
-aside ul li a.lastitem { border-right: none; }	
-aside ul li a.current { color: yellow; }
+#nam_menu ul li a.lastitem { border-right: none; }	
+#nam_menu ul li a.current { color: yellow; }

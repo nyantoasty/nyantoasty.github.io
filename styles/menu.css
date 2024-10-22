@@ -1,7 +1,7 @@
 aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
 
-
+body #nav_menu ul { list-style-type: none; }
 body #nav_menu ul li { float: left; }
 body #nav_menu ul li a {
     text-align: center;

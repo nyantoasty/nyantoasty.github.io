@@ -1,7 +1,10 @@
 aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
 
-article {clear: both;}
+article {
+    clear: both;
+    padding: 1em;
+}
 
 body #nav_menu ul { list-style-type: none; }
 body #nav_menu ul li { float: left; }

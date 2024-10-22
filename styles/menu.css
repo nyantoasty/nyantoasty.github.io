@@ -1,7 +1,9 @@
-#nav_menu ul { list-style-type: square; }
-#nav_menu ol { list-style-type: upper-roman;}
-#nav_menu ul li { float: left; }
-#nav_menu ul li a {
+aside ul { list-style-type: square; }
+aside ol { list-style-type: upper-roman;}
+
+
+body #nav_menu ul li { float: left; }
+body #nav_menu ul li a {
     text-align: center;
     display: block;
     width: 175px;
@@ -12,5 +14,5 @@
     color: white;
     font-weight: bold;
     border-right: 2px solid white; }
-#nav_menu ul li a.lastitem { border-right: none; }	
-#nav_menu ul li a.current { color: yellow; }
+body #nav_menu ul li a.lastitem { border-right: none; }	
+body #nav_menu ul li a.current { color: yellow; }

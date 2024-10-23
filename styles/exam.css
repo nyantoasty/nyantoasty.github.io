@@ -2,6 +2,10 @@ aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
 
 article {
+    background-image: url("../images/icon.jpg");
+    background-repeat:  repeat-y;
+    background-position:  right;
+    background-attachment: fixed;
     clear: both;
     padding: 1em;
     width: 75%;
@@ -16,6 +20,7 @@ article {
 }
 
 article img {
+    
     float: left;
     margin-right: 1em;
     margin-bottom: 1em;
@@ -45,10 +50,7 @@ body {
     border: 1px solid black;
     border-radius: 25px;
     box-shadow: 5px 5px 0 0;
-    background-image: url("../images/icon.jpg");
-    background-repeat:  repeat-y;
-    background-position:  right;
-    background-attachment: fixed;
+    
 }
 
 aside {

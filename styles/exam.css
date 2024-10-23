@@ -29,6 +29,10 @@ article p::first-letter{
     font-style: italic;
 }
 
+article h3 {
+    column-span:all
+}
+
 main body {
     margin: 1.5em 2em 1.5em;
     border: 5px dashed blue;

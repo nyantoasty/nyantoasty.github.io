@@ -33,14 +33,6 @@ article h1 {
     column-span:all
 }
 
-main body {
-    margin: 1.5em 2em 1.5em;
-    border: 5px dashed blue;
-    border-radius: 20px;
-    box-shadow: 3px 3px 4px 4px cyan;
-    padding: .5em;
-}
-
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;  
@@ -57,6 +49,21 @@ body {
     background-position:  right;
     background-attachment: fixed;
 }
+
+body #nav_menu ul { list-style-type: none; }
+body #nav_menu ul li { float: left; }
+body #nav_menu ul li a {
+    text-align: center;
+    display: block;
+    width: 175px;
+    padding: 1em 0;
+    text-decoration: none;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    border-right: 2px solid white; }
+body #nav_menu ul li a.lastitem { border-right: none; }	
+body #nav_menu ul li a.current { color: palevioletred; }
 
 h1,h2 {
     color: blue;
@@ -78,21 +85,6 @@ aside ol { list-style-type: upper-roman;}
 aside ol.alpha {
     list-style-type:lower-alpha
 }
-
-body #nav_menu ul { list-style-type: none; }
-body #nav_menu ul li { float: left; }
-body #nav_menu ul li a {
-    text-align: center;
-    display: block;
-    width: 175px;
-    padding: 1em 0;
-    text-decoration: none;
-    background-color: blue;
-    color: white;
-    font-weight: bold;
-    border-right: 2px solid white; }
-body #nav_menu ul li a.lastitem { border-right: none; }	
-body #nav_menu ul li a.current { color: yellow; }
 
 footer {
     clear: both;

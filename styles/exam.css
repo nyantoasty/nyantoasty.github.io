@@ -87,12 +87,12 @@ aside ol.alpha {
 }
 
 header {
-    border-bottom: lime
+    border-bottom: 2px solid lime;
 }
 footer {
     clear: both;
     text-align: center;
     font-size: 80%;
-    border-top: lime
+    border-top: 2px solid lime;
 
 }

@@ -2,9 +2,6 @@ html {
     background-image: linear-gradient(to bottom,white 0%,#492ec2 100%)    
 } 
 
-aside ul { list-style-type: square; }
-aside ol { list-style-type: upper-roman;}
-
 article {
  
     clear: both;
@@ -69,6 +66,8 @@ aside {
     border: 2px solid darkblue
 
 }
+aside ul { list-style-type: square; }
+aside ol { list-style-type: upper-roman;
 
 body #nav_menu ul { list-style-type: none; }
 body #nav_menu ul li { float: left; }

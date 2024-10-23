@@ -4,7 +4,7 @@ html {
 
 article { 
     clear: both;
-    padding: 1em;
+    padding: 1em 0em 1 em 1em;
     margin: 1em;
     width: 75%;
     height: 75%;
@@ -24,7 +24,7 @@ article img {
 }
 
 article p::first-letter{
-    font-size: 3em;
+    font-size: 2em;
     font-weight: bold;
     font-style: italic;
 }
@@ -38,6 +38,7 @@ main body {
 }
 
 body {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;  
     width: 95%;
     margin:15px auto;
@@ -53,7 +54,7 @@ body {
     background-attachment: fixed;
 }
 
-h2 {
+h2,h3 {
     color: blue;
 }
 
@@ -80,8 +81,7 @@ body #nav_menu ul li a {
     text-align: center;
     display: block;
     width: 175px;
-    padding: 1em 0;      /* padding above and below a
-                            elements */
+    padding: 1em 0;
     text-decoration: none;
     background-color: blue;
     color: white;

@@ -69,7 +69,7 @@ aside {
     padding: 1em;
     position:fixed;
     right: 0%;
-    top: 50%;
+    top:auto;
     border: 2px solid darkblue
 
 }

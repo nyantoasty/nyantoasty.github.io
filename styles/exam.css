@@ -4,6 +4,18 @@ aside ol { list-style-type: upper-roman;}
 article {
     clear: both;
     padding: 1em;
+    width: 70%;
+    float: left;
+    column-count: 3;
+    column-rule: 1px dotted blue;
+    column-gap: 2em;
+    margin-left: 2em;
+}
+
+article p::first-letter{
+    font-size: 3em;
+    font-weight: bold;
+    font-style: italic;
 }
 
 body #nav_menu ul { list-style-type: none; }

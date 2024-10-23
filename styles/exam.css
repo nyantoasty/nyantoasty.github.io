@@ -75,7 +75,7 @@ aside {
 }
 aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
-aside ol #alpha {
+aside ol.alpha {
     list-style-type:lower-alpha
 }
 

@@ -53,6 +53,10 @@ body {
     background-attachment: fixed;
 }
 
+h2 {
+    color: blue;
+}
+
 aside {
     width: 20%;
     float: right;

@@ -86,9 +86,13 @@ aside ol.alpha {
     list-style-type:lower-alpha
 }
 
+header {
+    border-bottom: lime
+}
 footer {
     clear: both;
     text-align: center;
     font-size: 80%;
+    border-top: lime
 
 }

@@ -1,10 +1,6 @@
 aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
 
-aside {
-    width:20%;
-}
-
 article {
     clear: both;
     padding: 1em;
@@ -28,6 +24,14 @@ article p::first-letter{
     font-style: italic;
 }
 
+main body {
+    margin: 1.5em 2em 1.5em;
+    border: 5px dashed blue;
+    border-radius: 20px;
+    box-shadow: 3px 3px 4px 4px cyan;
+    padding: .5em;
+}
+
 body {
     font-size: 100%;  
     width: 95%;
@@ -45,11 +49,11 @@ body {
 }
 
 aside {
-    width: auto;
+    width: 20%;
     float: right;
     background-color: lightskyblue;
     padding: 1em;
-    position:absolute;
+    position:fixed;
     right: 0%;
     top: 50%;
     border: 2px solid darkblue

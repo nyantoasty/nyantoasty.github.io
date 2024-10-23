@@ -1,11 +1,12 @@
+html {
+    background-image: linear-gradient(to bottom,white 0%,#492ec2 100%)    
+} 
+
 aside ul { list-style-type: square; }
 aside ol { list-style-type: upper-roman;}
 
 article {
-    background-image: url("../images/icon.jpg");
-    background-repeat:  repeat-y;
-    background-position:  right;
-    background-attachment: fixed;
+ 
     clear: both;
     padding: 1em;
     width: 75%;
@@ -50,7 +51,10 @@ body {
     border: 1px solid black;
     border-radius: 25px;
     box-shadow: 5px 5px 0 0;
-    
+    background-image: url("../images/icon.jpg");
+    background-repeat:  repeat-y;
+    background-position:  right;
+    background-attachment: fixed;
 }
 
 aside {

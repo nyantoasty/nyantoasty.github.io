@@ -8,9 +8,11 @@ article {
     height: 75%;
     float: left;
     column-count: 3;
-    column-rule: 1px dotted blue;
+    column-rule: 1px dashed blue;
     column-gap: 2em;
     margin-left: 2em;
+    border-top: 1px solid blue;
+    border-bottom: 1px solid blue;
 }
 
 article img {

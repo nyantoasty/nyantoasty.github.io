@@ -75,3 +75,8 @@ body #nav_menu ul li a {
     border-right: 2px solid white; }
 body #nav_menu ul li a.lastitem { border-right: none; }	
 body #nav_menu ul li a.current { color: yellow; }
+
+footer {
+    clear: both;
+    border-top: 2px solid darkblue;
+}

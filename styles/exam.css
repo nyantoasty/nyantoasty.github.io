@@ -9,15 +9,16 @@ article {
  
     clear: both;
     padding: 1em;
+    margin: 1em;
     width: 75%;
     height: 75%;
     float: left;
     column-count: 3;
-    column-rule: 1px dashed blue;
+    column-rule: 4px dashed blue;
     column-gap: 2em;
     margin-left: 2em;
-    border-top: 1px solid blue;
-    border-bottom: 1px solid blue;
+    border-top: 4px solid blue;
+    border-bottom: 4px solid blue;
 }
 
 article img {

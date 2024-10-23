@@ -29,7 +29,7 @@ article p::first-letter{
     font-style: italic;
 }
 
-article h3 {
+article h1 {
     column-span:all
 }
 

@@ -5,6 +5,7 @@ article {
     clear: both;
     padding: 1em;
     width: 75%;
+    height: 75%;
     float: left;
     column-count: 3;
     column-rule: 1px dotted blue;

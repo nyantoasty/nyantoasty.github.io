@@ -15,7 +15,7 @@ article {
     column-gap: 2em;
 }
 
-main div #space{
+main #space div{
     border-bottom:4px solid blue;
     padding:2em;
 }

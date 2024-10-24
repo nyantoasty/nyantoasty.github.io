@@ -15,7 +15,7 @@ article {
     column-gap: 2em;
 }
 
-article div.space{
+main div.space{
     border-bottom:4px dashed limegreen;
 
 }

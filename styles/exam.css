@@ -1,20 +1,19 @@
 html {
-    background-image: linear-gradient(to bottom,white 0%,#492ec2 100%)    
+    background-image: linear-gradient(to left,white 0%,#4d7272 100%)    
 } 
 
 article { 
     clear: both;
     padding: 1em 0em 1 em 1em;
-    margin: auto;
+    margin-top: 1em;
+    margin-bottom: auto;
     width: 75%;
     height: 75%;
     float: left;
     column-count: 3;
     column-rule: 4px dashed blue;
     column-gap: 2em;
-    margin-left: 2em;
     border-top: 4px solid blue;
-    border-bottom: 4px solid blue;
 }
 
 article img {
@@ -91,5 +90,7 @@ footer {
     clear: both;
     text-align: center;
     font-size: 80%;
-
+    border-top: 4px solid blue;
+    padding-top: 0;
+    margin-top: 0;
 }

@@ -5,7 +5,7 @@ html {
 article { 
     clear: both;
     padding: 1em 0em 1 em 1em;
-    margin: 1em;
+    margin: auto;
     width: 75%;
     height: 75%;
     float: left;

@@ -13,7 +13,11 @@ article {
     column-count: 3;
     column-rule: 4px dashed blue;
     column-gap: 2em;
-    border-top: 4px solid blue;
+}
+
+article div.space{
+    border-bottom:4px dashed limegreen;
+
 }
 
 article img {

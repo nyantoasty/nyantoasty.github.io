@@ -15,9 +15,9 @@ article {
     column-gap: 2em;
 }
 
-main div.space{
-    border-bottom:4px dashed limegreen;
-
+div.space{
+    border-bottom:4px solid blue;
+    padding:2em;
 }
 
 article img {

@@ -41,13 +41,15 @@ table.third td {
 table.third thead {
     background-color: lightgreen;
     font-weight: bold;
-    column-span: all;
+    border-collapse: collapse;
+    background-color: lightgreen;
+    text-align: center;
+    
 }
 
 table.third thead tr:first-child, table.third thead tr:nth-child(2) {
     border-top: 2px solid orangered;
     border-bottom: 2px solid orangered;
-    background-color: lightgreen;
 }
 
 table.third thead tr:last-child {

@@ -47,11 +47,13 @@ table.third thead {
 }
 
 table.third thead tr:first-child, table.third thead tr:nth-child(2) {
+    border-collapse: collapse;
     border-top: 2px solid orangered;
     border-bottom: 2px solid orangered;
 }
 
 table.third thead tr:last-child {
+    border-collapse: collapse;
     border-bottom: 2px solid orangered;
 }
 

@@ -30,3 +30,35 @@ table.second th, table.second td {
 table.second thead tr:first-child{
     border-bottom: 2px solid purple;
 }
+
+table.third th, table.third td{
+    padding: 0.7em;
+}
+table.third td {
+    vertical-align: top;
+}
+
+table.third thead {
+    background-color: lightgreen;
+    font-weight: bold;
+}
+
+table.third tr:first-child, table.third tr:nth-child(2) {
+    border-top: 2px solid orangered;
+    border-bottom: 2px solid orangered;
+    background-color: lightgreen;
+}
+
+table.third tr:last-child {
+    border-bottom: 2px solid orangered;
+}
+
+@media only screen and (max-width: 425px) {
+    th, td {
+        display: block;
+    }
+    thead, td.number {
+        display: none;
+        padding: 0;
+    }    
+}

@@ -41,7 +41,6 @@ table.third td {
 table.third thead {
     background-color: lightgreen;
     font-weight: bold;
-    border-collapse: collapse;
     text-align: center;
     
 }

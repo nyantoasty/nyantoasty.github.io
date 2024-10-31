@@ -31,12 +31,14 @@ table.second thead tr:first-child{
     border-bottom: 2px solid purple;
 }
 
-table.third th, table.third td{
-    padding: 0.7em;
-}
-table.third td {
+table.third {
     border-collapse: collapse;
     vertical-align: top;
+    text-align: left;
+}
+
+table.third th, table.third td{
+    padding: 0.7em;
 }
 
 table.third thead {

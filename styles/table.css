@@ -70,6 +70,10 @@ table.third tbody {
     text-align: left;
 }
 
+table.third td {
+    vertical-align: top;
+}
+
 @media only screen and (max-width: 425px) {
     th, td {
         display: block;

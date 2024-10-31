@@ -35,6 +35,7 @@ table.third th, table.third td{
     padding: 0.7em;
 }
 table.third td {
+    border-collapse: collapse;
     vertical-align: top;
 }
 
@@ -46,7 +47,7 @@ table.third thead {
 }
 
 table.third thead tr:first-child, table.third thead tr:nth-child(2) {
-    border-collapse: collapse;
+    
     border-top: 2px solid orangered;
     border-bottom: 2px solid orangered;
 }
@@ -54,6 +55,10 @@ table.third thead tr:first-child, table.third thead tr:nth-child(2) {
 table.third thead tr:last-child {
     border-collapse: collapse;
     border-bottom: 2px solid orangered;
+}
+
+table.third tbody {
+    text-align: left;
 }
 
 @media only screen and (max-width: 425px) {

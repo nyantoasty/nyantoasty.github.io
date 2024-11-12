@@ -42,6 +42,7 @@ table.third {
     border-collapse: collapse;
     vertical-align: top;
     text-align: left;
+    border-bottom: 2px solid orangered
 }
 
 table.third th, table.third td{

@@ -22,10 +22,10 @@
 
     <h1>The Rectangle Area Calculator</h1>
     <script>
-        const recwidth = parseInt(prompt("Enter a width of a rectangle"));
-        const recheight = parseInt(prompt("Enter a height of a rectangle"));
+        const recwidth = parsefloat(prompt("Enter a width of a rectangle"));
+        const recheight = parsefloat(prompt("Enter a height of a rectangle"));
         const recarea = parsefloat(recwidth*recheight);
-        const html3 = `<p>Width: ${recwidth}</>
+        const html3 = `<p>Width: ${recwidth}</p>
                         <p>Height: ${recheight}</p>
                         <p>Area: ${recarea.tofixed(3)}</p>`;
         document.write(html3);

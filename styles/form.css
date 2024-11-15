@@ -31,6 +31,7 @@ input:valid {
 input:invalid {
     box-shadow: none;
 }
+
 br {
     clear: both;
 }

@@ -32,6 +32,13 @@ input:invalid {
     box-shadow: none;
 }
 
+#submitreset {
+    width: 40em;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
 br {
     clear: both;
 }

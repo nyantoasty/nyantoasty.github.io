@@ -50,6 +50,6 @@ textarea {
     width: 10em;
 }
 
-#button input {
+#submit, #reset {
     width: 10em;
 }

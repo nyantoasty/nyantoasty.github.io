@@ -72,7 +72,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-09-28-debug</p>
+                <p class="text-xs text-gray-500">v2025-09-28-nocache</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
@@ -358,6 +358,17 @@
     }
     
     async function checkAuthState() {
+        // Clear service worker cache if it exists
+        if ('serviceWorker' in navigator && 'caches' in window) {
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                console.log('Cleared all caches');
+            } catch (error) {
+                console.log('Cache clearing failed:', error);
+            }
+        }
+        
         try {
             const result = await getRedirectResult(auth);
             if (result && result.user) {
@@ -599,31 +610,34 @@
             const instruction=findInstructionForStep(stepNumber);
             if(!instruction||!instruction.dynamicChunks)return null;
             
+            // Use the chunks from the instruction as a template
+            if(!instruction.chunks || !Array.isArray(instruction.chunks)) return null;
+            
             const prevCount=getStitchCount(stepNumber-1);
             
-            if(instruction.side==='rs' || instruction.side==='RS'){
-                const sideStitches=(prevCount-1)/2;
-                const mainKnitCount=sideStitches-4;
-                return[
-                    {name:"Edge",category:"edge",pattern:["k3"]},
-                    {name:"Increase",category:"increase",pattern:["kfb"]},
-                    {name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},
-                    {name:"Increase",category:"increase",pattern:["m1L"]},
-                    {name:"Spine",category:"spine",pattern:["k1"]},
-                    {name:"Increase",category:"increase",pattern:["m1R"]},
-                    {name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},
-                    {name:"Increase",category:"increase",pattern:["kfb"]},
-                    {name:"Edge",category:"edge",pattern:["k3"]}
-                ];
-            } else if(instruction.side==='ws' || instruction.side==='WS'){
-                const purlCount=prevCount-6;
-                return[
-                    {name:"Edge",category:"edge",pattern:["k3"]},
-                    {name:`Main Fabric (${purlCount})`,category:"main",pattern:[`p${purlCount}`]},
-                    {name:"Edge",category:"edge",pattern:["k3"]}
-                ];
-            }
-            return null;
+            // Process each chunk, expanding dynamic placeholders
+            return instruction.chunks.map(chunk => {
+                const chunkCopy = {...chunk};
+                
+                // Handle dynamic count values
+                if(typeof chunkCopy.count === 'string') {
+                    if(chunkCopy.count === 'to marker') {
+                        // Calculate stitches to marker based on pattern structure
+                        chunkCopy.count = Math.max(1, Math.floor((prevCount - 7) / 2));
+                    } else if(chunkCopy.count === 'to last 3') {
+                        chunkCopy.count = Math.max(1, prevCount - 6);
+                    } else if(chunkCopy.count === 'to last 4') {
+                        chunkCopy.count = Math.max(1, Math.floor((prevCount - 7) / 2));
+                    }
+                    // Add more dynamic count patterns as needed
+                }
+                
+                return {
+                    name: `${chunkCopy.instruction.toUpperCase()}${chunkCopy.count > 1 ? chunkCopy.count : ''}`,
+                    category: getInstructionCategory(chunkCopy.instruction),
+                    pattern: [chunkCopy.count > 1 ? `${chunkCopy.instruction}${chunkCopy.count}` : chunkCopy.instruction]
+                };
+            });
         }
         
         function convertJSONChunksToInternalFormat(jsonChunks) {
@@ -661,23 +675,39 @@
         }
         
         function getInstructionCategory(instruction) {
-            // Map instruction types to categories for coloring
-            const categoryMap = {
-                'k': 'main',
-                'p': 'main', 
-                'kfb': 'increase',
-                'm1l': 'increase',
-                'm1r': 'increase',
-                'yo': 'increase',
-                'k2tog': 'increase', 
-                'ssk': 'increase',
-                'cdd': 'increase',
-                'pm': 'edge',
-                'sm': 'edge',
-                'rm': 'edge'
+            // First check if the pattern defines custom categories
+            if(PATTERN_DATA?.categories?.[instruction]) {
+                return PATTERN_DATA.categories[instruction];
+            }
+            
+            // Craft-specific category mappings
+            const craft = PATTERN_DATA?.metadata?.craft?.toLowerCase();
+            
+            if(craft === 'knitting') {
+                const knittingMap = {
+                    'k': 'main', 'p': 'main',
+                    'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase',
+                    'k2tog': 'decrease', 'ssk': 'decrease', 'cdd': 'decrease',
+                    'pm': 'edge', 'sm': 'edge', 'rm': 'edge'
+                };
+                return knittingMap[instruction] || 'main';
+            } else if(craft === 'crochet') {
+                const crochetMap = {
+                    'ch': 'foundation', 'sc': 'main', 'hdc': 'main', 'dc': 'main', 'tr': 'main',
+                    'inc': 'increase', 'dec': 'decrease', '2tog': 'decrease',
+                    'sl st': 'edge', 'ss': 'edge'
+                };
+                return crochetMap[instruction] || 'main';
+            }
+            
+            // Default fallback categories
+            const generalMap = {
+                'inc': 'increase', 'increase': 'increase',
+                'dec': 'decrease', 'decrease': 'decrease',
+                'edge': 'edge', 'border': 'edge'
             };
             
-            return categoryMap[instruction] || 'main';
+            return generalMap[instruction] || 'main';
         }
         function getPatternForStitch(stepNumber,stitchNumber){
             const totalStitches=getStitchCount(stepNumber);
@@ -1024,7 +1054,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
 
     // --- PWA Service Worker ---
-    if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
+    // Temporarily disabled to fix caching issues during development
+    // if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
 </script>
 </body>
 </html>

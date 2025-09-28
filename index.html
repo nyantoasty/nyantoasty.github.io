@@ -1,45 +1,348 @@
-<!DOCTYPE html> <!-- must be at the top -->
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="K. Ainsworth's personal website">
-        <meta name="keywords" content="ainsworth,shsu,mis,student">
-        <title>K.Ainsworth's Site</title>
-        <link rel="stylesheet" href="styles/main.css">
-    </head>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Pattern Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'Source Code Pro', monospace; }
+        .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
+        .pattern-text p { padding: 0.5rem 0.75rem; margin-bottom: 0.25rem; }
+        .edge { color: #d8b4fe; } 
+        .increase { color: #86efac; }
+        .main { color: #93c5fd; }
+        .spine { color: #f87171; }
+        .lace-1-left, .lace-1-right { color: #fcd34d; }
+        .lace-2-left, .lace-2-right { color: #f9a8d4; }
+        .lace-3-left, .lace-3-right { color: #a7f3d0; }
+        .repeat { color: #a5f3fc; } /* Color for dynamic repeat sections */
+        main { padding-bottom: 140px; }
+        .highlight { background-color: #E6E6FA; color: #1a1a2e; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        .result-chunk { background-color: #374151; padding: 1em; border-radius: 5px; color: #e0e0e0; overflow-x: auto; white-space: pre; }
+        #stitch-locator-ui { transition: opacity 0.3s ease-in-out; }
+        .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; position: absolute; z-index: 10; bottom: 125%; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem; border-radius: 0.375rem; background-color: #1f2937; color: #d1d5db; font-size: 0.875rem; white-space: nowrap; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .tooltip-trigger:hover .tooltip { visibility: visible; opacity: 1; }
+        .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1f2937 transparent transparent transparent; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
 
-    <body>
-        <header>
-            <img src="images/icon.jpg" alt="KJA Icon" height="100"> <!--This is using a document-relative path; "images/icon.jpg"-->
-            <h1 class="shadow">Welcome to my web site</h1>
-            <h2 class="shadow">nyantoasty.github.io</h2>
+    <div id="stitch-popup" class="hidden absolute bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
+        <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
+        <div id="popup-content"></div>
+    </div>
+
+    <div id="app-container" class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 opacity-0 transition-opacity duration-500">
+        <header class="text-center mb-8">
+            <h1 id="pattern-name" class="text-4xl font-bold text-white mb-2"></h1>
+            <p id="pattern-author" class="text-lg text-violet-300"></p>
         </header>
+        <main id="pattern-content" class="space-y-8"></main>
+    </div>
 
-        <main>
-            <h3>K. Ainsworth is a student at SHSU, working on an MIS degree with a minor in Business Data Analytics.</h3>
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm border-t border-gray-700 p-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="relative h-20">
+                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-center space-x-6 transition-opacity duration-300">
+                    <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
+                    <div class="text-center">
+                        <div id="step-type" class="text-sm text-gray-400">ROW</div>
+                        <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                    </div>
+                    <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
+                </div>
+                <div id="stitch-locator-ui" class="absolute inset-0 flex items-center justify-center space-x-4 transition-opacity duration-300 opacity-0 pointer-events-none">
+                    <label for="stitch-input" class="text-lg">Stitch #:</label>
+                    <input type="number" id="stitch-input" min="1" class="bg-gray-700 text-white border border-violet-500 rounded-md p-2 w-24 text-center">
+                    <button id="find-stitch-btn" class="bg-violet-600 text-white font-bold rounded-md py-2 px-4 hover:bg-violet-700">Find</button>
+                </div>
+            </div>
+            <div class="text-center mt-2">
+                <button id="toggle-mode" class="text-violet-300 hover:text-white text-sm">Switch to Stitch Locator</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // --- DATA & STATE ---
+        let PATTERN_DATA;
+        let currentStep = 1;
+        let maxSteps = 1;
+        let progressKey = '';
+        let isStitchLocatorMode = false;
+        let stitchCountsCache = {}; // Cache for stitch counts
+
+        // --- UI ELEMENTS ---
+        const appContainer = document.getElementById('app-container');
+        const patternNameEl = document.getElementById('pattern-name');
+        const patternAuthorEl = document.getElementById('pattern-author');
+        const patternContentEl = document.getElementById('pattern-content');
+        const stepInput = document.getElementById('current-step-input');
+        const prevBtn = document.getElementById('prev-step');
+        const nextBtn = document.getElementById('next-step');
+        const stepTypeEl = document.getElementById('step-type');
+        const toggleModeBtn = document.getElementById('toggle-mode');
+        const stepCounterUI = document.getElementById('step-counter-ui');
+        const stitchLocatorUI = document.getElementById('stitch-locator-ui');
+        const findStitchBtn = document.getElementById('find-stitch-btn');
+        const stitchInput = document.getElementById('stitch-input');
+        const stitchPopup = document.getElementById('stitch-popup');
+        const popupContent = document.getElementById('popup-content');
+        const closePopupBtn = document.getElementById('close-popup-btn');
+
+        // --- CORE FUNCTIONS ---
+
+        async function loadPatternData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                PATTERN_DATA = await response.json();
+                progressKey = `pattern-progress-${PATTERN_DATA.metadata.name.replace(/\s+/g, '-')}`;
+            } catch (error) {
+                console.error("Failed to load pattern data:", error);
+                patternContentEl.innerHTML = `<p class="text-center text-red-400">Error: Could not load pattern file '${url}'.</p>`;
+            }
+        }
+
+        function initializeApp() {
+            if (!PATTERN_DATA) return;
+            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
+            patternNameEl.textContent = name;
+            patternAuthorEl.textContent = `by ${author}`;
+            maxSteps = max;
+            stepInput.max = maxSteps;
+            generateGlossary();
+            generateInstructions();
+            loadProgress();
+            appContainer.classList.remove('opacity-0');
+        }
+
+        function generateGlossary() {
+             if (!PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) return;
+            let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
+            for (const key in PATTERN_DATA.glossary) {
+                const item = PATTERN_DATA.glossary[key];
+                glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+            }
+            glossaryHTML += '</div>';
+            const section = document.createElement('section');
+            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
+            section.innerHTML = glossaryHTML;
+            patternContentEl.appendChild(section);
+        }
+
+        function generateInstructions() {
+            const section = document.createElement('section');
+            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
+            section.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
             
-            <nav>
-                <ul id="list">
-                    <li>Education</li>
-                    <li>Experience</li>
-                    <li>Certifications</li>
-                    <li>Scripts</li>
-                    <li><a href="project.html">Class Projects</a></li>
-                </ul>
-            </nav>
-            <div class="contact">
-                <p>Click <a href="https://www.linkedin.com/in/katie-ainsworth-10a17a28/" target="_blank">here</a> for my LinkedIn Profile.</p>
-                <p>Click <a href="files/script_doc.pdf" download>here</a> for an example script.</p>
+            PATTERN_DATA.instructions.forEach(instr => {
+                const p = document.createElement('p');
+                if (instr.step) p.dataset.step = instr.step;
+                if (instr.stepRange) {
+                    p.dataset.stepStart = instr.stepRange[0];
+                    p.dataset.stepEnd = instr.stepRange[1];
+                }
 
-                <p>Contact me at <em><a href="mailto:k.ainsworth@shsu.edu">k.ainsworth@shsu.edu</a></em></p>
-            </div> 
-            <br>
-            <hr>
-            <footer>
-                <p class="copyright">&copy; Copyright 2024</p>
-            </footer>
-        </main>
+                let instructionHTML = instr.displayText ? addTooltips(instr.displayText) : '';
+                
+                if (instr.chunks && !instr.displayText) { // Build from chunks if no displayText
+                    const side = instr.side ? `(${instr.side})` : '';
+                    instructionHTML = `<b>${instr.type || 'Step'} ${instr.step} ${side}:</b> `;
+                    let chunkTexts = instr.chunks.map(chunk => {
+                        let text = chunk.pattern.join(', ');
+                        if (chunk.repeats) text = `(${text}) ${chunk.repeats} times`;
+                        return `<span class="${chunk.category || ''}">${addTooltips(text)}</span>`;
+                    });
+                    instructionHTML += chunkTexts.join(', ');
+                }
+                
+                p.innerHTML = instructionHTML;
+                section.appendChild(p);
+            });
+            patternContentEl.appendChild(section);
+        }
 
-    </body>
+        function addTooltips(text) {
+             if (!PATTERN_DATA.glossary) return text;
+             const regex = new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`, 'g');
+             return text.replace(regex, (match) => {
+                const term = PATTERN_DATA.glossary[match];
+                return `<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;
+             });
+        }
+
+        // --- STITCH LOCATOR LOGIC ---
+
+        function getStitchCount(stepNumber) {
+            if (stitchCountsCache[stepNumber]) return stitchCountsCache[stepNumber];
+            
+            const instr = findInstructionForStep(stepNumber);
+            if (instr && instr.totalStitches) {
+                 stitchCountsCache[stepNumber] = instr.totalStitches;
+                 return instr.totalStitches;
+            }
+
+            // If not explicitly defined, calculate it based on the previous step's count and increases
+            if (stepNumber > 1) {
+                const prevCount = getStitchCount(stepNumber - 1);
+                const currentIncrease = instr && instr.increase ? instr.increase : 0;
+                const count = prevCount + currentIncrease;
+                stitchCountsCache[stepNumber] = count;
+                return count;
+            }
+            
+            return 0; // Should not be reached if pattern starts with a totalStitches count
+        }
+        
+        // Helper to expand patterns like "k5" into ["k", "k", "k", "k", "k"]
+        function expandPattern(patternArray) {
+            const expanded = [];
+            patternArray.forEach(p => {
+                const match = p.match(/^([a-zA-Z_]+)(\d+)$/);
+                if (match) {
+                    const instruction = match[1];
+                    const count = parseInt(match[2], 10);
+                    for (let i = 0; i < count; i++) expanded.push(instruction);
+                } else {
+                    expanded.push(p);
+                }
+            });
+            return expanded;
+        }
+
+        function getPatternForStitch(stepNumber, stitchNumber) {
+            const totalStitches = getStitchCount(stepNumber);
+            if (stitchNumber < 1 || stitchNumber > totalStitches) return null;
+
+            const instruction = findInstructionForStep(stepNumber);
+            if (!instruction || !instruction.chunks) {
+                return { sectionName: "This is a repeating instruction section.", patternChunk: "Stitch-by-stitch data is not defined for this row type." };
+            }
+
+            let cumulativeStitches = 0;
+            for (const chunk of instruction.chunks) {
+                const expandedPattern = expandPattern(chunk.pattern);
+                const repeats = chunk.repeats || 1;
+                const chunkStitchCount = expandedPattern.length * repeats;
+
+                if (stitchNumber <= cumulativeStitches + chunkStitchCount) {
+                    const stitchInSection = stitchNumber - cumulativeStitches;
+                    
+                    let sectionName = `<span class="${chunk.category}">${chunk.name}</span>`;
+                    let fullPatternSequence = [];
+
+                    for (let i = 0; i < repeats; i++) {
+                        fullPatternSequence.push(...expandedPattern);
+                    }
+                    if (repeats > 1) {
+                        const repeatNum = Math.ceil(stitchInSection / expandedPattern.length);
+                        sectionName += ` (Repeat ${repeatNum} of ${repeats})`;
+                    }
+
+                    const targetIndex = stitchInSection - 1;
+                    const windowSize = 4;
+                    const start = Math.max(0, targetIndex - windowSize);
+                    const end = Math.min(fullPatternSequence.length, targetIndex + windowSize + 1);
+                    
+                    const patternWindow = fullPatternSequence.slice(start, end);
+                    let patternChunk = patternWindow.map((stitch, index) => {
+                        return (start + index === targetIndex) ? `<span class="highlight">${stitch}</span>` : stitch;
+                    }).join(' ');
+                    
+                    if (start > 0) patternChunk = '... ' + patternChunk;
+                    if (end < fullPatternSequence.length) patternChunk += ' ...';
+
+                    return { sectionName, patternChunk };
+                }
+                cumulativeStitches += chunkStitchCount;
+            }
+            return null; // Should not happen if stitch counts are correct
+        }
+
+
+        // --- PROGRESS & NAVIGATION ---
+
+        function loadProgress() {
+            const savedStep = localStorage.getItem(progressKey);
+            currentStep = savedStep ? parseInt(savedStep, 10) : 1;
+            updateDisplay(false);
+        }
+        function saveProgress() { localStorage.setItem(progressKey, currentStep); }
+        function updateDisplay(shouldScroll = true) {
+            stepInput.value = currentStep;
+            const currentInstruction = findInstructionForStep(currentStep);
+            if (currentInstruction) {
+                stepTypeEl.textContent = currentInstruction.type?.toUpperCase() || 'STEP';
+            }
+            highlightCurrentStep(shouldScroll);
+            saveProgress();
+            if(isStitchLocatorMode) stitchInput.max = getStitchCount(currentStep);
+        }
+        function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
+        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{if(el.dataset.step)return parseInt(el.dataset.step,10)===stepNumber;if(el.dataset.stepStart){const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return stepNumber>=start&&stepNumber<=end;} return false;});}
+        function highlightCurrentStep(shouldScroll) {
+            document.querySelectorAll('.current-step').forEach(el => el.classList.remove('current-step'));
+            const stepElement = findStepElement(currentStep);
+            if (stepElement) {
+                stepElement.classList.add('current-step');
+                if (shouldScroll) stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
+        nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
+        stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
+        document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextBtn.click(); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevBtn.click(); });
+        
+        toggleModeBtn.addEventListener('click', () => {
+            isStitchLocatorMode = !isStitchLocatorMode;
+            stitchPopup.classList.add('hidden');
+            stepCounterUI.classList.toggle('opacity-0');
+            stepCounterUI.classList.toggle('pointer-events-none');
+            stitchLocatorUI.classList.toggle('opacity-0');
+            stitchLocatorUI.classList.toggle('pointer-events-none');
+            if (isStitchLocatorMode) {
+                toggleModeBtn.textContent = 'Switch to Step Counter';
+                stitchInput.value = '';
+                stitchInput.max = getStitchCount(currentStep);
+                stitchInput.focus();
+            } else {
+                toggleModeBtn.textContent = 'Switch to Stitch Locator';
+            }
+        });
+        closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
+        findStitchBtn.addEventListener('click', () => {
+            const stitchNumber = parseInt(stitchInput.value);
+            const patternInfo = getPatternForStitch(currentStep, stitchNumber);
+            const currentStepEl = findStepElement(currentStep);
+            
+            if (patternInfo && currentStepEl) {
+                popupContent.innerHTML = `<h4 class="text-xl font-semibold text-white mb-2">Location:</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;
+                const elRect = currentStepEl.getBoundingClientRect();
+                stitchPopup.style.top = `${elRect.top + window.scrollY - stitchPopup.offsetHeight - 10}px`;
+                stitchPopup.style.left = `50%`;
+                stitchPopup.style.transform = 'translateX(-50%)';
+                stitchPopup.classList.remove('hidden');
+            } else {
+                 popupContent.innerHTML = `<div class="text-white text-center"><p>Invalid stitch number for Step ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;
+                 stitchPopup.style.top = '50%'; stitchPopup.style.left = '50%'; stitchPopup.style.transform = 'translate(-50%, -50%)';
+                 stitchPopup.classList.remove('hidden');
+            }
+        });
+
+        // --- INITIALIZATION ---
+        await loadPatternData('neon-sky-full.json');
+        initializeApp();
+    });
+    </script>
+</body>
 </html>
+

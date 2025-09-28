@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "name": "Neon Sky Shawl",
+    "author": "Trinity & Co.",
+    "craft": "Knitting",
+    "maxSteps": 116
+  },
+  "glossary": {
+    "k": { "name": "Knit", "description": "The basic knit stitch." },
+    "p": { "name": "Purl", "description": "The basic purl stitch, the reverse of a knit stitch." },
+    "kfb": { "name": "Knit Front and Back", "description": "A single-stitch increase. Knit into the front of the stitch, but before sliding it off, knit into the back of the same stitch." },
+    "m1L": { "name": "Make 1 Left", "description": "An increase that slants to the left. Pick up the bar between stitches from front to back and knit it through the back loop." },
+    "m1R": { "name": "Make 1 Right", "description": "An increase that slants to the right. Pick up the bar between stitches from back to front and knit it through the front loop." },
+    "yo": { "name": "Yarn Over", "description": "An increase that creates a small decorative hole, essential for lace. Bring the yarn over the right needle." },
+    "ssk": { "name": "Slip, Slip, Knit", "description": "A decrease that slants to the left. Slip two stitches knitwise one at a time, then knit them together through the back loops." },
+    "k2tog": { "name": "Knit 2 Together", "description": "A decrease that slants to the right. Knit the next two stitches together as if they were one." },
+    "cdd": { "name": "Centered Double Decrease", "description": "A decrease that reduces three stitches to one without a slant. Slip two stitches as if to knit them together, knit the next stitch, then pass the two slipped stitches over." },
+    "sm": { "name": "Slip Marker", "description": "Move the stitch marker from the left needle to the right needle." }
+  },
+  "instructions": [
+    {
+      "step": 1, "type": "Row", "side": "RS", "totalStitches": 15,
+      "displayText": "<b>Row 1 (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='main'>k1</span>, <span class='increase'>m1L</span>, sm, <span class='spine'>k1</span>, sm, <span class='increase'>m1R</span>, <span class='main'>k1</span>, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (15 sts)",
+      "chunks": [
+        { "name": "Edge", "stitches": 3, "pattern": ["k"] },
+        { "name": "Increase", "stitches": 1, "pattern": ["kfb"] },
+        { "name": "Main", "stitches": 1, "pattern": ["k"] },
+        { "name": "Increase", "stitches": 1, "pattern": ["m1L"] },
+        { "name": "Spine", "stitches": 1, "pattern": ["k"] },
+        { "name": "Increase", "stitches": 1, "pattern": ["m1R"] },
+        { "name": "Main", "stitches": 1, "pattern": ["k"] },
+        { "name": "Increase", "stitches": 1, "pattern": ["kfb"] },
+        { "name": "Edge", "stitches": 3, "pattern": ["k"] }
+      ]
+    },
+    {
+      "step": 2, "type": "Row", "side": "WS", "totalStitches": 15,
+      "displayText": "<b>Row 2 (WS):</b> <span class='edge'>k3</span>, <span class='main'>p9</span>, <span class='edge'>k3</span>. (15 sts)",
+      "chunks": [
+        { "name": "Edge", "stitches": 3, "pattern": ["k"] },
+        { "name": "Main Fabric", "stitches": 9, "pattern": ["p"] },
+        { "name": "Edge", "stitches": 3, "pattern": ["k"] }
+      ]
+    },
+    {
+      "stepRange": [3, 61], "stepType": "odd", "type": "Row", "side": "RS", "increase": 4,
+      "displayText": "<b>Repeat Rows (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='main'>k to marker</span>, <span class='increase'>m1L</span>, sm, <span class='spine'>k1</span>, sm, <span class='increase'>m1R</span>, <span class='main'>k to last 4</span>, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (+4 sts)",
+      "dynamicChunks": true
+    },
+    {
+      "stepRange": [4, 62], "stepType": "even", "type": "Row", "side": "WS", "increase": 0,
+      "displayText": "<b>Repeat Rows (WS):</b> <span class='edge'>k3</span>, <span class='main'>purl to last 3</span>, <span class='edge'>k3</span>.",
+      "dynamicChunks": true
+    },
+    {
+      "step": 63, "type": "Row", "side": "RS", "totalStitches": 139,
+      "displayText": "<b>Row 63 (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='lace-1-left'>(yo, ssk, k5, k2tog, yo, k1)</span> 6 times, <span class='main'>k3, m1L, k1, m1R, k3</span>, <span class='lace-1-right'>(yo, ssk, k5, k2tog, yo, k1)</span> 6 times, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (139 sts)",
+      "chunks": [
+        { "name": "Edge & Inc", "category": "edge", "stitches": 4, "pattern": ["k3", "kfb"] },
+        { "name": "Lace 1 Left", "category": "lace-1-left", "stitches": 60, "repeats": 6, "pattern": ["yo", "ssk", "k5", "k2tog", "yo", "k1"] },
+        { "name": "Center Panel", "category": "main", "stitches": 9, "pattern": ["k3", "m1L", "k1", "m1R", "k3"] },
+        { "name": "Lace 1 Right", "category": "lace-1-right", "stitches": 60, "repeats": 6, "pattern": ["yo", "ssk", "k5", "k2tog", "yo", "k1"] },
+        { "name": "Inc & Edge", "category": "edge", "stitches": 4, "pattern": ["kfb", "k3"] }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,22 @@
+{
+  "name": "Interactive Pattern Viewer",
+  "short_name": "PatternApp",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#8b5cf6",
+  "description": "An interactive viewer for knitting and crochet patterns.",
+  "icons": [
+    {
+      "src": "yarn-ball-icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "MASTER_yarn-ball-icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
+

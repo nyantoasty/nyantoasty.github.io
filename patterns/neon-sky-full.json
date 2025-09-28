@@ -1,68 +1,344 @@
 {
   "metadata": {
     "name": "Neon Sky Shawl",
-    "author": "Trinity & Co.",
-    "craft": "Knitting",
+    "author": "Iris Schreier",
+    "craft": "knitting",
     "maxSteps": 116
   },
   "glossary": {
-    "k": { "name": "Knit", "description": "The basic knit stitch." },
-    "p": { "name": "Purl", "description": "The basic purl stitch, the reverse of a knit stitch." },
-    "kfb": { "name": "Knit Front and Back", "description": "A single-stitch increase. Knit into the front of the stitch, but before sliding it off, knit into the back of the same stitch." },
-    "m1L": { "name": "Make 1 Left", "description": "An increase that slants to the left. Pick up the bar between stitches from front to back and knit it through the back loop." },
-    "m1R": { "name": "Make 1 Right", "description": "An increase that slants to the right. Pick up the bar between stitches from back to front and knit it through the front loop." },
-    "yo": { "name": "Yarn Over", "description": "An increase that creates a small decorative hole, essential for lace. Bring the yarn over the right needle." },
-    "ssk": { "name": "Slip, Slip, Knit", "description": "A decrease that slants to the left. Slip two stitches knitwise one at a time, then knit them together through the back loops." },
-    "k2tog": { "name": "Knit 2 Together", "description": "A decrease that slants to the right. Knit the next two stitches together as if they were one." },
-    "cdd": { "name": "Centered Double Decrease", "description": "A decrease that reduces three stitches to one without a slant. Slip two stitches as if to knit them together, knit the next stitch, then pass the two slipped stitches over." },
-    "sm": { "name": "Slip Marker", "description": "Move the stitch marker from the left needle to the right needle." }
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch."
+    },
+    "p": {
+      "name": "Purl",
+      "description": "Purl stitch."
+    },
+    "k2tog": {
+      "name": "Knit 2 Together",
+      "description": "Knit 2 stitches together as though they were 1 st. A right-slanted decrease of 1 st."
+    },
+    "yo": {
+      "name": "Yarn Over",
+      "description": "Yarn over needle as though to create an extra stitch."
+    },
+    "ssk": {
+      "name": "Slip, Slip, Knit",
+      "description": "Slip 2 stitches from left to right needle and knit them together through back loops, a left-slanted decrease of 1 st."
+    },
+    "kfb": {
+      "name": "Knit Front and Back",
+      "description": "Knit into the front and back of the same stitch, an increase of 1 stitch."
+    },
+    "m1l": {
+      "name": "Make 1 Left",
+      "description": "Left-leaning lifted increase. Insert the left needle tip from front to back under bar between stitches, lifting it to form a new loop on left needle, and knit this loop through the back, an increase of 1 st."
+    },
+    "m1r": {
+      "name": "Make 1 Right",
+      "description": "Right-leaning lifted increase. Insert the left needle tip from back to front under bar between 2 sts, lifting it to form a new loop on the left needle, and knit this loop through the front, an increase of 1 st."
+    },
+    "pm": {
+      "name": "Place Marker",
+      "description": "Place a stitch marker on the needle."
+    },
+    "rm": {
+      "name": "Remove Marker",
+      "description": "Remove a stitch marker from the needle."
+    },
+    "sm": {
+      "name": "Slip Marker",
+      "description": "Slip a stitch marker from the left needle to the right needle."
+    },
+    "cdd": {
+      "name": "Centered Double Decrease",
+      "description": "Slip 2 sts with yarn in back, knit the next stitch, pass the 2 slipped stitches over the stitch just knitted, a decrease of 2 sts."
+    }
   },
   "instructions": [
     {
-      "step": 1, "type": "Row", "side": "RS", "totalStitches": 15,
-      "displayText": "<b>Row 1 (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='main'>k1</span>, <span class='increase'>m1L</span>, sm, <span class='spine'>k1</span>, sm, <span class='increase'>m1R</span>, <span class='main'>k1</span>, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (15 sts)",
+      "step": 0,
+      "section": "Setup",
+      "type": "specialInstruction",
+      "description": "Work Garter Tab: Cast on 3 sts. Knit 6 rows. Turn and pick up and knit into 3 purl bumps along side, then pick up and knit along 3 cast on sts—9 sts total. Knit back."
+    },
+    {
+      "step": 1,
+      "section": "Setup",
+      "side": "rs",
+      "stitchCount": 11,
       "chunks": [
-        { "name": "Edge", "stitches": 3, "pattern": ["k"] },
-        { "name": "Increase", "stitches": 1, "pattern": ["kfb"] },
-        { "name": "Main", "stitches": 1, "pattern": ["k"] },
-        { "name": "Increase", "stitches": 1, "pattern": ["m1L"] },
-        { "name": "Spine", "stitches": 1, "pattern": ["k"] },
-        { "name": "Increase", "stitches": 1, "pattern": ["m1R"] },
-        { "name": "Main", "stitches": 1, "pattern": ["k"] },
-        { "name": "Increase", "stitches": 1, "pattern": ["kfb"] },
-        { "name": "Edge", "stitches": 3, "pattern": ["k"] }
+        { "instruction": "k", "count": 3 },
+        { "instruction": "kfb", "count": 1 },
+        { "instruction": "pm", "count": 1 },
+        { "instruction": "k", "count": 1 },
+        { "instruction": "kfb", "count": 1 },
+        { "instruction": "k", "count": 3 }
       ]
     },
     {
-      "step": 2, "type": "Row", "side": "WS", "totalStitches": 15,
-      "displayText": "<b>Row 2 (WS):</b> <span class='edge'>k3</span>, <span class='main'>p9</span>, <span class='edge'>k3</span>. (15 sts)",
+      "step": 2,
+      "section": "Setup",
+      "side": "ws",
+      "stitchCount": 11,
+      "dynamicChunks": true,
       "chunks": [
-        { "name": "Edge", "stitches": 3, "pattern": ["k"] },
-        { "name": "Main Fabric", "stitches": 9, "pattern": ["p"] },
-        { "name": "Edge", "stitches": 3, "pattern": ["k"] }
+        { "instruction": "k", "count": 3 },
+        { "instruction": "p", "count": "to last 3" },
+        { "instruction": "k", "count": 3 }
       ]
     },
     {
-      "stepRange": [3, 61], "stepType": "odd", "type": "Row", "side": "RS", "increase": 4,
-      "displayText": "<b>Repeat Rows (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='main'>k to marker</span>, <span class='increase'>m1L</span>, sm, <span class='spine'>k1</span>, sm, <span class='increase'>m1R</span>, <span class='main'>k to last 4</span>, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (+4 sts)",
-      "dynamicChunks": true
-    },
-    {
-      "stepRange": [4, 62], "stepType": "even", "type": "Row", "side": "WS", "increase": 0,
-      "displayText": "<b>Repeat Rows (WS):</b> <span class='edge'>k3</span>, <span class='main'>purl to last 3</span>, <span class='edge'>k3</span>.",
-      "dynamicChunks": true
-    },
-    {
-      "step": 63, "type": "Row", "side": "RS", "totalStitches": 139,
-      "displayText": "<b>Row 63 (RS):</b> <span class='edge'>k3</span>, <span class='increase'>kfb</span>, <span class='lace-1-left'>(yo, ssk, k5, k2tog, yo, k1)</span> 6 times, <span class='main'>k3, m1L, k1, m1R, k3</span>, <span class='lace-1-right'>(yo, ssk, k5, k2tog, yo, k1)</span> 6 times, <span class='increase'>kfb</span>, <span class='edge'>k3</span>. (139 sts)",
+      "stepRange": [3, 61],
+      "stepType": "odd",
+      "section": "Top of Shawl",
+      "side": "rs",
+      "stitchCountChange": "+4",
+      "dynamicChunks": true,
       "chunks": [
-        { "name": "Edge & Inc", "category": "edge", "stitches": 4, "pattern": ["k3", "kfb"] },
-        { "name": "Lace 1 Left", "category": "lace-1-left", "stitches": 60, "repeats": 6, "pattern": ["yo", "ssk", "k5", "k2tog", "yo", "k1"] },
-        { "name": "Center Panel", "category": "main", "stitches": 9, "pattern": ["k3", "m1L", "k1", "m1R", "k3"] },
-        { "name": "Lace 1 Right", "category": "lace-1-right", "stitches": 60, "repeats": 6, "pattern": ["yo", "ssk", "k5", "k2tog", "yo", "k1"] },
-        { "name": "Inc & Edge", "category": "edge", "stitches": 4, "pattern": ["kfb", "k3"] }
+        { "instruction": "k", "count": 3 },
+        { "instruction": "kfb", "count": 1 },
+        { "instruction": "k", "count": "to marker" },
+        { "instruction": "m1l", "count": 1 },
+        { "instruction": "sm", "count": 1 },
+        { "instruction": "k", "count": 1 },
+        { "instruction": "m1r", "count": 1 },
+        { "instruction": "k", "count": "to last 4" },
+        { "instruction": "kfb", "count": 1 },
+        { "instruction": "k", "count": 3 }
       ]
+    },
+    {
+      "stepRange": [4, 62],
+      "stepType": "even",
+      "section": "Top of Shawl",
+      "side": "ws",
+      "stitchCountChange": "0",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 },
+        { "instruction": "p", "count": "to last 3" },
+        { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 63,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 139,
+      "subsection": "Lace Pattern 1, Row 1",
+      "chunks": [
+        { "instruction": "k", "count": 3 },
+        { "instruction": "kfb", "count": 1 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 5 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 3 },
+        { "instruction": "m1l", "count": 1 },
+        { "instruction": "k", "count": 1 },
+        { "instruction": "m1r", "count": 1 },
+        { "instruction": "k", "count": 3 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 5 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "kfb", "count": 1 },
+        { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [64, 76],
+      "stepType": "even",
+      "section": "Shawl Body",
+      "side": "ws",
+      "subsection": "Lace Pattern 1, Even Rows",
+      "stitchCountChange": "0",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 },
+        { "instruction": "p", "count": "to last 3" },
+        { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 65,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 143,
+      "subsection": "Lace Pattern 1, Row 3",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 1 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 2 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 3 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 4 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 4 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 3 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 2 }
+        ]}},
+        { "instruction": "k", "count": 1 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 67,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 147,
+      "subsection": "Lace Pattern 1, Row 5",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 2 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 2 }
+        ]}},
+        { "instruction": "k", "count": 5 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 5 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 2 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 2 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 69,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 151,
+      "subsection": "Lace Pattern 1, Row 7",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 6 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 6 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 7 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 71,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 155,
+      "subsection": "Lace Pattern 1, Row 9",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 4 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 5 }, { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 7 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 7 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "k", "count": 5 }, { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 73,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 159,
+      "subsection": "Lace Pattern 1, Row 11",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 1 },
+        { "repeat": { "count": 6, "instructions": [
+            { "repeat": { "count": 2, "instructions": [
+                { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 3 }
+            ]}},
+            { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 8 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 8 },
+        { "repeat": { "count": 6, "instructions": [
+            { "repeat": { "count": 2, "instructions": [
+                { "instruction": "k", "count": 2 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+            ]}}
+        ]}},
+        { "instruction": "k", "count": 1 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "step": 75,
+      "section": "Shawl Body",
+      "side": "rs",
+      "stitchCount": 163,
+      "subsection": "Lace Pattern 1, Row 13",
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 6 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 9 }, { "instruction": "m1l", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": 9 },
+        { "repeat": { "count": 6, "instructions": [
+          { "instruction": "yo", "count": 1 }, { "instruction": "ssk", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "cdd", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "k2tog", "count": 1 }, { "instruction": "yo", "count": 1 }, { "instruction": "k", "count": 1 }
+        ]}},
+        { "instruction": "k", "count": 6 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [77, 81],
+      "stepType": "odd",
+      "section": "Shawl Body",
+      "side": "rs",
+      "subsection": "Stockinette 1",
+      "stitchCountChange": "+4",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": "to marker" }, { "instruction": "m1l", "count": 1 }, { "instruction": "sm", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": "to last 4" }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [78, 82],
+      "stepType": "even",
+      "section": "Shawl Body",
+      "side": "ws",
+      "subsection": "Stockinette 1",
+      "stitchCountChange": "0",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "p", "count": "to last 3" }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [83, 96],
+      "section": "Shawl Body",
+      "type": "specialInstruction",
+      "subsection": "Lace Pattern 2",
+      "description": "Work Lace Pattern Rows 1-14 (as defined in Steps 63-76), but increase all internal repeats from 6 times to 8 times. This section adds 28 stitches."
+    },
+    {
+      "stepRange": [97, 101],
+      "stepType": "odd",
+      "section": "Shawl Body",
+      "side": "rs",
+      "subsection": "Stockinette 2",
+      "stitchCountChange": "+4",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": "to marker" }, { "instruction": "m1l", "count": 1 }, { "instruction": "sm", "count": 1 }, { "instruction": "k", "count": 1 }, { "instruction": "m1r", "count": 1 }, { "instruction": "k", "count": "to last 4" }, { "instruction": "kfb", "count": 1 }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [98, 102],
+      "stepType": "even",
+      "section": "Shawl Body",
+      "side": "ws",
+      "subsection": "Stockinette 2",
+      "stitchCountChange": "0",
+      "dynamicChunks": true,
+      "chunks": [
+        { "instruction": "k", "count": 3 }, { "instruction": "p", "count": "to last 3" }, { "instruction": "k", "count": 3 }
+      ]
+    },
+    {
+      "stepRange": [103, 116],
+      "section": "Shawl Body",
+      "type": "specialInstruction",
+      "subsection": "Lace Pattern 3",
+      "description": "Work Lace Pattern Rows 1-14 (as defined in Steps 63-76), but increase all internal repeats from 6 times to 10 times. This section adds 28 stitches."
+    },
+    {
+      "step": 117,
+      "section": "Finishing",
+      "type": "specialInstruction",
+      "description": "Bind off all sts loosely. Cut yarn, weave in ends. Block by dampening shawl and pinning out on blocking board to desired measurements. Let dry thoroughly before moving."
     }
   ]
 }
-

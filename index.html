@@ -171,6 +171,7 @@
 
     onAuthStateChanged(auth, user => {
         if (user) {
+            console.log("My User UID is:", user.uid)
             authContainer.classList.add('hidden');
             appContainer.classList.remove('hidden');
             userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;

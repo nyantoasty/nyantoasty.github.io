@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiber Art Stitch Glossary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfaf6; /* Warm off-white */
+        }
+        .stitch-card {
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #f0e9e1;
+        }
+        .stitch-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #e4dace;
+        }
+        .knitting-tag { background-color: #e0f2e9; color: #1e6043; } /* Muted Green */
+        .crochet-tag { background-color: #ffe4e6; color: #a32d46; } /* Dusty Rose */
+        .finishing-tag { background-color: #ffedd5; color: #9a3412; } /* Soft Orange for techniques */
+        
+        .modal-backdrop, .form-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            overflow-y: auto;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .modal-content, .form-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            margin: auto;
+        }
+        .media-container {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #e2e8f0;
+        }
+        .media-container iframe, .media-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .filter-tab {
+            transition: all 0.2s ease-in-out;
+        }
+        .filter-tab.active {
+            background-color: #f97316; /* Orange-600 */
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .reference-table th, .reference-table td {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border: 1px solid #f0e9e1;
+        }
+        .reference-table th {
+            background-color: #fdfaf6;
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-stone-800">
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-stone-700">Fiber Art Stitch Glossary</h1>
+            <p class="text-lg text-stone-500 mt-2">Your personal dictionary of stitches and tools.</p>
+        </header>
+
+        <div class="text-center mb-8 flex flex-wrap justify-center gap-4">
+            <button id="show-form-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                Add New Entry
+            </button>
+            <button id="show-reference-btn" class="inline-flex justify-center py-2 px-6 border border-orange-600 shadow-sm text-sm font-medium rounded-md text-orange-600 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                Tool & Yarn Guide
+            </button>
+        </div>
+
+        <!-- Add Stitch Form Modal -->
+        <div id="form-modal" class="form-backdrop hidden">
+            <div class="form-content">
+                <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-stone-600">Add a New Stitch or Technique</h2><button id="close-form-btn" class="text-stone-400 hover:text-stone-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+                <form id="add-stitch-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="stitch-name" class="block text-sm font-medium text-stone-700">Name</label><input type="text" id="stitch-name" placeholder="e.g., Knit Stitch" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div><div><label for="stitch-shorthand" class="block text-sm font-medium text-stone-700">Shorthand</label><input type="text" id="stitch-shorthand" placeholder="e.g., k" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div></div>
+                    <div><label for="stitch-hobby" class="block text-sm font-medium text-stone-700">Category</label><select id="stitch-hobby" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required><option value="Knitting">Knitting</option><option value="Crochet">Crochet</option><option value="Finishing">Finishing</option></select></div>
+                    <div><label for="stitch-description" class="block text-sm font-medium text-stone-700">Description</label><textarea id="stitch-description" rows="4" placeholder="How to perform the stitch..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></textarea></div>
+                    <div><label for="stitch-notes" class="block text-sm font-medium text-stone-700">Notes & Tips</label><textarea id="stitch-notes" rows="3" placeholder="e.g., US vs UK terms, tension tips..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></textarea></div>
+                    <div><label for="stitch-media-url" class="block text-sm font-medium text-stone-700">Image/Video URL</label><input type="url" id="stitch-media-url" placeholder="YouTube or image link" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
+                    <div class="text-right"><button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">Add to Glossary</button></div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Reference Modal -->
+        <div id="reference-modal" class="form-backdrop hidden">
+            <div class="form-content">
+                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-stone-600">Yarn & Tool Reference Guide</h2><button id="close-reference-btn" class="text-stone-400 hover:text-stone-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
+                 <p class="text-sm text-stone-500 mb-4">These are recommended starting points. Always create a gauge swatch to ensure you like the resulting fabric!</p>
+                 <table class="w-full text-sm reference-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Weight</th>
+                            <th>Knitting Needles (US)</th>
+                            <th>Crochet Hooks (US)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-stone-700">
+                        <tr><td>Lace</td><td>0</td><td>000-1 (1.5-2.25mm)</td><td>Steel 6-8, B-1 (1.6-2.25mm)</td></tr>
+                        <tr><td>Super Fine</td><td>1</td><td>1-3 (2.25-3.25mm)</td><td>B-1 to E-4 (2.25-3.5mm)</td></tr>
+                        <tr><td>Fine</td><td>2</td><td>3-5 (3.25-3.75mm)</td><td>E-4 to 7 (3.5-4.5mm)</td></tr>
+                        <tr><td>Light / DK</td><td>3</td><td>5-7 (3.75-4.5mm)</td><td>7 to I-9 (4.5-5.5mm)</td></tr>
+                        <tr><td>Medium / Worsted</td><td>4</td><td>7-9 (4.5-5.5mm)</td><td>I-9 to K-10.5 (5.5-6.5mm)</td></tr>
+                        <tr><td>Bulky</td><td>5</td><td>9-11 (5.5-8mm)</td><td>K-10.5 to M-13 (6.5-9mm)</td></tr>
+                        <tr><td>Super Bulky</td><td>6</td><td>11-17 (8-12.75mm)</td><td>M-13 to Q (9-15mm)</td></tr>
+                        <tr><td>Jumbo</td><td>7</td><td>17+ (12.75mm+)</td><td>Q+ (15mm+)</td></tr>
+                    </tbody>
+                 </table>
+            </div>
+        </div>
+
+        <!-- Controls: Filters, Search, Sort -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-8 space-y-4">
+             <div><h3 class="text-sm font-medium text-stone-500 mb-2">Filter by Category</h3><div id="filter-tabs" class="flex flex-wrap gap-2"><button class="filter-tab active py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="All">All</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Knitting">Knitting</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Crochet">Crochet</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Finishing">Finishing</button></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="search-input" class="block text-sm font-medium text-stone-500">Search</label><input type="text" id="search-input" placeholder="e.g., k2tog, cable..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div><div><label for="sort-select" class="block text-sm font-medium text-stone-500">Sort By</label><select id="sort-select" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"><option value="name-asc">Name (A-Z)</option><option value="name-desc">Name (Z-A)</option><option value="category">Category</option></select></div></div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loader" class="text-center py-8"><svg class="animate-spin h-8 w-8 text-orange-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-2 text-stone-500">Loading stitches...</p></div>
+
+        <!-- Glossary Display -->
+        <div id="glossary-container" class="space-y-4"></div>
+         <p id="no-results-message" class="text-center text-stone-500 py-8 hidden">No entries match your search.</p>
+
+    </div>
+
+    <!-- Message Modal -->
+    <div id="message-modal" class="modal-backdrop hidden"><div class="modal-content"><h3 id="modal-title" class="text-lg leading-6 font-medium text-stone-900"></h3><div class="mt-2"><p id="modal-message" class="text-sm text-stone-500"></p></div><div class="mt-4 text-right"><button id="modal-close-btn" type="button" class="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2">Got it!</button></div></div></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_FALLBACK_API_KEY", authDomain: "...", projectId: "..." };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-stitch-glossary';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        const addStitchForm = document.getElementById('add-stitch-form');
+        const glossaryContainer = document.getElementById('glossary-container');
+        const loader = document.getElementById('loader');
+        const messageModal = document.getElementById('message-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const formModal = document.getElementById('form-modal');
+        const showFormBtn = document.getElementById('show-form-btn');
+        const closeFormBtn = document.getElementById('close-form-btn');
+        const referenceModal = document.getElementById('reference-modal');
+        const showReferenceBtn = document.getElementById('show-reference-btn');
+        const closeReferenceBtn = document.getElementById('close-reference-btn');
+        const filterTabsContainer = document.getElementById('filter-tabs');
+        const searchInput = document.getElementById('search-input');
+        const sortSelect = document.getElementById('sort-select');
+        const noResultsMessage = document.getElementById('no-results-message');
+
+        let userId = null;
+        let unsubscribeGlossary = null;
+        let allStitches = [];
+        let currentFilter = 'All';
+        let currentSort = 'name-asc';
+        let currentSearchTerm = '';
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                await populateInitialData();
+                await setupGlossaryListener();
+            } else {
+                try {
+                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                     } else {
+                        await signInAnonymously(auth);
+                     }
+                } catch (error) {
+                    console.error("Error during sign-in:", error);
+                    showMessage('Authentication Error', 'Could not sign in. Please refresh to try again.');
+                }
+            }
+        });
+
+        async function setupGlossaryListener() {
+            if (!userId) return;
+            if(unsubscribeGlossary) unsubscribeGlossary(); 
+            const glossaryCollectionPath = `/artifacts/${appId}/public/data/stitchGlossary`;
+            const q = query(collection(db, glossaryCollectionPath));
+            unsubscribeGlossary = onSnapshot(q, (querySnapshot) => {
+                allStitches = [];
+                querySnapshot.forEach((doc) => {
+                    allStitches.push({ id: doc.id, ...doc.data() });
+                });
+                displayFilteredStitches();
+                loader.classList.add('hidden');
+            }, (error) => {
+                console.error("Error fetching glossary:", error);
+                showMessage('Database Error', 'Could not fetch your stitch glossary.');
+                loader.classList.add('hidden');
+            });
+        }
+        
+        async function addStitch(stitchData) {
+            try {
+                const glossaryCollectionPath = `/artifacts/${appId}/public/data/stitchGlossary`;
+                await addDoc(collection(db, glossaryCollectionPath), stitchData);
+                showMessage('Success!', `"${stitchData.name}" has been added to your glossary.`);
+                return true;
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showMessage('Error', 'There was a problem adding the stitch.');
+                return false;
+            }
+        }
+
+        function displayFilteredStitches() {
+            let filtered = [...allStitches];
+
+            if (currentFilter !== 'All') {
+                filtered = filtered.filter(stitch => stitch.hobby === currentFilter);
+            }
+
+            if (currentSearchTerm) {
+                const lowerCaseSearch = currentSearchTerm.toLowerCase();
+                filtered = filtered.filter(stitch => 
+                    stitch.name.toLowerCase().includes(lowerCaseSearch) ||
+                    stitch.shorthand.toLowerCase().includes(lowerCaseSearch)
+                );
+            }
+            
+            switch (currentSort) {
+                case 'name-asc':
+                    filtered.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    filtered.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'category':
+                    filtered.sort((a, b) => a.hobby.localeCompare(b.hobby) || a.name.localeCompare(b.name));
+                    break;
+            }
+
+            renderGlossary(filtered);
+        }
+
+        function createMediaElement(url) {
+            if (!url) return '';
+            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const youtubeMatch = url.match(youtubeRegex);
+            if (youtubeMatch && youtubeMatch[1]) {
+                const videoId = youtubeMatch[1];
+                return `<div class="media-container"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+            }
+            if (/\.(jpeg|jpg|gif|png|webp)$/i.test(url)) {
+                return `<div class="media-container"><img src="${url}" alt="Stitch visualization"></div>`;
+            }
+            return ''; 
+        }
+
+        function renderGlossary(stitches) {
+            glossaryContainer.innerHTML = '';
+            noResultsMessage.classList.toggle('hidden', stitches.length > 0);
+
+            stitches.forEach(stitch => {
+                const card = document.createElement('div');
+                card.className = 'stitch-card bg-white p-6 rounded-lg shadow-md';
+                let tagClass = '';
+                if (stitch.hobby === 'Knitting') tagClass = 'knitting-tag';
+                else if (stitch.hobby === 'Crochet') tagClass = 'crochet-tag';
+                else if (stitch.hobby === 'Finishing') tagClass = 'finishing-tag';
+
+                card.innerHTML = `<div class="flex justify-between items-start"><div><h3 class="text-xl font-bold text-stone-800">${stitch.name} (${stitch.shorthand})</h3><span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${tagClass} last:mr-0 mr-1">${stitch.hobby}</span></div></div>${createMediaElement(stitch.mediaUrl)}<div class="mt-4 space-y-2"><div><h4 class="font-semibold text-stone-600">How-To:</h4><p class="text-stone-600 whitespace-pre-wrap">${stitch.description}</p></div>${stitch.notes ? `<div><h4 class="font-semibold text-stone-600">Notes:</h4><p class="text-stone-600 whitespace-pre-wrap">${stitch.notes}</p></div>` : ''}</div>`;
+                glossaryContainer.appendChild(card);
+            });
+        }
+
+        addStitchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const stitchData = {
+                name: document.getElementById('stitch-name').value,
+                shorthand: document.getElementById('stitch-shorthand').value,
+                hobby: document.getElementById('stitch-hobby').value,
+                description: document.getElementById('stitch-description').value,
+                notes: document.getElementById('stitch-notes').value,
+                mediaUrl: document.getElementById('stitch-media-url').value,
+                createdAt: new Date()
+            };
+            if (stitchData.name && stitchData.shorthand && stitchData.hobby && stitchData.description) {
+                const success = await addStitch(stitchData);
+                if (success) {
+                    addStitchForm.reset();
+                    formModal.classList.add('hidden');
+                }
+            }
+        });
+
+        filterTabsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-tab')) {
+                currentFilter = e.target.dataset.filter;
+                document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+                e.target.classList.add('active');
+                displayFilteredStitches();
+            }
+        });
+        
+        searchInput.addEventListener('input', () => {
+            currentSearchTerm = searchInput.value;
+            displayFilteredStitches();
+        });
+        
+        sortSelect.addEventListener('change', () => {
+            currentSort = sortSelect.value;
+            displayFilteredStitches();
+        });
+
+        function showMessage(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+        modalCloseBtn.addEventListener('click', () => messageModal.classList.add('hidden'));
+
+        showFormBtn.addEventListener('click', () => formModal.classList.remove('hidden'));
+        closeFormBtn.addEventListener('click', () => formModal.classList.add('hidden'));
+        
+        showReferenceBtn.addEventListener('click', () => referenceModal.classList.remove('hidden'));
+        closeReferenceBtn.addEventListener('click', () => referenceModal.classList.add('hidden'));
+
+        async function populateInitialData() {
+            const path = `/artifacts/${appId}/public/data/stitchGlossary`;
+            const collectionRef = collection(db, path);
+            const q = query(collectionRef);
+            try {
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    console.log("Glossary empty, populating initial data.");
+                    const initialStitches = [
+                        { name: 'Long-Tail Cast-On', shorthand: 'LTCO', hobby: 'Knitting', description: `1. Make a slip knot, leaving a long tail (approx. 3x the width of your project).\n2. Arrange the tail yarn over your left thumb and the working yarn over your left index finger.\n3. Bring the needle tip under the front strand on your thumb, then scoop the strand on your index finger from above.\n4. Pull the new loop through the thumb loop and tighten.`, notes: `A popular, all-purpose cast-on. It's stretchy and creates a neat edge. Estimating the tail length is the trickiest part!`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Cable Cast-On', shorthand: 'CCO', hobby: 'Knitting', description: `1. Make a slip knot and knit one stitch into it, but don't drop it from the left needle. You now have two stitches.\n2. Insert the right needle between the two stitches on the left needle.\n3. Yarn over and pull through a new loop, placing it on the left needle.\n4. Repeat step 2-3 for the desired number of stitches.`, notes: `Creates a firm, decorative edge that looks like a rope. It is less stretchy than the Long-Tail Cast-On and is great for button bands.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Knit Stitch (Continental)', shorthand: 'k', hobby: 'Knitting', description: `1. With yarn held behind in your left hand, insert the right needle from front to back into the first loop on the left needle.\n2. Scoop the working yarn with the right needle.\n3. Pull the new loop through, and slide the old loop off.`, notes: `The foundation of knitting. Tension comes from how the yarn is wrapped on your left-hand fingers.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Purl Stitch (Continental)', shorthand: 'p', hobby: 'Knitting', description: `1. With yarn held in front in your left hand, insert the right needle from back to front into the first loop on the left needle.\n2. Catch the working yarn from above.\n3. Pull the new loop back through, and slide the old loop off.`, notes: `The 'opposite' of the knit stitch. Alternating knits and purls creates texture.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Knit 2 Together', shorthand: 'k2tog', hobby: 'Knitting', description: `Insert the right needle through two stitches on the left needle as if to knit, and knit them as one stitch.`, notes: `A standard, right-leaning decrease. Simple and effective for shaping.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Standard Bind-Off', shorthand: 'BO', hobby: 'Knitting', description: `1. Knit the first two stitches.\n2. Insert the left needle into the first stitch on the right needle.\n3. Lift this stitch over the second stitch and off the needle.\n4. Knit one more stitch and repeat.`, notes: `The most common bind-off. Be careful not to pull too tightly! Using a larger needle can help keep it loose.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Jeny\'s Surprisingly Stretchy Bind-Off', shorthand: 'JSSBO', hobby: 'Knitting', description: `1. Before the first stitch, do a reverse yarn over (wrap yarn clockwise).\n2. Knit the first stitch. Pass the yarn over over the stitch.\n3. Before the next stitch, yarn over normally (counter-clockwise). Knit the stitch. Pass both the previous stitch and the new yarn over over. Repeat.`, notes: `Fantastic for cuffs, necklines, and toe-up socks where you need a lot of stretch.`, mediaUrl: 'https://placehold.co/600x400/e0f2e9/1e6043?text=▶%20Play' },
+                        { name: 'Single Crochet (US)', shorthand: 'sc', hobby: 'Crochet', description: `1. Insert hook into stitch.\n2. Yarn over, pull up a loop (2 loops on hook).\n3. Yarn over, pull through both loops.`, notes: `The shortest crochet stitch. A US 'sc' is a UK 'double crochet' (dc).`, mediaUrl: 'https://placehold.co/600x400/ffe4e6/a32d46?text=▶%20Play' },
+                        { name: 'Double Crochet (US)', shorthand: 'dc', hobby: 'Crochet', description: `1. Yarn over, insert hook into stitch.\n2. Yarn over, pull up a loop (3 loops on hook).\n3. Yarn over, pull through two loops. Yarn over, pull through remaining two loops.`, notes: `A very common stitch. A US 'dc' is a UK 'treble crochet' (tr).`, mediaUrl: 'https://placehold.co/600x400/ffe4e6/a32d46?text=▶%20Play' },
+                        { name: 'Weave in Ends (Stockinette)', shorthand: 'Weaving', hobby: 'Finishing', description: `Using a tapestry needle, follow the path of the stitches on the wrong side of the fabric to create a duplicate stitch. Go up one 'V', then down the next, for at least an inch.`, notes: `This technique makes the woven end nearly invisible from the right side. Essential for a professional finish.`, mediaUrl: 'https://placehold.co/600x400/ffedd5/9a3412?text=▶%20Play' },
+                        { name: 'Weave in Ends (Garter)', shorthand: 'Weaving', hobby: 'Finishing', description: `On the wrong side, use a tapestry needle to follow the garter 'bumps' horizontally, alternating going under the top and bottom legs of each bump for about an inch.`, notes: `Hides the yarn tail within the texture of the garter stitch itself.`, mediaUrl: 'https://placehold.co/600x400/ffedd5/9a3412?text=▶%20Play' }
+                    ];
+                    for (const stitch of initialStitches) {
+                        await addDoc(collectionRef, stitch);
+                    }
+                }
+            } catch (error) {
+                console.error("Error populating data: ", error);
+            }
+        }
+    </script>
+</body>
+</html>
+

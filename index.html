@@ -455,22 +455,274 @@
         
         function generateGlossary(){if(!PATTERN_DATA.glossary||Object.keys(PATTERN_DATA.glossary).length===0)return;let glossaryHTML='<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';for(const key in PATTERN_DATA.glossary){const item=PATTERN_DATA.glossary[key];glossaryHTML+=`<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;}
         glossaryHTML+='</div>';const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg';section.innerHTML=glossaryHTML;patternContentEl.appendChild(section);}
-        function generateInstructions(){const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';section.innerHTML='<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';PATTERN_DATA.instructions.forEach(instr=>{const p=document.createElement('p');if(instr.step)p.dataset.step=instr.step;if(instr.stepRange){p.dataset.stepStart=instr.stepRange[0];p.dataset.stepEnd=instr.stepRange[1];}
-        let instructionHTML=instr.displayText?addTooltips(instr.displayText):'';p.innerHTML=instructionHTML;section.appendChild(p);});patternContentEl.appendChild(section);}
+        function generateInstructions(){
+            const section=document.createElement('section');
+            section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
+            section.innerHTML='<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
+            
+            PATTERN_DATA.instructions.forEach(instr=>{
+                const p=document.createElement('p');
+                if(instr.step)p.dataset.step=instr.step;
+                if(instr.stepRange){
+                    p.dataset.stepStart=instr.stepRange[0];
+                    p.dataset.stepEnd=instr.stepRange[1];
+                }
+                
+                // Generate display text from the JSON structure
+                let instructionHTML = generateDisplayText(instr);
+                p.innerHTML=addTooltips(instructionHTML);
+                section.appendChild(p);
+            });
+            patternContentEl.appendChild(section);
+        }
+        
+        function generateDisplayText(instr) {
+            // Handle special instructions
+            if (instr.type === 'specialInstruction') {
+                return `<b>Step ${instr.step || instr.stepRange?.join('-') || ''}:</b> ${instr.description}`;
+            }
+            
+            // Handle step ranges
+            if (instr.stepRange) {
+                let stepText = `<b>Steps ${instr.stepRange[0]}-${instr.stepRange[1]}`;
+                if (instr.stepType) stepText += ` (${instr.stepType})`;
+                stepText += `:</b>`;
+                
+                if (instr.dynamicChunks) {
+                    // For dynamic chunks, give a general description
+                    if (instr.side === 'rs' || instr.side === 'RS') {
+                        stepText += ' Increase rows: k3, kfb, k to marker, m1L, sm, k1, m1R, k to last 4, kfb, k3';
+                    } else if (instr.side === 'ws' || instr.side === 'WS') {
+                        stepText += ' Even rows: k3, purl to last 3, k3';
+                    }
+                } else if (instr.chunks) {
+                    stepText += ' ' + formatChunksForDisplay(instr.chunks);
+                }
+                return stepText;
+            }
+            
+            // Handle single steps
+            if (instr.step !== undefined) {
+                let stepText = `<b>Step ${instr.step}`;
+                if (instr.side) stepText += ` (${instr.side.toUpperCase()})`;
+                stepText += ':</b>';
+                
+                if (instr.chunks) {
+                    stepText += ' ' + formatChunksForDisplay(instr.chunks);
+                }
+                
+                if (instr.stitchCount) {
+                    stepText += ` (${instr.stitchCount} sts)`;
+                }
+                
+                return stepText;
+            }
+            
+            return 'Instruction data incomplete';
+        }
+        
+        function formatChunksForDisplay(chunks) {
+            let display = [];
+            chunks.forEach(chunk => {
+                if (chunk.repeat) {
+                    let repeatText = '(' + chunk.repeat.instructions.map(inst => 
+                        `${inst.instruction}${inst.count > 1 ? inst.count : ''}`
+                    ).join(', ') + `)`;
+                    if (chunk.repeat.count > 1) repeatText += ` ${chunk.repeat.count} times`;
+                    display.push(repeatText);
+                } else {
+                    let chunkText = chunk.instruction;
+                    if (chunk.count > 1) chunkText += chunk.count;
+                    display.push(chunkText);
+                }
+            });
+            return display.join(', ');
+        }
         function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
-        function getStitchCount(stepNumber){if(stitchCountsCache[stepNumber])return stitchCountsCache[stepNumber];const instr=findInstructionForStep(stepNumber);if(instr&&instr.totalStitches){stitchCountsCache[stepNumber]=instr.totalStitches;return instr.totalStitches;}
-        if(stepNumber>1){const prevCount=getStitchCount(stepNumber-1);const currentIncrease=instr&&typeof instr.increase!=='undefined'?instr.increase:0;const count=prevCount+currentIncrease;stitchCountsCache[stepNumber]=count;return count;}
-        const firstInstr=PATTERN_DATA.instructions[0];return firstInstr.totalStitches||0;}
+        function getStitchCount(stepNumber){
+            if(stitchCountsCache[stepNumber])return stitchCountsCache[stepNumber];
+            
+            const instr=findInstructionForStep(stepNumber);
+            
+            // Try to get direct stitch count from instruction
+            if(instr && instr.stitchCount){
+                stitchCountsCache[stepNumber]=instr.stitchCount;
+                return instr.stitchCount;
+            }
+            
+            // Calculate based on previous step and change
+            if(stepNumber>1){
+                const prevCount=getStitchCount(stepNumber-1);
+                let currentIncrease = 0;
+                
+                // Parse stitch count change
+                if(instr && instr.stitchCountChange) {
+                    if(typeof instr.stitchCountChange === 'string') {
+                        if(instr.stitchCountChange.startsWith('+')) {
+                            currentIncrease = parseInt(instr.stitchCountChange.substring(1), 10) || 0;
+                        } else if(instr.stitchCountChange.startsWith('-')) {
+                            currentIncrease = -parseInt(instr.stitchCountChange.substring(1), 10) || 0;
+                        } else if(instr.stitchCountChange === '0') {
+                            currentIncrease = 0;
+                        }
+                    } else if(typeof instr.stitchCountChange === 'number') {
+                        currentIncrease = instr.stitchCountChange;
+                    }
+                }
+                
+                const count = prevCount + currentIncrease;
+                stitchCountsCache[stepNumber] = count;
+                return count;
+            }
+            
+            // Fallback to first instruction
+            const firstInstr = PATTERN_DATA.instructions.find(i => i.step === 1);
+            return firstInstr?.stitchCount || 11; // Default starting count for this pattern
+        }
         function expandPattern(patternArray){const expanded=[];patternArray.forEach(p=>{const match=p.match(/^([a-zA-Z_]+)(\d+)$/);if(match){const instruction=match[1];const count=parseInt(match[2],10);for(let i=0;i<count;i++)expanded.push(instruction);}else{expanded.push(p);}});return expanded;}
-        function generateDynamicChunks(stepNumber){const instruction=findInstructionForStep(stepNumber);if(!instruction||!instruction.dynamicChunks)return null;const prevCount=getStitchCount(stepNumber-1);if(instruction.side==='RS'){const sideStitches=(prevCount-1)/2;const mainKnitCount=sideStitches-4;return[{name:"Edge",category:"edge",pattern:["k3"]},{name:"Increase",category:"increase",pattern:["kfb"]},{name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},{name:"Increase",category:"increase",pattern:["m1L"]},{name:"Spine",category:"spine",pattern:["k1"]},{name:"Increase",category:"increase",pattern:["m1R"]},{name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},{name:"Increase",category:"increase",pattern:["kfb"]},{name:"Edge",category:"edge",pattern:["k3"]}];}else if(instruction.side==='WS'){const purlCount=prevCount-6;return[{name:"Edge",category:"edge",pattern:["k3"]},{name:`Main Fabric (${purlCount})`,category:"main",pattern:[`p${purlCount}`]},{name:"Edge",category:"edge",pattern:["k3"]}];}
-        return null;}
-        function getPatternForStitch(stepNumber,stitchNumber){const totalStitches=getStitchCount(stepNumber);if(stitchNumber<1||stitchNumber>totalStitches)return null;let instruction={...findInstructionForStep(stepNumber)};if(instruction.dynamicChunks){instruction.chunks=generateDynamicChunks(stepNumber);}
-        if(!instruction||!instruction.chunks){return{sectionName:"This is a repeating instruction section.",patternChunk:"Stitch-by-stitch data is not yet defined for this row type."};}
-        let cumulativeStitches=0;for(const chunk of instruction.chunks){const expandedPattern=expandPattern(chunk.pattern);const repeats=chunk.repeats||1;const chunkStitchCount=expandedPattern.length*repeats;if(stitchNumber<=cumulativeStitches+chunkStitchCount){const stitchInSection=stitchNumber-cumulativeStitches;let sectionName=`<span class="${chunk.category||''}">${chunk.name}</span>`;let fullPatternSequence=[];for(let i=0;i<repeats;i++){fullPatternSequence.push(...expandedPattern);}
-        if(repeats>1){const repeatNum=Math.ceil(stitchInSection/expandedPattern.length);sectionName+=` (Repeat ${repeatNum} of ${repeats})`;}
-        const targetIndex=stitchInSection-1;const windowSize=4;const start=Math.max(0,targetIndex-windowSize);const end=Math.min(fullPatternSequence.length,targetIndex+windowSize+1);const patternWindow=fullPatternSequence.slice(start,end);let patternChunk=patternWindow.map((stitch,index)=>{return(start+index===targetIndex)?`<span class="highlight">${stitch}</span>`:stitch;}).join(' ');if(start>0)patternChunk='... '+patternChunk;if(end<fullPatternSequence.length)patternChunk+=' ...';return{sectionName,patternChunk};}
-        cumulativeStitches+=chunkStitchCount;}
-        return null;}
+        function generateDynamicChunks(stepNumber){
+            const instruction=findInstructionForStep(stepNumber);
+            if(!instruction||!instruction.dynamicChunks)return null;
+            
+            const prevCount=getStitchCount(stepNumber-1);
+            
+            if(instruction.side==='rs' || instruction.side==='RS'){
+                const sideStitches=(prevCount-1)/2;
+                const mainKnitCount=sideStitches-4;
+                return[
+                    {name:"Edge",category:"edge",pattern:["k3"]},
+                    {name:"Increase",category:"increase",pattern:["kfb"]},
+                    {name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},
+                    {name:"Increase",category:"increase",pattern:["m1L"]},
+                    {name:"Spine",category:"spine",pattern:["k1"]},
+                    {name:"Increase",category:"increase",pattern:["m1R"]},
+                    {name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},
+                    {name:"Increase",category:"increase",pattern:["kfb"]},
+                    {name:"Edge",category:"edge",pattern:["k3"]}
+                ];
+            } else if(instruction.side==='ws' || instruction.side==='WS'){
+                const purlCount=prevCount-6;
+                return[
+                    {name:"Edge",category:"edge",pattern:["k3"]},
+                    {name:`Main Fabric (${purlCount})`,category:"main",pattern:[`p${purlCount}`]},
+                    {name:"Edge",category:"edge",pattern:["k3"]}
+                ];
+            }
+            return null;
+        }
+        
+        function convertJSONChunksToInternalFormat(jsonChunks) {
+            // Convert the JSON chunk format to the internal format expected by the stitch locator
+            const converted = [];
+            
+            jsonChunks.forEach(chunk => {
+                if (chunk.repeat) {
+                    // Handle repeat structures
+                    const pattern = chunk.repeat.instructions.map(inst => {
+                        if (inst.count > 1) {
+                            return `${inst.instruction}${inst.count}`;
+                        }
+                        return inst.instruction;
+                    });
+                    
+                    converted.push({
+                        name: `Repeat ${chunk.repeat.count} times`,
+                        category: "main", // Default category
+                        repeats: chunk.repeat.count,
+                        pattern: pattern
+                    });
+                } else {
+                    // Handle regular chunks
+                    const pattern = chunk.count > 1 ? [`${chunk.instruction}${chunk.count}`] : [chunk.instruction];
+                    converted.push({
+                        name: chunk.instruction.toUpperCase(),
+                        category: getInstructionCategory(chunk.instruction),
+                        pattern: pattern
+                    });
+                }
+            });
+            
+            return converted;
+        }
+        
+        function getInstructionCategory(instruction) {
+            // Map instruction types to categories for coloring
+            const categoryMap = {
+                'k': 'main',
+                'p': 'main', 
+                'kfb': 'increase',
+                'm1l': 'increase',
+                'm1r': 'increase',
+                'yo': 'increase',
+                'k2tog': 'increase', 
+                'ssk': 'increase',
+                'cdd': 'increase',
+                'pm': 'edge',
+                'sm': 'edge',
+                'rm': 'edge'
+            };
+            
+            return categoryMap[instruction] || 'main';
+        }
+        function getPatternForStitch(stepNumber,stitchNumber){
+            const totalStitches=getStitchCount(stepNumber);
+            if(stitchNumber<1||stitchNumber>totalStitches)return null;
+            
+            let instruction={...findInstructionForStep(stepNumber)};
+            let chunks = null;
+            
+            if(instruction.dynamicChunks){
+                chunks = generateDynamicChunks(stepNumber);
+            } else if (instruction.chunks) {
+                chunks = convertJSONChunksToInternalFormat(instruction.chunks);
+            }
+            
+            if(!chunks){
+                return{
+                    sectionName:"This is a repeating instruction section.",
+                    patternChunk:"Stitch-by-stitch data is not yet defined for this row type."
+                };
+            }
+            
+            let cumulativeStitches=0;
+            for(const chunk of chunks){
+                const expandedPattern=expandPattern(chunk.pattern);
+                const repeats=chunk.repeats||1;
+                const chunkStitchCount=expandedPattern.length*repeats;
+                
+                if(stitchNumber<=cumulativeStitches+chunkStitchCount){
+                    const stitchInSection=stitchNumber-cumulativeStitches;
+                    let sectionName=`<span class="${chunk.category||''}">${chunk.name}</span>`;
+                    let fullPatternSequence=[];
+                    
+                    for(let i=0;i<repeats;i++){
+                        fullPatternSequence.push(...expandedPattern);
+                    }
+                    
+                    if(repeats>1){
+                        const repeatNum=Math.ceil(stitchInSection/expandedPattern.length);
+                        sectionName+=` (Repeat ${repeatNum} of ${repeats})`;
+                    }
+                    
+                    const targetIndex=stitchInSection-1;
+                    const windowSize=4;
+                    const start=Math.max(0,targetIndex-windowSize);
+                    const end=Math.min(fullPatternSequence.length,targetIndex+windowSize+1);
+                    const patternWindow=fullPatternSequence.slice(start,end);
+                    
+                    let patternChunk=patternWindow.map((stitch,index)=>{
+                        return(start+index===targetIndex)?`<span class="highlight">${stitch}</span>`:stitch;
+                    }).join(' ');
+                    
+                    if(start>0)patternChunk='... '+patternChunk;
+                    if(end<fullPatternSequence.length)patternChunk+=' ...';
+                    
+                    return{sectionName,patternChunk};
+                }
+                cumulativeStitches+=chunkStitchCount;
+            }
+            return null;
+        }
         function loadProgress(){const savedStep=localStorage.getItem(progressKey);currentStep=savedStep?parseInt(savedStep,10):1;updateDisplay(false);}
         function saveProgress() { localStorage.setItem(progressKey, currentStep); }
         function updateDisplay(shouldScroll=true){stepInput.value=currentStep;const currentInstruction=findInstructionForStep(currentStep);if(currentInstruction){stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';}
@@ -537,17 +789,33 @@
         
         // Collect all unique categories from the pattern
         const categories = new Set();
+        
         PATTERN_DATA.instructions.forEach(instr => {
             if (instr.chunks) {
                 instr.chunks.forEach(chunk => {
-                    if (chunk.category) {
-                        categories.add(chunk.category);
+                    // Add category based on instruction type
+                    if (chunk.instruction) {
+                        const category = getInstructionCategory(chunk.instruction);
+                        categories.add(category);
+                    }
+                    // Also check repeat instructions
+                    if (chunk.repeat && chunk.repeat.instructions) {
+                        chunk.repeat.instructions.forEach(repeatInstr => {
+                            const category = getInstructionCategory(repeatInstr.instruction);
+                            categories.add(category);
+                        });
                     }
                 });
             }
         });
         
-        // Default color palette - you can expand this
+        // Add standard categories for dynamic chunks
+        categories.add('edge');
+        categories.add('main');  
+        categories.add('increase');
+        categories.add('spine');
+        
+        // Default color palette
         const colorPalette = [
             '#d8b4fe', // purple-300 (edge/structural)
             '#86efac', // green-300 (increases)  
@@ -565,11 +833,19 @@
             '#fb7185', // rose-400
         ];
         
+        // Specific color mapping for common categories
+        const categoryColorMap = {
+            'edge': '#d8b4fe',     // purple-300
+            'increase': '#86efac',  // green-300
+            'main': '#93c5fd',     // blue-300
+            'spine': '#f87171',    // red-300
+        };
+        
         // Generate CSS for each category
         let cssRules = '';
         const categoryArray = Array.from(categories);
         categoryArray.forEach((category, index) => {
-            const color = colorPalette[index % colorPalette.length];
+            const color = categoryColorMap[category] || colorPalette[index % colorPalette.length];
             cssRules += `.${category} { color: ${color}; }\n`;
         });
         

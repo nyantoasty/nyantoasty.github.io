@@ -741,6 +741,86 @@
 
         // Pattern will be loaded when selected from dropdown
         // setupViewer will be called by loadSelectedPattern
+        
+        function generatePatternTheme() {
+            // Remove existing pattern theme
+            const existingStyle = document.getElementById('pattern-theme');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            
+            // Collect all unique categories from the pattern
+            const categories = new Set();
+            
+            PATTERN_DATA.instructions.forEach(instr => {
+                if (instr.chunks) {
+                    instr.chunks.forEach(chunk => {
+                        // Add category based on instruction type
+                        if (chunk.instruction) {
+                            const category = getInstructionCategory(chunk.instruction);
+                            categories.add(category);
+                        }
+                        // Also check repeat instructions
+                        if (chunk.repeat && chunk.repeat.instructions) {
+                            chunk.repeat.instructions.forEach(repeatInstr => {
+                                const category = getInstructionCategory(repeatInstr.instruction);
+                                categories.add(category);
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Add standard categories for dynamic chunks
+            categories.add('edge');
+            categories.add('main');  
+            categories.add('increase');
+            categories.add('spine');
+            
+            // Default color palette
+            const colorPalette = [
+                '#d8b4fe', // purple-300 (edge/structural)
+                '#86efac', // green-300 (increases)  
+                '#93c5fd', // blue-300 (main/body)
+                '#f87171', // red-300 (spine/center)
+                '#fcd34d', // yellow-300 (lace-1)
+                '#f9a8d4', // pink-300 (lace-2) 
+                '#a7f3d0', // emerald-300 (lace-3)
+                '#c4b5fd', // violet-300
+                '#fbbf24', // amber-400
+                '#34d399', // emerald-400
+                '#60a5fa', // blue-400
+                '#f472b6', // pink-400
+                '#a78bfa', // violet-400
+                '#fb7185', // rose-400
+            ];
+            
+            // Specific color mapping for common categories
+            const categoryColorMap = {
+                'edge': '#d8b4fe',     // purple-300
+                'increase': '#86efac',  // green-300
+                'main': '#93c5fd',     // blue-300
+                'spine': '#f87171',    // red-300
+            };
+            
+            // Generate CSS for each category
+            let cssRules = '';
+            const categoryArray = Array.from(categories);
+            categoryArray.forEach((category, index) => {
+                const color = categoryColorMap[category] || colorPalette[index % colorPalette.length];
+                cssRules += `.${category} { color: ${color}; }\n`;
+            });
+            
+            // Create and inject the dynamic stylesheet
+            const styleElement = document.createElement('style');
+            styleElement.id = 'pattern-theme';
+            styleElement.textContent = cssRules;
+            document.head.appendChild(styleElement);
+            
+            // Log the generated theme for debugging
+            console.log('Generated pattern theme for categories:', categoryArray);
+            console.log('CSS Rules:', cssRules);
+        }
     }
     
     async function loadSelectedPattern(filename) {

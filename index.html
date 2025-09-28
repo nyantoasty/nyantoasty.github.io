@@ -3,54 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Pattern Viewer</title>
-    <!-- PWA Manifest Link -->
+    <title>Interactive Pattern Hub</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#8b5cf6">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .mono { font-family: 'Source Code Pro', monospace; }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        .mono { font-family: 'Roboto Mono', monospace; }
         .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
         .pattern-text p { padding: 0.5rem 0.75rem; margin-bottom: 0.25rem; transition: background-color 0.3s; }
-        .edge { color: #d8b4fe; } 
-        .increase { color: #86efac; }
-        .main { color: #93c5fd; }
-        .spine { color: #f87171; }
-        .lace-1-left, .lace-1-right { color: #fcd34d; }
-        .lace-2-left, .lace-2-right { color: #f9a8d4; }
-        .lace-3-left, .lace-3-right { color: #a7f3d0; }
-        .repeat { color: #a5f3fc; } /* Color for dynamic repeat sections */
-        main { padding-bottom: 140px; }
+        .edge { color: #d8b4fe; } .increase { color: #86efac; } .main { color: #93c5fd; } .spine { color: #f87171; }
+        .lace-1-left, .lace-1-right { color: #fcd34d; } .lace-2-left, .lace-2-right { color: #f9a8d4; } .lace-3-left, .lace-3-right { color: #a7f3d0; }
         .highlight { background-color: #E6E6FA; color: #1a1a2e; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
         .result-chunk { background-color: #374151; padding: 1em; border-radius: 5px; color: #e0e0e0; overflow-x: auto; white-space: pre; }
         #stitch-locator-ui { transition: opacity 0.3s ease-in-out; }
         .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; position: absolute; z-index: 10; bottom: 125%; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem; border-radius: 0.375rem; background-color: #1f2937; color: #d1d5db; font-size: 0.875rem; white-space: nowrap; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         .tooltip-trigger:hover .tooltip { visibility: visible; opacity: 1; }
         .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1f2937 transparent transparent transparent; }
+        .tab-button { padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .tab-button.active { background-color: #8b5cf6; color: white; }
+        .tab-button:not(.active):hover { background-color: #4a5568; }
+        .code-block { background-color: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: 'Roboto Mono', monospace; font-size: 0.875rem; line-height: 1.6; color: #d1d5db; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
 
-    <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
-        <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
-        <div id="popup-content"></div>
+    <!-- Auth Container: Shown when logged out -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center">
+        <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700">
+            <h1 class="text-3xl font-bold text-white mb-4">Welcome to your Pattern Hub</h1>
+            <p class="text-gray-400 mb-8">Please sign in to access your patterns and tools.</p>
+            <button id="login-btn" class="bg-violet-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-violet-700 transition-colors flex items-center justify-center mx-auto">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+                Sign in with Google
+            </button>
+        </div>
     </div>
 
-    <div id="app-container" class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 opacity-0 transition-opacity duration-500">
-        <header class="text-center mb-8">
-            <h1 id="pattern-name" class="text-4xl font-bold text-white mb-2">Loading Pattern...</h1>
-            <p id="pattern-author" class="text-lg text-violet-300"></p>
+    <!-- App Container: Shown when logged in -->
+    <div id="app-container" class="hidden max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-gray-700 pb-4">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
+                <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                 <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
+                    <button data-view="viewer" class="tab-button active">Viewer</button>
+                    <button data-view="generator" class="tab-button">Generator</button>
+                </nav>
+                <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
+            </div>
         </header>
-        <main id="pattern-content" class="space-y-8"></main>
+
+        <!-- VIEWER SECTION -->
+        <div id="viewer-section">
+            <header class="text-center mb-8">
+                <h2 id="pattern-name" class="text-4xl font-bold text-white mb-2">Loading Pattern...</h2>
+                <p id="pattern-author" class="text-lg text-violet-300"></p>
+            </header>
+            <main id="pattern-content" class="space-y-8"></main>
+            <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
+                <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
+                <div id="popup-content"></div>
+            </div>
+        </div>
+        
+        <!-- GENERATOR SECTION -->
+        <div id="generator-section" class="hidden bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">AI Prompt Generator</h2>
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-300 mb-3">Step 1: Choose Pattern Format</h3>
+                    <div id="pattern-type-selector" class="flex items-center space-x-2 bg-gray-700 p-1 rounded-lg max-w-xs">
+                        <button data-type="text" class="w-1/2 tab-button active">Text</button>
+                        <button data-type="image" class="w-1/2 tab-button">Image</button>
+                    </div>
+                    <div id="image-instructions" class="hidden mt-4 p-4 bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg text-yellow-300">
+                        <h4 class="font-semibold mb-2">Image-Based Pattern Workflow</h4>
+                        <ol class="list-decimal list-inside mt-2 space-y-1 text-sm">
+                            <li><strong>Transcribe Image:</strong> Use an AI with vision. Prompt: <span class="mono text-xs bg-gray-900 p-1 rounded">"Please transcribe the text from this image of a pattern."</span></li>
+                            <li><strong>Generate JSON:</strong> Paste the transcribed text into Step 2 below.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-300 mb-3">Step 2: Paste Pattern Text</h3>
+                    <textarea id="pattern-input" rows="8" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition" placeholder="Paste pattern text here..."></textarea>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-300 mb-3">Step 3: Generate and Copy AI Prompt</h3>
+                    <div class="relative">
+                        <button id="copy-prompt-button" class="absolute top-3 right-3 bg-gray-600 hover:bg-gray-500 text-white font-medium py-1 px-3 border border-gray-500 rounded-md text-sm transition-colors">
+                            <span id="copy-default">Copy</span>
+                            <span id="copy-success" class="hidden">Copied!</span>
+                        </button>
+                        <div id="prompt-output" class="code-block h-64 overflow-y-auto">Paste pattern text to generate the prompt.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm border-t border-gray-700 p-4">
-        <div class="max-w-4xl mx-auto">
+        <div id="footer-controls" class="max-w-4xl mx-auto hidden">
             <div class="relative h-20">
                 <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-center space-x-6 transition-opacity duration-300">
                     <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
@@ -72,18 +132,79 @@
         </div>
     </footer>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        // --- DATA & STATE ---
-        let PATTERN_DATA = null;
-        let currentStep = 1;
-        let maxSteps = 1;
-        let progressKey = 'pattern-progress-default';
-        let isStitchLocatorMode = false;
-        let stitchCountsCache = {}; // Cache for stitch counts
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
+    // --- CONFIG & STATE ---
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let PATTERN_DATA = null;
+    let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
+    let isStitchLocatorMode = false;
+    let stitchCountsCache = {};
 
-        // --- UI ELEMENTS ---
-        const appContainer = document.getElementById('app-container');
+    // --- UI ELEMENTS ---
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userDisplay = document.getElementById('user-display');
+    const appNav = document.getElementById('app-nav');
+    const viewerSection = document.getElementById('viewer-section');
+    const generatorSection = document.getElementById('generator-section');
+    const footerControls = document.getElementById('footer-controls');
+
+    // --- AUTHENTICATION ---
+    const provider = new GoogleAuthProvider();
+    
+    loginBtn.addEventListener('click', () => {
+        signInWithPopup(auth, provider).catch(error => console.error("Sign in error", error));
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth).catch(error => console.error("Sign out error", error));
+    });
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            authContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+            initializeViewer();
+        } else {
+            authContainer.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            userDisplay.textContent = 'Not signed in';
+        }
+    });
+
+    // --- MAIN APP NAVIGATION ---
+    appNav.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const view = e.target.dataset.view;
+            appNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            if (view === 'viewer') {
+                viewerSection.classList.remove('hidden');
+                generatorSection.classList.add('hidden');
+                footerControls.classList.remove('hidden');
+            } else if (view === 'generator') {
+                viewerSection.classList.add('hidden');
+                generatorSection.classList.remove('hidden');
+                footerControls.classList.add('hidden');
+            }
+        }
+    });
+
+
+    // --- VIEWER LOGIC ---
+    async function initializeViewer() {
+        // Elements for viewer
         const patternNameEl = document.getElementById('pattern-name');
         const patternAuthorEl = document.getElementById('pattern-author');
         const patternContentEl = document.getElementById('pattern-content');
@@ -92,34 +213,27 @@
         const nextBtn = document.getElementById('next-step');
         const stepTypeEl = document.getElementById('step-type');
         const toggleModeBtn = document.getElementById('toggle-mode');
-        const stepCounterUI = document.getElementById('step-counter-ui');
-        const stitchLocatorUI = document.getElementById('stitch-locator-ui');
         const findStitchBtn = document.getElementById('find-stitch-btn');
         const stitchInput = document.getElementById('stitch-input');
         const stitchPopup = document.getElementById('stitch-popup');
         const popupContent = document.getElementById('popup-content');
         const closePopupBtn = document.getElementById('close-popup-btn');
 
-        // --- DATA FETCHING ---
         async function loadPatternData(filename) {
             try {
                 const response = await fetch(filename);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 PATTERN_DATA = await response.json();
             } catch (error) {
                 console.error("Could not load pattern data:", error);
                 patternNameEl.textContent = "Error";
-                patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern file: ${filename}.<br>Check the file path and your browser's developer console for 404 errors.</p>`;
+                patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern file. Check path and console.</p>`;
             }
         }
-        
-        // --- CORE FUNCTIONS ---
-        function initializeApp() {
-            if (!PATTERN_DATA) {
-                return;
-            }
+
+        function setupViewer() {
+            if (!PATTERN_DATA) return;
+            footerControls.classList.remove('hidden');
             const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
             patternNameEl.textContent = name;
             patternAuthorEl.textContent = `by ${author}`;
@@ -127,261 +241,94 @@
             stepInput.max = maxSteps;
             progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
             
+            patternContentEl.innerHTML = '';
             generateGlossary();
             generateInstructions();
             loadProgress();
-            appContainer.classList.remove('opacity-0');
         }
 
-        function generateGlossary() {
-             if (!PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) return;
-            let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
-            for (const key in PATTERN_DATA.glossary) {
-                const item = PATTERN_DATA.glossary[key];
-                glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
-            }
-            glossaryHTML += '</div>';
-            const section = document.createElement('section');
-            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
-            section.innerHTML = glossaryHTML;
-            patternContentEl.appendChild(section);
-        }
-
-        function generateInstructions() {
-            const section = document.createElement('section');
-            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
-            section.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
-            
-            PATTERN_DATA.instructions.forEach(instr => {
-                const p = document.createElement('p');
-                if (instr.step) p.dataset.step = instr.step;
-                if (instr.stepRange) {
-                    p.dataset.stepStart = instr.stepRange[0];
-                    p.dataset.stepEnd = instr.stepRange[1];
-                }
-                let instructionHTML = instr.displayText ? addTooltips(instr.displayText) : '';
-                p.innerHTML = instructionHTML;
-                section.appendChild(p);
-            });
-            patternContentEl.appendChild(section);
-        }
-
-        function addTooltips(text) {
-             if (!PATTERN_DATA.glossary) return text;
-             const regex = new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`, 'g');
-             return text.replace(regex, (match) => {
-                const term = PATTERN_DATA.glossary[match];
-                if (!term) return match;
-                return `<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;
-             });
-        }
-
-        // --- STITCH LOCATOR LOGIC ---
-        function getStitchCount(stepNumber) {
-            if (stitchCountsCache[stepNumber]) return stitchCountsCache[stepNumber];
-            
-            const instr = findInstructionForStep(stepNumber);
-            if (instr && instr.totalStitches) {
-                 stitchCountsCache[stepNumber] = instr.totalStitches;
-                 return instr.totalStitches;
-            }
-
-            if (stepNumber > 1) {
-                const prevCount = getStitchCount(stepNumber - 1);
-                const currentIncrease = instr && typeof instr.increase !== 'undefined' ? instr.increase : 0;
-                const count = prevCount + currentIncrease;
-                stitchCountsCache[stepNumber] = count;
-                return count;
-            }
-            
-            const firstInstr = PATTERN_DATA.instructions[0];
-            return firstInstr.totalStitches || 0;
-        }
-        
-        function expandPattern(patternArray) {
-            const expanded = [];
-            patternArray.forEach(p => {
-                const match = p.match(/^([a-zA-Z_]+)(\d+)$/);
-                if (match) {
-                    const instruction = match[1];
-                    const count = parseInt(match[2], 10);
-                    for (let i = 0; i < count; i++) expanded.push(instruction);
-                } else {
-                    expanded.push(p);
-                }
-            });
-            return expanded;
-        }
-
-        function generateDynamicChunks(stepNumber) {
-            const instruction = findInstructionForStep(stepNumber);
-            if (!instruction || !instruction.dynamicChunks) return null;
-
-            const prevCount = getStitchCount(stepNumber - 1);
-
-            if (instruction.side === 'RS') {
-                const sideStitches = (prevCount - 1) / 2;
-                const mainKnitCount = sideStitches - 4; // 3 for edge, 1 for kfb
-                return [
-                    { name: "Edge", category: "edge", pattern: ["k3"] },
-                    { name: "Increase", category: "increase", pattern: ["kfb"] },
-                    { name: `Main (${mainKnitCount})`, category: "main", pattern: [`k${mainKnitCount}`] },
-                    { name: "Increase", category: "increase", pattern: ["m1L"] },
-                    { name: "Spine", category: "spine", pattern: ["k1"] },
-                    { name: "Increase", category: "increase", pattern: ["m1R"] },
-                    { name: `Main (${mainKnitCount})`, category: "main", pattern: [`k${mainKnitCount}`] },
-                    { name: "Increase", category: "increase", pattern: ["kfb"] },
-                    { name: "Edge", category: "edge", pattern: ["k3"] }
-                ];
-            } else if (instruction.side === 'WS') {
-                const purlCount = prevCount - 6; // 3 edge stitches on each side
-                return [
-                    { name: "Edge", category: "edge", pattern: ["k3"] },
-                    { name: `Main Fabric (${purlCount})`, category: "main", pattern: [`p${purlCount}`] },
-                    { name: "Edge", category: "edge", pattern: ["k3"] }
-                ];
-            }
-            return null;
-        }
-
-        function getPatternForStitch(stepNumber, stitchNumber) {
-            const totalStitches = getStitchCount(stepNumber);
-            if (stitchNumber < 1 || stitchNumber > totalStitches) return null;
-
-            let instruction = { ...findInstructionForStep(stepNumber) }; 
-            
-            if (instruction.dynamicChunks) {
-                instruction.chunks = generateDynamicChunks(stepNumber);
-            }
-
-            if (!instruction || !instruction.chunks) {
-                return { sectionName: "This is a repeating instruction section.", patternChunk: "Stitch-by-stitch data is not yet defined for this row type." };
-            }
-
-            let cumulativeStitches = 0;
-            for (const chunk of instruction.chunks) {
-                const expandedPattern = expandPattern(chunk.pattern);
-                const repeats = chunk.repeats || 1;
-                const chunkStitchCount = expandedPattern.length * repeats;
-
-                if (stitchNumber <= cumulativeStitches + chunkStitchCount) {
-                    const stitchInSection = stitchNumber - cumulativeStitches;
-                    
-                    let sectionName = `<span class="${chunk.category || ''}">${chunk.name}</span>`;
-                    let fullPatternSequence = [];
-
-                    for (let i = 0; i < repeats; i++) {
-                        fullPatternSequence.push(...expandedPattern);
-                    }
-                    if (repeats > 1) {
-                        const repeatNum = Math.ceil(stitchInSection / expandedPattern.length);
-                        sectionName += ` (Repeat ${repeatNum} of ${repeats})`;
-                    }
-
-                    const targetIndex = stitchInSection - 1;
-                    const windowSize = 4;
-                    const start = Math.max(0, targetIndex - windowSize);
-                    const end = Math.min(fullPatternSequence.length, targetIndex + windowSize + 1);
-                    
-                    const patternWindow = fullPatternSequence.slice(start, end);
-                    let patternChunk = patternWindow.map((stitch, index) => {
-                        return (start + index === targetIndex) ? `<span class="highlight">${stitch}</span>` : stitch;
-                    }).join(' ');
-                    
-                    if (start > 0) patternChunk = '... ' + patternChunk;
-                    if (end < fullPatternSequence.length) patternChunk += ' ...';
-
-                    return { sectionName, patternChunk };
-                }
-                cumulativeStitches += chunkStitchCount;
-            }
-            return null; 
-        }
-
-        // --- PROGRESS & NAVIGATION ---
-        function loadProgress() {
-            const savedStep = localStorage.getItem(progressKey);
-            currentStep = savedStep ? parseInt(savedStep, 10) : 1;
-            updateDisplay(false);
-        }
+        function generateGlossary() { /* ... function from previous index ... */ }
+        function generateInstructions() { /* ... function from previous index ... */ }
+        function addTooltips(text) { /* ... function from previous index ... */ }
+        function getStitchCount(stepNumber) { /* ... function from previous index ... */ }
+        function expandPattern(patternArray) { /* ... function from previous index ... */ }
+        function generateDynamicChunks(stepNumber) { /* ... function from previous index ... */ }
+        function getPatternForStitch(stepNumber, stitchNumber) { /* ... function from previous index ... */ }
+        function loadProgress() { /* ... function from previous index ... */ }
         function saveProgress() { localStorage.setItem(progressKey, currentStep); }
-        function updateDisplay(shouldScroll = true) {
-            stepInput.value = currentStep;
-            const currentInstruction = findInstructionForStep(currentStep);
-            if (currentInstruction) {
-                stepTypeEl.textContent = currentInstruction.type?.toUpperCase() || 'STEP';
-            }
-            highlightCurrentStep(shouldScroll);
-            saveProgress();
-            if(isStitchLocatorMode) stitchInput.max = getStitchCount(currentStep);
-        }
+        function updateDisplay(shouldScroll = true) { /* ... function from previous index ... */ }
         function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
         function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{const step=parseInt(el.dataset.step,10);if(step===stepNumber)return true;const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return(stepNumber>=start&&stepNumber<=end);});}
-        function highlightCurrentStep(shouldScroll) {
-            document.querySelectorAll('.current-step').forEach(el => el.classList.remove('current-step'));
-            const stepElement = findStepElement(currentStep);
-            if (stepElement) {
-                stepElement.classList.add('current-step');
-                if (shouldScroll) stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
+        function highlightCurrentStep(shouldScroll) { /* ... function from previous index ... */ }
 
-        // --- EVENT LISTENERS ---
+        // --- VIEWER EVENT LISTENERS ---
         prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
         nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
         stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
         document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {e.preventDefault(); nextBtn.click();} if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {e.preventDefault(); prevBtn.click();}});
-        
-        toggleModeBtn.addEventListener('click', () => {
-            isStitchLocatorMode = !isStitchLocatorMode;
-            stitchPopup.classList.add('hidden');
-            stepCounterUI.classList.toggle('opacity-0');
-            stepCounterUI.classList.toggle('pointer-events-none');
-            stitchLocatorUI.classList.toggle('opacity-0');
-            stitchLocatorUI.classList.toggle('pointer-events-none');
-            if (isStitchLocatorMode) {
-                toggleModeBtn.textContent = 'Switch to Step Counter';
-                stitchInput.value = '';
-                stitchInput.max = getStitchCount(currentStep);
-                stitchInput.focus();
-            } else {
-                toggleModeBtn.textContent = 'Switch to Stitch Locator';
-            }
-        });
+        toggleModeBtn.addEventListener('click', () => { /* ... function from previous index ... */ });
         closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
-        findStitchBtn.addEventListener('click', () => {
-            const stitchNumber = parseInt(stitchInput.value);
-            const patternInfo = getPatternForStitch(currentStep, stitchNumber);
-            
-            if (patternInfo) {
-                popupContent.innerHTML = `<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;
-                 stitchPopup.style.top = '50%'; stitchPopup.style.left = '50%'; stitchPopup.style.transform = 'translate(-50%, -50%)';
-                stitchPopup.classList.remove('hidden');
-            } else {
-                 popupContent.innerHTML = `<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;
-                 stitchPopup.style.top = '50%'; stitchPopup.style.left = '50%'; stitchPopup.style.transform = 'translate(-50%, -50%)';
-                 stitchPopup.classList.remove('hidden');
-            }
-        });
+        findStitchBtn.addEventListener('click', () => { /* ... function from previous index ... */ });
+        
+        // PASTE VIEWER FUNCTIONS HERE, remove duplicates
+        function generateGlossary(){if(!PATTERN_DATA.glossary||Object.keys(PATTERN_DATA.glossary).length===0)return;let glossaryHTML='<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';for(const key in PATTERN_DATA.glossary){const item=PATTERN_DATA.glossary[key];glossaryHTML+=`<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;}
+        glossaryHTML+='</div>';const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg';section.innerHTML=glossaryHTML;patternContentEl.appendChild(section);}
+        function generateInstructions(){const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';section.innerHTML='<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';PATTERN_DATA.instructions.forEach(instr=>{const p=document.createElement('p');if(instr.step)p.dataset.step=instr.step;if(instr.stepRange){p.dataset.stepStart=instr.stepRange[0];p.dataset.stepEnd=instr.stepRange[1];}
+        let instructionHTML=instr.displayText?addTooltips(instr.displayText):'';p.innerHTML=instructionHTML;section.appendChild(p);});patternContentEl.appendChild(section);}
+        function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
+        function getStitchCount(stepNumber){if(stitchCountsCache[stepNumber])return stitchCountsCache[stepNumber];const instr=findInstructionForStep(stepNumber);if(instr&&instr.totalStitches){stitchCountsCache[stepNumber]=instr.totalStitches;return instr.totalStitches;}
+        if(stepNumber>1){const prevCount=getStitchCount(stepNumber-1);const currentIncrease=instr&&typeof instr.increase!=='undefined'?instr.increase:0;const count=prevCount+currentIncrease;stitchCountsCache[stepNumber]=count;return count;}
+        const firstInstr=PATTERN_DATA.instructions[0];return firstInstr.totalStitches||0;}
+        function expandPattern(patternArray){const expanded=[];patternArray.forEach(p=>{const match=p.match(/^([a-zA-Z_]+)(\d+)$/);if(match){const instruction=match[1];const count=parseInt(match[2],10);for(let i=0;i<count;i++)expanded.push(instruction);}else{expanded.push(p);}});return expanded;}
+        function generateDynamicChunks(stepNumber){const instruction=findInstructionForStep(stepNumber);if(!instruction||!instruction.dynamicChunks)return null;const prevCount=getStitchCount(stepNumber-1);if(instruction.side==='RS'){const sideStitches=(prevCount-1)/2;const mainKnitCount=sideStitches-4;return[{name:"Edge",category:"edge",pattern:["k3"]},{name:"Increase",category:"increase",pattern:["kfb"]},{name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},{name:"Increase",category:"increase",pattern:["m1L"]},{name:"Spine",category:"spine",pattern:["k1"]},{name:"Increase",category:"increase",pattern:["m1R"]},{name:`Main (${mainKnitCount})`,category:"main",pattern:[`k${mainKnitCount}`]},{name:"Increase",category:"increase",pattern:["kfb"]},{name:"Edge",category:"edge",pattern:["k3"]}];}else if(instruction.side==='WS'){const purlCount=prevCount-6;return[{name:"Edge",category:"edge",pattern:["k3"]},{name:`Main Fabric (${purlCount})`,category:"main",pattern:[`p${purlCount}`]},{name:"Edge",category:"edge",pattern:["k3"]}];}
+        return null;}
+        function getPatternForStitch(stepNumber,stitchNumber){const totalStitches=getStitchCount(stepNumber);if(stitchNumber<1||stitchNumber>totalStitches)return null;let instruction={...findInstructionForStep(stepNumber)};if(instruction.dynamicChunks){instruction.chunks=generateDynamicChunks(stepNumber);}
+        if(!instruction||!instruction.chunks){return{sectionName:"This is a repeating instruction section.",patternChunk:"Stitch-by-stitch data is not yet defined for this row type."};}
+        let cumulativeStitches=0;for(const chunk of instruction.chunks){const expandedPattern=expandPattern(chunk.pattern);const repeats=chunk.repeats||1;const chunkStitchCount=expandedPattern.length*repeats;if(stitchNumber<=cumulativeStitches+chunkStitchCount){const stitchInSection=stitchNumber-cumulativeStitches;let sectionName=`<span class="${chunk.category||''}">${chunk.name}</span>`;let fullPatternSequence=[];for(let i=0;i<repeats;i++){fullPatternSequence.push(...expandedPattern);}
+        if(repeats>1){const repeatNum=Math.ceil(stitchInSection/expandedPattern.length);sectionName+=` (Repeat ${repeatNum} of ${repeats})`;}
+        const targetIndex=stitchInSection-1;const windowSize=4;const start=Math.max(0,targetIndex-windowSize);const end=Math.min(fullPatternSequence.length,targetIndex+windowSize+1);const patternWindow=fullPatternSequence.slice(start,end);let patternChunk=patternWindow.map((stitch,index)=>{return(start+index===targetIndex)?`<span class="highlight">${stitch}</span>`:stitch;}).join(' ');if(start>0)patternChunk='... '+patternChunk;if(end<fullPatternSequence.length)patternChunk+=' ...';return{sectionName,patternChunk};}
+        cumulativeStitches+=chunkStitchCount;}
+        return null;}
+        function loadProgress(){const savedStep=localStorage.getItem(progressKey);currentStep=savedStep?parseInt(savedStep,10):1;updateDisplay(false);}
+        function updateDisplay(shouldScroll=true){stepInput.value=currentStep;const currentInstruction=findInstructionForStep(currentStep);if(currentInstruction){stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';}
+        highlightCurrentStep(shouldScroll);saveProgress();if(isStitchLocatorMode)stitchInput.max=getStitchCount(currentStep);}
+        function highlightCurrentStep(shouldScroll){document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));const stepElement=findStepElement(currentStep);if(stepElement){stepElement.classList.add('current-step');if(shouldScroll)stepElement.scrollIntoView({behavior:'smooth',block:'center'});}}
+        toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Step Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
+        findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
 
-        // --- INITIALIZATION ---
         await loadPatternData('/patterns/neon-sky-full.json');
-        initializeApp();
-    });
-
-    // --- PWA Service Worker Registration ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-        });
+        setupViewer();
     }
-    </script>
+
+
+    // --- GENERATOR LOGIC ---
+    const patternTypeSelector=document.getElementById('pattern-type-selector');const imageInstructions=document.getElementById('image-instructions');const patternInput=document.getElementById('pattern-input');const promptOutput=document.getElementById('prompt-output');const copyButton=document.getElementById('copy-prompt-button');
+    const basePrompt=`# AI Prompt: Convert a Craft Pattern to a Smartly Grouped JSON
+
+## 1. The Goal & Persona
+
+You are an expert technical editor for fiber arts (knitting, crochet, Tunisian crochet) and a software developer. Your task is to convert a human-readable pattern into a strict, **craft-agnostic**, and efficiently grouped JSON format for a web application.
+
+## 2. The Input Pattern
+
+\`\`\`
+{{PATTERN_TEXT}}
+\`\`\`
+
+## 3. The Required JSON Output Structure
+... (Full prompt text) ...
+
+## 4. Detailed Instructions for Generating the \`instructions\` Array
+... (Full prompt text) ...`;
+    function updatePrompt(){const patternText=patternInput.value.trim();if(patternText){const fullPrompt=basePrompt.replace('{{PATTERN_TEXT}}',patternText);promptOutput.textContent=fullPrompt;}else{promptOutput.textContent='Paste pattern text to generate the prompt.';}}
+    patternTypeSelector.addEventListener('click',(e)=>{if(e.target.tagName==='BUTTON'){const type=e.target.dataset.type;patternTypeSelector.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));e.target.classList.add('active');if(type==='image'){imageInstructions.classList.remove('hidden');}else{imageInstructions.classList.add('hidden');}}});
+    patternInput.addEventListener('input',updatePrompt);
+    copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
+
+
+    // --- PWA Service Worker ---
+    if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
+</script>
 </body>
 </html>
 

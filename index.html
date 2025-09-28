@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Pattern Viewer</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +16,7 @@
         body { font-family: 'Inter', sans-serif; }
         .mono { font-family: 'Source Code Pro', monospace; }
         .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
-        .pattern-text p { padding: 0.5rem 0.75rem; margin-bottom: 0.25rem; }
+        .pattern-text p { padding: 0.5rem 0.75rem; margin-bottom: 0.25rem; transition: background-color 0.3s; }
         .edge { color: #d8b4fe; } 
         .increase { color: #86efac; }
         .main { color: #93c5fd; }
@@ -32,14 +36,14 @@
 </head>
 <body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
 
-    <div id="stitch-popup" class="hidden absolute bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
+    <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
         <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
         <div id="popup-content"></div>
     </div>
 
     <div id="app-container" class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 opacity-0 transition-opacity duration-500">
         <header class="text-center mb-8">
-            <h1 id="pattern-name" class="text-4xl font-bold text-white mb-2"></h1>
+            <h1 id="pattern-name" class="text-4xl font-bold text-white mb-2">Loading Pattern...</h1>
             <p id="pattern-author" class="text-lg text-violet-300"></p>
         </header>
         <main id="pattern-content" class="space-y-8"></main>
@@ -71,10 +75,10 @@
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
         // --- DATA & STATE ---
-        let PATTERN_DATA;
+        let PATTERN_DATA = null;
         let currentStep = 1;
         let maxSteps = 1;
-        let progressKey = '';
+        let progressKey = 'pattern-progress-default';
         let isStitchLocatorMode = false;
         let stitchCountsCache = {}; // Cache for stitch counts
 
@@ -96,27 +100,33 @@
         const popupContent = document.getElementById('popup-content');
         const closePopupBtn = document.getElementById('close-popup-btn');
 
-        // --- CORE FUNCTIONS ---
-
-        async function loadPatternData(url) {
+        // --- DATA FETCHING ---
+        async function loadPatternData(filename) {
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const response = await fetch(filename);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 PATTERN_DATA = await response.json();
-                progressKey = `pattern-progress-${PATTERN_DATA.metadata.name.replace(/\s+/g, '-')}`;
             } catch (error) {
-                console.error("Failed to load pattern data:", error);
-                patternContentEl.innerHTML = `<p class="text-center text-red-400">Error: Could not load pattern file '${url}'.</p>`;
+                console.error("Could not load pattern data:", error);
+                patternNameEl.textContent = "Error";
+                patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern file: ${filename}.<br>Check the file path and your browser's developer console for 404 errors.</p>`;
             }
         }
-
+        
+        // --- CORE FUNCTIONS ---
         function initializeApp() {
-            if (!PATTERN_DATA) return;
+            if (!PATTERN_DATA) {
+                return;
+            }
             const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
             patternNameEl.textContent = name;
             patternAuthorEl.textContent = `by ${author}`;
             maxSteps = max;
             stepInput.max = maxSteps;
+            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
+            
             generateGlossary();
             generateInstructions();
             loadProgress();
@@ -149,20 +159,7 @@
                     p.dataset.stepStart = instr.stepRange[0];
                     p.dataset.stepEnd = instr.stepRange[1];
                 }
-
                 let instructionHTML = instr.displayText ? addTooltips(instr.displayText) : '';
-                
-                if (instr.chunks && !instr.displayText) { // Build from chunks if no displayText
-                    const side = instr.side ? `(${instr.side})` : '';
-                    instructionHTML = `<b>${instr.type || 'Step'} ${instr.step} ${side}:</b> `;
-                    let chunkTexts = instr.chunks.map(chunk => {
-                        let text = chunk.pattern.join(', ');
-                        if (chunk.repeats) text = `(${text}) ${chunk.repeats} times`;
-                        return `<span class="${chunk.category || ''}">${addTooltips(text)}</span>`;
-                    });
-                    instructionHTML += chunkTexts.join(', ');
-                }
-                
                 p.innerHTML = instructionHTML;
                 section.appendChild(p);
             });
@@ -174,12 +171,12 @@
              const regex = new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`, 'g');
              return text.replace(regex, (match) => {
                 const term = PATTERN_DATA.glossary[match];
+                if (!term) return match;
                 return `<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;
              });
         }
 
         // --- STITCH LOCATOR LOGIC ---
-
         function getStitchCount(stepNumber) {
             if (stitchCountsCache[stepNumber]) return stitchCountsCache[stepNumber];
             
@@ -189,19 +186,18 @@
                  return instr.totalStitches;
             }
 
-            // If not explicitly defined, calculate it based on the previous step's count and increases
             if (stepNumber > 1) {
                 const prevCount = getStitchCount(stepNumber - 1);
-                const currentIncrease = instr && instr.increase ? instr.increase : 0;
+                const currentIncrease = instr && typeof instr.increase !== 'undefined' ? instr.increase : 0;
                 const count = prevCount + currentIncrease;
                 stitchCountsCache[stepNumber] = count;
                 return count;
             }
             
-            return 0; // Should not be reached if pattern starts with a totalStitches count
+            const firstInstr = PATTERN_DATA.instructions[0];
+            return firstInstr.totalStitches || 0;
         }
         
-        // Helper to expand patterns like "k5" into ["k", "k", "k", "k", "k"]
         function expandPattern(patternArray) {
             const expanded = [];
             patternArray.forEach(p => {
@@ -217,13 +213,49 @@
             return expanded;
         }
 
+        function generateDynamicChunks(stepNumber) {
+            const instruction = findInstructionForStep(stepNumber);
+            if (!instruction || !instruction.dynamicChunks) return null;
+
+            const prevCount = getStitchCount(stepNumber - 1);
+
+            if (instruction.side === 'RS') {
+                const sideStitches = (prevCount - 1) / 2;
+                const mainKnitCount = sideStitches - 4; // 3 for edge, 1 for kfb
+                return [
+                    { name: "Edge", category: "edge", pattern: ["k3"] },
+                    { name: "Increase", category: "increase", pattern: ["kfb"] },
+                    { name: `Main (${mainKnitCount})`, category: "main", pattern: [`k${mainKnitCount}`] },
+                    { name: "Increase", category: "increase", pattern: ["m1L"] },
+                    { name: "Spine", category: "spine", pattern: ["k1"] },
+                    { name: "Increase", category: "increase", pattern: ["m1R"] },
+                    { name: `Main (${mainKnitCount})`, category: "main", pattern: [`k${mainKnitCount}`] },
+                    { name: "Increase", category: "increase", pattern: ["kfb"] },
+                    { name: "Edge", category: "edge", pattern: ["k3"] }
+                ];
+            } else if (instruction.side === 'WS') {
+                const purlCount = prevCount - 6; // 3 edge stitches on each side
+                return [
+                    { name: "Edge", category: "edge", pattern: ["k3"] },
+                    { name: `Main Fabric (${purlCount})`, category: "main", pattern: [`p${purlCount}`] },
+                    { name: "Edge", category: "edge", pattern: ["k3"] }
+                ];
+            }
+            return null;
+        }
+
         function getPatternForStitch(stepNumber, stitchNumber) {
             const totalStitches = getStitchCount(stepNumber);
             if (stitchNumber < 1 || stitchNumber > totalStitches) return null;
 
-            const instruction = findInstructionForStep(stepNumber);
+            let instruction = { ...findInstructionForStep(stepNumber) }; 
+            
+            if (instruction.dynamicChunks) {
+                instruction.chunks = generateDynamicChunks(stepNumber);
+            }
+
             if (!instruction || !instruction.chunks) {
-                return { sectionName: "This is a repeating instruction section.", patternChunk: "Stitch-by-stitch data is not defined for this row type." };
+                return { sectionName: "This is a repeating instruction section.", patternChunk: "Stitch-by-stitch data is not yet defined for this row type." };
             }
 
             let cumulativeStitches = 0;
@@ -235,7 +267,7 @@
                 if (stitchNumber <= cumulativeStitches + chunkStitchCount) {
                     const stitchInSection = stitchNumber - cumulativeStitches;
                     
-                    let sectionName = `<span class="${chunk.category}">${chunk.name}</span>`;
+                    let sectionName = `<span class="${chunk.category || ''}">${chunk.name}</span>`;
                     let fullPatternSequence = [];
 
                     for (let i = 0; i < repeats; i++) {
@@ -263,12 +295,10 @@
                 }
                 cumulativeStitches += chunkStitchCount;
             }
-            return null; // Should not happen if stitch counts are correct
+            return null; 
         }
 
-
         // --- PROGRESS & NAVIGATION ---
-
         function loadProgress() {
             const savedStep = localStorage.getItem(progressKey);
             currentStep = savedStep ? parseInt(savedStep, 10) : 1;
@@ -286,7 +316,7 @@
             if(isStitchLocatorMode) stitchInput.max = getStitchCount(currentStep);
         }
         function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
-        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{if(el.dataset.step)return parseInt(el.dataset.step,10)===stepNumber;if(el.dataset.stepStart){const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return stepNumber>=start&&stepNumber<=end;} return false;});}
+        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{const step=parseInt(el.dataset.step,10);if(step===stepNumber)return true;const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return(stepNumber>=start&&stepNumber<=end);});}
         function highlightCurrentStep(shouldScroll) {
             document.querySelectorAll('.current-step').forEach(el => el.classList.remove('current-step'));
             const stepElement = findStepElement(currentStep);
@@ -300,7 +330,7 @@
         prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
         nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
         stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
-        document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextBtn.click(); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevBtn.click(); });
+        document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {e.preventDefault(); nextBtn.click();} if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {e.preventDefault(); prevBtn.click();}});
         
         toggleModeBtn.addEventListener('click', () => {
             isStitchLocatorMode = !isStitchLocatorMode;
@@ -322,26 +352,35 @@
         findStitchBtn.addEventListener('click', () => {
             const stitchNumber = parseInt(stitchInput.value);
             const patternInfo = getPatternForStitch(currentStep, stitchNumber);
-            const currentStepEl = findStepElement(currentStep);
             
-            if (patternInfo && currentStepEl) {
-                popupContent.innerHTML = `<h4 class="text-xl font-semibold text-white mb-2">Location:</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;
-                const elRect = currentStepEl.getBoundingClientRect();
-                stitchPopup.style.top = `${elRect.top + window.scrollY - stitchPopup.offsetHeight - 10}px`;
-                stitchPopup.style.left = `50%`;
-                stitchPopup.style.transform = 'translateX(-50%)';
+            if (patternInfo) {
+                popupContent.innerHTML = `<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;
+                 stitchPopup.style.top = '50%'; stitchPopup.style.left = '50%'; stitchPopup.style.transform = 'translate(-50%, -50%)';
                 stitchPopup.classList.remove('hidden');
             } else {
-                 popupContent.innerHTML = `<div class="text-white text-center"><p>Invalid stitch number for Step ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;
+                 popupContent.innerHTML = `<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;
                  stitchPopup.style.top = '50%'; stitchPopup.style.left = '50%'; stitchPopup.style.transform = 'translate(-50%, -50%)';
                  stitchPopup.classList.remove('hidden');
             }
         });
 
         // --- INITIALIZATION ---
-        await loadPatternData('neon-sky-full.json');
+        await loadPatternData('/patterns/neon-sky-full.json');
         initializeApp();
     });
+
+    // --- PWA Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(error => {
+                console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+    }
     </script>
 </body>
 </html>

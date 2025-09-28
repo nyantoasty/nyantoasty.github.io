@@ -1,40 +1,54 @@
 // This file is the "Service Worker"
 // It runs in the background and gives the app offline capabilities.
 
-const CACHE_NAME = 'pattern-viewer-v1';
-// These are the files that will be saved for offline use.
+const CACHE_NAME = 'pattern-viewer-v3'; // <<< IMPORTANT: Version incremented!
+// These are the files that will be saved for offline use, with updated paths.
 const urlsToCache = [
   '/',
-  'index.html',
-  'neon-sky-full.json'
+  '/index.html',
+  '/manifest.json',
+  '/patterns/neon-sky-full.json',
+  '/assets/icons/yarn-ball-icon.png',
+  '/assets/icons/MASTER_yarn-ball-icon.png'
 ];
 
-// The 'install' event is fired when the service worker is first installed.
+// The 'install' event is fired when the service worker is first installed or updated.
 self.addEventListener('install', event => {
-  // We wait until the caching is complete before finishing installation.
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
-        // addAll() fetches the files and adds them to the cache.
+        console.log('Opened cache and caching new files');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// The 'fetch' event is fired for every network request the page makes.
+// The 'fetch' event intercepts network requests.
 self.addEventListener('fetch', event => {
   event.respondWith(
-    // caches.match() looks for a cached response for the current request.
     caches.match(event.request)
       .then(response => {
-        // If a cached response is found, return it.
-        if (response) {
-          return response;
-        }
-        // If nothing is in the cache, fetch it from the network as normal.
-        return fetch(event.request);
+        // If we have a cached version, return it. Otherwise, fetch from network.
+        return response || fetch(event.request);
       }
     )
   );
 });
+
+// The 'activate' event cleans up old caches.
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+

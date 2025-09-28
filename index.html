@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Pattern Hub</title>
+    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#8b5cf6">
 
@@ -15,7 +16,11 @@
         body { font-family: 'Inter', sans-serif; background-color: #111827; }
         .mono { font-family: 'Roboto Mono', monospace; }
         .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
-        .pattern-text p { padding: 0.5rem 0.75rem; margin-bottom: 0.25rem; transition: background-color 0.3s; }
+        .pattern-text p { 
+            padding: 0.5rem 0.75rem; 
+            margin-bottom: 0.25rem; 
+            transition: background-color 0.3s; 
+        }
         .edge { color: #d8b4fe; } .increase { color: #86efac; } .main { color: #93c5fd; } .spine { color: #f87171; }
         .lace-1-left, .lace-1-right { color: #fcd34d; } .lace-2-left, .lace-2-right { color: #f9a8d4; } .lace-3-left, .lace-3-right { color: #a7f3d0; }
         .highlight { background-color: #E6E6FA; color: #1a1a2e; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
@@ -134,11 +139,10 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- CONFIG & STATE ---
-    // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
     apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
@@ -149,6 +153,7 @@
     appId: "1:285468127259:web:9a1285684a1a6b9b1548be",
     measurementId: "G-208TQKEXGG"
     };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -172,26 +177,66 @@
     const provider = new GoogleAuthProvider();
     
     loginBtn.addEventListener('click', () => {
-        signInWithPopup(auth, provider).catch(error => console.error("Sign in error", error));
+        signInWithRedirect(auth, provider); // USE REDIRECT
     });
 
     logoutBtn.addEventListener('click', () => {
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
 
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            console.log("My User UID is:", user.uid)
-            authContainer.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
-            initializeViewer();
-        } else {
-            authContainer.classList.remove('hidden');
-            appContainer.classList.add('hidden');
-            userDisplay.textContent = 'Not signed in';
+    // --- AUTHORIZATION & APP STATE ---
+    
+    function showNotAuthorized(user) {
+        authContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        userDisplay.textContent = `Access Denied for ${user.email}`;
+        viewerSection.innerHTML = `<div class="text-center p-8 bg-gray-800 rounded-lg"><h2 class="text-2xl font-bold text-red-400">Not Authorized</h2><p class="text-gray-400 mt-2">Your account does not have permission to view this content.</p></div>`;
+        generatorSection.classList.add('hidden');
+        footerControls.classList.add('hidden');
+    }
+
+    function showApplication(user) {
+        authContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+        initializeViewer();
+    }
+    
+    async function checkAuthState() {
+        try {
+            const result = await getRedirectResult(auth);
+            if (result && result.user) {
+                const user = result.user;
+                const userDocRef = doc(db, "allowedUsers", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    showApplication(user);
+                } else {
+                    showNotAuthorized(user);
+                }
+                return;
+            }
+        } catch (error) {
+            console.error("Auth redirect error:", error);
         }
-    });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, "allowedUsers", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    showApplication(user);
+                } else {
+                    showNotAuthorized(user);
+                }
+            } else {
+                authContainer.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            }
+        });
+    }
+
+    checkAuthState(); // Run auth check on page load
 
     // --- MAIN APP NAVIGATION ---
     appNav.addEventListener('click', (e) => {
@@ -212,10 +257,8 @@
         }
     });
 
-
-    // --- VIEWER LOGIC ---
+    // --- VIEWER LOGIC (Your existing functions) ---
     async function initializeViewer() {
-        // Elements for viewer
         const patternNameEl = document.getElementById('pattern-name');
         const patternAuthorEl = document.getElementById('pattern-author');
         const patternContentEl = document.getElementById('pattern-content');
@@ -257,31 +300,7 @@
             generateInstructions();
             loadProgress();
         }
-
-        function generateGlossary() { /* ... function from previous index ... */ }
-        function generateInstructions() { /* ... function from previous index ... */ }
-        function addTooltips(text) { /* ... function from previous index ... */ }
-        function getStitchCount(stepNumber) { /* ... function from previous index ... */ }
-        function expandPattern(patternArray) { /* ... function from previous index ... */ }
-        function generateDynamicChunks(stepNumber) { /* ... function from previous index ... */ }
-        function getPatternForStitch(stepNumber, stitchNumber) { /* ... function from previous index ... */ }
-        function loadProgress() { /* ... function from previous index ... */ }
-        function saveProgress() { localStorage.setItem(progressKey, currentStep); }
-        function updateDisplay(shouldScroll = true) { /* ... function from previous index ... */ }
-        function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
-        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{const step=parseInt(el.dataset.step,10);if(step===stepNumber)return true;const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return(stepNumber>=start&&stepNumber<=end);});}
-        function highlightCurrentStep(shouldScroll) { /* ... function from previous index ... */ }
-
-        // --- VIEWER EVENT LISTENERS ---
-        prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
-        nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
-        stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
-        document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {e.preventDefault(); nextBtn.click();} if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {e.preventDefault(); prevBtn.click();}});
-        toggleModeBtn.addEventListener('click', () => { /* ... function from previous index ... */ });
-        closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
-        findStitchBtn.addEventListener('click', () => { /* ... function from previous index ... */ });
         
-        // PASTE VIEWER FUNCTIONS HERE, remove duplicates
         function generateGlossary(){if(!PATTERN_DATA.glossary||Object.keys(PATTERN_DATA.glossary).length===0)return;let glossaryHTML='<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';for(const key in PATTERN_DATA.glossary){const item=PATTERN_DATA.glossary[key];glossaryHTML+=`<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;}
         glossaryHTML+='</div>';const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg';section.innerHTML=glossaryHTML;patternContentEl.appendChild(section);}
         function generateInstructions(){const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';section.innerHTML='<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';PATTERN_DATA.instructions.forEach(instr=>{const p=document.createElement('p');if(instr.step)p.dataset.step=instr.step;if(instr.stepRange){p.dataset.stepStart=instr.stepRange[0];p.dataset.stepEnd=instr.stepRange[1];}
@@ -301,18 +320,26 @@
         cumulativeStitches+=chunkStitchCount;}
         return null;}
         function loadProgress(){const savedStep=localStorage.getItem(progressKey);currentStep=savedStep?parseInt(savedStep,10):1;updateDisplay(false);}
+        function saveProgress() { localStorage.setItem(progressKey, currentStep); }
         function updateDisplay(shouldScroll=true){stepInput.value=currentStep;const currentInstruction=findInstructionForStep(currentStep);if(currentInstruction){stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';}
         highlightCurrentStep(shouldScroll);saveProgress();if(isStitchLocatorMode)stitchInput.max=getStitchCount(currentStep);}
+        function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
+        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{const step=parseInt(el.dataset.step,10);if(step===stepNumber)return true;const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return(stepNumber>=start&&stepNumber<=end);});}
         function highlightCurrentStep(shouldScroll){document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));const stepElement=findStepElement(currentStep);if(stepElement){stepElement.classList.add('current-step');if(shouldScroll)stepElement.scrollIntoView({behavior:'smooth',block:'center'});}}
+        
+        prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
+        nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
+        stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
+        document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {e.preventDefault(); nextBtn.click();} if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {e.preventDefault(); prevBtn.click();}});
         toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Step Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
+        closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
         findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
 
         await loadPatternData('/patterns/neon-sky-full.json');
         setupViewer();
     }
 
-
-    // --- GENERATOR LOGIC ---
+    // --- GENERATOR LOGIC (Your existing functions) ---
     const patternTypeSelector=document.getElementById('pattern-type-selector');const imageInstructions=document.getElementById('image-instructions');const patternInput=document.getElementById('pattern-input');const promptOutput=document.getElementById('prompt-output');const copyButton=document.getElementById('copy-prompt-button');
     const basePrompt=`# AI Prompt: Convert a Craft Pattern to a Smartly Grouped JSON
 
@@ -335,7 +362,6 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     patternTypeSelector.addEventListener('click',(e)=>{if(e.target.tagName==='BUTTON'){const type=e.target.dataset.type;patternTypeSelector.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));e.target.classList.add('active');if(type==='image'){imageInstructions.classList.remove('hidden');}else{imageInstructions.classList.add('hidden');}}});
     patternInput.addEventListener('input',updatePrompt);
     copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
-
 
     // --- PWA Service Worker ---
     if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}

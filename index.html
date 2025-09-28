@@ -725,11 +725,53 @@
         }
         function loadProgress(){const savedStep=localStorage.getItem(progressKey);currentStep=savedStep?parseInt(savedStep,10):1;updateDisplay(false);}
         function saveProgress() { localStorage.setItem(progressKey, currentStep); }
-        function updateDisplay(shouldScroll=true){stepInput.value=currentStep;const currentInstruction=findInstructionForStep(currentStep);if(currentInstruction){stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';}
-        highlightCurrentStep(shouldScroll);saveProgress();if(isStitchLocatorMode)stitchInput.max=getStitchCount(currentStep);}
-        function findInstructionForStep(stepNumber) { return PATTERN_DATA.instructions.find(instr=>{if(instr.step)return instr.step===stepNumber;if(instr.stepRange){const[start,end]=instr.stepRange;if(stepNumber>=start&&stepNumber<=end){if(!instr.stepType)return true;if(instr.stepType==='odd'&&stepNumber%2!==0)return true;if(instr.stepType==='even'&&stepNumber%2===0)return true;}} return false;});}
-        function findStepElement(stepNumber) { return Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{const step=parseInt(el.dataset.step,10);if(step===stepNumber)return true;const start=parseInt(el.dataset.stepStart,10);const end=parseInt(el.dataset.stepEnd,10);return(stepNumber>=start&&stepNumber<=end);});}
-        function highlightCurrentStep(shouldScroll){document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));const stepElement=findStepElement(currentStep);if(stepElement){stepElement.classList.add('current-step');if(shouldScroll)stepElement.scrollIntoView({behavior:'smooth',block:'center'});}}
+        function updateDisplay(shouldScroll=true){
+            stepInput.value=currentStep;
+            const currentInstruction=findInstructionForStep(currentStep);
+            console.log(`Step ${currentStep}: Found instruction:`, currentInstruction);
+            if(currentInstruction){
+                stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';
+            }
+            highlightCurrentStep(shouldScroll);
+            saveProgress();
+            if(isStitchLocatorMode)stitchInput.max=getStitchCount(currentStep);
+        }
+        function findInstructionForStep(stepNumber) { 
+            return PATTERN_DATA.instructions.find(instr=>{
+                if(instr.step) return instr.step===stepNumber;
+                if(instr.stepRange){
+                    const[start,end]=instr.stepRange;
+                    if(stepNumber>=start&&stepNumber<=end){
+                        if(!instr.stepType) return true;
+                        if(instr.stepType==='odd'&&stepNumber%2!==0) return true;
+                        if(instr.stepType==='even'&&stepNumber%2===0) return true;
+                    }
+                } 
+                return false;
+            });
+        }
+        function findStepElement(stepNumber) { 
+            const element = Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{
+                const step=parseInt(el.dataset.step,10);
+                if(step===stepNumber) return true;
+                const start=parseInt(el.dataset.stepStart,10);
+                const end=parseInt(el.dataset.stepEnd,10);
+                return(stepNumber>=start&&stepNumber<=end);
+            });
+            console.log(`Finding element for step ${stepNumber}:`, element);
+            return element;
+        }
+        function highlightCurrentStep(shouldScroll){
+            document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));
+            const stepElement=findStepElement(currentStep);
+            if(stepElement){
+                stepElement.classList.add('current-step');
+                console.log(`Highlighted step ${currentStep}, scrolling:`, shouldScroll);
+                if(shouldScroll) stepElement.scrollIntoView({behavior:'smooth',block:'center'});
+            } else {
+                console.log(`No element found for step ${currentStep}`);
+            }
+        }
         
         prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
         nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });

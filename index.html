@@ -72,7 +72,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-09-28-nocache</p>
+                <p class="text-xs text-gray-500">v2025-09-28-auth-fix</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
@@ -259,10 +259,20 @@
     }
 
     function showApplication(user) {
-        authContainer.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
-        discoverPatterns().then(() => initializeViewer());
+        try {
+            authContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+            console.log('Initializing application for user:', user.email);
+            discoverPatterns().then(() => {
+                console.log('Patterns discovered, initializing viewer');
+                initializeViewer();
+            }).catch(error => {
+                console.error('Error during pattern discovery or viewer initialization:', error);
+            });
+        } catch (error) {
+            console.error('Error in showApplication:', error);
+        }
     }
     
     async function discoverPatterns() {
@@ -319,10 +329,10 @@
             const infoBtn = document.getElementById('pattern-info-btn');
             const detailsDiv = document.getElementById('pattern-details');
             
-            if (e.target.value) {
+            if (e.target.value && infoBtn && detailsDiv) {
                 infoBtn.disabled = false;
                 await loadSelectedPattern(e.target.value);
-            } else {
+            } else if (infoBtn && detailsDiv) {
                 infoBtn.disabled = true;
                 detailsDiv.classList.add('hidden');
                 resetViewer();
@@ -330,17 +340,24 @@
         });
         
         // Add pattern info button functionality
-        document.getElementById('pattern-info-btn').addEventListener('click', () => {
-            const detailsDiv = document.getElementById('pattern-details');
-            const selectedPattern = availablePatterns.find(p => p.filename === document.getElementById('pattern-selector').value);
-            
-            if (selectedPattern && PATTERN_DATA) {
-                document.getElementById('pattern-craft').textContent = PATTERN_DATA.metadata.craft || 'Unknown';
-                document.getElementById('pattern-steps').textContent = PATTERN_DATA.metadata.maxSteps || 'Unknown';
-                document.getElementById('pattern-file').textContent = selectedPattern.filename;
-                detailsDiv.classList.toggle('hidden');
-            }
-        });
+        const infoBtn = document.getElementById('pattern-info-btn');
+        if (infoBtn) {
+            infoBtn.addEventListener('click', () => {
+                const detailsDiv = document.getElementById('pattern-details');
+                const selectedPattern = availablePatterns.find(p => p.filename === document.getElementById('pattern-selector').value);
+                
+                if (selectedPattern && PATTERN_DATA && detailsDiv) {
+                    const craftEl = document.getElementById('pattern-craft');
+                    const stepsEl = document.getElementById('pattern-steps');
+                    const fileEl = document.getElementById('pattern-file');
+                    
+                    if (craftEl) craftEl.textContent = PATTERN_DATA.metadata.craft || 'Unknown';
+                    if (stepsEl) stepsEl.textContent = PATTERN_DATA.metadata.maxSteps || 'Unknown';
+                    if (fileEl) fileEl.textContent = selectedPattern.filename;
+                    detailsDiv.classList.toggle('hidden');
+                }
+            });
+        }
     }
     
     function resetViewer() {
@@ -372,12 +389,15 @@
         try {
             const result = await getRedirectResult(auth);
             if (result && result.user) {
+                console.log('Redirect auth result:', result.user.email);
                 const user = result.user;
                 const userDocRef = doc(db, "allowedUsers", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
+                    console.log('User authorized, showing application');
                     showApplication(user);
                 } else {
+                    console.log('User not authorized');
                     showNotAuthorized(user);
                 }
                 return;
@@ -388,14 +408,24 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocRef = doc(db, "allowedUsers", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    showApplication(user);
-                } else {
-                    showNotAuthorized(user);
+                console.log('Auth state changed - user:', user.email);
+                try {
+                    const userDocRef = doc(db, "allowedUsers", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists()) {
+                        console.log('User authorized via auth state change');
+                        showApplication(user);
+                    } else {
+                        console.log('User not authorized via auth state change');
+                        showNotAuthorized(user);
+                    }
+                } catch (error) {
+                    console.error('Error checking user authorization:', error);
+                    authContainer.classList.remove('hidden');
+                    appContainer.classList.add('hidden');
                 }
             } else {
+                console.log('No user signed in');
                 authContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
             }

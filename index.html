@@ -21,8 +21,7 @@
             margin-bottom: 0.25rem; 
             transition: background-color 0.3s; 
         }
-        .edge { color: #d8b4fe; } .increase { color: #86efac; } .main { color: #93c5fd; } .spine { color: #f87171; }
-        .lace-1-left, .lace-1-right { color: #fcd34d; } .lace-2-left, .lace-2-right { color: #f9a8d4; } .lace-3-left, .lace-3-right { color: #a7f3d0; }
+        /* Dynamic pattern-specific colors will be injected here */
         .highlight { background-color: #E6E6FA; color: #1a1a2e; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
         .result-chunk { background-color: #374151; padding: 1em; border-radius: 5px; color: #e0e0e0; overflow-x: auto; white-space: pre; }
         #stitch-locator-ui { transition: opacity 0.3s ease-in-out; }
@@ -347,6 +346,12 @@
         document.getElementById('pattern-content').innerHTML = '';
         footerControls.classList.add('hidden');
         PATTERN_DATA = null;
+        
+        // Remove pattern-specific theme
+        const existingStyle = document.getElementById('pattern-theme');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
     }
     
     async function checkAuthState() {
@@ -497,6 +502,9 @@
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             PATTERN_DATA = await response.json();
             
+            // Generate dynamic CSS for this pattern's categories
+            generatePatternTheme();
+            
             // Update UI with pattern info
             const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
             patternNameEl.textContent = name;
@@ -518,6 +526,62 @@
             patternAuthorEl.textContent = '';
             patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern: ${error.message}</p>`;
         }
+    }
+    
+    function generatePatternTheme() {
+        // Remove existing pattern theme
+        const existingStyle = document.getElementById('pattern-theme');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+        
+        // Collect all unique categories from the pattern
+        const categories = new Set();
+        PATTERN_DATA.instructions.forEach(instr => {
+            if (instr.chunks) {
+                instr.chunks.forEach(chunk => {
+                    if (chunk.category) {
+                        categories.add(chunk.category);
+                    }
+                });
+            }
+        });
+        
+        // Default color palette - you can expand this
+        const colorPalette = [
+            '#d8b4fe', // purple-300 (edge/structural)
+            '#86efac', // green-300 (increases)  
+            '#93c5fd', // blue-300 (main/body)
+            '#f87171', // red-300 (spine/center)
+            '#fcd34d', // yellow-300 (lace-1)
+            '#f9a8d4', // pink-300 (lace-2) 
+            '#a7f3d0', // emerald-300 (lace-3)
+            '#c4b5fd', // violet-300
+            '#fbbf24', // amber-400
+            '#34d399', // emerald-400
+            '#60a5fa', // blue-400
+            '#f472b6', // pink-400
+            '#a78bfa', // violet-400
+            '#fb7185', // rose-400
+        ];
+        
+        // Generate CSS for each category
+        let cssRules = '';
+        const categoryArray = Array.from(categories);
+        categoryArray.forEach((category, index) => {
+            const color = colorPalette[index % colorPalette.length];
+            cssRules += `.${category} { color: ${color}; }\n`;
+        });
+        
+        // Create and inject the dynamic stylesheet
+        const styleElement = document.createElement('style');
+        styleElement.id = 'pattern-theme';
+        styleElement.textContent = cssRules;
+        document.head.appendChild(styleElement);
+        
+        // Log the generated theme for debugging
+        console.log('Generated pattern theme for categories:', categoryArray);
+        console.log('CSS Rules:', cssRules);
     }
 
     // --- GENERATOR LOGIC (Your existing functions) ---

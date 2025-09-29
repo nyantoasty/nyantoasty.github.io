@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-28-redirect-fix -->
+<!-- Version: v2025-09-29-debug-simple -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -225,25 +225,19 @@
     });
     
     async function signInWithGoogle() {
-        console.log('Login button clicked, starting popup auth...');
+        console.log('=== LOGIN BUTTON CLICKED ===');
+        console.log('Starting signInWithRedirect...');
+        
         try {
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Redirecting...';
+            loginBtn.textContent = 'Redirecting to Google...';
             
-            console.log('Calling signInWithRedirect...');
-            signInWithRedirect(auth, provider);
+            await signInWithRedirect(auth, provider);
+            console.log('✅ signInWithRedirect called successfully');
         } catch (error) {
-            console.error('Popup sign in failed:', error);
+            console.log('❌ signInWithRedirect failed:', error);
+            alert('Redirect failed: ' + error.message);
             
-            // Handle specific error cases
-            if (error.code === 'auth/popup-closed-by-user') {
-                console.log('User closed the popup');
-            } else if (error.code === 'auth/popup-blocked') {
-                alert('Popup blocked! Please allow popups for this site and try again.');
-            } else {
-                alert('Sign in failed: ' + error.message);
-            }
-        } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = 'Sign in with Google';
         }
@@ -404,71 +398,49 @@
     }
     
     async function checkAuthState() {
-        // Clear service worker cache if it exists
+        console.log('=== STEP 1: Starting checkAuthState ===');
+        
+        // Clear caches first
         if ('serviceWorker' in navigator && 'caches' in window) {
             try {
                 const cacheNames = await caches.keys();
                 await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                console.log('Cleared all caches');
+                console.log('✅ Cleared all caches');
             } catch (error) {
-                console.log('Cache clearing failed:', error);
+                console.log('❌ Cache clearing failed:', error);
             }
         }
         
-        console.log('Firebase initialized, checking auth state...');
-        
-        // Check current auth state
-        console.log('Checking current auth state...');
-        const currentUser = auth.currentUser;
-        if (currentUser) {
-            console.log('Current user found:', currentUser.email);
-            try {
-                const userDocRef = doc(db, "allowedUsers", currentUser.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    console.log('Current user authorized');
-                    showApplication(currentUser);
-                } else {
-                    console.log('Current user not authorized');
-                    showNotAuthorized(currentUser);
-                }
-            } catch (dbError) {
-                console.error('Database check failed for current user:', dbError);
-                showApplication(currentUser);
+        console.log('=== STEP 2: Checking for redirect result ===');
+        try {
+            const result = await getRedirectResult(auth);
+            console.log('getRedirectResult returned:', result);
+            
+            if (result && result.user) {
+                console.log('✅ FOUND REDIRECT RESULT!');
+                console.log('User email:', result.user.email);
+                console.log('User UID:', result.user.uid);
+                // For now, just show success
+                alert('Auth successful! User: ' + result.user.email);
+                return;
+            } else {
+                console.log('ℹ️ No redirect result (normal for fresh page loads)');
             }
+        } catch (error) {
+            console.log('❌ getRedirectResult error:', error);
+        }
+        
+        console.log('=== STEP 3: Checking current user ===');
+        const currentUser = auth.currentUser;
+        console.log('auth.currentUser:', currentUser);
+        
+        if (currentUser) {
+            console.log('✅ Current user found:', currentUser.email);
+            alert('Already signed in: ' + currentUser.email);
             return;
         }
-
-        // Set up auth state listener for future auth changes
-        console.log('Setting up auth state listener...');
-        onAuthStateChanged(auth, async (user) => {
-            console.log('Auth state changed event fired');
-            if (user) {
-                console.log('Auth state changed - user:', user.email);
-                try {
-                    const userDocRef = doc(db, "allowedUsers", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists()) {
-                        console.log('User authorized via auth state change');
-                        showApplication(user);
-                    } else {
-                        console.log('User not authorized via auth state change');
-                        showNotAuthorized(user);
-                    }
-                } catch (error) {
-                    console.error('Error checking user authorization:', error);
-                    // If database check fails, still try to show the app
-                    showApplication(user);
-                }
-            } else {
-                console.log('Auth state: no user signed in');
-                authContainer.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-            }
-        });
         
-        // Show login screen
-        console.log('Showing login screen');
+        console.log('=== STEP 4: No user found, showing login screen ===');
         authContainer.classList.remove('hidden');
         appContainer.classList.add('hidden');
     }

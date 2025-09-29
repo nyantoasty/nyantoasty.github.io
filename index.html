@@ -181,6 +181,11 @@
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
+    // Import our modular functions
+    import { getInstructionCategory } from "./js/utils.js";
+    import { generateGlossary, generateInstructions, generatePatternTheme } from "./js/pattern-functions.js";
+    import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
+    
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
@@ -200,88 +205,6 @@
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
-
-    // --- UTILITY FUNCTIONS (defined early for global access) ---
-    function getInstructionCategory(instruction) {
-        // Defensive check: ensure instruction is provided
-        if (!instruction || typeof instruction !== 'string') {
-            console.warn('getInstructionCategory called with invalid instruction:', instruction);
-            return 'main';
-        }
-        
-        // Defensive check: ensure PATTERN_DATA is available
-        if (!PATTERN_DATA) {
-            console.warn('getInstructionCategory called before PATTERN_DATA is loaded');
-            return 'main';
-        }
-        
-        // First check if the pattern defines custom categories
-        if(PATTERN_DATA?.categories?.[instruction]) {
-            return PATTERN_DATA.categories[instruction];
-        }
-        
-        // Craft-specific category mappings
-        const craft = PATTERN_DATA?.metadata?.craft?.toLowerCase();
-        
-        if(craft === 'knitting') {
-            const knittingMap = {
-                'k': 'main', 'p': 'main',
-                'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase',
-                'k2tog': 'decrease', 'ssk': 'decrease', 'cdd': 'decrease',
-                'pm': 'edge', 'sm': 'edge', 'rm': 'edge'
-            };
-            return knittingMap[instruction] || 'main';
-        } else if(craft === 'crochet') {
-            const crochetMap = {
-                'ch': 'foundation', 'sc': 'main', 'hdc': 'main', 'dc': 'main', 'tr': 'main',
-                'inc': 'increase', 'dec': 'decrease', '2tog': 'decrease',
-                'sl st': 'edge', 'ss': 'edge'
-            };
-            return crochetMap[instruction] || 'main';
-        }
-        
-        // Default fallback categories
-        const generalMap = {
-            'inc': 'increase', 'increase': 'increase',
-            'dec': 'decrease', 'decrease': 'decrease',
-            'edge': 'edge', 'border': 'edge'
-        };
-        
-        return generalMap[instruction] || 'main';
-    }
-
-    // Global function for generating glossary
-    function generateGlossary() {
-        // Defensive check: ensure PATTERN_DATA is loaded
-        if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
-            console.log('No glossary data available or PATTERN_DATA not loaded');
-            return;
-        }
-        
-        let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
-        
-        for (const key in PATTERN_DATA.glossary) {
-            const item = PATTERN_DATA.glossary[key];
-            if (item && item.name && item.description) {
-                // Use stitchIndex instead of stitchCount for the new format
-                const stitchInfo = item.stitchIndex !== undefined ? ` (${item.stitchIndex} st)` : '';
-                glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
-            }
-        }
-        
-        glossaryHTML += '</div>';
-        const section = document.createElement('section');
-        section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
-        section.innerHTML = glossaryHTML;
-        
-        // Find the pattern content element dynamically
-        const patternContentEl = document.getElementById('pattern-content');
-        if (patternContentEl) {
-            patternContentEl.appendChild(section);
-        } else {
-            console.error('patternContentEl not found when trying to append glossary');
-        }
-    }
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
@@ -946,7 +869,7 @@
                 
                 return {
                     name: `${chunkCopy.instruction.toUpperCase()}${chunkCopy.count > 1 ? chunkCopy.count : ''}`,
-                    category: getInstructionCategory(chunkCopy.instruction),
+                    category: getInstructionCategory(chunkCopy.instruction, PATTERN_DATA),
                     pattern: [chunkCopy.count > 1 ? `${chunkCopy.instruction}${chunkCopy.count}` : chunkCopy.instruction]
                 };
             });
@@ -977,7 +900,7 @@
                     const pattern = chunk.count > 1 ? [`${chunk.instruction}${chunk.count}`] : [chunk.instruction];
                     converted.push({
                         name: chunk.instruction.toUpperCase(),
-                        category: getInstructionCategory(chunk.instruction),
+                        category: getInstructionCategory(chunk.instruction, PATTERN_DATA),
                         pattern: pattern
                     });
                 }
@@ -1120,13 +1043,13 @@
                     instr.chunks.forEach(chunk => {
                         // Add category based on instruction type
                         if (chunk.instruction) {
-                            const category = getInstructionCategory(chunk.instruction);
+                            const category = getInstructionCategory(chunk.instruction, PATTERN_DATA);
                             categories.add(category);
                         }
                         // Also check repeat instructions
                         if (chunk.repeat && chunk.repeat.instructions) {
                             chunk.repeat.instructions.forEach(repeatInstr => {
-                                const category = getInstructionCategory(repeatInstr.instruction);
+                                const category = getInstructionCategory(repeatInstr.instruction, PATTERN_DATA);
                                 categories.add(category);
                             });
                         }
@@ -1200,7 +1123,7 @@
             PATTERN_DATA = await response.json();
             
             // Generate dynamic CSS for this pattern's categories
-            generatePatternTheme();
+            generatePatternTheme(PATTERN_DATA);
             
             // Update UI with pattern info
             const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
@@ -1212,8 +1135,8 @@
             
             // Clear and regenerate content
             patternContentEl.innerHTML = '';
-            generateGlossary();
-            generateInstructions();
+            generateGlossary(PATTERN_DATA);
+            generateInstructions(PATTERN_DATA);
             loadProgress();
             
             footerControls.classList.remove('hidden');
@@ -1247,14 +1170,14 @@
                     instr.chunks.forEach(chunk => {
                         // Add category based on instruction type - defensive check
                         if (chunk && chunk.instruction) {
-                            const category = getInstructionCategory(chunk.instruction);
+                            const category = getInstructionCategory(chunk.instruction, PATTERN_DATA);
                             categories.add(category);
                         }
                         // Also check repeat instructions
                         if (chunk && chunk.repeat && chunk.repeat.instructions && Array.isArray(chunk.repeat.instructions)) {
                             chunk.repeat.instructions.forEach(repeatInstr => {
                                 if (repeatInstr && repeatInstr.instruction) {
-                                    const category = getInstructionCategory(repeatInstr.instruction);
+                                    const category = getInstructionCategory(repeatInstr.instruction, PATTERN_DATA);
                                     categories.add(category);
                                 }
                             });

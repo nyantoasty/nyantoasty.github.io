@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-Viewer Logic Module -->
+<!-- Version: v2025-09-29-Updating pattern schema -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -76,7 +76,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-09-28-Creating viewer-logic module</p>
+                <p class="text-xs text-gray-500">v2025-09-28-updating pattern schema</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
@@ -701,104 +701,9 @@
             progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
             
             patternContentEl.innerHTML = '';
-            generateGlossary();
-            generateInstructions();
+            generateGlossary(PATTERN_DATA);
+            generateInstructions(PATTERN_DATA);
             loadProgress();
-        }
-        function generateInstructions(){
-            const section=document.createElement('section');
-            section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
-            section.innerHTML='<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
-            
-            console.log(`Generating instructions for ${PATTERN_DATA.instructions.length} instruction blocks`);
-            
-            PATTERN_DATA.instructions.forEach((instr, index)=>{
-                console.log(`Processing instruction ${index}:`, instr);
-                const p=document.createElement('p');
-                if(instr.step)p.dataset.step=instr.step;
-                if(instr.stepRange){
-                    p.dataset.stepStart=instr.stepRange[0];
-                    p.dataset.stepEnd=instr.stepRange[1];
-                }
-                
-                // Generate display text from the JSON structure
-                let instructionHTML = generateDisplayText(instr);
-                console.log(`Generated HTML for instruction ${index}:`, instructionHTML);
-                
-                if (instructionHTML && instructionHTML.trim() !== '') {
-                    p.innerHTML=addTooltips(instructionHTML);
-                    section.appendChild(p);
-                    console.log(`Added instruction ${index} to DOM`);
-                } else {
-                    console.warn(`Empty instruction HTML for instruction ${index}:`, instr);
-                }
-            });
-            
-            console.log(`Final section contains ${section.children.length} instruction elements`);
-            patternContentEl.appendChild(section);
-        }
-        
-        function generateDisplayText(instr) {
-            // Handle special instructions
-            if (instr.type === 'specialInstruction') {
-                return `<b>Step ${instr.step || instr.stepRange?.join('-') || ''}:</b> ${instr.description}`;
-            }
-            
-            // Handle step ranges
-            if (instr.stepRange) {
-                let stepText = `<b>Steps ${instr.stepRange[0]}-${instr.stepRange[1]}`;
-                if (instr.stepType) stepText += ` (${instr.stepType})`;
-                stepText += `:</b>`;
-                
-                if (instr.dynamicChunks) {
-                    // For dynamic chunks, give a general description
-                    if (instr.side === 'rs' || instr.side === 'RS') {
-                        stepText += ' Increase rows: k3, kfb, k to marker, m1L, sm, k1, m1R, k to last 4, kfb, k3';
-                    } else if (instr.side === 'ws' || instr.side === 'WS') {
-                        stepText += ' Even rows: k3, purl to last 3, k3';
-                    }
-                } else if (instr.chunks) {
-                    stepText += ' ' + formatChunksForDisplay(instr.chunks);
-                }
-                return stepText;
-            }
-            
-            // Handle single steps
-            if (instr.step !== undefined) {
-                let stepText = `<b>Step ${instr.step}`;
-                if (instr.side) stepText += ` (${instr.side.toUpperCase()})`;
-                stepText += ':</b>';
-                
-                if (instr.chunks) {
-                    stepText += ' ' + formatChunksForDisplay(instr.chunks);
-                }
-                
-                if (instr.stitchCount) {
-                    stepText += ` (${instr.stitchCount} sts)`;
-                }
-                
-                return stepText;
-            }
-            
-            return 'Instruction data incomplete';
-        }
-        
-        function formatChunksForDisplay(chunks) {
-            let display = [];
-            chunks.forEach(chunk => {
-                if (chunk.repeat) {
-                    let repeatText = '(' + chunk.repeat.instructions.map(inst => 
-                        `${inst.instruction}${inst.count > 1 ? inst.count : ''}`
-                    ).join(', ') + `)`;
-                    if (chunk.repeat.count > 1) repeatText += ` ${chunk.repeat.count} times`;
-                    display.push(repeatText);
-                } else {
-                    let chunkText = chunk.instruction;
-                    if (chunk.count > 1) chunkText += chunk.count;
-                    display.push(chunkText);
-                }
-            });
-            return display.join(', ');
         }
         function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
         function getStitchCount(stepNumber){

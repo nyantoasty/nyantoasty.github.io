@@ -67,7 +67,7 @@
       "stitchIndex": 1
     }
   },
-  "instructions": [
+  "steps": [
     {
       "step": 0,
       "section": "Setup",
@@ -78,26 +78,82 @@
       "step": 1,
       "section": "Setup",
       "side": "rs",
-      "stitchCount": 11,
+      "startingStitchCount": 9,
+      "endingStitchCount": 11,
       "chunks": [
-        { "instruction": "k", "count": 3 },
-        { "instruction": "kfb", "count": 1 },
-        { "instruction": "pm", "count": 1 },
-        { "instruction": "k", "count": 1 },
-        { "instruction": "kfb", "count": 1 },
-        { "instruction": "k", "count": 3 }
+        { 
+          "id": "setup1-edge-left",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "k", "count": 3 }
+          ]
+        },
+        { 
+          "id": "setup1-increase1",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "kfb", "count": 1 }
+          ]
+        },
+        { 
+          "id": "setup1-marker",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "pm", "count": 1 }
+          ]
+        },
+        { 
+          "id": "setup1-center",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "k", "count": 1 }
+          ]
+        },
+        { 
+          "id": "setup1-increase2",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "kfb", "count": 1 }
+          ]
+        },
+        { 
+          "id": "setup1-edge-right",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "k", "count": 3 }
+          ]
+        }
       ]
     },
     {
       "step": 2,
       "section": "Setup",
       "side": "ws",
-      "stitchCount": 11,
-      "dynamicChunks": true,
+      "startingStitchCount": 11,
+      "endingStitchCount": 11,
       "chunks": [
-        { "instruction": "k", "count": 3 },
-        { "instruction": "p", "count": "to last 3" },
-        { "instruction": "k", "count": 3 }
+        { 
+          "id": "setup-edge-left",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "k", "count": 3 }
+          ]
+        },
+        { 
+          "id": "setup-center", 
+          "type": "dynamic",
+          "calculation": "totalStitches - 6",
+          "instructions": [
+            { "stitch": "p", "count": "calculated" }
+          ]
+        },
+        { 
+          "id": "setup-edge-right",
+          "type": "static", 
+          "instructions": [
+            { "stitch": "k", "count": 3 }
+          ]
+        }
       ]
     },
     {

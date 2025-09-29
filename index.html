@@ -440,25 +440,49 @@
         onAuthStateChanged(auth, async (user) => {
             console.log('🔥 AUTH STATE CHANGED EVENT FIRED!');
             console.log('User from auth state change:', user ? user.email : 'null');
-            console.log('User object details:', user);
-            console.log('User serialized:', JSON.stringify(user, null, 2));
             
             if (user) {
                 console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
                 console.log('User email:', user.email);
                 console.log('User UID:', user.uid);
                 console.log('User displayName:', user.displayName);
-                console.log('User emailVerified:', user.emailVerified);
-                console.log('User photoURL:', user.photoURL);
-                alert('Auth successful via state change! User: ' + user.email);
-                return;
+                
+                // Check if user is authorized in Firestore
+                console.log('🔍 Checking user authorization in Firestore...');
+                try {
+                    const userDocRef = doc(db, "allowedUsers", user.uid);
+                    console.log('Looking for document:', `allowedUsers/${user.uid}`);
+                    
+                    const userDocSnap = await getDoc(userDocRef);
+                    console.log('Document exists:', userDocSnap.exists());
+                    
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        console.log('✅ User is authorized!');
+                        console.log('User data from Firestore:', userData);
+                        showApplication(user);
+                    } else {
+                        console.log('❌ User not found in allowedUsers collection');
+                        console.log('User email:', user.email);
+                        console.log('User UID:', user.uid);
+                        console.log('You need to add this user to the allowedUsers collection in Firestore');
+                        showNotAuthorized(user);
+                    }
+                } catch (error) {
+                    console.error('🚨 Error checking user authorization:', error);
+                    console.log('Error code:', error.code);
+                    console.log('Error message:', error.message);
+                    
+                    // If there's an error accessing Firestore, show a helpful message
+                    alert(`Error checking authorization: ${error.message}\n\nThis might mean:\n1. Firestore isn't set up\n2. Security rules are too restrictive\n3. Network issue`);
+                    
+                    // For now, show unauthorized screen
+                    showNotAuthorized(user);
+                }
             } else {
-                console.log('Auth state change: no user');
-                console.log('This could mean:');
-                console.log('1. User cancelled Google auth');
-                console.log('2. User denied permissions');
-                console.log('3. OAuth flow failed');
-                console.log('4. User was signed out');
+                console.log('Auth state change: no user - showing login screen');
+                authContainer.classList.remove('hidden');
+                appContainer.classList.add('hidden');
             }
         });
         
@@ -508,10 +532,14 @@
                 
                 alert('Auth successful via redirect result! User: ' + result.user.email);
                 return;
+            } else if (result && !result.user) {
+                console.log('🚨 REDIRECT RESULT EXISTS BUT NO USER!');
+                console.log('Result object:', result);
+                console.log('This usually means the OAuth flow completed but user was rejected');
             } else {
                 console.log('ℹ️ No redirect result');
                 if (result === null) {
-                    console.log('   - result is explicitly null');
+                    console.log('   - result is explicitly null (normal for non-redirect page loads)');
                 } else if (result === undefined) {
                     console.log('   - result is undefined');
                 } else {
@@ -522,6 +550,15 @@
             console.log('❌ getRedirectResult error:', error);
             console.log('Error code:', error.code);
             console.log('Error message:', error.message);
+            
+            // Check for specific Firebase auth error codes
+            if (error.code === 'auth/unauthorized-domain') {
+                console.log('🚨 DOMAIN NOT AUTHORIZED - Add your domain to Firebase authorized domains');
+            } else if (error.code === 'auth/operation-not-allowed') {
+                console.log('🚨 GOOGLE SIGN-IN NOT ENABLED - Enable Google provider in Firebase');
+            } else if (error.code === 'auth/invalid-api-key') {
+                console.log('🚨 INVALID API KEY - Check your Firebase config');
+            }
         }
         
         console.log('=== STEP 3: No redirect result found, now clearing caches ===');

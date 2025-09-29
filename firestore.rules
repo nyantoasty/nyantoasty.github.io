@@ -1,6 +1,19 @@
 // Firestore Security Rules for Development
-// Copy these rules to your Firebase Console > Firestore Database > Rules
+// SIMPLE DEVELOPMENT RULES - Use these for now!
 
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow any authenticated user to read/write any document
+    // This is permissive but safe for development since only signed-in users can access
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+// PRODUCTION RULES (use later when patterns are working):
+/*
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -74,17 +87,6 @@ service cloud.firestore {
     function hasPatternPermission(patternId, userId, permission) {
       let accessDoc = get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + userId));
       return accessDoc.data.permission == permission || accessDoc.data.permission == 'admin';
-    }
-  }
-}
-
-// DEVELOPMENT ONLY: For easier testing, you can temporarily use these permissive rules:
-/*
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
     }
   }
 }

@@ -215,7 +215,8 @@
         try {
             const user = auth.currentUser;
             if (!user) {
-                throw new Error('Please sign in first');
+                alert('Please sign in first');
+                return null;
             }
             
             const userId = user.uid;
@@ -370,14 +371,26 @@
             });
             
             console.log('✅ Created sample analytics data');
+            
+            // 5. Refresh the pattern list
+            await discoverPatterns();
+            
             console.log('🎉 Firestore initialization complete!');
             console.log('📋 Pattern ID:', patternId);
             console.log('💡 You can now load this pattern in the viewer');
+            
+            // Hide the init button to prevent multiple runs
+            document.getElementById('init-firestore-btn').style.display = 'none';
             
             return patternId;
             
         } catch (error) {
             console.error('❌ Error initializing Firestore:', error);
+            if (error.code === 'permission-denied') {
+                alert('Permission denied. Please:\n1. Go to Firebase Console\n2. Navigate to Firestore Database > Rules\n3. Copy the rules from firestore.rules file\n4. Click Publish');
+            } else {
+                alert('Error initializing Firestore: ' + error.message);
+            }
             throw error;
         }
     }
@@ -585,40 +598,49 @@
     
     async function discoverPatterns() {
         try {
-            // List of known patterns - add new patterns here!
-            const knownPatterns = [
-                { filename: 'neon-sky-full.json', name: 'Neon Sky Shawl' }
-                // To add more patterns:
-                // 1. Save your JSON file in the /patterns/ directory
-                // 2. Add an entry here like: { filename: 'your-pattern.json', name: 'Display Name' }
-                // The system will automatically load the actual metadata from the JSON file
-            ];
-            
-            availablePatterns = [];
-            
-            for (const pattern of knownPatterns) {
-                try {
-                    // Add cache busting parameter to force reload
-                    const cacheBust = new Date().getTime();
-                    const response = await fetch(`/patterns/${pattern.filename}?v=${cacheBust}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        availablePatterns.push({
-                            filename: pattern.filename,
-                            name: data.metadata.name,
-                            author: data.metadata.author,
-                            craft: data.metadata.craft || 'Unknown',
-                            maxSteps: data.metadata.maxSteps
-                        });
-                    }
-                } catch (error) {
-                    console.warn(`Failed to load pattern ${pattern.filename}:`, error);
-                }
+            const user = auth.currentUser;
+            if (!user) {
+                console.log('No user signed in - cannot load patterns');
+                availablePatterns = [];
+                populatePatternSelector();
+                return;
             }
             
+            console.log('🔍 Loading patterns from Firestore...');
+            availablePatterns = [];
+            
+            // Load patterns the user created
+            const userPatternsQuery = query(
+                collection(db, 'patterns'), 
+                where('createdBy', '==', user.uid)
+            );
+            
+            const userPatterns = await getDocs(userPatternsQuery);
+            
+            userPatterns.forEach(docSnapshot => {
+                const data = docSnapshot.data();
+                availablePatterns.push({
+                    id: docSnapshot.id,
+                    filename: docSnapshot.id, // Use Firestore ID as filename for compatibility
+                    name: data.name,
+                    author: data.author,
+                    craft: data.craft || 'Unknown',
+                    maxSteps: data.metadata?.maxSteps || 'Unknown',
+                    source: 'firestore'
+                });
+            });
+            
+            // TODO: Also load patterns shared with the user via pattern_access collection
+            // For now, we're just loading user's own patterns
+            
+            console.log(`✅ Found ${availablePatterns.length} patterns`);
             populatePatternSelector();
+            
         } catch (error) {
             console.error('Error discovering patterns:', error);
+            // Fallback to empty list
+            availablePatterns = [];
+            populatePatternSelector();
         }
     }
     
@@ -1159,24 +1181,46 @@
         // setupViewer will be called by loadSelectedPattern
     }
     
-    async function loadSelectedPattern(filename) {
+    async function loadSelectedPattern(patternId) {
         const patternNameEl = document.getElementById('pattern-name');
         const patternAuthorEl = document.getElementById('pattern-author');
         const patternContentEl = document.getElementById('pattern-content');
         
         try {
             patternNameEl.textContent = 'Loading...';
-            // Add cache busting parameter to force reload
-            const cacheBust = new Date().getTime();
-            const response = await fetch(`/patterns/${filename}?v=${cacheBust}`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            PATTERN_DATA = await response.json();
+            
+            // Find the selected pattern data from our loaded list
+            const selectedPattern = availablePatterns.find(p => p.filename === patternId);
+            
+            if (selectedPattern && selectedPattern.source === 'firestore') {
+                // Load from Firestore
+                console.log('📖 Loading pattern from Firestore:', patternId);
+                const docRef = doc(db, 'patterns', patternId);
+                const docSnap = await getDoc(docRef);
+                
+                if (!docSnap.exists()) {
+                    throw new Error('Pattern not found in Firestore');
+                }
+                
+                PATTERN_DATA = docSnap.data();
+                
+            } else {
+                // Fallback to JSON file loading (for compatibility)
+                console.log('📖 Loading pattern from JSON file:', patternId);
+                const cacheBust = new Date().getTime();
+                const response = await fetch(`/patterns/${patternId}?v=${cacheBust}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                PATTERN_DATA = await response.json();
+            }
             
             // Generate dynamic CSS for this pattern's categories
             generatePatternTheme(PATTERN_DATA);
             
             // Update UI with pattern info
-            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
+            const name = PATTERN_DATA.name || PATTERN_DATA.metadata?.name;
+            const author = PATTERN_DATA.author || PATTERN_DATA.metadata?.author;
+            const max = PATTERN_DATA.metadata?.maxSteps;
+            
             patternNameEl.textContent = name;
             patternAuthorEl.textContent = `by ${author}`;
             maxSteps = max;
@@ -1194,6 +1238,7 @@
             // We'll improve this when we integrate the full viewer logic
             
             footerControls.classList.remove('hidden');
+            
         } catch (error) {
             console.error('Error loading pattern:', error);
             patternNameEl.textContent = 'Error Loading Pattern';

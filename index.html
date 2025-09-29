@@ -908,6 +908,18 @@
         }
         
         function getInstructionCategory(instruction) {
+            // Defensive check: ensure instruction is provided
+            if (!instruction || typeof instruction !== 'string') {
+                console.warn('getInstructionCategory called with invalid instruction:', instruction);
+                return 'main';
+            }
+            
+            // Defensive check: ensure PATTERN_DATA is available
+            if (!PATTERN_DATA) {
+                console.warn('getInstructionCategory called before PATTERN_DATA is loaded');
+                return 'main';
+            }
+            
             // First check if the pattern defines custom categories
             if(PATTERN_DATA?.categories?.[instruction]) {
                 return PATTERN_DATA.categories[instruction];
@@ -1183,6 +1195,12 @@
     }
     
     function generatePatternTheme() {
+        // Defensive check: ensure PATTERN_DATA is loaded
+        if (!PATTERN_DATA || !PATTERN_DATA.instructions) {
+            console.warn('generatePatternTheme called before PATTERN_DATA is fully loaded');
+            return;
+        }
+        
         // Remove existing pattern theme
         const existingStyle = document.getElementById('pattern-theme');
         if (existingStyle) {
@@ -1192,17 +1210,18 @@
         // Collect all unique categories from the pattern
         const categories = new Set();
         
-        PATTERN_DATA.instructions.forEach(instr => {
-            if (instr.chunks) {
-                instr.chunks.forEach(chunk => {
-                    // Add category based on instruction type
-                    if (chunk.instruction) {
-                        const category = getInstructionCategory(chunk.instruction);
-                        categories.add(category);
-                    }
-                    // Also check repeat instructions
-                    if (chunk.repeat && chunk.repeat.instructions) {
-                        chunk.repeat.instructions.forEach(repeatInstr => {
+        try {
+            PATTERN_DATA.instructions.forEach(instr => {
+                if (instr.chunks && Array.isArray(instr.chunks)) {
+                    instr.chunks.forEach(chunk => {
+                        // Add category based on instruction type
+                        if (chunk.instruction) {
+                            const category = getInstructionCategory(chunk.instruction);
+                            categories.add(category);
+                        }
+                        // Also check repeat instructions
+                        if (chunk.repeat && chunk.repeat.instructions && Array.isArray(chunk.repeat.instructions)) {
+                            chunk.repeat.instructions.forEach(repeatInstr => {
                             const category = getInstructionCategory(repeatInstr.instruction);
                             categories.add(category);
                         });
@@ -1210,6 +1229,13 @@
                 });
             }
         });
+        
+        } catch (error) {
+            console.error('Error generating pattern theme:', error);
+            // Add some default categories if processing fails
+            categories.add('main');
+            categories.add('edge');
+        }
         
         // Add standard categories for dynamic chunks
         categories.add('edge');

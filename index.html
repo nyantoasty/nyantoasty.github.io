@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-popup-test -->
+<!-- Version: v2025-09-29-functions-fixed -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -200,6 +200,55 @@
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
+
+    // --- UTILITY FUNCTIONS (defined early for global access) ---
+    function getInstructionCategory(instruction) {
+        // Defensive check: ensure instruction is provided
+        if (!instruction || typeof instruction !== 'string') {
+            console.warn('getInstructionCategory called with invalid instruction:', instruction);
+            return 'main';
+        }
+        
+        // Defensive check: ensure PATTERN_DATA is available
+        if (!PATTERN_DATA) {
+            console.warn('getInstructionCategory called before PATTERN_DATA is loaded');
+            return 'main';
+        }
+        
+        // First check if the pattern defines custom categories
+        if(PATTERN_DATA?.categories?.[instruction]) {
+            return PATTERN_DATA.categories[instruction];
+        }
+        
+        // Craft-specific category mappings
+        const craft = PATTERN_DATA?.metadata?.craft?.toLowerCase();
+        
+        if(craft === 'knitting') {
+            const knittingMap = {
+                'k': 'main', 'p': 'main',
+                'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase',
+                'k2tog': 'decrease', 'ssk': 'decrease', 'cdd': 'decrease',
+                'pm': 'edge', 'sm': 'edge', 'rm': 'edge'
+            };
+            return knittingMap[instruction] || 'main';
+        } else if(craft === 'crochet') {
+            const crochetMap = {
+                'ch': 'foundation', 'sc': 'main', 'hdc': 'main', 'dc': 'main', 'tr': 'main',
+                'inc': 'increase', 'dec': 'decrease', '2tog': 'decrease',
+                'sl st': 'edge', 'ss': 'edge'
+            };
+            return crochetMap[instruction] || 'main';
+        }
+        
+        // Default fallback categories
+        const generalMap = {
+            'inc': 'increase', 'increase': 'increase',
+            'dec': 'decrease', 'decrease': 'decrease',
+            'edge': 'edge', 'border': 'edge'
+        };
+        
+        return generalMap[instruction] || 'main';
+    }
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
@@ -700,8 +749,34 @@
             loadProgress();
         }
         
-        function generateGlossary(){if(!PATTERN_DATA.glossary||Object.keys(PATTERN_DATA.glossary).length===0)return;let glossaryHTML='<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';for(const key in PATTERN_DATA.glossary){const item=PATTERN_DATA.glossary[key];glossaryHTML+=`<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;}
-        glossaryHTML+='</div>';const section=document.createElement('section');section.className='bg-gray-800 p-6 rounded-lg shadow-lg';section.innerHTML=glossaryHTML;patternContentEl.appendChild(section);}
+        function generateGlossary() {
+            // Defensive check: ensure PATTERN_DATA is loaded
+            if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
+                console.log('No glossary data available or PATTERN_DATA not loaded');
+                return;
+            }
+            
+            let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
+            
+            for (const key in PATTERN_DATA.glossary) {
+                const item = PATTERN_DATA.glossary[key];
+                if (item && item.name && item.description) {
+                    glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+                }
+            }
+            
+            glossaryHTML += '</div>';
+            const section = document.createElement('section');
+            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
+            section.innerHTML = glossaryHTML;
+            
+            // Defensive check: ensure patternContentEl exists
+            if (patternContentEl) {
+                patternContentEl.appendChild(section);
+            } else {
+                console.error('patternContentEl not found when trying to append glossary');
+            }
+        }
         function generateInstructions(){
             const section=document.createElement('section');
             section.className='bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
@@ -905,54 +980,6 @@
             });
             
             return converted;
-        }
-        
-        function getInstructionCategory(instruction) {
-            // Defensive check: ensure instruction is provided
-            if (!instruction || typeof instruction !== 'string') {
-                console.warn('getInstructionCategory called with invalid instruction:', instruction);
-                return 'main';
-            }
-            
-            // Defensive check: ensure PATTERN_DATA is available
-            if (!PATTERN_DATA) {
-                console.warn('getInstructionCategory called before PATTERN_DATA is loaded');
-                return 'main';
-            }
-            
-            // First check if the pattern defines custom categories
-            if(PATTERN_DATA?.categories?.[instruction]) {
-                return PATTERN_DATA.categories[instruction];
-            }
-            
-            // Craft-specific category mappings
-            const craft = PATTERN_DATA?.metadata?.craft?.toLowerCase();
-            
-            if(craft === 'knitting') {
-                const knittingMap = {
-                    'k': 'main', 'p': 'main',
-                    'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase',
-                    'k2tog': 'decrease', 'ssk': 'decrease', 'cdd': 'decrease',
-                    'pm': 'edge', 'sm': 'edge', 'rm': 'edge'
-                };
-                return knittingMap[instruction] || 'main';
-            } else if(craft === 'crochet') {
-                const crochetMap = {
-                    'ch': 'foundation', 'sc': 'main', 'hdc': 'main', 'dc': 'main', 'tr': 'main',
-                    'inc': 'increase', 'dec': 'decrease', '2tog': 'decrease',
-                    'sl st': 'edge', 'ss': 'edge'
-                };
-                return crochetMap[instruction] || 'main';
-            }
-            
-            // Default fallback categories
-            const generalMap = {
-                'inc': 'increase', 'increase': 'increase',
-                'dec': 'decrease', 'decrease': 'decrease',
-                'edge': 'edge', 'border': 'edge'
-            };
-            
-            return generalMap[instruction] || 'main';
         }
         function getPatternForStitch(stepNumber,stitchNumber){
             const totalStitches=getStitchCount(stepNumber);

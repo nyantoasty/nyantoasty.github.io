@@ -250,6 +250,39 @@
         return generalMap[instruction] || 'main';
     }
 
+    // Global function for generating glossary
+    function generateGlossary() {
+        // Defensive check: ensure PATTERN_DATA is loaded
+        if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
+            console.log('No glossary data available or PATTERN_DATA not loaded');
+            return;
+        }
+        
+        let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
+        
+        for (const key in PATTERN_DATA.glossary) {
+            const item = PATTERN_DATA.glossary[key];
+            if (item && item.name && item.description) {
+                // Use stitchIndex instead of stitchCount for the new format
+                const stitchInfo = item.stitchIndex !== undefined ? ` (${item.stitchIndex} st)` : '';
+                glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+            }
+        }
+        
+        glossaryHTML += '</div>';
+        const section = document.createElement('section');
+        section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
+        section.innerHTML = glossaryHTML;
+        
+        // Find the pattern content element dynamically
+        const patternContentEl = document.getElementById('pattern-content');
+        if (patternContentEl) {
+            patternContentEl.appendChild(section);
+        } else {
+            console.error('patternContentEl not found when trying to append glossary');
+        }
+    }
+
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
@@ -730,38 +763,6 @@
                 console.error("Could not load pattern data:", error);
                 patternNameEl.textContent = "Error";
                 patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern file. Check path and console.</p>`;
-            }
-        }
-
-        // Global function for generating glossary
-        function generateGlossary() {
-            // Defensive check: ensure PATTERN_DATA is loaded
-            if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
-                console.log('No glossary data available or PATTERN_DATA not loaded');
-                return;
-            }
-            
-            let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
-            
-            for (const key in PATTERN_DATA.glossary) {
-                const item = PATTERN_DATA.glossary[key];
-                if (item && item.name && item.description) {
-                    // Add stitch count if available
-                    const stitchInfo = item.stitchCount !== undefined ? ` (${item.stitchCount} st)` : '';
-                    glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
-                }
-            }
-            
-            glossaryHTML += '</div>';
-            const section = document.createElement('section');
-            section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
-            section.innerHTML = glossaryHTML;
-            
-            // Defensive check: ensure patternContentEl exists
-            if (patternContentEl) {
-                patternContentEl.appendChild(section);
-            } else {
-                console.error('patternContentEl not found when trying to append glossary');
             }
         }
 

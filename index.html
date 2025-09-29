@@ -63,6 +63,9 @@
                 <button id="guest-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
                     Use AI Pattern Generator (No Sign-in Required)
                 </button>
+                <button id="debug-btn" class="bg-gray-600 text-white font-medium py-1 px-3 rounded text-xs">
+                    🔧 Debug Firebase
+                </button>
             </div>
         </div>
     </div>
@@ -204,6 +207,7 @@
     const standaloneGenerator = document.getElementById('standalone-generator');
     const loginBtn = document.getElementById('login-btn');
     const guestGeneratorBtn = document.getElementById('guest-generator-btn');
+    const debugBtn = document.getElementById('debug-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const standaloneGeneratorBtn = document.getElementById('standalone-generator-btn');
     const backToMainBtn = document.getElementById('back-to-main');
@@ -227,16 +231,25 @@
     async function signInWithGoogle() {
         console.log('=== LOGIN BUTTON CLICKED ===');
         console.log('Starting signInWithRedirect...');
+        console.log('Auth object:', auth);
+        console.log('Provider object:', provider);
         
         try {
             loginBtn.disabled = true;
             loginBtn.textContent = 'Redirecting to Google...';
             
-            await signInWithRedirect(auth, provider);
+            console.log('Calling signInWithRedirect...');
+            const result = await signInWithRedirect(auth, provider);
+            console.log('signInWithRedirect result:', result);
             console.log('✅ signInWithRedirect called successfully');
         } catch (error) {
-            console.log('❌ signInWithRedirect failed:', error);
-            alert('Redirect failed: ' + error.message);
+            console.log('❌ signInWithRedirect failed:');
+            console.log('Error object:', error);
+            console.log('Error code:', error.code);
+            console.log('Error message:', error.message);
+            console.log('Error stack:', error.stack);
+            
+            alert('Redirect failed: ' + error.code + ' - ' + error.message);
             
             loginBtn.disabled = false;
             loginBtn.textContent = 'Sign in with Google';
@@ -244,6 +257,28 @@
     }
     
     loginBtn.addEventListener('click', signInWithGoogle);
+
+    debugBtn.addEventListener('click', () => {
+        console.log('=== 🔧 FIREBASE DEBUG INFO ===');
+        console.log('Firebase app:', app);
+        console.log('Firebase auth:', auth);
+        console.log('Firebase auth currentUser:', auth.currentUser);
+        console.log('Provider:', provider);
+        console.log('Current URL:', window.location.href);
+        console.log('Document referrer:', document.referrer);
+        console.log('Local storage keys:', Object.keys(localStorage));
+        console.log('Session storage keys:', Object.keys(sessionStorage));
+        
+        // Try to manually call getRedirectResult
+        console.log('Manually calling getRedirectResult...');
+        getRedirectResult(auth).then(result => {
+            console.log('Manual getRedirectResult result:', result);
+        }).catch(error => {
+            console.log('Manual getRedirectResult error:', error);
+        });
+        
+        alert('Debug info logged to console!');
+    });
 
     guestGeneratorBtn.addEventListener('click', () => {
         authContainer.classList.add('hidden');
@@ -495,6 +530,19 @@
     console.log('Script loaded, initializing app...');
     console.log('Current URL:', window.location.href);
     console.log('URL params:', window.location.search);
+    
+    // Add global error handlers to catch any errors we might miss
+    window.addEventListener('error', (event) => {
+        console.log('🚨 GLOBAL ERROR CAUGHT:', event.error);
+        console.log('Error message:', event.message);
+        console.log('Error filename:', event.filename);
+        console.log('Error line:', event.lineno);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.log('🚨 UNHANDLED PROMISE REJECTION:', event.reason);
+        console.log('Promise:', event.promise);
+    });
     
     // Check if we just came back from a redirect (Google referrer is key indicator)
     const hasGoogleReferrer = document.referrer.includes('accounts.google.com') || 

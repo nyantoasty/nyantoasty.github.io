@@ -1,7 +1,71 @@
 // pattern-functions.js - Pattern rendering and generation functions
-// Version: v2025-09-29-clean-dynamic-chunks
+// Version: v2025-09-29-steprange-interpreter
 
 import { getInstructionCategory, addTooltips } from './utils.js';
+
+// Get step data for any step number, resolving stepRanges
+export function getStepData(stepNumber, PATTERN_DATA) {
+    // First check for exact step match
+    const exactStep = PATTERN_DATA.steps.find(step => step.step === stepNumber);
+    if (exactStep) {
+        return exactStep;
+    }
+    
+    // Check stepRange entries
+    const rangeStep = PATTERN_DATA.steps.find(step => 
+        step.stepRange && 
+        stepNumber >= step.stepRange[0] && 
+        stepNumber <= step.stepRange[1]
+    );
+    
+    if (rangeStep) {
+        // Calculate stitch count for this specific step
+        const startingStitchCount = calculateStitchCountForStep(stepNumber, PATTERN_DATA);
+        const endingStitchCount = calculateEndingStitchCount(stepNumber, rangeStep, startingStitchCount);
+        
+        // Return a resolved step based on the template
+        return {
+            ...rangeStep,
+            step: stepNumber,
+            startingStitchCount: startingStitchCount,
+            endingStitchCount: endingStitchCount,
+            // Remove stepRange since this is now a resolved individual step
+            stepRange: undefined
+        };
+    }
+    
+    return null; // Step not found
+}
+
+function calculateStitchCountForStep(stepNumber, PATTERN_DATA) {
+    if (stepNumber === 1) {
+        // Find first step's starting count
+        const firstStep = PATTERN_DATA.steps.find(s => s.step === 1);
+        return firstStep?.startingStitchCount || 9; // Default for this pattern
+    }
+    
+    // Calculate based on previous step
+    const prevStepData = getStepData(stepNumber - 1, PATTERN_DATA);
+    return prevStepData?.endingStitchCount || calculateStitchCountForStep(stepNumber - 1, PATTERN_DATA);
+}
+
+function calculateEndingStitchCount(stepNumber, stepTemplate, startingStitchCount) {
+    let change = 0;
+    
+    if (stepTemplate.stitchCountChange) {
+        if (typeof stepTemplate.stitchCountChange === 'string') {
+            if (stepTemplate.stitchCountChange.startsWith('+')) {
+                change = parseInt(stepTemplate.stitchCountChange.substring(1), 10) || 0;
+            } else if (stepTemplate.stitchCountChange.startsWith('-')) {
+                change = -parseInt(stepTemplate.stitchCountChange.substring(1), 10) || 0;
+            }
+        } else if (typeof stepTemplate.stitchCountChange === 'number') {
+            change = stepTemplate.stitchCountChange;
+        }
+    }
+    
+    return startingStitchCount + change;
+}
 
 // Enhanced chunk processing functions
 export function processChunk(chunk, stepContext, PATTERN_DATA) {
@@ -9,9 +73,15 @@ export function processChunk(chunk, stepContext, PATTERN_DATA) {
         return processDynamicChunk(chunk, stepContext, PATTERN_DATA);
     } else if (chunk.type === "repeat") {
         return processRepeatChunk(chunk, stepContext, PATTERN_DATA);
+    } else if (chunk.instructions) {
+        // New format with instructions array
+        return chunk.instructions;
     } else {
-        // Static chunk - return instructions as-is
-        return chunk.instructions || [];
+        // Legacy format with direct instruction/stitch properties
+        return [{
+            stitch: chunk.instruction || chunk.stitch,
+            count: chunk.count
+        }];
     }
 }
 
@@ -19,31 +89,51 @@ function processDynamicChunk(chunk, stepContext, PATTERN_DATA) {
     const totalStitches = stepContext.startingStitchCount || stepContext.endingStitchCount;
     let calculatedCount = 0;
     
-    switch(chunk.calculation) {
-        case "totalStitches - 6":
-            calculatedCount = totalStitches - 6;
-            break;
-        case "totalStitches - 3":
-            calculatedCount = totalStitches - 3;
-            break;
-        case "toMarker":
-            calculatedCount = calculateToMarker(stepContext);
-            break;
-        case "toLast3":
-            calculatedCount = totalStitches - 3;
-            break;
-        case "toLast4":
-            calculatedCount = totalStitches - 4;
-            break;
-        default:
-            console.warn(`Unknown dynamic calculation: ${chunk.calculation}`);
-            calculatedCount = 1;
+    // Handle legacy chunk format with direct calculation strings
+    if (chunk.count === "to last 3") {
+        calculatedCount = totalStitches - 6; // 3 stitches on each side
+    } else if (chunk.count === "to last 4") {
+        calculatedCount = totalStitches - 7; // Account for edge stitches
+    } else if (chunk.count === "to marker") {
+        calculatedCount = calculateToMarker(stepContext);
+    } else {
+        // Handle new format with explicit calculations
+        switch(chunk.calculation) {
+            case "totalStitches - 6":
+                calculatedCount = totalStitches - 6;
+                break;
+            case "totalStitches - 3":
+                calculatedCount = totalStitches - 3;
+                break;
+            case "toMarker":
+                calculatedCount = calculateToMarker(stepContext);
+                break;
+            case "toLast3":
+                calculatedCount = totalStitches - 6;
+                break;
+            case "toLast4":
+                calculatedCount = totalStitches - 7;
+                break;
+            default:
+                console.warn(`Unknown dynamic calculation: ${chunk.calculation}`);
+                calculatedCount = 1;
+        }
     }
     
-    return chunk.instructions.map(instr => ({
-        ...instr,
-        count: instr.count === "calculated" ? calculatedCount : instr.count
-    }));
+    // Handle both legacy and new chunk formats
+    if (chunk.instructions) {
+        // New format
+        return chunk.instructions.map(instr => ({
+            ...instr,
+            count: instr.count === "calculated" ? calculatedCount : instr.count
+        }));
+    } else {
+        // Legacy format
+        return [{
+            stitch: chunk.instruction,
+            count: calculatedCount
+        }];
+    }
 }
 
 function processRepeatChunk(chunk, stepContext, PATTERN_DATA) {
@@ -157,7 +247,7 @@ export function generateInstructions(PATTERN_DATA) {
     section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
     section.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
     
-    console.log(`Generating instructions for ${PATTERN_DATA.steps.length} steps`);
+    console.log(`Generating instructions for ${PATTERN_DATA.steps.length} step templates`);
     
     PATTERN_DATA.steps.forEach((step, index) => {
         console.log(`Processing step ${index}:`, step);
@@ -182,6 +272,42 @@ export function generateInstructions(PATTERN_DATA) {
     
     console.log(`Final section contains ${section.children.length} step elements`);
     patternContentEl.appendChild(section);
+}
+
+// Generate instructions for a specific step number
+export function generateInstructionsForStep(stepNumber, PATTERN_DATA) {
+    const stepData = getStepData(stepNumber, PATTERN_DATA);
+    if (!stepData) return null;
+    
+    const stepContext = {
+        startingStitchCount: stepData.startingStitchCount,
+        endingStitchCount: stepData.endingStitchCount
+    };
+    
+    let formattedInstructions = [];
+    
+    if (stepData.chunks) {
+        stepData.chunks.forEach(chunk => {
+            const processedInstructions = processChunk(chunk, stepContext, PATTERN_DATA);
+            
+            processedInstructions.forEach(instr => {
+                const glossaryEntry = PATTERN_DATA.glossary[instr.stitch];
+                const category = getInstructionCategory(instr.stitch);
+                
+                formattedInstructions.push({
+                    text: `${instr.stitch}${instr.count > 1 ? instr.count : ''}`,
+                    stitch: instr.stitch,
+                    count: instr.count,
+                    glossary: glossaryEntry,
+                    category: category,
+                    chunkId: chunk.id,
+                    chunkType: chunk.type
+                });
+            });
+        });
+    }
+    
+    return addTooltips(formattedInstructions);
 }
 
 export function generateDisplayText(step, PATTERN_DATA) {
@@ -226,14 +352,14 @@ export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
         
         if (chunk.type === "repeat") {
             // Display repeat in compact form
-            const patternText = chunk.pattern.map(instr => 
+            const patternText = processedInstructions.map(instr => 
                 instr.count > 1 ? `${instr.stitch}${instr.count}` : instr.stitch
             ).join(', ');
             return `[${patternText}] ${chunk.times}x`;
         } else if (chunk.type === "dynamic") {
             // Display dynamic chunk with calculation hint
             const instrText = processedInstructions.map(instr => {
-                const category = getInstructionCategory(instr.stitch, PATTERN_DATA);
+                const category = getInstructionCategory(instr.stitch);
                 const displayText = instr.count > 1 ? `${instr.stitch}${instr.count}` : instr.stitch;
                 return `<span class="${category}">${displayText}</span>`;
             }).join(', ');
@@ -241,7 +367,7 @@ export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
         } else {
             // Static chunk
             return processedInstructions.map(instr => {
-                const category = getInstructionCategory(instr.stitch, PATTERN_DATA);
+                const category = getInstructionCategory(instr.stitch);
                 const displayText = instr.count > 1 ? `${instr.stitch}${instr.count}` : instr.stitch;
                 return `<span class="${category}">${displayText}</span>`;
             }).join(', ');

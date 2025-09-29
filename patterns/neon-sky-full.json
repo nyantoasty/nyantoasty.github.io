@@ -1,4 +1,32 @@
 {
+  "_schemaVersion": "2.0",
+  "_aiInstructions": {
+    "overview": "Fiber arts pattern JSON with intelligent step range interpretation. This format supports both individual steps and step ranges for efficiency.",
+    "stepResolution": {
+      "description": "Steps can be defined as individual entries OR as stepRanges. The interpreter resolves any step number to the correct template.",
+      "individualSteps": "Use 'step': number for unique steps that don't follow a pattern",
+      "stepRanges": "Use 'stepRange': [start, end] for repeating patterns. Include 'stepType' for odd/even alternation",
+      "stitchCounting": "startingStitchCount is calculated automatically based on previous step's endingStitchCount + stitchCountChange"
+    },
+    "chunkTypes": {
+      "static": "Fixed instructions that never change. Use 'instructions': [{'stitch': 'k', 'count': 3}]",
+      "dynamic": "Instructions with calculated counts. Use 'calculation': 'totalStitches - 6' and 'count': 'calculated'",
+      "repeat": "Repeated pattern sections. Use 'pattern': [...] and 'times': number"
+    },
+    "dynamicCalculations": {
+      "totalStitches - 6": "Calculate current stitch count minus 6 (for 'to last 3' scenarios)",
+      "totalStitches - 3": "Calculate current stitch count minus 3",
+      "toMarker": "Calculate stitches to next marker (context-dependent)",
+      "toLast3": "Same as totalStitches - 3",
+      "toLast4": "Same as totalStitches - 4"
+    },
+    "stitchIndexes": "Each stitch type has 'stitchIndex' indicating how many needle positions it creates (k=1, kfb=2, etc)",
+    "exampleUsage": {
+      "stepRange": "Steps 3-61 odd rows all follow same increase pattern, so define once with stepRange",
+      "dynamicChunk": "For 'k3, p to last 3, k3' use dynamic chunk with 'totalStitches - 6' calculation",
+      "repeatChunk": "For '[k1, yo, ssk, k5, k2tog, yo] 6 times' use repeat chunk"
+    }
+  },
   "metadata": {
     "name": "Neon Sky Shawl",
     "author": "Iris Schreier",

@@ -8,51 +8,63 @@
   "glossary": {
     "k": {
       "name": "Knit",
-      "description": "Knit stitch."
+      "description": "Knit stitch.",
+      "stitchIndex": 1
     },
     "p": {
       "name": "Purl",
-      "description": "Purl stitch."
+      "description": "Purl stitch.",
+      "stitchIndex": 1
     },
     "k2tog": {
       "name": "Knit 2 Together",
-      "description": "Knit 2 stitches together as though they were 1 st. A right-slanted decrease of 1 st."
+      "description": "Knit 2 stitches together as though they were 1 st. A right-slanted decrease of 1 st.",
+      "stitchIndex": 1
     },
     "yo": {
       "name": "Yarn Over",
-      "description": "Yarn over needle as though to create an extra stitch."
+      "description": "Yarn over needle as though to create an extra stitch.",
+      "stitchIndex": 1
     },
     "ssk": {
       "name": "Slip, Slip, Knit",
-      "description": "Slip 2 stitches from left to right needle and knit them together through back loops, a left-slanted decrease of 1 st."
+      "description": "Slip 2 stitches from left to right needle and knit them together through back loops, a left-slanted decrease of 1 st.",
+      "stitchIndex": 1
     },
     "kfb": {
       "name": "Knit Front and Back",
-      "description": "Knit into the front and back of the same stitch, an increase of 1 stitch."
+      "description": "Knit into the front and back of the same stitch, an increase of 1 stitch.",
+      "stitchIndex": 2
     },
     "m1l": {
       "name": "Make 1 Left",
-      "description": "Left-leaning lifted increase. Insert the left needle tip from front to back under bar between stitches, lifting it to form a new loop on left needle, and knit this loop through the back, an increase of 1 st."
+      "description": "Left-leaning lifted increase. Insert the left needle tip from front to back under bar between stitches, lifting it to form a new loop on left needle, and knit this loop through the back, an increase of 1 st.",
+      "stitchIndex": 1
     },
     "m1r": {
       "name": "Make 1 Right",
-      "description": "Right-leaning lifted increase. Insert the left needle tip from back to front under bar between 2 sts, lifting it to form a new loop on the left needle, and knit this loop through the front, an increase of 1 st."
+      "description": "Right-leaning lifted increase. Insert the left needle tip from back to front under bar between 2 sts, lifting it to form a new loop on the left needle, and knit this loop through the front, an increase of 1 st.",
+      "stitchIndex": 1
     },
     "pm": {
       "name": "Place Marker",
-      "description": "Place a stitch marker on the needle."
+      "description": "Place a stitch marker on the needle.",
+      "stitchIndex": 0
     },
     "rm": {
       "name": "Remove Marker",
-      "description": "Remove a stitch marker from the needle."
+      "description": "Remove a stitch marker from the needle.",
+      "stitchIndex": 0
     },
     "sm": {
       "name": "Slip Marker",
-      "description": "Slip a stitch marker from the left needle to the right needle."
+      "description": "Slip a stitch marker from the left needle to the right needle.",
+      "stitchIndex": 0
     },
     "cdd": {
       "name": "Centered Double Decrease",
-      "description": "Slip 2 sts with yarn in back, knit the next stitch, pass the 2 slipped stitches over the stitch just knitted, a decrease of 2 sts."
+      "description": "Slip 2 sts with yarn in back, knit the next stitch, pass the 2 slipped stitches over the stitch just knitted, a decrease of 2 sts.",
+      "stitchIndex": 1
     }
   },
   "instructions": [

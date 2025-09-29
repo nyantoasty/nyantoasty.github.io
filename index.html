@@ -733,22 +733,7 @@
             }
         }
 
-        function setupViewer() {
-            if (!PATTERN_DATA) return;
-            footerControls.classList.remove('hidden');
-            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
-            patternNameEl.textContent = name;
-            patternAuthorEl.textContent = `by ${author}`;
-            maxSteps = max;
-            stepInput.max = maxSteps;
-            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
-            
-            patternContentEl.innerHTML = '';
-            generateGlossary();
-            generateInstructions();
-            loadProgress();
-        }
-        
+        // Global function for generating glossary
         function generateGlossary() {
             // Defensive check: ensure PATTERN_DATA is loaded
             if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
@@ -761,7 +746,9 @@
             for (const key in PATTERN_DATA.glossary) {
                 const item = PATTERN_DATA.glossary[key];
                 if (item && item.name && item.description) {
-                    glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+                    // Add stitch count if available
+                    const stitchInfo = item.stitchCount !== undefined ? ` (${item.stitchCount} st)` : '';
+                    glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
                 }
             }
             
@@ -776,6 +763,22 @@
             } else {
                 console.error('patternContentEl not found when trying to append glossary');
             }
+        }
+
+        function setupViewer() {
+            if (!PATTERN_DATA) return;
+            footerControls.classList.remove('hidden');
+            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
+            patternNameEl.textContent = name;
+            patternAuthorEl.textContent = `by ${author}`;
+            maxSteps = max;
+            stepInput.max = maxSteps;
+            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
+            
+            patternContentEl.innerHTML = '';
+            generateGlossary();
+            generateInstructions();
+            loadProgress();
         }
         function generateInstructions(){
             const section=document.createElement('section');
@@ -1241,20 +1244,22 @@
             PATTERN_DATA.instructions.forEach(instr => {
                 if (instr.chunks && Array.isArray(instr.chunks)) {
                     instr.chunks.forEach(chunk => {
-                        // Add category based on instruction type
-                        if (chunk.instruction) {
+                        // Add category based on instruction type - defensive check
+                        if (chunk && chunk.instruction) {
                             const category = getInstructionCategory(chunk.instruction);
                             categories.add(category);
                         }
                         // Also check repeat instructions
-                        if (chunk.repeat && chunk.repeat.instructions && Array.isArray(chunk.repeat.instructions)) {
+                        if (chunk && chunk.repeat && chunk.repeat.instructions && Array.isArray(chunk.repeat.instructions)) {
                             chunk.repeat.instructions.forEach(repeatInstr => {
-                            const category = getInstructionCategory(repeatInstr.instruction);
-                            categories.add(category);
-                        });
-                    }
-                });
-            }
+                                if (repeatInstr && repeatInstr.instruction) {
+                                    const category = getInstructionCategory(repeatInstr.instruction);
+                                    categories.add(category);
+                                }
+                            });
+                        }
+                    });
+                }
         });
         
         } catch (error) {

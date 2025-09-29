@@ -440,15 +440,25 @@
         onAuthStateChanged(auth, async (user) => {
             console.log('🔥 AUTH STATE CHANGED EVENT FIRED!');
             console.log('User from auth state change:', user ? user.email : 'null');
+            console.log('User object details:', user);
+            console.log('User serialized:', JSON.stringify(user, null, 2));
             
             if (user) {
                 console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
                 console.log('User email:', user.email);
                 console.log('User UID:', user.uid);
+                console.log('User displayName:', user.displayName);
+                console.log('User emailVerified:', user.emailVerified);
+                console.log('User photoURL:', user.photoURL);
                 alert('Auth successful via state change! User: ' + user.email);
                 return;
             } else {
                 console.log('Auth state change: no user');
+                console.log('This could mean:');
+                console.log('1. User cancelled Google auth');
+                console.log('2. User denied permissions');
+                console.log('3. OAuth flow failed');
+                console.log('4. User was signed out');
             }
         });
         
@@ -457,6 +467,21 @@
         console.log('URL search params:', window.location.search);
         console.log('URL hash:', window.location.hash);
         console.log('Document referrer:', document.referrer);
+        
+        // Parse URL parameters to look for auth-related data
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log('URL Parameters:');
+        for (const [key, value] of urlParams) {
+            console.log(`  ${key}: ${value}`);
+        }
+        
+        // Check for common OAuth error parameters
+        if (urlParams.has('error')) {
+            console.log('🚨 OAuth ERROR DETECTED in URL!');
+            console.log('Error:', urlParams.get('error'));
+            console.log('Error description:', urlParams.get('error_description'));
+            alert('OAuth Error: ' + urlParams.get('error') + ' - ' + urlParams.get('error_description'));
+        }
         
         try {
             const result = await getRedirectResult(auth);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-28-auth-redirect-fix -->
+<!-- Version: v2025-09-28-redirect-fix -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -175,7 +175,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- CONFIG & STATE ---
@@ -224,15 +224,32 @@
         prompt: 'select_account'
     });
     
-    loginBtn.addEventListener('click', () => {
-        console.log('Login button clicked, starting redirect...');
+    async function signInWithGoogle() {
+        console.log('Login button clicked, starting popup auth...');
         try {
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Redirecting...';
+            
+            console.log('Calling signInWithRedirect...');
             signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error('Redirect sign in failed:', error);
-            alert('Sign in failed: ' + error.message);
+            console.error('Popup sign in failed:', error);
+            
+            // Handle specific error cases
+            if (error.code === 'auth/popup-closed-by-user') {
+                console.log('User closed the popup');
+            } else if (error.code === 'auth/popup-blocked') {
+                alert('Popup blocked! Please allow popups for this site and try again.');
+            } else {
+                alert('Sign in failed: ' + error.message);
+            }
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign in with Google';
         }
-    });
+    }
+    
+    loginBtn.addEventListener('click', signInWithGoogle);
 
     guestGeneratorBtn.addEventListener('click', () => {
         authContainer.classList.add('hidden');
@@ -398,40 +415,8 @@
             }
         }
         
-        // Wait a moment for Firebase to initialize
-        await new Promise(resolve => setTimeout(resolve, 1000));
         console.log('Firebase initialized, checking auth state...');
         
-        try {
-            console.log('Checking for redirect result...');
-            const result = await getRedirectResult(auth);
-            if (result && result.user) {
-                console.log('Redirect auth result:', result.user.email);
-                const user = result.user;
-                try {
-                    const userDocRef = doc(db, "allowedUsers", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists()) {
-                        console.log('User authorized, showing application');
-                        showApplication(user);
-                    } else {
-                        console.log('User not authorized');
-                        showNotAuthorized(user);
-                    }
-                    return;
-                } catch (dbError) {
-                    console.error('Database check failed:', dbError);
-                    // If database check fails, still try to show the app
-                    showApplication(user);
-                    return;
-                }
-            } else {
-                console.log('No redirect result found');
-            }
-        } catch (error) {
-            console.error("Auth redirect error:", error);
-        }
-
         // Check current auth state
         console.log('Checking current auth state...');
         const currentUser = auth.currentUser;
@@ -454,7 +439,7 @@
             return;
         }
 
-        // Set up auth state listener
+        // Set up auth state listener for future auth changes
         console.log('Setting up auth state listener...');
         onAuthStateChanged(auth, async (user) => {
             console.log('Auth state changed event fired');
@@ -476,11 +461,16 @@
                     showApplication(user);
                 }
             } else {
-                console.log('No user signed in');
+                console.log('Auth state: no user signed in');
                 authContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
             }
         });
+        
+        // Show login screen
+        console.log('Showing login screen');
+        authContainer.classList.remove('hidden');
+        appContainer.classList.add('hidden');
     }
 
     // --- INITIALIZATION ---

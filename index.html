@@ -451,18 +451,27 @@
         console.log('=== STEP 1.5: Setting up auth state listener ===');
         onAuthStateChanged(auth, async (user) => {
             console.log('🔥 AUTH STATE CHANGED EVENT FIRED!');
+            console.log('Raw user object:', user);
             console.log('User from auth state change:', user ? user.email : 'null');
+            console.log('User is null?', user === null);
+            console.log('User is undefined?', user === undefined);
             
             if (user) {
                 console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
                 console.log('User email:', user.email);
                 console.log('User UID:', user.uid);
+                console.log('User emailVerified:', user.emailVerified);
+                console.log('User providerData:', user.providerData);
                 
                 try {
                     // Check if user exists in the users collection
                     console.log('🔍 Checking user in Firebase users collection...');
+                    console.log('Looking for document path: users/' + user.uid);
+                    
                     const userDocRef = doc(db, "users", user.uid);
                     const userDocSnap = await getDoc(userDocRef);
+                    
+                    console.log('User document exists:', userDocSnap.exists());
                     
                     if (userDocSnap.exists()) {
                         // User exists, get their role and permissions
@@ -497,25 +506,45 @@
                         }
                     } else {
                         // User doesn't exist, create them with default 'viewer' role
-                        console.log('👤 New user - creating user document with viewer role');
+                        console.log('👤 New user detected - creating user document');
+                        console.log('User UID:', user.uid);
+                        console.log('User email:', user.email);
+                        console.log('User displayName:', user.displayName);
                         
-                        const newUserData = {
-                            email: user.email,
-                            displayName: user.displayName || user.email.split('@')[0],
-                            role: 'viewer',
-                            createdAt: new Date().toISOString(),
-                            lastLogin: new Date().toISOString()
-                        };
-                        
-                        await setDoc(userDocRef, newUserData);
-                        console.log('✅ Created new user with viewer role');
-                        
-                        // Get the viewer role permissions
-                        const roleDocRef = doc(db, "roles", "viewer");
-                        const roleDocSnap = await getDoc(roleDocRef);
-                        const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'] };
-                        
-                        showApplication(user, newUserData, roleData);
+                        try {
+                            const newUserData = {
+                                email: user.email,
+                                displayName: user.displayName || user.email.split('@')[0],
+                                role: 'viewer',
+                                createdAt: new Date().toISOString(),
+                                lastLogin: new Date().toISOString()
+                            };
+                            
+                            console.log('Creating user document with data:', newUserData);
+                            await setDoc(userDocRef, newUserData);
+                            console.log('✅ Successfully created new user document');
+                            
+                            // Get the viewer role permissions
+                            const roleDocRef = doc(db, "roles", "viewer");
+                            const roleDocSnap = await getDoc(roleDocRef);
+                            const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'], name: 'Viewer' };
+                            
+                            console.log('New user role data:', roleData);
+                            showApplication(user, newUserData, roleData);
+                            
+                        } catch (createError) {
+                            console.error('🚨 Error creating user document:', createError);
+                            console.log('Create error code:', createError.code);
+                            console.log('Create error message:', createError.message);
+                            
+                            if (createError.code === 'permission-denied') {
+                                alert('Permission denied when creating user account. Please check Firebase security rules.');
+                            } else {
+                                alert(`Error creating user account: ${createError.message}`);
+                            }
+                            
+                            showNotAuthorized(user);
+                        }
                     }
                     
                 } catch (error) {

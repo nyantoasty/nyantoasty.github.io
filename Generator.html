@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Pattern-to-JSON Generator Guide</title>
+    <title>AI Pattern-to-Firestore Generator</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <!-- Chosen Palette: Warm Neutral -->
-    <!-- Application Structure Plan: A vertical, single-page guide designed as an interactive "Prompt Builder". The user follows a step-by-step process to prepare their pattern and generate the full AI prompt. A separate reference section below uses tabs and interactive elements to explain the required JSON schema and show clear examples. This task-oriented flow (building the prompt) is prioritized over simply displaying the document, making the information more actionable and easier to understand for the user's goal of generating JSON. -->
-    <!-- Visualization & Content Choices: Report Info: Whole document -> Goal: Guide user in creating an AI prompt -> Presentation: Interactive form/builder for prompt generation, and tabbed/collapsible sections for technical reference. -> Interaction: Text input, copy-to-clipboard button, content toggles. -> Justification: Transforms a static guide into a practical tool, directly assisting the user's workflow. The structure separates the "doing" part (building the prompt) from the "learning" part (reference), which is a better user experience. -> Library/Method: Vanilla JS for interactions, Tailwind CSS for layout. NO SVG/Mermaid used. -->
+    <!-- Application Structure Plan: Interactive prompt builder for generating Firestore write operations instead of JSON files. Creates direct database integration patterns with sharing capabilities built-in. -->
+    <!-- Visualization & Content Choices: Report Info: Pattern conversion -> Goal: Generate Firestore operations -> Presentation: Form builder with copy-to-clipboard for database operations -> Interaction: Text input, operation type selection, permission settings -> Justification: Eliminates JSON file management, enables real-time testing, supports pattern sharing from day one. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,8 +102,8 @@
 
     <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">AI Pattern-to-JSON Generator Guide</h1>
-            <p class="text-lg text-gray-600">An interactive tool to generate prompts for converting craft patterns into structured JSON.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">AI Pattern-to-Firestore Generator</h1>
+            <p class="text-lg text-gray-600">Generate prompts for AI to create patterns directly in Firestore with sharing capabilities.</p>
         </header>
 
         <main class="space-y-16">
@@ -129,14 +129,37 @@
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 2: Paste Your Pattern Text</h3>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 2: Pattern Settings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Pattern Visibility</label>
+                                <select id="pattern-visibility" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                    <option value="private">Private (only you)</option>
+                                    <option value="shared">Shared (specific users)</option>
+                                    <option value="public">Public (everyone can view)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Craft Type</label>
+                                <select id="craft-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                    <option value="knitting">Knitting</option>
+                                    <option value="crochet">Crochet</option>
+                                    <option value="tunisian">Tunisian Crochet</option>
+                                    <option value="weaving">Weaving</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 3: Paste Your Pattern Text</h3>
                         <p class="text-sm text-gray-500 mb-3">Paste the full, raw text of your pattern here. If you transcribed it from an image, paste that text.</p>
                         <textarea id="pattern-input" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition" placeholder="Paste pattern text here..."></textarea>
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 3: Generate and Copy Your AI Prompt</h3>
-                        <p class="text-sm text-gray-500 mb-3">The complete prompt has been generated below based on your input. Use the button to copy it and paste it into the AI of your choice.</p>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 4: Generate Firestore Integration Prompt</h3>
+                        <p class="text-sm text-gray-500 mb-3">This generates a prompt for AI to create Firestore write operations instead of JSON files. The pattern will be stored directly in the database with sharing capabilities.</p>
                         <div class="relative">
                             <button id="copy-prompt-button" class="absolute top-3 right-3 bg-white hover:bg-stone-100 text-gray-600 font-medium py-1 px-3 border border-gray-300 rounded-md text-sm transition-colors">
                                 <span id="copy-default">Copy</span>
@@ -239,59 +262,148 @@ document.addEventListener('DOMContentLoaded', () => {
     const promptOutput = document.getElementById('prompt-output');
     const copyButton = document.getElementById('copy-prompt-button');
 
-    const basePrompt = `# AI Prompt: Convert a Craft Pattern to a Smartly Grouped JSON
+    const basePrompt = `# AI Prompt: Convert Craft Pattern to Firestore Write Operations
 
-## 1. The Goal & Persona
+## 1. Goal & Context
 
-You are an expert technical editor for fiber arts (knitting, crochet, Tunisian crochet) and a software developer. Your task is to convert a human-readable pattern into a strict, **craft-agnostic**, and efficiently grouped JSON format for a web application. The primary goal is to provide enough data for a "Stitch Locator" feature. This means that while we will group identical rows to save space, the structure must allow the application to calculate the exact stitch sequence for any given row.
+You are an expert at converting fiber arts patterns into structured data for a web application. Instead of generating JSON files, you'll create **Firestore write operations** that store the pattern directly in a database with sharing capabilities.
 
-## 2. The Input Pattern
+## 2. Pattern Settings
+Craft Type: {{CRAFT_TYPE}}
+Visibility: {{VISIBILITY}}
+User ID: {{USER_ID}} (the person creating this pattern)
 
-Paste the complete, raw text of the pattern here.
-
+## 3. Input Pattern Text
 \`\`\`
 {{PATTERN_TEXT}}
 \`\`\`
 
-## 3. The Required JSON Output Structure
+## 4. Required Output: Firestore Write Operations
 
-You must generate a single JSON object. Note that some fields like \`side\` are **optional** to support various crafts.
+Generate the JavaScript code to write this pattern to Firestore using our schema:
 
-\`\`\`json
-{
-  "metadata": {
-    "name": "Pattern Name",
-    "author": "Author Name",
-    "maxSteps": 116 
-  },
-  "glossary": {
-    "k": { "name": "Knit", "description": "..." },
-    "sc": { "name": "Single Crochet", "description": "..." }
-  },
-  "instructions": []
+\`\`\`javascript
+// Pattern creation with sharing support
+async function createPatternInFirestore() {
+  const patternId = generateUniqueId();
+  const userId = '{{USER_ID}}';
+  
+  // Main pattern document
+  const patternData = {
+    // Metadata
+    id: patternId,
+    name: "Pattern Name Here",
+    author: "Author Name",
+    craft: "{{CRAFT_TYPE}}",
+    difficulty: "intermediate", // beginner, intermediate, advanced
+    
+    // Ownership and sharing
+    createdBy: userId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    visibility: "{{VISIBILITY}}",
+    
+    // Pattern structure
+    metadata: {
+      maxSteps: 117,
+      estimatedTime: "20 hours",
+      materials: ["materials list here"]
+    },
+    
+    glossary: {
+      "k": {
+        "name": "Knit",
+        "description": "Knit stitch.",
+        "stitchIndex": 1
+      }
+      // ... complete glossary based on stitches used
+    },
+    
+    steps: [
+      {
+        "step": 1,
+        "section": "Setup",
+        "side": "rs",
+        "startingStitchCount": 9,
+        "endingStitchCount": 11,
+        "chunks": [
+          {
+            "id": "edge-left",
+            "type": "static",
+            "instructions": [
+              { "stitch": "k", "count": 3 }
+            ]
+          }
+          // ... more chunks
+        ]
+      }
+      // ... more steps using stepRange for repeating patterns
+    ],
+    
+    // Analytics and sharing
+    shareCount: 0,
+    viewCount: 0,
+    forkCount: 0,
+    tags: ["tag1", "tag2"],
+    exportCount: 0
+  };
+  
+  // Write to Firestore
+  await db.collection('patterns').doc(patternId).set(patternData);
+  
+  // Create access record for creator
+  await db.collection('pattern_access').doc(patternId + '_' + userId).set({
+    patternId: patternId,
+    userId: userId,
+    grantedBy: userId,
+    permission: 'admin',
+    grantedAt: new Date(),
+    status: 'active',
+    shareReason: 'pattern_creator'
+  });
+  
+  console.log('Pattern created with ID:', patternId);
+  return patternId;
 }
 \`\`\`
 
-## 4. Detailed Instructions for Generating the \`instructions\` Array
+## 5. Key Requirements
 
-You will create JSON objects representing either a single, unique step or a range of identical/systematic steps.
+### Chunk Architecture
+- Use **stepRange** for repeating patterns (e.g., rows 3-61 odd)
+- Break instructions into logical **chunks** (edge, center, increases)
+- Use **dynamic chunks** for "k to marker" or "p to last 3" scenarios
+- Each chunk needs an **id** and **type** (static, dynamic, repeat)
 
-### Key Rules:
+### Stitch Index
+- Every stitch in glossary needs **stitchIndex** (how many needle positions it creates)
+- k=1, kfb=2, k2tog=1, yo=1, pm=0, etc.
 
-* **Smart Grouping:** If a sequence of steps (e.g., Rows 4, 6, 8...62) are functionally identical, group them using a \`stepRange: [start, end]\` and an optional \`stepType: "even"\` or \`"odd"\` to specify which rows in the range this applies to.
-* **Logical Chunks:** Structure the \`chunks\` array to mirror the logical sections of the pattern as a crafter would read them (e.g., Edge, Lace Panel, Center).
-* **Dynamic Calculation Flag:** For repeating rows where an inner part changes predictably (e.g., "knit to marker"), use \`"dynamicChunks": true\`. This tells the application to calculate the variable parts on the fly.
+### Step Counting
+- **startingStitchCount** and **endingStitchCount** for each step
+- Use **stitchCountChange** for stepRanges (+4, -2, 0)
 
-(The full schema and examples from the template are included in the actual prompt logic but omitted here for brevity in the script)
-`;
+### Sharing Ready
+- Pattern includes all metadata for sharing
+- Visibility setting determines access level
+- Tags help with pattern discovery
+
+Generate the complete Firestore write operations for this pattern.`;
 
     function updatePrompt() {
         const patternText = patternInput.value.trim();
+        const visibility = document.getElementById('pattern-visibility').value;
+        const craftType = document.getElementById('craft-type').value;
+        
         if (patternText) {
-            const fullPrompt = basePrompt.replace('{{PATTERN_TEXT}}', patternText);
+            const fullPrompt = basePrompt
+                .replace(/{{PATTERN_TEXT}}/g, patternText)
+                .replace(/{{VISIBILITY}}/g, visibility)
+                .replace(/{{CRAFT_TYPE}}/g, craftType)
+                .replace(/{{USER_ID}}/g, 'current_user_id'); // This would be filled by the app
             promptOutput.textContent = fullPrompt;
         } else {
-            promptOutput.textContent = 'Select a pattern type and paste text to generate the prompt.';
+            promptOutput.textContent = 'Configure settings and paste pattern text to generate the prompt.';
         }
     }
 
@@ -310,6 +422,8 @@ You will create JSON objects representing either a single, unique step or a rang
     });
 
     patternInput.addEventListener('input', updatePrompt);
+    document.getElementById('pattern-visibility').addEventListener('change', updatePrompt);
+    document.getElementById('craft-type').addEventListener('change', updatePrompt);
 
     copyButton.addEventListener('click', () => {
         if (navigator.clipboard && window.isSecureContext) {

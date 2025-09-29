@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-debug-simple -->
+<!-- Version: v2025-09-29-cache-after-auth -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -400,7 +400,56 @@
     async function checkAuthState() {
         console.log('=== STEP 1: Starting checkAuthState ===');
         
-        // Clear caches first
+        console.log('=== STEP 2: Checking for redirect result FIRST (before cache clearing) ===');
+        console.log('Current URL:', window.location.href);
+        console.log('URL search params:', window.location.search);
+        console.log('URL hash:', window.location.hash);
+        console.log('Document referrer:', document.referrer);
+        
+        try {
+            const result = await getRedirectResult(auth);
+            console.log('getRedirectResult returned:', result);
+            console.log('getRedirectResult type:', typeof result);
+            console.log('getRedirectResult null check:', result === null);
+            
+            if (result && result.user) {
+                console.log('✅ FOUND REDIRECT RESULT!');
+                console.log('User email:', result.user.email);
+                console.log('User UID:', result.user.uid);
+                
+                // NOW clear caches after successful auth
+                console.log('🧹 Clearing caches AFTER successful auth...');
+                if ('serviceWorker' in navigator && 'caches' in window) {
+                    try {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                        console.log('✅ Cleared all caches after auth');
+                    } catch (error) {
+                        console.log('❌ Cache clearing failed:', error);
+                    }
+                }
+                
+                // For now, just show success
+                alert('Auth successful! User: ' + result.user.email);
+                return;
+            } else {
+                console.log('ℹ️ No redirect result');
+                if (result === null) {
+                    console.log('   - result is explicitly null');
+                } else if (result === undefined) {
+                    console.log('   - result is undefined');
+                } else {
+                    console.log('   - result exists but no user:', result);
+                }
+            }
+        } catch (error) {
+            console.log('❌ getRedirectResult error:', error);
+            console.log('Error code:', error.code);
+            console.log('Error message:', error.message);
+        }
+        
+        console.log('=== STEP 3: No redirect result found, now clearing caches ===');
+        // Only clear caches if we didn't find a redirect result
         if ('serviceWorker' in navigator && 'caches' in window) {
             try {
                 const cacheNames = await caches.keys();
@@ -411,26 +460,7 @@
             }
         }
         
-        console.log('=== STEP 2: Checking for redirect result ===');
-        try {
-            const result = await getRedirectResult(auth);
-            console.log('getRedirectResult returned:', result);
-            
-            if (result && result.user) {
-                console.log('✅ FOUND REDIRECT RESULT!');
-                console.log('User email:', result.user.email);
-                console.log('User UID:', result.user.uid);
-                // For now, just show success
-                alert('Auth successful! User: ' + result.user.email);
-                return;
-            } else {
-                console.log('ℹ️ No redirect result (normal for fresh page loads)');
-            }
-        } catch (error) {
-            console.log('❌ getRedirectResult error:', error);
-        }
-        
-        console.log('=== STEP 3: Checking current user ===');
+        console.log('=== STEP 4: Checking current user ===');
         const currentUser = auth.currentUser;
         console.log('auth.currentUser:', currentUser);
         
@@ -440,7 +470,7 @@
             return;
         }
         
-        console.log('=== STEP 4: No user found, showing login screen ===');
+        console.log('=== STEP 5: No user found, showing login screen ===');
         authContainer.classList.remove('hidden');
         appContainer.classList.add('hidden');
     }
@@ -450,10 +480,26 @@
     console.log('Current URL:', window.location.href);
     console.log('URL params:', window.location.search);
     
-    // Add a small delay to ensure Firebase is fully loaded
-    setTimeout(() => {
-        checkAuthState(); // Run auth check on page load
-    }, 500);
+    // Check if we just came back from a redirect (common indicators)
+    const hasAuthParams = window.location.search.includes('code') || 
+                         window.location.search.includes('state') || 
+                         window.location.hash.includes('access_token') ||
+                         document.referrer.includes('google.com') ||
+                         document.referrer.includes('accounts.google.com');
+    
+    console.log('Possible redirect return:', hasAuthParams);
+    
+    if (hasAuthParams) {
+        console.log('🔄 Looks like we returned from auth redirect - checking immediately');
+        // If we think we came from redirect, check auth state immediately
+        checkAuthState();
+    } else {
+        console.log('🔍 Normal page load - adding delay before auth check');
+        // Add a small delay to ensure Firebase is fully loaded
+        setTimeout(() => {
+            checkAuthState();
+        }, 500);
+    }
 
     // --- MAIN APP NAVIGATION ---
     appNav.addEventListener('click', (e) => {

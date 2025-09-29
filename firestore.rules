@@ -1,0 +1,91 @@
+// Firestore Security Rules for Development
+// Copy these rules to your Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Allow authenticated users to read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Pattern access control
+    match /patterns/{patternId} {
+      // Allow read if user has access OR pattern is public OR user is creator
+      allow read: if request.auth != null && (
+        hasPatternAccess(patternId, request.auth.uid) ||
+        resource.data.visibility == 'public' ||
+        resource.data.createdBy == request.auth.uid
+      );
+      
+      // Allow write if user is creator OR has edit permission
+      allow write: if request.auth != null && (
+        resource.data.createdBy == request.auth.uid ||
+        hasPatternPermission(patternId, request.auth.uid, 'edit')
+      );
+      
+      // Allow create if authenticated
+      allow create: if request.auth != null;
+    }
+    
+    // Pattern access records - users can read their own access
+    match /pattern_access/{accessId} {
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid || 
+        resource.data.grantedBy == request.auth.uid
+      );
+      
+      // Allow write if user is pattern creator or admin
+      allow write: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+    
+    // Pattern shares - users can read shares involving them
+    match /pattern_shares/{shareId} {
+      allow read, write: if request.auth != null && (
+        resource.data.sharedBy == request.auth.uid ||
+        resource.data.sharedWith == request.auth.uid
+      );
+      allow create: if request.auth != null;
+    }
+    
+    // Analytics collections - allow authenticated users to write
+    match /stitch_finder_queries/{queryId} {
+      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+    
+    match /navigation_events/{eventId} {
+      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+    
+    match /generator_events/{eventId} {
+      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+    
+    // Helper functions (simplified for development)
+    function hasPatternAccess(patternId, userId) {
+      return exists(/databases/$(database)/documents/pattern_access/$(patternId + '_' + userId));
+    }
+    
+    function hasPatternPermission(patternId, userId, permission) {
+      let accessDoc = get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + userId));
+      return accessDoc.data.permission == permission || accessDoc.data.permission == 'admin';
+    }
+  }
+}
+
+// DEVELOPMENT ONLY: For easier testing, you can temporarily use these permissive rules:
+/*
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+*/

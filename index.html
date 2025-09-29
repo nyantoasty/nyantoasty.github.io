@@ -180,7 +180,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // Import our modular functions
     import { getInstructionCategory } from "./js/utils.js";
@@ -215,11 +215,25 @@
         try {
             const user = auth.currentUser;
             if (!user) {
-                console.error('❌ Please sign in first');
-                return;
+                throw new Error('Please sign in first');
             }
             
             const userId = user.uid;
+            
+            // Check if user already has patterns (safety check)
+            const existingPatternsQuery = await getDocs(
+                query(collection(db, 'patterns'), where('createdBy', '==', userId), limit(1))
+            );
+            
+            if (!existingPatternsQuery.empty) {
+                const confirmOverwrite = confirm(
+                    'You already have patterns in Firestore. Create another development pattern anyway?'
+                );
+                if (!confirmOverwrite) {
+                    console.log('🚫 Initialization cancelled by user');
+                    return null;
+                }
+            }
             
             // 1. Update user document (merge with existing data)
             await setDoc(doc(db, 'users', userId), {
@@ -474,12 +488,38 @@
         
         try {
             const patternId = await initializeFirestoreCollections();
-            initFirestoreBtn.textContent = '✅ Done!';
-            alert(`Firestore initialized! Pattern ID: ${patternId}\n\nYou can now test the pattern viewer.`);
+            
+            if (patternId) {
+                initFirestoreBtn.textContent = '✅ Done!';
+                alert(`Firestore initialized! Pattern ID: ${patternId}\n\nYou can now test the pattern viewer.\n\nThe initialization button will be hidden since setup is complete.`);
+                
+                // Hide button after successful initialization
+                setTimeout(() => {
+                    initFirestoreBtn.style.display = 'none';
+                }, 2000);
+            } else {
+                initFirestoreBtn.textContent = '🚫 Cancelled';
+                setTimeout(() => {
+                    initFirestoreBtn.disabled = false;
+                    initFirestoreBtn.textContent = '🔧 Init DB';
+                }, 3000);
+            }
         } catch (error) {
             initFirestoreBtn.textContent = '❌ Error';
-            alert(`Error: ${error.message}`);
-        } finally {
+            console.error('Firestore initialization error:', error);
+            
+            // Show helpful error message
+            let errorMessage = error.message;
+            if (errorMessage.includes('permission')) {
+                errorMessage = `Permission Error: ${error.message}\n\n` +
+                              `Please update your Firestore security rules:\n` +
+                              `1. Go to Firebase Console > Firestore Database > Rules\n` +
+                              `2. Copy the rules from firestore.rules file\n` +
+                              `3. Or temporarily use: allow read, write: if request.auth != null;`;
+            }
+            
+            alert(`Error: ${errorMessage}`);
+            
             setTimeout(() => {
                 initFirestoreBtn.disabled = false;
                 initFirestoreBtn.textContent = '🔧 Init DB';

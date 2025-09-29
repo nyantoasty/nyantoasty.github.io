@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-simple-auth -->
+<!-- Version: v2025-09-29-proper-firebase -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -179,12 +179,9 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- CONFIG & STATE ---
-    // Allowed email domains (empty array = allow all)
-    const ALLOWED_DOMAINS = []; // e.g., ['gmail.com', 'yourdomain.com'] or [] for all
-    
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
     apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
@@ -319,12 +316,24 @@
         footerControls.classList.add('hidden');
     }
 
-    function showApplication(user) {
+    function showApplication(user, userData = null, roleData = null) {
         try {
             authContainer.classList.add('hidden');
             appContainer.classList.remove('hidden');
-            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+            
+            // Display user info with role
+            const roleName = roleData ? roleData.name : 'User';
+            userDisplay.textContent = `${user.displayName || user.email} (${roleName})`;
+            
             console.log('Initializing application for user:', user.email);
+            console.log('User role:', userData?.role);
+            console.log('User permissions:', roleData?.permissions);
+            
+            // Store user data globally for use in other parts of the app
+            window.currentUser = user;
+            window.currentUserData = userData;
+            window.currentUserRole = roleData;
+            
             discoverPatterns().then(() => {
                 console.log('Patterns discovered, initializing viewer');
                 initializeViewer();
@@ -449,18 +458,79 @@
                 console.log('User email:', user.email);
                 console.log('User UID:', user.uid);
                 
-                // Check if user's email domain is allowed (if restrictions are set)
-                if (ALLOWED_DOMAINS.length > 0) {
-                    const userDomain = user.email.split('@')[1];
-                    if (!ALLOWED_DOMAINS.includes(userDomain)) {
-                        console.log(`❌ Email domain ${userDomain} not allowed`);
-                        showNotAuthorized(user);
-                        return;
+                try {
+                    // Check if user exists in the users collection
+                    console.log('🔍 Checking user in Firebase users collection...');
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    
+                    if (userDocSnap.exists()) {
+                        // User exists, get their role and permissions
+                        const userData = userDocSnap.data();
+                        console.log('✅ User found in database:', userData);
+                        
+                        // Get role details
+                        const roleDocRef = doc(db, "roles", userData.role);
+                        const roleDocSnap = await getDoc(roleDocRef);
+                        
+                        if (roleDocSnap.exists()) {
+                            const roleData = roleDocSnap.data();
+                            console.log('✅ User role data:', roleData);
+                            
+                            // Check if user has permission to view patterns
+                            if (roleData.permissions && roleData.permissions.includes('view_patterns')) {
+                                console.log('🎉 User authorized - showing application');
+                                
+                                // Update last login
+                                await updateDoc(userDocRef, {
+                                    lastLogin: new Date().toISOString()
+                                });
+                                
+                                showApplication(user, userData, roleData);
+                            } else {
+                                console.log('❌ User role does not have view_patterns permission');
+                                showNotAuthorized(user);
+                            }
+                        } else {
+                            console.log('❌ User role not found in roles collection');
+                            showNotAuthorized(user);
+                        }
+                    } else {
+                        // User doesn't exist, create them with default 'viewer' role
+                        console.log('👤 New user - creating user document with viewer role');
+                        
+                        const newUserData = {
+                            email: user.email,
+                            displayName: user.displayName || user.email.split('@')[0],
+                            role: 'viewer',
+                            createdAt: new Date().toISOString(),
+                            lastLogin: new Date().toISOString()
+                        };
+                        
+                        await setDoc(userDocRef, newUserData);
+                        console.log('✅ Created new user with viewer role');
+                        
+                        // Get the viewer role permissions
+                        const roleDocRef = doc(db, "roles", "viewer");
+                        const roleDocSnap = await getDoc(roleDocRef);
+                        const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'] };
+                        
+                        showApplication(user, newUserData, roleData);
                     }
+                    
+                } catch (error) {
+                    console.error('🚨 Error checking user authorization:', error);
+                    console.log('Error code:', error.code);
+                    console.log('Error message:', error.message);
+                    
+                    if (error.code === 'permission-denied') {
+                        alert('Permission denied. Please check your Firebase security rules.');
+                    } else {
+                        alert(`Authentication error: ${error.message}`);
+                    }
+                    
+                    showNotAuthorized(user);
                 }
-                
-                console.log('🎉 User authenticated and authorized - showing application');
-                showApplication(user);
                 
             } else {
                 console.log('Auth state change: no user - showing login screen');

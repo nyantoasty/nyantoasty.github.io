@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-proper-firebase test 2 -->
+<!-- Version: v2025-09-29-popup-test -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -178,7 +178,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- CONFIG & STATE ---
@@ -230,26 +230,34 @@
     
     async function signInWithGoogle() {
         console.log('=== LOGIN BUTTON CLICKED ===');
-        console.log('Starting signInWithRedirect...');
+        console.log('Testing POPUP auth instead of redirect...');
         console.log('Auth object:', auth);
         console.log('Provider object:', provider);
         
         try {
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Redirecting to Google...';
+            loginBtn.textContent = 'Opening popup...';
             
-            console.log('Calling signInWithRedirect...');
-            const result = await signInWithRedirect(auth, provider);
-            console.log('signInWithRedirect result:', result);
-            console.log('✅ signInWithRedirect called successfully');
+            console.log('Calling signInWithPopup...');
+            const result = await signInWithPopup(auth, provider);
+            console.log('✅ signInWithPopup result:', result);
+            console.log('User from popup:', result.user.email);
+            
+            // Don't need to do anything here - onAuthStateChanged will handle it
+            
         } catch (error) {
-            console.log('❌ signInWithRedirect failed:');
+            console.log('❌ signInWithPopup failed:');
             console.log('Error object:', error);
             console.log('Error code:', error.code);
             console.log('Error message:', error.message);
-            console.log('Error stack:', error.stack);
             
-            alert('Redirect failed: ' + error.code + ' - ' + error.message);
+            if (error.code === 'auth/popup-blocked') {
+                alert('Popup was blocked! Please allow popups for this site and try again.');
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                console.log('User closed popup');
+            } else {
+                alert('Sign in failed: ' + error.code + ' - ' + error.message);
+            }
             
             loginBtn.disabled = false;
             loginBtn.textContent = 'Sign in with Google';
@@ -568,104 +576,23 @@
             }
         });
         
-        console.log('=== STEP 2: Checking for redirect result FIRST (before cache clearing) ===');
+        console.log('=== STEP 2: Checking current auth state (popup method) ===');
         console.log('Current URL:', window.location.href);
-        console.log('URL search params:', window.location.search);
-        console.log('URL hash:', window.location.hash);
-        console.log('Document referrer:', document.referrer);
         
-        // Parse URL parameters to look for auth-related data
-        const urlParams = new URLSearchParams(window.location.search);
-        console.log('URL Parameters:');
-        for (const [key, value] of urlParams) {
-            console.log(`  ${key}: ${value}`);
-        }
+        // With popup auth, we don't need to check for redirect results
+        console.log('Using popup auth - skipping redirect result check');
         
-        // Check for common OAuth error parameters
-        if (urlParams.has('error')) {
-            console.log('🚨 OAuth ERROR DETECTED in URL!');
-            console.log('Error:', urlParams.get('error'));
-            console.log('Error description:', urlParams.get('error_description'));
-            alert('OAuth Error: ' + urlParams.get('error') + ' - ' + urlParams.get('error_description'));
-        }
-        
-        try {
-            const result = await getRedirectResult(auth);
-            console.log('getRedirectResult returned:', result);
-            console.log('getRedirectResult type:', typeof result);
-            console.log('getRedirectResult null check:', result === null);
-            
-            if (result && result.user) {
-                console.log('✅ FOUND REDIRECT RESULT!');
-                console.log('User email:', result.user.email);
-                console.log('User UID:', result.user.uid);
-                
-                // NOW clear caches after successful auth
-                console.log('🧹 Clearing caches AFTER successful auth...');
-                if ('serviceWorker' in navigator && 'caches' in window) {
-                    try {
-                        const cacheNames = await caches.keys();
-                        await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                        console.log('✅ Cleared all caches after auth');
-                    } catch (error) {
-                        console.log('❌ Cache clearing failed:', error);
-                    }
-                }
-                
-                alert('Auth successful via redirect result! User: ' + result.user.email);
-                return;
-            } else if (result && !result.user) {
-                console.log('🚨 REDIRECT RESULT EXISTS BUT NO USER!');
-                console.log('Result object:', result);
-                console.log('This usually means the OAuth flow completed but user was rejected');
-            } else {
-                console.log('ℹ️ No redirect result');
-                if (result === null) {
-                    console.log('   - result is explicitly null (normal for non-redirect page loads)');
-                } else if (result === undefined) {
-                    console.log('   - result is undefined');
-                } else {
-                    console.log('   - result exists but no user:', result);
-                }
-            }
-        } catch (error) {
-            console.log('❌ getRedirectResult error:', error);
-            console.log('Error code:', error.code);
-            console.log('Error message:', error.message);
-            
-            // Check for specific Firebase auth error codes
-            if (error.code === 'auth/unauthorized-domain') {
-                console.log('🚨 DOMAIN NOT AUTHORIZED - Add your domain to Firebase authorized domains');
-            } else if (error.code === 'auth/operation-not-allowed') {
-                console.log('🚨 GOOGLE SIGN-IN NOT ENABLED - Enable Google provider in Firebase');
-            } else if (error.code === 'auth/invalid-api-key') {
-                console.log('🚨 INVALID API KEY - Check your Firebase config');
-            }
-        }
-        
-        console.log('=== STEP 3: No redirect result found, now clearing caches ===');
-        // Only clear caches if we didn't find a redirect result
-        if ('serviceWorker' in navigator && 'caches' in window) {
-            try {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                console.log('✅ Cleared all caches');
-            } catch (error) {
-                console.log('❌ Cache clearing failed:', error);
-            }
-        }
-        
-        console.log('=== STEP 4: Checking current user ===');
+        console.log('=== STEP 3: Checking current user ===');
         const currentUser = auth.currentUser;
         console.log('auth.currentUser:', currentUser);
         
         if (currentUser) {
             console.log('✅ Current user found:', currentUser.email);
-            alert('Already signed in: ' + currentUser.email);
-            return;
+            // Trigger the auth state change manually if needed
+            console.log('Current user exists, but auth state change should handle this');
         }
         
-        console.log('=== STEP 5: No user found, showing login screen ===');
+        console.log('=== STEP 4: No user found, showing login screen ===');
         authContainer.classList.remove('hidden');
         appContainer.classList.add('hidden');
     }

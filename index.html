@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-correctingModular-functions -->
+<!-- Version: v2025-09-29-Viewer Logic Module -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -76,7 +76,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-09-28-Correcting Modular Functions</p>
+                <p class="text-xs text-gray-500">v2025-09-28-Creating viewer-logic module</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
@@ -185,6 +185,7 @@
     import { getInstructionCategory } from "./js/utils.js";
     import { generateGlossary, generateInstructions, generatePatternTheme } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
+    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple } from "./js/viewer-logic.js";
     
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -1057,7 +1058,11 @@
             patternContentEl.innerHTML = '';
             generateGlossary(PATTERN_DATA);
             generateInstructions(PATTERN_DATA);
-            loadProgress();
+            
+            // Load saved progress
+            currentStep = loadProgressSimple(progressKey);
+            // Note: updateDisplay would need PATTERN_DATA, but let's keep it simple for now
+            // We'll improve this when we integrate the full viewer logic
             
             footerControls.classList.remove('hidden');
         } catch (error) {

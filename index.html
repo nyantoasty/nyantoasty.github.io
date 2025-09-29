@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-cache-after-auth -->
+<!-- Version: v2025-09-29-simple-auth -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -182,6 +182,9 @@
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- CONFIG & STATE ---
+    // Allowed email domains (empty array = allow all)
+    const ALLOWED_DOMAINS = []; // e.g., ['gmail.com', 'yourdomain.com'] or [] for all
+    
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
     apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
@@ -445,19 +448,18 @@
                 console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
                 console.log('User email:', user.email);
                 console.log('User UID:', user.uid);
-                console.log('User displayName:', user.displayName);
                 
-                // TEMPORARILY SKIP FIRESTORE CHECK - just show the UID
-                console.log('🎯 === YOUR USER ID FOR FIRESTORE ===');
-                console.log(`UID: ${user.uid}`);
-                console.log(`Email: ${user.email}`);
-                console.log('🎯 === COPY THIS UID TO ADD TO FIRESTORE ===');
+                // Check if user's email domain is allowed (if restrictions are set)
+                if (ALLOWED_DOMAINS.length > 0) {
+                    const userDomain = user.email.split('@')[1];
+                    if (!ALLOWED_DOMAINS.includes(userDomain)) {
+                        console.log(`❌ Email domain ${userDomain} not allowed`);
+                        showNotAuthorized(user);
+                        return;
+                    }
+                }
                 
-                // Show alert with UID so you can copy it
-                alert(`SUCCESS! Your UID is: ${user.uid}\n\nEmail: ${user.email}\n\nCopy this UID and add it to your Firestore allowedUsers collection!`);
-                
-                // For now, just allow anyone who successfully authenticates
-                console.log('🎉 Allowing access for debugging - showing application');
+                console.log('🎉 User authenticated and authorized - showing application');
                 showApplication(user);
                 
             } else {

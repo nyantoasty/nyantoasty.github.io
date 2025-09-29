@@ -447,38 +447,19 @@
                 console.log('User UID:', user.uid);
                 console.log('User displayName:', user.displayName);
                 
-                // Check if user is authorized in Firestore
-                console.log('🔍 Checking user authorization in Firestore...');
-                try {
-                    const userDocRef = doc(db, "allowedUsers", user.uid);
-                    console.log('Looking for document:', `allowedUsers/${user.uid}`);
-                    
-                    const userDocSnap = await getDoc(userDocRef);
-                    console.log('Document exists:', userDocSnap.exists());
-                    
-                    if (userDocSnap.exists()) {
-                        const userData = userDocSnap.data();
-                        console.log('✅ User is authorized!');
-                        console.log('User data from Firestore:', userData);
-                        showApplication(user);
-                    } else {
-                        console.log('❌ User not found in allowedUsers collection');
-                        console.log('User email:', user.email);
-                        console.log('User UID:', user.uid);
-                        console.log('You need to add this user to the allowedUsers collection in Firestore');
-                        showNotAuthorized(user);
-                    }
-                } catch (error) {
-                    console.error('🚨 Error checking user authorization:', error);
-                    console.log('Error code:', error.code);
-                    console.log('Error message:', error.message);
-                    
-                    // If there's an error accessing Firestore, show a helpful message
-                    alert(`Error checking authorization: ${error.message}\n\nThis might mean:\n1. Firestore isn't set up\n2. Security rules are too restrictive\n3. Network issue`);
-                    
-                    // For now, show unauthorized screen
-                    showNotAuthorized(user);
-                }
+                // TEMPORARILY SKIP FIRESTORE CHECK - just show the UID
+                console.log('🎯 === YOUR USER ID FOR FIRESTORE ===');
+                console.log(`UID: ${user.uid}`);
+                console.log(`Email: ${user.email}`);
+                console.log('🎯 === COPY THIS UID TO ADD TO FIRESTORE ===');
+                
+                // Show alert with UID so you can copy it
+                alert(`SUCCESS! Your UID is: ${user.uid}\n\nEmail: ${user.email}\n\nCopy this UID and add it to your Firestore allowedUsers collection!`);
+                
+                // For now, just allow anyone who successfully authenticates
+                console.log('🎉 Allowing access for debugging - showing application');
+                showApplication(user);
+                
             } else {
                 console.log('Auth state change: no user - showing login screen');
                 authContainer.classList.remove('hidden');

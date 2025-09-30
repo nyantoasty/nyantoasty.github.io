@@ -59,7 +59,8 @@ export function addTooltips(text, PATTERN_DATA) {
     return text.replace(regex, (match) => {
         const term = PATTERN_DATA.glossary[match];
         if(!term) return match;
-        return `<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;
+        const category = getInstructionCategory(match, PATTERN_DATA);
+        return `<span class="${category} stitch-clickable relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1" data-stitch="${match}" title="${term.name}: ${term.description}">${match}<span class="tooltip mono">${term.name}</span></span>`;
     });
 }
 

@@ -33,6 +33,15 @@
         .tab-button.active { background-color: #8b5cf6; color: white; }
         .tab-button:not(.active):hover { background-color: #4a5568; }
         .code-block { background-color: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: 'Roboto Mono', monospace; font-size: 0.875rem; line-height: 1.6; color: #d1d5db; }
+        .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
+        .stitch-clickable:hover { opacity: 0.8; }
+        .bobble { color: #fbbf24 !important; font-weight: 600; }
+        .increase { color: #86efac !important; font-weight: 500; }
+        .decrease { color: #f87171 !important; font-weight: 500; }
+        .main { color: #93c5fd !important; font-weight: 400; }
+        .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
+        .stitch-clickable:hover { opacity: 0.8; }
+        .bobble { color: #fbbf24; font-weight: 600; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
@@ -176,6 +185,15 @@
             </div>
         </div>
     </footer>
+
+    <!-- Stitch Definition Modal -->
+    <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[70] hidden">
+        <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative">
+            <button id="close-stitch-modal" class="absolute top-2 right-3 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-white"></h3>
+            <div id="stitch-modal-definition" class="text-gray-300 whitespace-pre-line"></div>
+        </div>
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1083,6 +1101,51 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     patternTypeSelector.addEventListener('click',(e)=>{if(e.target.tagName==='BUTTON'){const type=e.target.dataset.type;patternTypeSelector.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));e.target.classList.add('active');if(type==='image'){imageInstructions.classList.remove('hidden');}else{imageInstructions.classList.add('hidden');}}});
     patternInput.addEventListener('input',updatePrompt);
     copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
+
+    // --- STITCH MODAL FUNCTIONALITY ---
+    const stitchModal = document.getElementById('stitch-modal');
+    const stitchModalTitle = document.getElementById('stitch-modal-title');
+    const stitchModalDefinition = document.getElementById('stitch-modal-definition');
+    const closeStitchModal = document.getElementById('close-stitch-modal');
+    
+    function showStitchDefinition(stitchCode) {
+        if (!PATTERN_DATA || !PATTERN_DATA.glossary || !PATTERN_DATA.glossary[stitchCode]) {
+            console.warn('No definition found for stitch:', stitchCode);
+            return;
+        }
+        
+        const glossaryEntry = PATTERN_DATA.glossary[stitchCode];
+        stitchModalTitle.textContent = `${glossaryEntry.name} (${stitchCode})`;
+        stitchModalDefinition.textContent = glossaryEntry.description;
+        stitchModal.classList.remove('hidden');
+    }
+    
+    function hideStitchDefinition() {
+        stitchModal.classList.add('hidden');
+    }
+    
+    // Event listeners for stitch interactions
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('stitch-clickable')) {
+            e.preventDefault();
+            const stitchCode = e.target.dataset.stitch;
+            showStitchDefinition(stitchCode);
+        }
+    });
+    
+    closeStitchModal.addEventListener('click', hideStitchDefinition);
+    stitchModal.addEventListener('click', (e) => {
+        if (e.target === stitchModal) {
+            hideStitchDefinition();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !stitchModal.classList.contains('hidden')) {
+            hideStitchDefinition();
+        }
+    });
 
     // --- PWA Service Worker ---
     // Temporarily disabled to fix caching issues during development

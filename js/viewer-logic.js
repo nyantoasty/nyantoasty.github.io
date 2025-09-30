@@ -33,19 +33,32 @@ export function updateDisplay(currentStep, shouldScroll = true) {
             let stepInfo = '';
             if (instruction.stepType) stepInfo += instruction.stepType + ' ';
             if (instruction.side) stepInfo += `(${instruction.side.toUpperCase()})`;
-            stepTypeEl.textContent = stepInfo.trim();
+            stepTypeEl.textContent = stepInfo.trim() || 'ROW';
         } else {
-            stepTypeEl.textContent = '';
+            stepTypeEl.textContent = 'ROW';
         }
     }
     
-    // Highlight current step in pattern
+    // Highlight current step in pattern - Enhanced highlighting
     const allSteps = document.querySelectorAll('[data-step], [data-step-start]');
-    allSteps.forEach(el => el.classList.remove('current-step'));
+    allSteps.forEach(el => {
+        el.classList.remove('current-step');
+        el.style.backgroundColor = '';
+        el.style.padding = '';
+        el.style.margin = '';
+        el.style.borderRadius = '';
+    });
     
     const currentStepEl = findStepElement(currentStep);
     if (currentStepEl) {
         currentStepEl.classList.add('current-step');
+        // Enhanced highlighting with better visibility
+        currentStepEl.style.backgroundColor = 'rgba(139, 92, 246, 0.3)';
+        currentStepEl.style.padding = '0.75rem';
+        currentStepEl.style.margin = '0.25rem 0';
+        currentStepEl.style.borderRadius = '0.5rem';
+        currentStepEl.style.border = '2px solid rgba(139, 92, 246, 0.5)';
+        
         if (shouldScroll) {
             currentStepEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }

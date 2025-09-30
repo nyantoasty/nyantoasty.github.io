@@ -279,8 +279,8 @@
     </footer>
 
     <!-- Stitch Definition Modal -->
-    <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[70] hidden">
-        <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content">
+    <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 pt-16 z-[70] hidden">
+        <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content mx-4">
             <button id="close-stitch-modal" class="absolute top-2 right-3 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-white"></h3>
             <div id="stitch-modal-definition" class="text-gray-300 whitespace-pre-line"></div>
@@ -889,45 +889,106 @@
             setupInteractiveFeatures();
         }
         function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
-        function getStitchCount(stepNumber){
-            if(stitchCountsCache[stepNumber])return stitchCountsCache[stepNumber];
+        
+        function findInstructionForStep(stepNumber) {
+            if (!PATTERN_DATA || !PATTERN_DATA.steps) return null;
             
-            const instr=findInstructionForStep(stepNumber);
-            
-            // Try to get direct stitch count from instruction
-            if(instr && instr.stitchCount){
-                stitchCountsCache[stepNumber]=instr.stitchCount;
-                return instr.stitchCount;
+            // First check for exact step match
+            const exactStep = PATTERN_DATA.steps.find(step => step.step === stepNumber);
+            if (exactStep) {
+                return exactStep;
             }
             
-            // Calculate based on previous step and change
-            if(stepNumber>1){
-                const prevCount=getStitchCount(stepNumber-1);
-                let currentIncrease = 0;
-                
-                // Parse stitch count change
-                if(instr && instr.stitchCountChange) {
-                    if(typeof instr.stitchCountChange === 'string') {
-                        if(instr.stitchCountChange.startsWith('+')) {
-                            currentIncrease = parseInt(instr.stitchCountChange.substring(1), 10) || 0;
-                        } else if(instr.stitchCountChange.startsWith('-')) {
-                            currentIncrease = -parseInt(instr.stitchCountChange.substring(1), 10) || 0;
-                        } else if(instr.stitchCountChange === '0') {
-                            currentIncrease = 0;
-                        }
-                    } else if(typeof instr.stitchCountChange === 'number') {
-                        currentIncrease = instr.stitchCountChange;
-                    }
+            // Check stepRange entries
+            const rangeStep = PATTERN_DATA.steps.find(step => 
+                step.stepRange && 
+                stepNumber >= step.stepRange[0] && 
+                stepNumber <= step.stepRange[1]
+            );
+            
+            return rangeStep || null;
+        }
+        
+        function findStepElement(stepNumber) {
+            return document.querySelector(`[data-step="${stepNumber}"]`);
+        }
+        
+        function saveProgress() {
+            if (progressKey && currentStep) {
+                localStorage.setItem(progressKey, currentStep.toString());
+            }
+        }
+        
+        function loadProgress() {
+            if (progressKey) {
+                const saved = localStorage.getItem(progressKey);
+                if (saved) {
+                    currentStep = parseInt(saved, 10) || 1;
+                    document.getElementById('current-step-input').value = currentStep;
                 }
+            }
+        }
+        
+        function updateDisplay() {
+            const stepInput = document.getElementById('current-step-input');
+            if (stepInput) {
+                stepInput.value = currentStep;
+            }
+        }
+        
+        function scrollToCurrentRow() {
+            const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
+            if (currentRowElement) {
+                // Remove previous highlights
+                document.querySelectorAll('.current-step').forEach(el => {
+                    el.classList.remove('current-step');
+                });
                 
-                const count = prevCount + currentIncrease;
+                // Add current step highlight
+                currentRowElement.classList.add('current-step');
+                
+                // Scroll to the row
+                currentRowElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        }
+        function getStitchCount(stepNumber){
+            if (!PATTERN_DATA || !PATTERN_DATA.steps) return 3;
+            
+            if(stitchCountsCache[stepNumber]) return stitchCountsCache[stepNumber];
+            
+            const instr = findInstructionForStep(stepNumber);
+            
+            // Try to get endingStitchCount from current schema
+            if(instr && instr.endingStitchCount){
+                stitchCountsCache[stepNumber] = instr.endingStitchCount;
+                return instr.endingStitchCount;
+            }
+            
+            // For step ranges, calculate based on the stepRange template
+            if(instr && instr.stepRange && instr.startingStitchCount) {
+                // This is a template step, calculate for the specific step number
+                const stepOffset = stepNumber - instr.stepRange[0];
+                const stitchCountChange = instr.stitchCountChange || 0;
+                const count = instr.startingStitchCount + (stepOffset * stitchCountChange);
                 stitchCountsCache[stepNumber] = count;
                 return count;
             }
             
-            // Fallback to first instruction
-            const firstInstr = PATTERN_DATA.instructions.find(i => i.step === 1);
-            return firstInstr?.stitchCount || 11; // Default starting count for this pattern
+            // Calculate based on previous step
+            if(stepNumber > 1){
+                const prevCount = getStitchCount(stepNumber - 1);
+                const stitchCountChange = instr?.stitchCountChange || 0;
+                const count = prevCount + stitchCountChange;
+                stitchCountsCache[stepNumber] = count;
+                return count;
+            }
+            
+            // Fallback to first step's starting count or default
+            const firstStep = PATTERN_DATA.steps[0];
+            return firstStep?.startingStitchCount || firstStep?.endingStitchCount || 3;
         }
         function expandPattern(patternArray){const expanded=[];patternArray.forEach(p=>{const match=p.match(/^([a-zA-Z_]+)(\d+)$/);if(match){const instruction=match[1];const count=parseInt(match[2],10);for(let i=0;i<count;i++)expanded.push(instruction);}else{expanded.push(p);}});return expanded;}
         function generateDynamicChunks(stepNumber){
@@ -1211,8 +1272,11 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
 
     // --- INTERACTIVE FEATURES SETUP ---
     function setupInteractiveFeatures() {
+        console.log('🔧 Setting up interactive features...');
+        
         // Set up click handlers for color-coded stitches
         const stitchElements = document.querySelectorAll('.stitch-clickable');
+        console.log('Found', stitchElements.length, 'clickable stitches');
         stitchElements.forEach(element => {
             element.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1232,6 +1296,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         
         // Populate sidebar glossary
         populateSidebarGlossary();
+        
+        console.log('✅ Interactive features setup complete');
     }
     
     function setupStitchFinder() {
@@ -1287,28 +1353,12 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         
-        function scrollToCurrentRow() {
-            const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
-            if (currentRowElement) {
-                // Remove previous highlights
-                document.querySelectorAll('.current-step').forEach(el => {
-                    el.classList.remove('current-step');
-                });
-                
-                // Add current step highlight
-                currentRowElement.classList.add('current-step');
-                
-                // Scroll to the row
-                currentRowElement.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            }
-        }
-        
         if (stepInput) {
             stepInput.addEventListener('change', () => {
                 currentStep = parseInt(stepInput.value) || 1;
+                if (currentStep < 1) currentStep = 1;
+                if (currentStep > maxSteps) currentStep = maxSteps;
+                stepInput.value = currentStep;
                 scrollToCurrentRow();
                 saveProgress();
                 updateDisplay();
@@ -1384,24 +1434,43 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     
     // --- PATTERN TOOLS SIDEBAR FUNCTIONALITY ---
     function setupPatternSidebar() {
+        console.log('🔧 Setting up pattern sidebar...');
+        
         const sidebar = document.getElementById('pattern-sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const sidebarClose = document.getElementById('sidebar-close');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const returnToRowBtn = document.getElementById('return-to-row');
         
+        console.log('Sidebar elements found:', {
+            sidebar: !!sidebar,
+            sidebarToggle: !!sidebarToggle,
+            sidebarClose: !!sidebarClose,
+            sidebarOverlay: !!sidebarOverlay,
+            returnToRowBtn: !!returnToRowBtn
+        });
+        
         function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('hidden');
+            console.log('🔄 Toggling sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('hidden');
+            }
         }
         
         function closeSidebar() {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.add('hidden');
+            console.log('❌ Closing sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.add('hidden');
+            }
         }
         
         if (sidebarToggle) {
+            console.log('✅ Adding click handler to sidebar toggle');
             sidebarToggle.addEventListener('click', toggleSidebar);
+        } else {
+            console.error('❌ Sidebar toggle button not found!');
         }
         
         if (sidebarClose) {
@@ -1433,6 +1502,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                 }
             });
         }
+        
+        console.log('✅ Pattern sidebar setup complete');
     }
     
     function populateSidebarGlossary() {

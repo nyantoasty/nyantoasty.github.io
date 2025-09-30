@@ -726,6 +726,16 @@
             appNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
             
+            // Analytics: Track section navigation
+            if (auth.currentUser) {
+                logStitchWitchQuery({
+                    type: 'navigation',
+                    action: 'section_switch',
+                    section: view,
+                    patternId: PATTERN_DATA?.id || 'unknown'
+                });
+            }
+            
             if (view === 'viewer') {
                 viewerSection.classList.remove('hidden');
                 generatorSection.classList.add('hidden');
@@ -1112,6 +1122,17 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         if (!PATTERN_DATA || !PATTERN_DATA.glossary || !PATTERN_DATA.glossary[stitchCode]) {
             console.warn('No definition found for stitch:', stitchCode);
             return;
+        }
+        
+        // Analytics: Track stitch definition views
+        if (auth.currentUser) {
+            logStitchWitchQuery({
+                type: 'stitch_finder',
+                action: 'view_definition',
+                stitchCode: stitchCode,
+                rowNumber: currentStep,
+                patternId: PATTERN_DATA?.id || 'unknown'
+            });
         }
         
         const glossaryEntry = PATTERN_DATA.glossary[stitchCode];

@@ -224,6 +224,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    
+    // Make db globally available for analytics
+    window.db = db;
+    
     let PATTERN_DATA = null;
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
     let isStitchLocatorMode = false;
@@ -735,7 +739,7 @@
                     action: 'section_switch',
                     section: view,
                     patternId: PATTERN_DATA?.id || 'unknown'
-                });
+                }, db);
             }
             
             if (view === 'viewer') {

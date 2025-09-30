@@ -8,10 +8,16 @@ export function getInstructionCategory(instruction, PATTERN_DATA) {
         return 'main';
     }
     
-    // Defensive check: ensure PATTERN_DATA is available
+    // If PATTERN_DATA is not available, use basic categorization
     if (!PATTERN_DATA) {
-        console.warn('getInstructionCategory called before PATTERN_DATA is loaded');
-        return 'main';
+        // Basic categorization without pattern data
+        const basicMap = {
+            'k': 'main', 'p': 'main',
+            'kfb': 'increase', 'yo': 'increase', 'YO': 'increase',
+            'k2tog': 'decrease', 'ssk': 'decrease', 'BO1': 'decrease',
+            'MB3': 'bobble', 'MB5': 'bobble', 'MB7': 'bobble', 'MB9': 'bobble'
+        };
+        return basicMap[instruction] || 'main';
     }
     
     // First check if the pattern defines custom categories

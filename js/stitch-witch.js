@@ -1,8 +1,18 @@
 // stitch-witch.js - Analytics and user interaction tracking
 // Version: v2025-09-29-modular
 
-export async function logStitchWitchQuery(queryData, db) {
+export async function logStitchWitchQuery(queryData, db = null) {
     try {
+        // If db is not provided, try to get it from global context
+        if (!db && typeof window !== 'undefined' && window.db) {
+            db = window.db;
+        }
+        
+        if (!db) {
+            console.warn('No Firestore database instance available for logging');
+            return null;
+        }
+        
         // Import Firestore functions
         const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
         

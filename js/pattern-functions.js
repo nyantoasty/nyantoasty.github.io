@@ -365,7 +365,7 @@ export function generateInstructionsForStep(stepNumber, PATTERN_DATA) {
             
             processedInstructions.forEach(instr => {
                 const glossaryEntry = PATTERN_DATA.glossary[instr.stitch];
-                const category = getInstructionCategory(instr.stitch);
+                const category = getInstructionCategory(instr.stitch, PATTERN_DATA);
                 
                 formattedInstructions.push({
                     text: `${instr.stitch}${instr.count > 1 ? instr.count : ''}`,
@@ -437,7 +437,7 @@ export function formatInstructionForDisplay(instruction, PATTERN_DATA) {
         
         // Check if this part matches a glossary term
         if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[trimmedPart]) {
-            const category = getInstructionCategory(trimmedPart);
+            const category = getInstructionCategory(trimmedPart, PATTERN_DATA);
             return `<span class="${category}" title="${PATTERN_DATA.glossary[trimmedPart].description}">${trimmedPart}</span>`;
         }
         
@@ -446,7 +446,7 @@ export function formatInstructionForDisplay(instruction, PATTERN_DATA) {
         if (stitchMatch) {
             const [, stitchCode, count] = stitchMatch;
             if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[stitchCode]) {
-                const category = getInstructionCategory(stitchCode);
+                const category = getInstructionCategory(stitchCode, PATTERN_DATA);
                 const title = PATTERN_DATA.glossary[stitchCode].description;
                 return `<span class="${category}" title="${title}">${trimmedPart}</span>`;
             }
@@ -470,7 +470,7 @@ export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
         } else if (chunk.type === "dynamic") {
             // Display dynamic chunk with calculation hint
             const instrText = processedInstructions.map(instr => {
-                const category = getInstructionCategory(instr.stitch);
+                const category = getInstructionCategory(instr.stitch, PATTERN_DATA);
                 const displayText = instr.count > 1 ? `${instr.stitch}${instr.count}` : instr.stitch;
                 return `<span class="${category}">${displayText}</span>`;
             }).join(', ');
@@ -478,7 +478,7 @@ export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
         } else {
             // Static chunk
             return processedInstructions.map(instr => {
-                const category = getInstructionCategory(instr.stitch);
+                const category = getInstructionCategory(instr.stitch, PATTERN_DATA);
                 const displayText = instr.count > 1 ? `${instr.stitch}${instr.count}` : instr.stitch;
                 return `<span class="${category}">${displayText}</span>`;
             }).join(', ');

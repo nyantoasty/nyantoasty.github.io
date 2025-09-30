@@ -44,9 +44,99 @@
         .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
         .stitch-clickable:hover { opacity: 0.8; }
         .bobble { color: #fbbf24; font-weight: 600; }
+        
+        /* Sidebar Styles */
+        #pattern-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #pattern-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        /* Better modal positioning */
+        .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
+
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="fixed top-4 left-4 z-[70] bg-gray-800 text-white p-3 rounded-full shadow-lg border border-gray-700 hover:bg-gray-700 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+
+    <!-- Pattern Tools Sidebar -->
+    <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-gray-800 border-r border-gray-700 p-6 z-[60] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-white">Pattern Tools</h2>
+            <button id="sidebar-close" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+        </div>
+        
+        <div class="space-y-6">
+            <!-- Return to Current Row -->
+            <div>
+                <button id="return-to-row" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    Return to Current Row
+                </button>
+            </div>
+
+            <!-- Jump to Section -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-300 mb-3">Jump to Section</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="sidebar-links">
+                        <a href="#" data-section="section1" class="block text-blue-400 hover:text-blue-300 py-1">Section 1: Increasing</a>
+                        <a href="#" data-section="section2" class="block text-blue-400 hover:text-blue-300 py-1">Section 2: Decreasing</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Key -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-300 mb-3">Color Key</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="increase font-semibold">kfb, YO:</span>
+                        <span class="text-gray-400">Increase</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="decrease font-semibold">k2tog, BO1:</span>
+                        <span class="text-gray-400">Decrease</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="bobble font-semibold">MB3/5/7/9:</span>
+                        <span class="text-gray-400">Make Bobble</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials & Notes -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-300 mb-3">Materials & Notes</h3>
+                <div class="text-sm text-gray-400 space-y-1">
+                    <div>Yarn: Pattern specific</div>
+                    <div>Needles: As specified</div>
+                    <div>Gauge: Pattern specific</div>
+                </div>
+            </div>
+
+            <!-- Stitch Glossary -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-300 mb-3">Stitch Glossary</h3>
+                <div id="sidebar-glossary" class="text-sm space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <!-- Standalone Generator: Always accessible -->
     <div id="standalone-generator" class="hidden max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -123,16 +213,6 @@
                 </div>
             </header>
             <main id="pattern-content" class="space-y-8"></main>
-            <!-- Interactive Stitch Sidebar -->
-            <div id="stitch-sidebar" class="fixed top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 border border-violet-500 rounded-lg shadow-xl p-4 w-80 max-h-96 overflow-y-auto z-50 hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="sidebar-title" class="text-lg font-bold text-white">Stitch Definition</h3>
-                    <button id="close-sidebar" class="text-gray-400 hover:text-white text-xl">&times;</button>
-                </div>
-                <div id="sidebar-content" class="text-gray-300">
-                    <!-- Stitch details will be populated here -->
-                </div>
-            </div>
             <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
                 <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
                 <div id="popup-content"></div>
@@ -200,7 +280,7 @@
 
     <!-- Stitch Definition Modal -->
     <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[70] hidden">
-        <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative">
+        <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content">
             <button id="close-stitch-modal" class="absolute top-2 right-3 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-white"></h3>
             <div id="stitch-modal-definition" class="text-gray-300 whitespace-pre-line"></div>
@@ -1146,6 +1226,12 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         
         // Set up row navigation with auto-scroll
         setupRowNavigation();
+        
+        // Set up pattern tools sidebar
+        setupPatternSidebar();
+        
+        // Populate sidebar glossary
+        populateSidebarGlossary();
     }
     
     function setupStitchFinder() {
@@ -1292,87 +1378,92 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         if (e.target.classList.contains('stitch-clickable')) {
             e.preventDefault();
             const stitchCode = e.target.dataset.stitch || e.target.textContent.trim();
-            showStitchInSidebar(stitchCode);
+            showStitchDefinition(stitchCode);
         }
     });
     
-    // --- STITCH SIDEBAR FUNCTIONALITY ---
-    const stitchSidebar = document.getElementById('stitch-sidebar');
-    const sidebarTitle = document.getElementById('sidebar-title');
-    const sidebarContent = document.getElementById('sidebar-content');
-    const closeSidebar = document.getElementById('close-sidebar');
+    // --- PATTERN TOOLS SIDEBAR FUNCTIONALITY ---
+    function setupPatternSidebar() {
+        const sidebar = document.getElementById('pattern-sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const returnToRowBtn = document.getElementById('return-to-row');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', toggleSidebar);
+        }
+        
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', closeSidebar);
+        }
+        
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+        
+        if (returnToRowBtn) {
+            returnToRowBtn.addEventListener('click', () => {
+                scrollToCurrentRow();
+                closeSidebar();
+            });
+        }
+        
+        // Handle section navigation
+        const sidebarLinks = document.querySelector('.sidebar-links');
+        if (sidebarLinks) {
+            sidebarLinks.addEventListener('click', (e) => {
+                if (e.target.dataset.section) {
+                    e.preventDefault();
+                    const sectionElement = document.getElementById(e.target.dataset.section);
+                    if (sectionElement) {
+                        sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        closeSidebar();
+                    }
+                }
+            });
+        }
+    }
     
-    function showStitchInSidebar(stitchCode) {
-        if (!PATTERN_DATA || !PATTERN_DATA.glossary || !PATTERN_DATA.glossary[stitchCode]) {
-            console.warn('No definition found for stitch:', stitchCode);
+    function populateSidebarGlossary() {
+        const sidebarGlossary = document.getElementById('sidebar-glossary');
+        if (!sidebarGlossary || !PATTERN_DATA || !PATTERN_DATA.glossary) {
             return;
         }
         
-        const glossaryEntry = PATTERN_DATA.glossary[stitchCode];
-        const category = getInstructionCategory(stitchCode, PATTERN_DATA);
-        
-        sidebarTitle.textContent = `${glossaryEntry.name} (${stitchCode})`;
-        
-        // Get stitch context
-        const context = getStitchContext(stitchCode, currentStep, PATTERN_DATA);
-        
-        sidebarContent.innerHTML = `
-            <div class="space-y-4">
-                <div class="p-3 bg-gray-700 rounded-lg">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="${category} px-2 py-1 rounded text-sm font-bold">${stitchCode}</span>
-                        <span class="text-gray-400 text-sm">(${category})</span>
+        let glossaryHTML = '';
+        for (const [key, item] of Object.entries(PATTERN_DATA.glossary)) {
+            if (item && item.name) {
+                const category = getInstructionCategory(key, PATTERN_DATA);
+                glossaryHTML += `
+                    <div class="cursor-pointer hover:bg-gray-700 p-2 rounded" data-stitch="${key}">
+                        <span class="${category} font-semibold">${key}</span> - ${item.name}
                     </div>
-                    <p class="text-sm">${glossaryEntry.description}</p>
-                </div>
-                
-                ${context ? `
-                <div class="p-3 bg-gray-900 rounded-lg">
-                    <h4 class="font-semibold mb-2 text-violet-300">Context in Row ${currentStep}</h4>
-                    <div class="text-sm space-y-1">
-                        ${context.before ? `<div><span class="text-gray-500">Before:</span> ${context.before}</div>` : ''}
-                        <div><span class="text-gray-500">Current:</span> <span class="${category} font-bold">${stitchCode}</span></div>
-                        ${context.after ? `<div><span class="text-gray-500">After:</span> ${context.after}</div>` : ''}
-                    </div>
-                </div>
-                ` : ''}
-                
-                ${glossaryEntry.stitchIndex ? `
-                <div class="text-xs text-gray-400">
-                    Stitch index: ${glossaryEntry.stitchIndex}
-                </div>
-                ` : ''}
-            </div>
-        `;
-        
-        stitchSidebar.classList.remove('hidden');
-        
-        // Analytics: Track sidebar usage
-        if (auth.currentUser && window.db) {
-            logStitchWitchQuery({
-                type: 'stitch_finder',
-                action: 'view_sidebar',
-                stitchCode: stitchCode,
-                rowNumber: currentStep,
-                patternId: PATTERN_DATA?.id || 'unknown'
-            }, window.db);
+                `;
+            }
         }
+        
+        sidebarGlossary.innerHTML = glossaryHTML;
+        
+        // Add click handlers for sidebar glossary items
+        sidebarGlossary.addEventListener('click', (e) => {
+            const stitchDiv = e.target.closest('[data-stitch]');
+            if (stitchDiv) {
+                const stitchCode = stitchDiv.dataset.stitch;
+                showStitchDefinition(stitchCode);
+            }
+        });
     }
-    
-    function hideSidebar() {
-        stitchSidebar.classList.add('hidden');
-    }
-    
-    if (closeSidebar) {
-        closeSidebar.addEventListener('click', hideSidebar);
-    }
-    
-    // Close sidebar when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!stitchSidebar.contains(e.target) && !e.target.classList.contains('stitch-clickable')) {
-            hideSidebar();
-        }
-    });
     
     closeStitchModal.addEventListener('click', hideStitchDefinition);
     stitchModal.addEventListener('click', (e) => {

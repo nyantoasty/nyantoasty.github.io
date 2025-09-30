@@ -1,0 +1,627 @@
+Sea Witch Tentacle Scarf
+by Jay Edwards
+https://www.ravelry.com/patterns/library/sea-witch-tentacle-spiral-scarf
+
+
+Materials & Notes
+Yarn: Red Heart Gemstone, 1 ball
+Weight: Bulky (5)
+Needles: US 8 (5.0 mm)
+Gauge: 18 sts, 24 rows = 4in/10cm
+
+For the bump: I got rid of that by gently getting the scarf damp (only a little) to make it easier to work with, then stretching and pinning it out until I was satisfied with the shape. As I mainly used acrylic yarns for mine, I then applied steam. If you’re using wool, you can steam or use a wet blocking technique. But yeah, that gets rid of the bump in the middle, and you can make the ends a bit more spiral-y if desired.
+
+For the bobbles: If you’re steam blocking, shape the bobble into a sucker and apply steam. Wait until it’s cooled down just enough to touch, and adjust the shape as needed. Apply steam again. I did my bobbles this way and they’ve stayed quite well.
+Alternatively, you can use a marble to keep the centers in if you have some around, as well as some kind of support around the edge of the bobble to keep it from flattening too much. This method comes from the project notes of someone who made a scarf, and would also work well for wet blocking, though that would require more marbles and/or supports.
+
+
+
+Stitch Glossary
+Knit Front and Back (kfb): Knit into the front then back of the same stitch. This is a one-stitch increase.
+Knit 2 Together (k2tog): Insert the righthand needle into the first two stitches on the lefthand needle from left to right, then wrap the yarn and pull through as with a normal knit stitch. This is a one-stitch decrease.
+Yarn Over (YO): Bring yarn to the front as if to purl. Wrap the yarn over the righthand needle to the back, then knit. This creates an extra stitch and a small decorative hole.
+Bind Off 1 (BO1): Knit 2 stitches, then slip the first stitch over the second stitch and off the needle. This binds off one stitch.
+Make Bobble 3 (MB3):
+k, yo, k into same st, drop from left (3 loops on needle).
+Turn, p3.
+Turn, k3.
+Bind off until 1 loop on needle.
+Make Bobble 5 (MB5):
+[k, yo] twice, k into same st, drop from left (5 loops on needle).
+Turn, p5.
+Turn, k5.
+Turn, p5.
+Turn, k5.
+Bind off until 1 loop on needle.
+Make Bobble 7 (MB7):
+[k, yo] three times, k into same st, drop from left (7 loops on needle).
+Turn, p7.
+Turn, k7.
+Turn, p7.
+Turn, k7.
+Bind off until 1 loop on needle.
+Make Bobble 9 (MB9):
+[k, yo] four times, k into same st, drop from left (9 loops on needle).
+Turn, p9.
+Turn, k9.
+Turn, p9.
+Turn, k9.
+Turn, p9.
+Turn, k9.
+Bind off until 1 loop on needle.
+
+
+
+
+Section 1: Increasing
+Set-Up Rows
+Cast on 3 stitches.
+Row 1: k1, kfb, k1 (4 sts)
+
+Row 2: BO1, kfb, k1 (4 sts)
+
+Row 3: k2, kfb, k1 (5 sts)
+
+Row 4: BO1, kfb, k2 (5 sts)
+
+Row 5: k2, kfb, k2 (6 sts)
+
+Row 6: BO1, k1, kfb, k2 (6 sts)
+
+Row 7: k2, kfb, k3 (7 sts)
+
+Row 8: BO1, k2, kfb, k2 (7 sts)
+
+Row 9: k2, kfb, k4 (8 sts)
+
+Row 10: BO1, k3, kfb, k2 (8 sts)
+
+Row 11: k2, kfb, k5 (9 sts)
+
+Row 12: BO1, k4, kfb, k2 (9 sts)
+
+3 Stitch Bobbles
+Row 13: k2, kfb, k1, MB3, k4 (10 sts)
+
+Row 14: BO1, k5, kfb, k2 (10 sts)
+
+Row 15: k2, kfb, k7 (11 sts)
+
+Row 16: BO1, k6, kfb, k2 (11 sts)
+
+Row 17: k2, kfb, k8 (12 sts)
+
+Row 18: BO1, k7, kfb, k2 (12 sts)
+
+Row 19: k2, kfb, k1, MB3, k6 (13 sts)
+
+Row 20: BO1, k8, kfb, k2 (13 sts)
+
+Row 21: k2, kfb, k10 (14 sts)
+
+Row 22: BO1, k9, kfb, k2 (14 sts)
+
+Row 23: k2, kfb, k11 (15 sts)
+
+Row 24: BO1, k10, kfb, k2 (15 sts)
+
+Row 25: k2, kfb, k12 (16 sts)
+
+Row 26: BO1, k11, kfb, k2 (16 sts)
+
+5 Stitch Bobbles
+Row 27: k2, kfb, k3, MB5, k9 (17 sts)
+
+Row 28: BO1, k12, kfb, k2 (17 sts)
+
+Row 29: k2, kfb, k14 (18 sts)
+
+Row 30: BO1, k13, kfb, k2 (18 sts)
+
+Row 31: k2, kfb, k15 (19 sts)
+
+Row 32: BO1, k14, kfb, k2 (19 sts)
+
+Row 33: k2, kfb, k16 (20 sts)
+
+Row 34: BO1, k15, kfb, k2 (20 sts)
+
+Row 35: k2, kfb, k3, MB5, k13 (21 sts)
+
+Row 36: BO1, k16, kfb, k2 (21 sts)
+
+Row 37: k2, kfb, k18 (22 sts)
+
+Row 38: BO1, k17, kfb, k2 (22 sts)
+
+Row 39: k2, kfb, k19 (23 sts)
+
+Row 40: BO1, k18, kfb, k2 (23 sts)
+
+Row 41: k2, kfb, k20 (24 sts)
+
+Row 42: BO1, k19, kfb, k2 (24 sts)
+
+Row 43: k2, kfb, k3, MB5, k17 (25 sts)
+
+Row 44: BO1, k20, kfb, k2 (25 sts)
+
+Row 45: k2, kfb, k22 (26 sts)
+
+Row 46: BO1, k21, kfb, k2 (26 sts)
+
+Row 47: k2, kfb, k23 (27 sts)
+
+Row 48: BO1, k22, kfb, k2 (27 sts)
+
+Row 49: k2, kfb, k24 (28 sts)
+
+Row 50: BO1, k23, kfb, k2 (28 sts)
+
+Row 51: k2, kfb, k25 (29 sts)
+
+Row 52: BO1, k24, kfb, k2 (29 sts)
+
+7 Stitch Bobbles
+Row 53: k2, kfb, k4, MB7, k21 (30 sts)
+
+Row 54: BO1, k25, kfb, k2 (30 sts)
+
+Row 55: k2, kfb, k27 (31 sts)
+
+Row 56: BO1, k26, kfb, k2 (31 sts)
+
+Row 57: k2, kfb, k28 (32 sts)
+
+Row 58: BO1, k27, kfb, k2 (32 sts)
+
+Row 59: k2, kfb, k29 (33 sts)
+
+Row 60: BO1, k28, kfb, k2 (33 sts)
+
+Row 61: k2, kfb, k30 (34 sts)
+
+Row 62: BO1, k29, kfb, k2 (34 sts)
+
+Row 63: k2, kfb, k4, MB7, k26 (35 sts)
+
+Row 64: BO1, k30, kfb, k2 (35 sts)
+
+Row 65: k2, kfb, k32 (36 sts)
+
+Row 66: BO1, k31, kfb, k2 (36 sts)
+
+Row 67: k2, kfb, k33 (37 sts)
+
+Row 68: BO1, k32, kfb, k2 (37 sts)
+
+Row 69: k2, kfb, k34 (38 sts)
+
+Row 70: BO1, k33, kfb, k2 (38 sts)
+
+Row 71: k2, kfb, k35 (39 sts)
+
+Row 72: BO1, k34, kfb, k2 (39 sts)
+
+Row 73: k2, kfb, k4, MB7, k31 (40 sts)
+
+Row 74: BO1, k35, kfb, k2 (40 sts)
+
+Row 75: k2, kfb, k37 (41 sts)
+
+Row 76: BO1, k36, kfb, k2 (41 sts)
+
+Row 77: k2, kfb, k38 (42 sts)
+
+Row 78: BO1, k37, kfb, k2 (42 sts)
+
+Row 79: k2, kfb, k39 (43 sts)
+
+Row 80: BO1, k38, kfb, k2 (43 sts)
+
+Row 81: k2, kfb, k40 (44 sts)
+
+Row 82: BO1, k39, kfb, k2 (44 sts)
+
+Row 83: k2, kfb, k4, MB7, k36 (45 sts)
+
+Row 84: BO1, k40, kfb, k2 (45 sts)
+
+Row 85: k2, kfb, k42 (46 sts)
+
+Row 86: BO1, k41, kfb, k2 (46 sts)
+
+Row 87: k2, kfb, k43 (47 sts)
+
+Row 88: BO1, k42, kfb, k2 (47 sts)
+
+Row 89: k2, kfb, k44 (48 sts)
+
+Row 90: BO1, k43, kfb, k2 (48 sts)
+
+Row 91: k2, kfb, k45 (49 sts)
+
+Row 92: BO1, k44, kfb, k2 (49 sts)
+
+Row 93: k2, kfb, k46 (50 sts)
+
+Row 94: BO1, k45, kfb, k2 (50 sts)
+
+9 Stitch Bobbles
+Row 95: k2, kfb, k5, MB9, k41 (51 sts)
+
+Row 96: BO1, k46, kfb, k2 (51 sts)
+
+Row 97: k2, kfb, k48 (52 sts)
+
+Row 98: BO1, k47, kfb, k2 (52 sts)
+
+Row 99: k2, kfb, k49 (53 sts)
+
+Row 100: BO1, k48, kfb, k2 (53 sts)
+
+Row 101: k2, kfb, k50 (54 sts)
+
+Row 102: BO1, k49, kfb, k2 (54 sts)
+
+Row 103: k2, kfb, k51 (55 sts)
+
+Row 104: BO1, k50, kfb, k2 (55 sts)
+
+Row 105: k2, kfb, k52 (56 sts)
+
+Row 106: BO1, k51, kfb, k2 (56 sts)
+
+Row 107: k2, kfb, k5, MB9, k47 (57 sts)
+
+Row 108: BO1, k52, kfb, k2 (57 sts)
+
+Row 109: k2, kfb, k54 (58 sts)
+
+Row 110: BO1, k53, kfb, k2 (58 sts)
+
+Row 111: k2, kfb, k55 (59 sts)
+
+Row 112: BO1, k54, kfb, k2 (59 sts)
+
+Row 113: k2, kfb, k56 (60 sts)
+
+Row 114: BO1, k55, kfb, k2 (60 sts)
+
+Row 115: k2, kfb, k57 (61 sts)
+
+Row 116: BO1, k56, kfb, k2 (61 sts)
+
+Row 117: k2, kfb, k58 (62 sts)
+
+Row 118: BO1, k57, kfb, k2 (62 sts)
+
+Row 119: k2, kfb, k5, MB9, k53 (63 sts)
+
+Row 120: BO1, k58, kfb, k2 (63 sts)
+
+Row 121: k2, kfb, k60 (64 sts)
+
+Row 122: BO1, k59, kfb, k2 (64 sts)
+
+Row 123: k2, kfb, k61 (65 sts)
+
+Row 124: BO1, k61 (64 sts)
+
+Row 125: k2, kfb, k61 (65 sts)
+
+Row 126: BO1, k61 (64 sts)
+
+Row 127: k2, kfb, k61 (65 sts)
+
+Row 128: BO1, k61 (64 sts)
+
+Row 129: k2, kfb, k61 (65 sts)
+
+Row 130: BO1, k61 (64 sts)
+
+Row 131: k2, kfb, k61 (65 sts)
+
+Row 132: BO1, k61 (64 sts)
+
+Row 133: k2, kfb, k5, MB9, k55 (65 sts)
+
+Row 134: BO1, k61 (64 sts)
+
+Row 135: k2, kfb, k61 (65 sts)
+
+Row 136: BO1, k61 (64 sts)
+
+Section 2: Decreasing
+Row 137: k64 (64 sts)
+
+Row 138: k64 (64 sts)
+
+Row 139: k64 (64 sts)
+
+Row 140: k64 (64 sts)
+
+Row 141: k64 (64 sts)
+
+Row 142: k64 (64 sts)
+
+Row 143: k64 (64 sts)
+
+Row 144: k64, kfb (65 sts)
+
+Row 145: k61, k2tog, k2 (64 sts)
+
+Row 146: k64, kfb (65 sts)
+
+9 Stitch Bobbles (Decrease)
+Row 147: k9, MB9, k51, k2tog, k2 (64 sts)
+
+Row 148: k64, kfb (65 sts)
+
+Row 149: k61, k2tog, k2 (64 sts)
+
+Row 150: k64, kfb (65 sts)
+
+Row 151: k61, k2tog, k2 (64 sts)
+
+Row 152: k64, kfb (65 sts)
+
+Row 153: k61, k2tog, k2 (64 sts)
+
+Row 154: k64, kfb (65 sts)
+
+Row 155: k61, k2tog, k2 (64 sts)
+
+Row 156: k64, kfb (65 sts)
+
+Row 157: k61, k2tog, k2 (64 sts)
+
+Row 158: k2, k2tog, k59, kfb (64 sts)
+
+Row 159: k60, k2tog, k2 (63 sts)
+
+Row 160: k2, k2tog, k58, kfb (63 sts)
+
+Row 161: k9, MB9, k49, k2tog, k2 (62 sts)
+
+Row 162: k2, k2tog, k57, kfb (62 sts)
+
+Row 163: k58, k2tog, k2 (61 sts)
+
+Row 164: k2, k2tog, k56, kfb (61 sts)
+
+Row 165: k57, k2tog, k2 (60 sts)
+
+Row 166: k2, k2tog, k55, kfb (60 sts)
+
+Row 167: k56, k2tog, k2 (59 sts)
+
+Row 168: k2, k2tog, k54, kfb (59 sts)
+
+Row 169: k55, k2tog, k2 (58 sts)
+
+Row 170: k2, k2tog, k53, kfb (58 sts)
+
+Row 171: k54, k2tog, k2 (57 sts)
+
+Row 172: k2, k2tog, k52, kfb (57 sts)
+
+Row 173: k9, MB9, k43, k2tog, k2 (56 sts)
+
+Row 174: k2, k2tog, k51, kfb (56 sts)
+
+Row 175: k52, k2tog, k2 (55 sts)
+
+Row 176: k2, k2tog, k50, kfb (55 sts)
+
+Row 177: k51, k2tog, k2 (54 sts)
+
+Row 178: k2, k2tog, k49, kfb (54 sts)
+
+Row 179: k50, k2tog, k2 (53 sts)
+
+Row 180: k2, k2tog, k48, kfb (53 sts)
+
+Row 181: k49, k2tog, k2 (52 sts)
+
+Row 182: k2, k2tog, k47, kfb (52 sts)
+
+Row 183: k48, k2tog, k2 (51 sts)
+
+Row 184: k2, k2tog, k46, kfb (51 sts)
+
+Row 185: k9, MB9, k37, k2tog, k2 (50 sts)
+
+Row 186: k2, k2tog, k45, kfb (50 sts)
+
+Row 187: k46, k2tog, k2 (49 sts)
+
+Row 188: k2, k2tog, k44, kfb (49 sts)
+
+Row 189: k45, k2tog, k2 (48 sts)
+
+Row 190: k2, k2tog, k43, kfb (48 sts)
+
+Row 191: k44, k2tog, k2 (47 sts)
+
+Row 192: k2, k2tog, k42, kfb (47 sts)
+
+Row 193: k43, k2tog, k2 (46 sts)
+
+Row 194: k2, k2tog, k41, kfb (46 sts)
+
+Row 195: k42, k2tog, k2 (45 sts)
+
+7 Stitch Bobbles (Decrease)
+Row 196: k2, k2tog, k40, kfb (45 sts)
+
+Row 197: k8, MB7, k32, k2tog, k2 (44 sts)
+
+Row 198: k2, k2tog, k39, kfb (44 sts)
+
+Row 199: k40, k2tog, k2 (43 sts)
+
+Row 200: k2, k2tog, k38, kfb (43 sts)
+
+Row 201: k39, k2tog, k2 (42 sts)
+
+Row 202: k2, k2tog, k37, kfb (42 sts)
+
+Row 203: k38, k2tog, k2 (41 sts)
+
+Row 204: k2, k2tog, k36, kfb (41 sts)
+
+Row 205: k37, k2tog, k2 (40 sts)
+
+Row 206: k2, k2tog, k35, kfb (40 sts)
+
+Row 207: k8, MB7, k27, k2tog, k2 (39 sts)
+
+Row 208: k2, k2tog, k34, kfb (39 sts)
+
+Row 209: k35, k2tog, k2 (38 sts)
+
+Row 210: k2, k2tog, k33, kfb (38 sts)
+
+Row 211: k34, k2tog, k2 (37 sts)
+
+Row 212: k2, k2tog, k32, kfb (37 sts)
+
+Row 213: k33, k2tog, k2 (36 sts)
+
+Row 214: k2, k2tog, k31, kfb (36 sts)
+
+Row 215: k32, k2tog, k2 (35 sts)
+
+Row 216: k2, k2tog, k30, kfb (35 sts)
+
+Row 217: k8, MB7, k22, k2tog, k2 (34 sts)
+
+Row 218: k2, k2tog, k29, kfb (34 sts)
+
+Row 219: k30, k2tog, k2 (33 sts)
+
+Row 220: k2, k2tog, k28, kfb (33 sts)
+
+Row 221: k29, k2tog, k2 (32 sts)
+
+Row 222: k2, k2tog, k27, kfb (32 sts)
+
+Row 223: k28, k2tog, k2 (31 sts)
+
+Row 224: k2, k2tog, k26, kfb (31 sts)
+
+Row 225: k27, k2tog, k2 (30 sts)
+
+Row 226: k2, k2tog, k25, kfb (30 sts)
+
+Row 227: k8, MB7, k17, k2tog, k2 (29 sts)
+
+Row 228: k2, k2tog, k24, kfb (29 sts)
+
+Row 229: k25, k2tog, k2 (28 sts)
+
+Row 230: k2, k2tog, k23, kfb (28 sts)
+
+Row 231: k24, k2tog, k2 (27 sts)
+
+Row 232: k2, k2tog, k22, kfb (27 sts)
+
+Row 233: k23, k2tog, k2 (26 sts)
+
+Row 234: k2, k2tog, k21, kfb (26 sts)
+
+Row 235: k22, k2tog, k2 (25 sts)
+
+5 Stitch Bobbles (Decrease)
+Row 236: k2, k2tog, k20, kfb (25 sts)
+
+Row 237: k6, MB5, k14, k2tog, k2 (24 sts)
+
+Row 238: k2, k2tog, k19, kfb (24 sts)
+
+Row 239: k20, k2tog, k2 (23 sts)
+
+Row 240: k2, k2tog, k18, kfb (23 sts)
+
+Row 241: k19, k2tog, k2 (22 sts)
+
+Row 242: k2, k2tog, k17, kfb (22 sts)
+
+Row 243: k18, k2tog, k2 (21 sts)
+
+Row 244: k2, k2tog, k16, kfb (21 sts)
+
+Row 245: k6, MB5, k10, k2tog, k2 (20 sts)
+
+Row 246: k2, k2tog, k15, kfb (20 sts)
+
+Row 247: k16, k2tog, k2 (19 sts)
+
+Row 248: k2, k2tog, k14, kfb (19 sts)
+
+Row 249: k15, k2tog, k2 (18 sts)
+
+Row 250: k2, k2tog, k13, kfb (18 sts)
+
+Row 251: k14, k2tog, k2 (17 sts)
+
+Row 252: k2, k2tog, k12, kfb (17 sts)
+
+Row 253: k6, MB5, k6, k2tog, k2 (16 sts)
+
+Row 254: k2, k2tog, k11, kfb (16 sts)
+
+Row 255: k12, k2tog, k2 (15 sts)
+
+Row 256: k2, k2tog, k10, kfb (15 sts)
+
+Row 257: k11, k2tog, k2 (14 sts)
+
+Row 258: k2, k2tog, k9, kfb (14 sts)
+
+Row 259: k10, k2tog, k2 (13 sts)
+
+3 Stitch Bobbles (Decrease)
+Row 260: k2, k2tog, k8, kfb (13 sts)
+
+Row 261: k4, MB3, k4, k2tog, k2 (12 sts)
+
+Row 262: k2, k2tog, k7, kfb (12 sts)
+
+Row 263: k8, k2tog, k2 (11 sts)
+
+Row 264: k2, k2tog, k6, kfb (11 sts)
+
+Row 265: k7, k2tog, k2 (10 sts)
+
+Row 266: k2, k2tog, k5, kfb (10 sts)
+
+Row 267: k4, MB3, k1, k2tog, k2 (9 sts)
+
+Finishing
+Row 268: k2, k2tog, k4, kfb (9 sts)
+
+Row 269: k5, k2tog, k2 (8 sts)
+
+Row 270: k2, k2tog, k3, kfb (8 sts)
+
+Row 271: k4, k2tog, k2 (7 sts)
+
+Row 272: k2, k2tog, k2, kfb (7 sts)
+
+Row 273: k3, k2tog, k2 (6 sts)
+
+Row 274: k2, k2tog, k1, kfb (6 sts)
+
+Row 275: k2, k2tog, k2 (5 sts)
+
+Row 276: k2, k2tog, kfb (5 sts)
+
+Row 277: k1, k2tog, k2 (4 sts)
+
+Row 278: k1, k2tog, k1 (3 sts)
+
+Row 279: k1, k2tog, kfb (3 sts)
+
+Row 280: k1, k2tog, k1 (3 sts)

@@ -83,7 +83,7 @@
                     <button data-view="viewer" class="tab-button active">Viewer</button>
                     <button data-view="generator" class="tab-button">Generator</button>
                 </nav>
-                <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🔧 Init DB</button>
+                <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🧙‍♀️ Create Sea Witch</button>
                 <button id="standalone-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Full Generator</button>
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
@@ -187,6 +187,7 @@
     import { generateGlossary, generateInstructions, generatePatternTheme } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple } from "./js/viewer-logic.js";
+    import { createSeaWitchPattern } from "./scripts/create-sea-witch-pattern.js";
     
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -207,196 +208,6 @@
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
-
-    // --- FIRESTORE INITIALIZATION FOR DEVELOPMENT ---
-    async function initializeFirestoreCollections() {
-        console.log('🔧 Initializing Firestore collections for development...');
-        
-        try {
-            const user = auth.currentUser;
-            if (!user) {
-                alert('Please sign in first');
-                return null;
-            }
-            
-            const userId = user.uid;
-            
-            // Check if user already has patterns (safety check)
-            const existingPatternsQuery = await getDocs(
-                query(collection(db, 'patterns'), where('createdBy', '==', userId), limit(1))
-            );
-            
-            if (!existingPatternsQuery.empty) {
-                const confirmOverwrite = confirm(
-                    'You already have patterns in Firestore. Create another development pattern anyway?'
-                );
-                if (!confirmOverwrite) {
-                    console.log('🚫 Initialization cancelled by user');
-                    return null;
-                }
-            }
-            
-            // 1. Update user document (merge with existing data)
-            await setDoc(doc(db, 'users', userId), {
-                preferences: {
-                    defaultCraft: 'knitting',
-                    displayMode: 'detailed',
-                    colorTheme: 'default'
-                },
-                stats: {
-                    patternsCreated: 0,
-                    patternsShared: 0,
-                    patternsReceived: 0
-                }
-            }, { merge: true });
-            
-            console.log('✅ Updated user document');
-            
-            // 2. Create sample pattern with proper chunk structure
-            const patternRef = doc(collection(db, 'patterns'));
-            const patternId = patternRef.id;
-            
-            await setDoc(patternRef, {
-                id: patternId,
-                name: 'Development Test Pattern',
-                author: user.displayName || 'Developer',
-                craft: 'knitting',
-                difficulty: 'beginner',
-                
-                createdBy: userId,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-                visibility: 'private',
-                
-                metadata: {
-                    maxSteps: 4,
-                    estimatedTime: '1 hour',
-                    materials: ['worsted weight yarn', 'size 8 needles']
-                },
-                
-                glossary: {
-                    'k': { name: 'Knit', description: 'Knit stitch.', stitchIndex: 1 },
-                    'p': { name: 'Purl', description: 'Purl stitch.', stitchIndex: 1 },
-                    'kfb': { name: 'Knit Front and Back', description: 'Increase stitch.', stitchIndex: 2 }
-                },
-                
-                steps: [
-                    {
-                        step: 0,
-                        type: 'specialInstruction',
-                        description: 'Cast on 10 stitches using long-tail cast on.'
-                    },
-                    {
-                        step: 1,
-                        section: 'Setup',
-                        side: 'rs',
-                        startingStitchCount: 10,
-                        endingStitchCount: 10,
-                        chunks: [
-                            {
-                                id: 'row1-all',
-                                type: 'static',
-                                instructions: [
-                                    { stitch: 'k', count: 10 }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        step: 2,
-                        section: 'Setup',
-                        side: 'ws',
-                        startingStitchCount: 10,
-                        endingStitchCount: 10,
-                        chunks: [
-                            {
-                                id: 'row2-all',
-                                type: 'static',
-                                instructions: [
-                                    { stitch: 'p', count: 10 }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        stepRange: [3, 4],
-                        stepType: 'all',
-                        section: 'Body',
-                        side: 'both',
-                        stitchCountChange: '0',
-                        chunks: [
-                            {
-                                id: 'stockinette-all',
-                                type: 'static',
-                                instructions: [
-                                    { stitch: 'k', count: 10 }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                
-                shareCount: 0,
-                viewCount: 0,
-                forkCount: 0,
-                tags: ['test', 'development'],
-                exportCount: 0
-            });
-            
-            console.log('✅ Created development pattern:', patternId);
-            
-            // 3. Create access record
-            await setDoc(doc(db, 'pattern_access', `${patternId}_${userId}`), {
-                patternId: patternId,
-                userId: userId,
-                grantedBy: userId,
-                permission: 'admin',
-                grantedAt: serverTimestamp(),
-                status: 'active',
-                shareReason: 'pattern_creator'
-            });
-            
-            console.log('✅ Created access record');
-            
-            // 4. Create sample analytics data
-            await addDoc(collection(db, 'stitch_finder_queries'), {
-                userId: userId,
-                patternId: patternId,
-                step: 1,
-                position: 5,
-                stitchFound: 'k',
-                context: ['k', 'k', 'k', 'k', 'k', 'k', 'k'],
-                timestamp: serverTimestamp(),
-                sessionId: 'dev-session-' + Date.now()
-            });
-            
-            console.log('✅ Created sample analytics data');
-            
-            // 5. Refresh the pattern list
-            await discoverPatterns();
-            
-            console.log('🎉 Firestore initialization complete!');
-            console.log('📋 Pattern ID:', patternId);
-            console.log('💡 You can now load this pattern in the viewer');
-            
-            // Hide the init button to prevent multiple runs
-            document.getElementById('init-firestore-btn').style.display = 'none';
-            
-            return patternId;
-            
-        } catch (error) {
-            console.error('❌ Error initializing Firestore:', error);
-            if (error.code === 'permission-denied') {
-                alert('Permission denied. Please:\n1. Go to Firebase Console\n2. Navigate to Firestore Database > Rules\n3. Copy the rules from firestore.rules file\n4. Click Publish');
-            } else {
-                alert('Error initializing Firestore: ' + error.message);
-            }
-            throw error;
-        }
-    }
-
-    // Make function available globally for console use
-    window.initializeFirestoreCollections = initializeFirestoreCollections;
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
@@ -497,16 +308,17 @@
 
     initFirestoreBtn.addEventListener('click', async () => {
         initFirestoreBtn.disabled = true;
-        initFirestoreBtn.textContent = '⏳ Creating...';
+        initFirestoreBtn.textContent = '⏳ Creating Sea Witch...';
         
         try {
-            const patternId = await initializeFirestoreCollections();
+            const patternId = await createSeaWitchPattern();
             
             if (patternId) {
-                initFirestoreBtn.textContent = '✅ Done!';
-                alert(`Firestore initialized! Pattern ID: ${patternId}\n\nYou can now test the pattern viewer.\n\nThe initialization button will be hidden since setup is complete.`);
+                initFirestoreBtn.textContent = '✅ Sea Witch Created!';
+                alert(`Sea Witch Tentacle Scarf created successfully!\n\nPattern ID: ${patternId}\n\nYou can now select it from the pattern dropdown.`);
                 
-                // Hide button after successful initialization
+                // Refresh patterns list and hide button
+                await discoverPatterns();
                 setTimeout(() => {
                     initFirestoreBtn.style.display = 'none';
                 }, 2000);
@@ -514,12 +326,12 @@
                 initFirestoreBtn.textContent = '🚫 Cancelled';
                 setTimeout(() => {
                     initFirestoreBtn.disabled = false;
-                    initFirestoreBtn.textContent = '🔧 Init DB';
+                    initFirestoreBtn.textContent = '🧙‍♀️ Create Sea Witch';
                 }, 3000);
             }
         } catch (error) {
             initFirestoreBtn.textContent = '❌ Error';
-            console.error('Firestore initialization error:', error);
+            console.error('Sea Witch pattern creation error:', error);
             
             // Show helpful error message
             let errorMessage = error.message;
@@ -531,11 +343,11 @@
                               `3. Or temporarily use: allow read, write: if request.auth != null;`;
             }
             
-            alert(`Error: ${errorMessage}`);
+            alert(`Error creating Sea Witch pattern: ${errorMessage}`);
             
             setTimeout(() => {
                 initFirestoreBtn.disabled = false;
-                initFirestoreBtn.textContent = '🔧 Init DB';
+                initFirestoreBtn.textContent = '🧙‍♀️ Create Sea Witch';
             }, 3000);
         }
     });
@@ -1169,11 +981,11 @@
             }
         }
         
-        prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateDisplay(); } });
-        nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; updateDisplay(); } });
-        stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; updateDisplay(); });
+        prevBtn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; document.getElementById('current-step-input').value = currentStep; saveProgress(progressKey, currentStep); } });
+        nextBtn.addEventListener('click', () => { if (currentStep < maxSteps) { currentStep++; document.getElementById('current-step-input').value = currentStep; saveProgress(progressKey, currentStep); } });
+        stepInput.addEventListener('change', () => { let newStep = parseInt(stepInput.value); if (isNaN(newStep) || newStep < 1) newStep = 1; if (newStep > maxSteps) newStep = maxSteps; currentStep = newStep; stepInput.value = currentStep; saveProgress(progressKey, currentStep); });
         document.addEventListener('keydown', (e) => { if (document.activeElement === stepInput || document.activeElement === stitchInput) return; if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {e.preventDefault(); nextBtn.click();} if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {e.preventDefault(); prevBtn.click();}});
-        toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Step Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
+        toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Row Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
         closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
         findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
 
@@ -1234,8 +1046,9 @@
             
             // Load saved progress
             currentStep = loadProgressSimple(progressKey);
-            // Note: updateDisplay would need PATTERN_DATA, but let's keep it simple for now
-            // We'll improve this when we integrate the full viewer logic
+            
+            // Set up the current step display
+            document.getElementById('current-step-input').value = currentStep;
             
             footerControls.classList.remove('hidden');
             

@@ -5,33 +5,70 @@ import { getInstructionCategory, addTooltips } from './utils.js';
 
 // Get step data for any step number, resolving stepRanges
 export function getStepData(stepNumber, PATTERN_DATA) {
-    // First check for exact step match
-    const exactStep = PATTERN_DATA.steps.find(step => step.step === stepNumber);
-    if (exactStep) {
-        return exactStep;
+    if (!PATTERN_DATA) return null;
+    
+    // Handle NEW Firestore schema format with steps array
+    if (PATTERN_DATA.steps && Array.isArray(PATTERN_DATA.steps)) {
+        // First check for exact step match
+        const exactStep = PATTERN_DATA.steps.find(step => step.step === stepNumber);
+        if (exactStep) {
+            return exactStep;
+        }
+        
+        // Check stepRange entries
+        const rangeStep = PATTERN_DATA.steps.find(step => 
+            step.stepRange && 
+            stepNumber >= step.stepRange[0] && 
+            stepNumber <= step.stepRange[1]
+        );
+        
+        if (rangeStep) {
+            // Calculate stitch count for this specific step
+            const startingStitchCount = calculateStitchCountForStep(stepNumber, PATTERN_DATA);
+            const endingStitchCount = calculateEndingStitchCount(stepNumber, rangeStep, startingStitchCount);
+            
+            // Return a resolved step based on the template
+            return {
+                ...rangeStep,
+                step: stepNumber,
+                startingStitchCount: startingStitchCount,
+                endingStitchCount: endingStitchCount,
+                // Remove stepRange since this is now a resolved individual step
+                stepRange: undefined
+            };
+        }
     }
     
-    // Check stepRange entries
-    const rangeStep = PATTERN_DATA.steps.find(step => 
-        step.stepRange && 
-        stepNumber >= step.stepRange[0] && 
-        stepNumber <= step.stepRange[1]
-    );
-    
-    if (rangeStep) {
-        // Calculate stitch count for this specific step
-        const startingStitchCount = calculateStitchCountForStep(stepNumber, PATTERN_DATA);
-        const endingStitchCount = calculateEndingStitchCount(stepNumber, rangeStep, startingStitchCount);
+    // Handle LEGACY format with instructions array
+    if (PATTERN_DATA.instructions && Array.isArray(PATTERN_DATA.instructions)) {
+        // First check for exact step match
+        const exactStep = PATTERN_DATA.instructions.find(step => step.step === stepNumber);
+        if (exactStep) {
+            return exactStep;
+        }
         
-        // Return a resolved step based on the template
-        return {
-            ...rangeStep,
-            step: stepNumber,
-            startingStitchCount: startingStitchCount,
-            endingStitchCount: endingStitchCount,
-            // Remove stepRange since this is now a resolved individual step
-            stepRange: undefined
-        };
+        // Check stepRange entries
+        const rangeStep = PATTERN_DATA.instructions.find(step => 
+            step.stepRange && 
+            stepNumber >= step.stepRange[0] && 
+            stepNumber <= step.stepRange[1]
+        );
+        
+        if (rangeStep) {
+            // Calculate stitch count for this specific step
+            const startingStitchCount = calculateStitchCountForStep(stepNumber, PATTERN_DATA);
+            const endingStitchCount = calculateEndingStitchCount(stepNumber, rangeStep, startingStitchCount);
+            
+            // Return a resolved step based on the template
+            return {
+                ...rangeStep,
+                step: stepNumber,
+                startingStitchCount: startingStitchCount,
+                endingStitchCount: endingStitchCount,
+                // Remove stepRange since this is now a resolved individual step
+                stepRange: undefined
+            };
+        }
     }
     
     return null; // Step not found
@@ -247,28 +284,64 @@ export function generateInstructions(PATTERN_DATA) {
     section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
     section.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
     
-    console.log(`Generating instructions for ${PATTERN_DATA.steps.length} step templates`);
-    
-    PATTERN_DATA.steps.forEach((step, index) => {
-        console.log(`Processing step ${index}:`, step);
-        const p = document.createElement('p');
-        if(step.step) p.dataset.step = step.step;
-        if(step.stepRange) {
-            p.dataset.stepStart = step.stepRange[0];
-            p.dataset.stepEnd = step.stepRange[1];
-        }
+    // Handle NEW Firestore schema format with steps array
+    if (PATTERN_DATA.steps && Array.isArray(PATTERN_DATA.steps)) {
+        console.log(`Generating instructions for ${PATTERN_DATA.steps.length} steps (Firestore format)`);
         
-        let instructionHTML = generateDisplayText(step, PATTERN_DATA);
-        console.log(`Generated HTML for step ${index}:`, instructionHTML);
+        PATTERN_DATA.steps.forEach((step, index) => {
+            console.log(`Processing step ${index}:`, step);
+            const p = document.createElement('p');
+            
+            // Set data attributes for navigation
+            if (step.step !== undefined) {
+                p.dataset.step = step.step;
+            }
+            if (step.stepRange) {
+                p.dataset.stepStart = step.stepRange[0];
+                p.dataset.stepEnd = step.stepRange[1];
+            }
+            
+            let instructionHTML = generateDisplayText(step, PATTERN_DATA);
+            console.log(`Generated HTML for step ${index}:`, instructionHTML);
+            
+            if (instructionHTML && instructionHTML.trim() !== '') {
+                p.innerHTML = addTooltips(instructionHTML, PATTERN_DATA);
+                section.appendChild(p);
+                console.log(`Added step ${index} to DOM`);
+            } else {
+                console.warn(`Empty step HTML for step ${index}:`, step);
+            }
+        });
+    }
+    // Handle LEGACY format with instructions array (for backwards compatibility)
+    else if (PATTERN_DATA.instructions && Array.isArray(PATTERN_DATA.instructions)) {
+        console.log(`Generating instructions for ${PATTERN_DATA.instructions.length} step templates (legacy format)`);
         
-        if (instructionHTML && instructionHTML.trim() !== '') {
-            p.innerHTML = addTooltips(instructionHTML, PATTERN_DATA);
-            section.appendChild(p);
-            console.log(`Added step ${index} to DOM`);
-        } else {
-            console.warn(`Empty step HTML for step ${index}:`, step);
-        }
-    });
+        PATTERN_DATA.instructions.forEach((step, index) => {
+            console.log(`Processing step ${index}:`, step);
+            const p = document.createElement('p');
+            if (step.step) p.dataset.step = step.step;
+            if (step.stepRange) {
+                p.dataset.stepStart = step.stepRange[0];
+                p.dataset.stepEnd = step.stepRange[1];
+            }
+            
+            let instructionHTML = generateDisplayText(step, PATTERN_DATA);
+            console.log(`Generated HTML for step ${index}:`, instructionHTML);
+            
+            if (instructionHTML && instructionHTML.trim() !== '') {
+                p.innerHTML = addTooltips(instructionHTML, PATTERN_DATA);
+                section.appendChild(p);
+                console.log(`Added step ${index} to DOM`);
+            } else {
+                console.warn(`Empty step HTML for step ${index}:`, step);
+            }
+        });
+    }
+    else {
+        console.error('No valid pattern data found. Expected steps or instructions array.');
+        section.innerHTML += '<p class="text-red-400">No pattern instructions found.</p>';
+    }
     
     console.log(`Final section contains ${section.children.length} step elements`);
     patternContentEl.appendChild(section);
@@ -313,13 +386,13 @@ export function generateInstructionsForStep(stepNumber, PATTERN_DATA) {
 export function generateDisplayText(step, PATTERN_DATA) {
     // Handle special instructions
     if (step.type === 'specialInstruction') {
-        return `<b>Step ${step.step || step.stepRange?.join('-') || ''}:</b> ${step.description}`;
+        return `<b>Setup:</b> ${step.description}`;
     }
     
-    // Handle regular steps with chunks
+    // Handle regular steps - NEW FIRESTORE SCHEMA FORMAT
     let text = '';
-    const stepText = step.step ? `Step ${step.step}: ` : 
-                    step.stepRange ? `Steps ${step.stepRange[0]}-${step.stepRange[1]} (${step.stepType || 'all'}): ` : '';
+    const stepText = step.step ? `Row ${step.step}: ` : 
+                    step.stepRange ? `Rows ${step.stepRange[0]}-${step.stepRange[1]} (${step.stepType || 'all'}): ` : '';
     
     text += stepText;
     
@@ -327,13 +400,19 @@ export function generateDisplayText(step, PATTERN_DATA) {
     if (step.subsection) text += `<em class="text-gray-500">${step.subsection} </em>`;
     if (step.side) text += `<span class="text-xs bg-blue-600 text-white px-1 rounded">${step.side.toUpperCase()}</span> `;
     
-    // Handle chunk-based format
-    if (step.chunks) {
+    // Handle NEW simple instruction format (Firestore schema)
+    if (step.instruction) {
+        text += formatInstructionForDisplay(step.instruction, PATTERN_DATA);
+    }
+    // Handle LEGACY chunk-based format (for backwards compatibility)
+    else if (step.chunks) {
         text += formatChunksForDisplay(step.chunks, step, PATTERN_DATA);
     }
     
     // Display stitch counts
-    if (step.startingStitchCount) {
+    if (step.endingStitchCount) {
+        text += ` <span class="text-blue-300">(${step.endingStitchCount} sts)</span>`;
+    } else if (step.startingStitchCount) {
         text += ` <span class="text-blue-300">(${step.startingStitchCount} sts)</span>`;
     } else if (step.stitchCount !== undefined) {
         text += ` <span class="text-yellow-300">(${step.stitchCount} sts)</span>`;
@@ -344,6 +423,38 @@ export function generateDisplayText(step, PATTERN_DATA) {
     }
     
     return text;
+}
+
+// NEW function to format simple instruction strings
+export function formatInstructionForDisplay(instruction, PATTERN_DATA) {
+    if (!instruction) return '';
+    
+    // Split instruction by commas and spaces to identify individual stitches
+    const parts = instruction.split(/[,\s]+/).filter(part => part.trim());
+    
+    return parts.map(part => {
+        const trimmedPart = part.trim();
+        
+        // Check if this part matches a glossary term
+        if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[trimmedPart]) {
+            const category = getInstructionCategory(trimmedPart);
+            return `<span class="${category}" title="${PATTERN_DATA.glossary[trimmedPart].description}">${trimmedPart}</span>`;
+        }
+        
+        // Handle numbered instructions like "k2", "MB3", etc.
+        const stitchMatch = trimmedPart.match(/^([a-zA-Z]+)(\d+)?$/);
+        if (stitchMatch) {
+            const [, stitchCode, count] = stitchMatch;
+            if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[stitchCode]) {
+                const category = getInstructionCategory(stitchCode);
+                const title = PATTERN_DATA.glossary[stitchCode].description;
+                return `<span class="${category}" title="${title}">${trimmedPart}</span>`;
+            }
+        }
+        
+        // Default formatting for unrecognized terms
+        return `<span class="main">${trimmedPart}</span>`;
+    }).join(' ');
 }
 
 export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
@@ -408,7 +519,8 @@ export function generatePatternTheme(PATTERN_DATA) {
         increase: '#86efac', 
         edge: '#d8b4fe',
         decrease: '#f87171',
-        spine: '#f87171'
+        spine: '#f87171',
+        bobble: '#fbbf24'  // Golden yellow for bobbles
     };
     
     // Generate CSS rules

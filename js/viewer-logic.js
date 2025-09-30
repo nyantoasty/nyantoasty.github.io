@@ -53,15 +53,31 @@ export function updateDisplay(currentStep, shouldScroll = true) {
 }
 
 export function findInstructionForStep(stepNumber, PATTERN_DATA) {
-    if (!PATTERN_DATA || !PATTERN_DATA.instructions) return null;
+    if (!PATTERN_DATA) return null;
     
-    return PATTERN_DATA.instructions.find(instr => {
-        if (instr.step === stepNumber) return true;
-        if (instr.stepRange && stepNumber >= instr.stepRange[0] && stepNumber <= instr.stepRange[1]) {
-            return true;
-        }
-        return false;
-    });
+    // Handle NEW Firestore schema format with steps array
+    if (PATTERN_DATA.steps && Array.isArray(PATTERN_DATA.steps)) {
+        return PATTERN_DATA.steps.find(step => {
+            if (step.step === stepNumber) return true;
+            if (step.stepRange && stepNumber >= step.stepRange[0] && stepNumber <= step.stepRange[1]) {
+                return true;
+            }
+            return false;
+        });
+    }
+    
+    // Handle LEGACY format with instructions array
+    if (PATTERN_DATA.instructions && Array.isArray(PATTERN_DATA.instructions)) {
+        return PATTERN_DATA.instructions.find(instr => {
+            if (instr.step === stepNumber) return true;
+            if (instr.stepRange && stepNumber >= instr.stepRange[0] && stepNumber <= instr.stepRange[1]) {
+                return true;
+            }
+            return false;
+        });
+    }
+    
+    return null;
 }
 
 export function findStepElement(stepNumber) {
@@ -83,11 +99,20 @@ export function findStepElement(stepNumber) {
 }
 
 export function getStitchCount(stepNumber, PATTERN_DATA) {
-    if (!PATTERN_DATA || !PATTERN_DATA.instructions) return 0;
+    if (!PATTERN_DATA) return 0;
     
     const instruction = findInstructionForStep(stepNumber, PATTERN_DATA);
     if (!instruction) return 0;
     
+    // Handle NEW Firestore schema format
+    if (instruction.endingStitchCount !== undefined) {
+        return instruction.endingStitchCount;
+    }
+    if (instruction.startingStitchCount !== undefined) {
+        return instruction.startingStitchCount;
+    }
+    
+    // Handle LEGACY format
     // If explicitly defined, use that
     if (instruction.stitchCount !== undefined) {
         return instruction.stitchCount;

@@ -25,9 +25,12 @@ export function getInstructionCategory(instruction, PATTERN_DATA) {
     if(craft === 'knitting') {
         const knittingMap = {
             'k': 'main', 'p': 'main',
-            'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase',
+            'kfb': 'increase', 'm1l': 'increase', 'm1r': 'increase', 'yo': 'increase', 'YO': 'increase',
             'k2tog': 'decrease', 'ssk': 'decrease', 'cdd': 'decrease',
-            'pm': 'edge', 'sm': 'edge', 'rm': 'edge'
+            'pm': 'edge', 'sm': 'edge', 'rm': 'edge',
+            'BO1': 'decrease', 'bo1': 'decrease',
+            'MB3': 'bobble', 'MB5': 'bobble', 'MB7': 'bobble', 'MB9': 'bobble',
+            'mb3': 'bobble', 'mb5': 'bobble', 'mb7': 'bobble', 'mb9': 'bobble'
         };
         return knittingMap[instruction] || 'main';
     } else if(craft === 'crochet') {

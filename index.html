@@ -929,6 +929,22 @@
             }
         }
         
+        function loadProgressSimple(key) {
+            if (key) {
+                const saved = localStorage.getItem(key);
+                return parseInt(saved, 10) || 1;
+            }
+            return 1;
+        }
+        
+        function loadProgressSimple(key) {
+            if (key) {
+                const saved = localStorage.getItem(key);
+                return parseInt(saved, 10) || 1;
+            }
+            return 1;
+        }
+        
         function updateDisplay() {
             const stepInput = document.getElementById('current-step-input');
             if (stepInput) {
@@ -1223,18 +1239,27 @@
             patternAuthorEl.textContent = `by ${author}`;
             maxSteps = max;
             document.getElementById('current-step-input').max = maxSteps;
-            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
+            
+            // Use pattern ID for progress key (pattern-specific, not user-specific)
+            progressKey = `pattern-progress-${patternId}`;
             
             // Clear and regenerate content
             patternContentEl.innerHTML = '';
             generateGlossary(PATTERN_DATA);
             generateInstructions(PATTERN_DATA);
             
-            // Load saved progress
+            // Set up interactive features AFTER pattern content is generated
+            setupInteractiveFeatures();
+            
+            // Load saved progress for this specific pattern
             currentStep = loadProgressSimple(progressKey);
             
             // Set up the current step display
             document.getElementById('current-step-input').value = currentStep;
+            
+            // Update display and scroll to current row
+            updateDisplay();
+            scrollToCurrentRow();
             
             footerControls.classList.remove('hidden');
             

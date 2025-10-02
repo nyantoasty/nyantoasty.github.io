@@ -184,7 +184,7 @@
                     <button data-view="viewer" class="tab-button active">Viewer</button>
                     <button data-view="generator" class="tab-button">Generator</button>
                 </nav>
-                <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🧙‍♀️ Create Sea Witch</button>
+                <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🚀 Setup Progress System</button>
                 <button id="standalone-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Full Generator</button>
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
@@ -299,6 +299,7 @@
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
     import { getCurrentStep, setCurrentStep, loadUserProgress } from "./js/progress-tracking.js";
     import { createSeaWitchPattern } from "./scripts/create-sea-witch-pattern.js";
+    import { setupProgressTracking } from "./scripts/progress-setup.js";
     
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -424,30 +425,36 @@
 
     initFirestoreBtn.addEventListener('click', async () => {
         initFirestoreBtn.disabled = true;
-        initFirestoreBtn.textContent = '⏳ Creating Sea Witch...';
+        initFirestoreBtn.textContent = '⏳ Setting up system...';
         
         try {
+            // First, set up the progress tracking system with sample data
+            console.log('🚀 Setting up progress tracking system...');
+            await setupProgressTracking();
+            
+            // Then create the Sea Witch pattern with updated schema
+            console.log('🧙‍♀️ Creating Sea Witch pattern...');
             const patternId = await createSeaWitchPattern();
             
             if (patternId) {
-                initFirestoreBtn.textContent = '✅ Sea Witch Created!';
-                alert(`Sea Witch Tentacle Scarf created successfully!\n\nPattern ID: ${patternId}\n\nYou can now select it from the pattern dropdown.`);
+                initFirestoreBtn.textContent = '✅ System Ready!';
+                alert(`Progress tracking system initialized successfully!\n\n✅ Sample users and progress data created\n✅ Sea Witch Tentacle Scarf pattern created\n✅ Individual progress tracking enabled\n\nPattern ID: ${patternId}\n\nYou can now test the new progress tracking features!`);
                 
                 // Refresh patterns list and hide button
                 await discoverPatterns();
                 setTimeout(() => {
                     initFirestoreBtn.style.display = 'none';
-                }, 2000);
+                }, 3000);
             } else {
                 initFirestoreBtn.textContent = '🚫 Cancelled';
                 setTimeout(() => {
                     initFirestoreBtn.disabled = false;
-                    initFirestoreBtn.textContent = '🧙‍♀️ Create Sea Witch';
+                    initFirestoreBtn.textContent = '🚀 Setup Progress System';
                 }, 3000);
             }
         } catch (error) {
-            initFirestoreBtn.textContent = '❌ Error';
-            console.error('Sea Witch pattern creation error:', error);
+            initFirestoreBtn.textContent = '❌ Setup Error';
+            console.error('Progress system setup error:', error);
             
             // Show helpful error message
             let errorMessage = error.message;
@@ -455,15 +462,14 @@
                 errorMessage = `Permission Error: ${error.message}\n\n` +
                               `Please update your Firestore security rules:\n` +
                               `1. Go to Firebase Console > Firestore Database > Rules\n` +
-                              `2. Copy the rules from firestore.rules file\n` +
+                              `2. Copy the rules from scripts/firestore-security-rules.js\n` +
                               `3. Or temporarily use: allow read, write: if request.auth != null;`;
             }
             
-            alert(`Error creating Sea Witch pattern: ${errorMessage}`);
-            
+            alert(`Setup failed: ${errorMessage}\n\nCheck the console for details.`);
             setTimeout(() => {
                 initFirestoreBtn.disabled = false;
-                initFirestoreBtn.textContent = '🧙‍♀️ Create Sea Witch';
+                initFirestoreBtn.textContent = '🚀 Retry Setup';
             }, 3000);
         }
     });

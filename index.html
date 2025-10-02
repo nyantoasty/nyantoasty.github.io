@@ -1046,6 +1046,38 @@
         }
     }
     
+    // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
+    window.setupViewer = function() {
+        if (!PATTERN_DATA) return;
+        
+        const footerControls = document.getElementById('footer-controls');
+        footerControls.classList.remove('hidden');
+        const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
+        
+        // Update pattern display elements (now visible in project view)
+        const patternNameEl = document.getElementById('pattern-name');
+        const patternAuthorEl = document.getElementById('pattern-author');
+        
+        if (patternNameEl) patternNameEl.textContent = name;
+        if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
+        
+        maxSteps = max;
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) stepInput.max = maxSteps;
+        
+        progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
+        
+        // Update footer metadata
+        updateFooterMetadata();
+        
+        const patternContentEl = document.getElementById('pattern-content');
+        patternContentEl.innerHTML = '';
+        generateGlossary(PATTERN_DATA);
+        generateInstructions(PATTERN_DATA);
+        loadProgress();
+        setupInteractiveFeatures();
+    }
+
     // PROJECT MANAGEMENT FUNCTIONS
     async function loadUserProjects() {
         if (!auth.currentUser) return;
@@ -1218,10 +1250,11 @@
             if (patternDoc.exists()) {
                 const patternData = patternDoc.data();
                 window.PATTERN_DATA = patternData;
+                PATTERN_DATA = patternData; // Also set local variable
                 
                 if (patternData.metadata && patternData.metadata.name) {
                     // Pattern loaded successfully, set up the viewer
-                    setupViewer(); // This will call generateInstructions and set up all components
+                    window.setupViewer(); // Call the global function
                     console.log('✅ Pattern loaded from Firestore:', patternData.metadata.name);
                 } else {
                     console.error('❌ Pattern data missing required metadata');
@@ -1639,35 +1672,6 @@
             }
         }
 
-        function setupViewer() {
-            if (!PATTERN_DATA) return;
-            
-            footerControls.classList.remove('hidden');
-            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
-            
-            // Update pattern display elements (now visible in project view)
-            const patternNameEl = document.getElementById('pattern-name');
-            const patternAuthorEl = document.getElementById('pattern-author');
-            
-            if (patternNameEl) patternNameEl.textContent = name;
-            if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
-            
-            maxSteps = max;
-            const stepInput = document.getElementById('current-step-input');
-            if (stepInput) stepInput.max = maxSteps;
-            
-            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
-            
-            // Update footer metadata
-            updateFooterMetadata();
-            
-            patternContentEl.innerHTML = '';
-            generateGlossary(PATTERN_DATA);
-            generateInstructions(PATTERN_DATA);
-            loadProgress();
-            setupInteractiveFeatures();
-        }
-        
         // updateFooterMetadata is defined globally - see below
         
 

@@ -15,13 +15,31 @@ export async function setupProgressTracking(db = window.db, auth = window.auth) 
         throw new Error('Firestore database not available');
     }
     
-    if (!auth?.currentUser) {
+    if (!auth) {
+        throw new Error('Firebase auth not available');
+    }
+    
+    // Wait for auth state to be ready
+    let currentUser = auth.currentUser;
+    if (!currentUser) {
+        console.log('⏳ Waiting for auth state...');
+        // Wait up to 5 seconds for auth state
+        for (let i = 0; i < 50; i++) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            currentUser = auth.currentUser;
+            if (currentUser) break;
+        }
+    }
+    
+    if (!currentUser) {
         throw new Error('Please sign in first to set up the progress tracking system');
     }
     
+    console.log(`✅ Setting up for user: ${currentUser.email} (${currentUser.uid})`);
+    
     try {
         // Sample user IDs for testing
-        const currentUserId = auth.currentUser.uid;
+        const currentUserId = currentUser.uid;
         const user1Id = 'sample-user-001';
         const user2Id = 'sample-user-002';
         

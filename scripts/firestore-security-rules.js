@@ -14,11 +14,18 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
     function hasPatternAccess(patternId, permission) {
       return isAuthenticated() && 
-             exists(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)) &&
-             get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)).data.status == 'active' &&
-             get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)).data.permission in permission;
+             (isAdmin() ||
+              (exists(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)) &&
+               get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)).data.status == 'active' &&
+               get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + request.auth.uid)).data.permission in permission));
     }
     
     function isPatternCreator(patternId) {
@@ -31,21 +38,25 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    // Patterns collection - read based on access, write for creators/editors
+    // Patterns collection - read based on access, write for creators/editors, admins have full access
     match /patterns/{patternId} {
-      allow read: if hasPatternAccess(patternId, ['view', 'edit', 'admin']) || 
+      allow read: if isAdmin() ||
+                     hasPatternAccess(patternId, ['view', 'edit', 'admin']) || 
                      resource.data.visibility == 'public';
-      allow write: if hasPatternAccess(patternId, ['edit', 'admin']);
+      allow write: if isAdmin() ||
+                      hasPatternAccess(patternId, ['edit', 'admin']);
       allow create: if isAuthenticated() && request.auth.uid == request.resource.data.createdBy;
     }
 
     // Pattern access - admin can manage, users can read their own access
     match /pattern_access/{accessId} {
-      allow read: if isAuthenticated() && 
-                     (resource.data.userId == request.auth.uid ||
-                      hasPatternAccess(resource.data.patternId, ['admin']));
-      allow write: if isAuthenticated() && 
-                      hasPatternAccess(resource.data.patternId, ['admin']);
+      allow read: if isAdmin() ||
+                     (isAuthenticated() && 
+                      (resource.data.userId == request.auth.uid ||
+                       hasPatternAccess(resource.data.patternId, ['admin'])));
+      allow write: if isAdmin() ||
+                      (isAuthenticated() && 
+                       hasPatternAccess(resource.data.patternId, ['admin']));
     }
 
     // Pattern shares - users can read shares meant for them, creators can create shares
@@ -61,13 +72,14 @@ service cloud.firestore {
                        request.resource.data.keys().hasOnly(['accepted', 'acceptedAt']);
     }
 
-    // User pattern progress - users can only access their own progress
+    // User pattern progress - users can only access their own progress, admins can access all
     match /user_pattern_progress/{progressId} {
-      allow read, write: if isAuthenticated() && 
-                            resource.data.userId == request.auth.uid;
+      allow read, write: if isAdmin() ||
+                            (isAuthenticated() && 
+                             resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && 
                        request.auth.uid == request.resource.data.userId &&
-                       hasPatternAccess(request.resource.data.patternId, ['view', 'edit', 'admin']);
+                       (isAdmin() || hasPatternAccess(request.resource.data.patternId, ['view', 'edit', 'admin']));
     }
 
     // Analytics collections - users can write their own data, admins can read

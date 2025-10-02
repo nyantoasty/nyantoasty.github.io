@@ -1,23 +1,27 @@
 # Logic Guide for Interpreting and Enumerating Knitting Patterns
 
-**Objective:** To translate a condensed, human-readable knitting pattern into a fully enumerated, step-by-step Firestore document suitable for interactive a**\"Repeat rows S3 and S4 four more times\"** → The AI generates 8 more explicit steps (steps 4-11), recalculating "k to end" based on each step's current stitch count.plications with color-coded stitches, clickable definitions, and pattern navigation.
+## Objective
 
-This process involves parsing loops, interpreting knitting shorthand, calculating stitch counts, organizing sections, and creating rich metadata for every single step.
+To translate a condensed, human-readable knitting pattern into a fully enumerated, step-by-step Firestore document. This creates a rich, interactive experience for the crafter, with features like color-coded stitches, clickable definitions, and precise row-by-row navigation.
 
-## Target Schema: Firestore Pattern Document
+The core philosophy is to **transform ambiguity into certainty**. We will eliminate all loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
+
+## The Target Firestore Schema
+
+Our goal is to populate a Firestore document with this structure:
 
 ```json
 {
   "metadata": {
     "name": "Pattern Name",
-    "author": "Designer Name", 
-    "craft": "knitting",
+    "author": "Designer Name",
+    "craft": "knitting", 
     "maxSteps": 280
   },
   "glossary": {
-    "k": { "name": "Knit", "description": "Knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 },
-    "kfb": { "name": "Knit Front and Back", "description": "Increase.", "stitchesUsed": 1, "stitchesCreated": 2 },
-    "k2tog": { "name": "Knit 2 Together", "description": "Decrease.", "stitchesUsed": 2, "stitchesCreated": 1 }
+    "k": { "name": "Knit", "description": "A standard knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 },
+    "kfb": { "name": "Knit Front and Back", "description": "A one-stitch increase.", "stitchesUsed": 1, "stitchesCreated": 2 },
+    "k2tog": { "name": "Knit 2 Together", "description": "A one-stitch decrease.", "stitchesUsed": 2, "stitchesCreated": 1 }
   },
   "steps": [
     {
@@ -33,135 +37,90 @@ This process involves parsing loops, interpreting knitting shorthand, calculatin
 }
 ```
 
-## Core Concepts to Understand
+## Core Concepts for Translation
 
-### 1. Full Step Enumeration (No Repeats in Output)
-**Source Format:** Uses phrases like "Repeat rows S3 and S4 four more times."
+### 1. The Glossary: The Foundation of Automation
 
-**Target Format:** The Firestore `steps` array has no concept of a "repeat." Every step is a unique object with its own step number.
+The glossary is the most critical component. It is the dictionary that gives our logic meaning. For the system to automatically calculate stitch counts, it must have a complete and accurate entry for every single abbreviation used in the pattern.
 
-**AI Task:** Identify the rows to repeat and the number of repetitions, then generate the explicit sequence of steps with consecutive step numbers.
+- **stitchesUsed**: How many stitches are taken off the left-hand needle to perform the action.
+- **stitchesCreated**: How many stitches are placed onto the right-hand needle after the action is complete.
 
-### 2. Section Organization & Metadata
-**Source Format:** Patterns may have implicit sections (setup, body, finishing).
+The net change for any stitch is simply `stitchesCreated - stitchesUsed`.
 
-**Target Format:** Each step includes a `section` field ("setup", "increasing", "bobbles", "decreasing", "finishing") and `side` field ("RS", "WS", or null).
+- **Knit (k)**: 1 used, 1 created = 0 net change.
+- **Increase (kfb)**: 1 used, 2 created = +1 net change.  
+- **Decrease (k2tog)**: 2 used, 1 created = -1 net change.
 
-**AI Task:** Recognize pattern structure and assign appropriate section names. Track row sides for knitting patterns.
+By defining these values upfront, we empower the AI to calculate the `endingStitchCount` for any given row with perfect accuracy, which is paramount for the entire process.
 
-### 3. Interactive Stitch Processing
-**Source Format:** Plain text instructions like "k2, kfb, k1".
+### 2. Full Step Enumeration (No Repeats)
 
-**Target Format:** Instructions use standard abbreviations that match the `glossary` for color-coded, clickable stitches.
+A pattern might say, "Repeat Rows 3 and 4 five more times." Our target format does not use repeats. Every single row must be a unique, numbered step in the `steps` array.
 
-**AI Task:** Use consistent abbreviations that will be recognized by the front-end application for rendering.
+**AI Task**: Identify the rows to be repeated and the number of repetitions. Generate the full, explicit sequence of steps with consecutive step numbers, recalculating any variables for each new row.
 
-### 4. Variable Interpretation in Instructions
-**Source Format:** Uses variables like "k to end" or "p to marker."
+### 3. Stitch Count Calculation is Paramount
 
-**Target Format:** Resolves these variables into concrete numbers (e.g., "k7") while maintaining the `startingStitchCount` and `endingStitchCount` fields.
+Every step must have a `startingStitchCount` and an `endingStitchCount`. This provides a constant check for pattern integrity. The `endingStitchCount` of one step becomes the `startingStitchCount` of the next.
 
-**AI Task:** Maintain state that tracks current stitch counts to calculate specific numbers. Store both the resolved instruction and the calculated stitch counts.
+**AI Task**: For each step, parse every stitch in the instruction. The final stitch count is calculated by taking the `startingStitchCount` and adding the net change for every action in the row, as determined by the glossary.
 
-### 5. Stitch Count Calculation is Paramount
-**Source Format:** Provides stitch counts only occasionally.
+### 4. Resolving Variables in Instructions
 
-**Target Format:** Requires `startingStitchCount` and `endingStitchCount` for every single step. The system automatically validates count consistency between steps.
+Instructions like "k to end" or "p to marker" are relative. They depend entirely on the number of stitches present at that moment.
 
-**AI Task:** Parse all stitches in each step's instruction. The final stitch count is calculated by taking the `startingStitchCount` and adding the net change for every action in the row. The net change for an action is `stitchesCreated - stitchesUsed`.
+**AI Task**: Maintain a running stitch count. When a variable instruction is encountered, calculate the specific number of stitches it represents. For example, in a row with 10 stitches that starts with "k2, yo," the instruction "k to end" would resolve to "k7" (10 stitches - 2 knit - 1 yarn over stitch created = 7 remaining). The final instruction in the JSON should be the fully resolved version (e.g., "k2, yo, k7").
 
-### 6. Structural Elements (Edges, Spines, Wedges)
-**Source Format:** Patterns like shawls are often built in sections, like [Edge] [Panel 1] [Spine] [Panel 2] [Edge].
+### 5. Handling Repeats Within a Row
 
-**AI Task:** Recognize the pattern's underlying structure. The AI should treat the instructions for each panel as a self-contained unit and apply the consistent edge/spine instructions as a "wrapper" for each row. It must track stitch counts for each section independently to resolve variable instructions like "k to marker".
+Parentheses `()` or asterisks `*` denote a sequence to be repeated within a single row.
 
-### 7. Inline Repeats (...)
-**Source Format:** Uses parentheses for repeats within the same row, either a fixed number of times `(yo, ssk) 6 times` or variably `(k1, p1)* to marker`.
+- **Fixed Repeats**: `(yo, ssk) 6 times`
+- **Variable Repeats**: `(k1, p1) to last 2 sts`
 
-**AI Task:** For fixed repeats, multiply the enclosed sequence. For variable repeats, calculate how many times the sequence fits into the available stitches for that section.
+**AI Task**:
+- For fixed repeats, expand the sequence fully. `(yo, ssk) 2 times` becomes `yo, ssk, yo, ssk`.
+- For variable repeats, calculate how many times the sequence fits into the available stitches for that section before the specified endpoint.
 
-### 8. References & Charts (Work Row X of Chart Y)
-**Source Format:** Instructions may simply refer to a chart or a separate block of instructions.
+### 6. Recognizing Structural Elements (Edges, Spines, Panels)
 
-**AI Task:** Pre-process the pattern to parse and store all named charts and sub-patterns in a structured format. When a reference is encountered, look up the corresponding instructions and insert them into the final, explicit row instruction.
+Complex patterns, like shawls, often have a consistent structure applied to every row, such as `[Edge] [Panel 1] [Spine] [Panel 2] [Edge]`.
 
-4. NEW: Structural Elements (Edges, Spines, Wedges)
-Source Format: Patterns like shawls are often built in sections. A common structure is [Edge stitches] [Wedge 1] [Spine] [Wedge 2] [Edge stitches].
+**AI Task**: Identify these structural elements. Treat the instructions for each panel as a self-contained unit and "wrap" them with the consistent edge and spine instructions for each row. This requires tracking the stitch count for each section independently to resolve variables like "k to marker" correctly.
 
-Target Format: These elements are present in every row, often with consistent actions (e.g., k3 for the edge, k1 for the spine, yo increases around the spine).
+## AI Implementation: A Step-by-Step Guide
 
-AI Task: Recognize the pattern's underlying structure. The AI should treat the instructions for each wedge/panel as a self-contained unit and apply the consistent edge/spine instructions as a "wrapper" around the panel instructions for each row. It must track stitch counts for each wedge independently.
+### Step 1: Initialization & Pre-Processing
 
-5. NEW: Inline Repeats (...)
-Source Format: Uses parentheses to denote a sequence of stitches to be repeated within the same row. This can be a fixed number of times or until a certain point.
+1. **Parse Metadata**: Extract the pattern's name, author, etc., to build the `metadata` object.
 
-Fixed: (yo, ssk, k5, k2tog, yo, k1) 6 times
+2. **Build Glossary**: Scan the entire pattern for all stitch abbreviations and their definitions. Meticulously create the `glossary` object. This step cannot be skipped or rushed.
 
-Variable: (k1, p1)* to marker
+3. **Identify Structure**: Pre-process the pattern to identify any persistent structural elements like edges and spines, or separate charts and sub-patterns (e.g., "Work Row 1 of Chart A"). Store these for later reference.
 
-Target Format: The repeated stitches are fully expanded in the final instruction string.
+4. **Initialize State**:
+   - `currentStepNumber`: Start at 1.
+   - `currentStitchCount`: Initialize based on the "Cast on" instruction.
+   - `currentSection`: e.g., "setup".
+   - `currentSide`: e.g., "RS".
 
-AI Task:
+### Step 2: Sequential Row Processing
 
-For fixed repeats, the AI must multiply the enclosed stitch sequence by the specified number.
+Iterate through the pattern instructions one line at a time.
 
-For variable repeats, the AI must know the number of stitches available in that specific section (wedge) and repeat the sequence as many times as possible until it reaches the marker or runs out of stitches.
+1. **Handle Special Instructions**: For non-row instructions like "Cast on 3 stitches," create a step with `type: "specialInstruction"`. These describe an action but don't have stitch counts.
 
-6. NEW: References & Charts (Work Row X of Chart Y)
-Source Format: Instructions for a row may simply refer to a chart or a separate block of written instructions (e.g., "work Row 1 of Wedge A").
+2. **Process a Regular Row**:
+   - **Set Starting State**: The `startingStitchCount` is the `currentStitchCount` from the previous step.
+   - **Resolve Variables**: Calculate all "knit to end" or "purl to marker" phrases based on the `startingStitchCount` and the stitches that come before them in the instruction.
+   - **Expand Repeats**: Expand all `(...)` or `*...*` repeats into a full, explicit sequence of stitches.
+   - **Assemble Final Instruction**: Combine all parts (edges, panels, spines, resolved variables, expanded repeats) into the final, complete instruction string.
+   - **Calculate Ending Stitch Count**: Iterate through the final instruction string. For each stitch, look up its net change in the glossary and add it to the `startingStitchCount`. The final sum is the `endingStitchCount`.
+   - **Generate Step Object**: Create the JSON object for the current step with all the calculated data.
+   - **Update State**: Set `currentStitchCount = endingStitchCount`, increment `currentStepNumber`, and alternate `currentSide` ("RS" to "WS").
 
-Target Format: The referenced instructions are resolved and inserted into the main row's instruction string.
-
-AI Task: This is an advanced task. The AI must first parse and store all named charts and sub-patterns in a structured format (e.g., a dictionary or map). When it encounters a reference in the main pattern, it must look up the corresponding instructions from its stored data and use them to build the final, explicit row instruction.
-
-## Step-by-Step Instructions for the AI
-
-### Step 1: Document Structure & Metadata Extraction
-**Parse Pattern Metadata:** Extract pattern name, author, craft type, etc., for the `metadata` object.
-
-**Build Glossary:** Scan the document for all stitch definitions. Create `glossary` entries with `name`, `description`, `stitchesUsed`, and `stitchesCreated` for each stitch.
-
-**Initialize State:**
-- `currentStepNumber`: Start at 1 (or 0 for setup)
-- `currentStitchCount`: Initialize based on "Cast on"
-- `currentSection`: e.g., "setup"
-- `currentSide`: e.g., "RS"
-- `outputStepsArray`: An empty array
-
-### Step 2: Section Recognition & Organization
-Identify pattern sections based on headings and keywords (Setup, Section 1, Lace, Finishing, etc.). Update `currentSection` as you process the document. For knitting, alternate `currentSide` between "RS" and "WS" for each regular step.
-
-### Step 3: Process Instructions Sequentially
-
-#### A. Handling Setup Instructions
-**Action:** For non-row instructions like "Cast on 3 stitches" or "Knit 6 rows," create steps with `type: "specialInstruction"`. These steps describe an action rather than providing a stitch-by-stitch instruction.
-
-```json
-{
-  "step": 0,
-  "description": "Cast on 3 stitches.",
-  "section": "setup", 
-  "type": "specialInstruction"
-}
-```
-
-#### B. Handling Regular Steps
-**Action:** For each row, parse the instruction, resolve all variables, and calculate the stitch counts.
-
-**Validation:** For each stitch in the instruction, find its `stitchesUsed` and `stitchesCreated` value in the glossary. The `endingStitchCount` is the `startingStitchCount` plus the sum of all `(stitchesCreated - stitchesUsed)` for that row.
-
-**Generate Object:**
-```json
-{
-  "step": 1,
-  "startingStitchCount": 3,
-  "endingStitchCount": 4,
-  "instruction": "k1, kfb, k1",
-  "section": "setup",
-  "side": "RS",
-  "type": "regular"
-}
-```
+3. **Process Loops**: When you encounter a "repeat rows X-Y" instruction, loop through the stored instructions for rows X-Y the specified number of times, running each one through the "Process a Regular Row" logic above.
 
 ## Example Walkthrough: "Set-Up Rows" 
 
@@ -170,56 +129,14 @@ Identify pattern sections based on headings and keywords (Setup, Section 1, Lace
 **Step S1: k1, kfb, k1**
 - Calculation: k1 (1 used → 1 created = 0 net), kfb (1 used → 2 created = +1 net), k1 (1 used → 1 created = 0 net)
 - Net change: 0 + 1 + 0 = +1
-- startingStitchCount = 3, endingStitchCount = 3 + 1 = 4
-- Generate:
-```json
-{
-  "step": 1,
-  "startingStitchCount": 3,
-  "endingStitchCount": 4,
-  "instruction": "k1, kfb, k1",
-  "section": "setup",
-  "side": "RS",
-  "type": "regular"
-}
-```
-- Update: `currentStitchCount = 4`, `currentStepNumber = 2`
+- `startingStitchCount = 3`, `endingStitchCount = 3 + 1 = 4`
 
-**Step S2: BO1, kfb, k1**
-- Calculation: BO1 (1 used → 0 created = -1 net), kfb (1 used → 2 created = +1 net), k1 (1 used → 1 created = 0 net)
-- Net change: -1 + 1 + 0 = 0
-- startingStitchCount = 4, endingStitchCount = 4 + 0 = 4
-- Generate:
-```json
-{
-  "step": 2,
-  "startingStitchCount": 4,
-  "endingStitchCount": 4,
-  "instruction": "BO1, kfb, k1",
-  "section": "setup",
-  "side": "WS",
-  "type": "regular"
-}
-```
-- Update: `currentStitchCount = 4`, `currentStepNumber = 3`
-
-**Step S3: k2, kfb, k to end**
+**Step S2: k2, kfb, k to end**
 - "k to end" needs calculation: k2 (uses 2) + kfb (uses 1) = 3 stitches used, so "k to end" = k(4-3) = k1
 - Full instruction becomes: "k2, kfb, k1"
-- Calculation: k2 (2 used → 2 created = 0 net), kfb (1 used → 2 created = +1 net), k1 (1 used → 1 created = 0 net)
 - Net change: 0 + 1 + 0 = +1
-- startingStitchCount = 4, endingStitchCount = 4 + 1 = 5
-- Generate:
-```json
-{
-  "step": 3,
-  "startingStitchCount": 4,
-  "endingStitchCount": 5,
-  "instruction": "k2, kfb, k1",
-  "section": "setup", 
-  "side": "RS",
-  "type": "regular"
-}
-```
+- `startingStitchCount = 4`, `endingStitchCount = 4 + 1 = 5`
 
-**"Repeat rows S3 and S4 four more times"** → The AI generates 8 more explicit steps (steps 4-11), recalculating "k to end" based on each step's current stitch count.
+**"Repeat rows S1 and S2 four more times"** → The AI generates 8 more explicit steps, recalculating "k to end" based on each step's current stitch count.
+
+By following this meticulous process, you can successfully translate the artful shorthand of a knitting pattern into a flawless, machine-readable format that integrates seamlessly with our enhanced progress tracking system.

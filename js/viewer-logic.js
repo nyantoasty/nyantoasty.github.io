@@ -1,7 +1,7 @@
 // viewer-logic.js - Pattern viewer navigation and progress functions
-// Version: v2025-10-01-firestore-progress
+// Version: v2025-10-02-enhanced-progress
 
-import { getCurrentStep, setCurrentStep } from './progress-tracking.js';
+import { getCurrentStep, setCurrentStep, getOrCreateProject, saveProjectProgress, getCurrentProject } from './progress-tracking.js';
 
 export function loadProgressSimple(progressKey) {
     const savedStep = localStorage.getItem(progressKey);
@@ -20,20 +20,64 @@ export function saveProgress(progressKey, currentStep) {
     localStorage.setItem(progressKey, currentStep);
 }
 
-// NEW: Firestore-based progress functions
+// Enhanced Firestore-based progress functions
 export async function loadProgressFirestore(db, userId, patternId, currentStepRef, updateDisplayFn) {
-    const currentStep = await getCurrentStep(db, userId, patternId);
-    if (currentStepRef) {
-        currentStepRef.value = currentStep;
+    try {
+        const currentStep = await getCurrentStep(db, userId, patternId);
+        if (currentStepRef) {
+            currentStepRef.value = currentStep;
+        }
+        if (updateDisplayFn) {
+            updateDisplayFn(false);
+        }
+        return currentStep;
+    } catch (error) {
+        console.error('❌ Error loading progress from Firestore:', error);
+        // Fallback to localStorage
+        const fallbackStep = loadProgressSimple(`pattern-progress-${patternId}`);
+        if (currentStepRef) {
+            currentStepRef.value = fallbackStep;
+        }
+        if (updateDisplayFn) {
+            updateDisplayFn(false);
+        }
+        return fallbackStep;
     }
-    if (updateDisplayFn) {
-        updateDisplayFn(false);
-    }
-    return currentStep;
 }
 
 export async function saveProgressFirestore(db, userId, patternId, currentStep) {
-    await setCurrentStep(db, userId, patternId, currentStep);
+    try {
+        await setCurrentStep(db, userId, patternId, currentStep);
+        return true;
+    } catch (error) {
+        console.error('❌ Error saving progress to Firestore:', error);
+        // Fallback to localStorage
+        saveProgress(`pattern-progress-${patternId}`, currentStep);
+        return false;
+    }
+}
+
+// Enhanced project management functions
+export async function getOrCreateCurrentProject(db, userId, patternId, projectName = null) {
+    try {
+        return await getOrCreateProject(db, userId, patternId, projectName);
+    } catch (error) {
+        console.error('❌ Error getting or creating project:', error);
+        return null;
+    }
+}
+
+export async function saveEnhancedProgress(db, userId, patternId, projectId, progressData) {
+    try {
+        return await saveProjectProgress(db, userId, patternId, projectId, progressData);
+    } catch (error) {
+        console.error('❌ Error saving enhanced progress:', error);
+        // Fallback to localStorage for basic step tracking
+        if (progressData.currentStep) {
+            saveProgress(`pattern-progress-${patternId}`, progressData.currentStep);
+        }
+        return false;
+    }
 }
 
 export function updateDisplay(currentStep, shouldScroll = true) {

@@ -1,26 +1,17 @@
-// Firestore Security Rules for Development
-// SIMPLE DEVELOPMENT RULES - Use these for now!
+// Firestore Security Rules for Enhanced Progress Tracking
+// DEVELOPMENT RULES with Enhanced Progress Support
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow any authenticated user to read/write any document
-    // This is permissive but safe for development since only signed-in users can access
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-
-// PRODUCTION RULES (use later when patterns are working):
-/*
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
     // Allow authenticated users to read/write their own user document
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Roles collection - read only for authenticated users
+    match /roles/{roleId} {
+      allow read: if request.auth != null;
     }
     
     // Pattern access control
@@ -42,19 +33,35 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
     
-    // Pattern access records - users can read their own access
+    // ENHANCED PROGRESS TRACKING RULES
+    match /user_pattern_progress/{progressId} {
+      // Progress document ID format: {userId}_{patternId}_{projectId}
+      // Only allow access if the progress belongs to the current user
+      allow read, write: if request.auth != null && 
+        progressId.split('_')[0] == request.auth.uid;
+      
+      // Allow create if authenticated and the progress document is for the current user
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Validate data structure on write
+      allow write: if request.auth != null && 
+        progressId.split('_')[0] == request.auth.uid &&
+        validateProgressData(request.resource.data);
+    }
+    
+    // Pattern access records
     match /pattern_access/{accessId} {
       allow read: if request.auth != null && (
         resource.data.userId == request.auth.uid || 
         resource.data.grantedBy == request.auth.uid
       );
       
-      // Allow write if user is pattern creator or admin
       allow write: if request.auth != null;
       allow create: if request.auth != null;
     }
     
-    // Pattern shares - users can read shares involving them
+    // Pattern shares
     match /pattern_shares/{shareId} {
       allow read, write: if request.auth != null && (
         resource.data.sharedBy == request.auth.uid ||
@@ -79,7 +86,7 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
     
-    // Helper functions (simplified for development)
+    // Helper functions
     function hasPatternAccess(patternId, userId) {
       return exists(/databases/$(database)/documents/pattern_access/$(patternId + '_' + userId));
     }
@@ -88,6 +95,52 @@ service cloud.firestore {
       let accessDoc = get(/databases/$(database)/documents/pattern_access/$(patternId + '_' + userId));
       return accessDoc.data.permission == permission || accessDoc.data.permission == 'admin';
     }
+    
+    // Validate progress data structure
+    function validateProgressData(data) {
+      return data.keys().hasAll(['userId', 'patternId', 'projectId']) &&
+        data.userId is string &&
+        data.patternId is string &&
+        data.projectId is string &&
+        (
+          !('currentStep' in data) || 
+          (data.currentStep is number && data.currentStep >= 1)
+        ) &&
+        (
+          !('status' in data) || 
+          data.status in ['not_started', 'in_progress', 'paused', 'completed', 'abandoned']
+        ) &&
+        (
+          !('privacy' in data) || 
+          (data.privacy is map && validatePrivacySettings(data.privacy))
+        ) &&
+        (
+          !('images' in data) || 
+          (data.images is list && validateImageArray(data.images))
+        );
+    }
+    
+    // Validate privacy settings
+    function validatePrivacySettings(privacy) {
+      return (
+        !('shareProgress' in privacy) || privacy.shareProgress is bool
+      ) &&
+      (
+        !('shareLocation' in privacy) || privacy.shareLocation is bool
+      ) &&
+      (
+        !('sharePhotos' in privacy) || privacy.sharePhotos is bool
+      ) &&
+      (
+        !('profileVisibility' in privacy) || 
+        privacy.profileVisibility in ['public', 'friends', 'private']
+      );
+    }
+    
+    // Validate image array structure
+    function validateImageArray(images) {
+      return images.size() <= 50 && // Limit to 50 images per pattern
+        images.hasOnly(['id', 'step', 'timestamp', 'url', 'thumbnailUrl', 'caption', 'type', 'metadata']);
+    }
   }
 }
-*/

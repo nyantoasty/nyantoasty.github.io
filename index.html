@@ -17,9 +17,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* CSS Custom Properties for Light/Dark Mode Theming */
+        /* CSS Custom Properties for Dynamic Pattern-Based Theming */
+        /* Colors will be dynamically injected by generatePatternTheme() */
         :root {
-            /* Dark mode colors (default) */
+            /* Default fallback colors - will be overridden dynamically */
             --color-main: #93c5fd;
             --color-increase: #86efac;
             --color-decrease: #f87171;
@@ -35,25 +36,6 @@
             --color-repeat: #ff6b6b;
             --color-bind: #9ca3af;
             --color-cast: #9ca3af;
-        }
-        
-        /* Light mode colors */
-        [data-theme="light"] {
-            --color-main: #1e40af;
-            --color-increase: #059669;
-            --color-decrease: #dc2626;
-            --color-edge: #7c3aed;
-            --color-spine: #dc2626;
-            --color-bobble: #d97706;
-            --color-lace: #e11d48;
-            --color-cable: #2563eb;
-            --color-texture: #ca8a04;
-            --color-stitch: #7c2d12;
-            --color-special: #047857;
-            --color-marker: #ea580c;
-            --color-repeat: #dc2626;
-            --color-bind: #4b5563;
-            --color-cast: #4b5563;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: #111827; color: #d1d5db; transition: all 0.3s ease; }
@@ -1104,6 +1086,11 @@
         // Generate pattern content
         const patternContentEl = document.getElementById('pattern-content');
         patternContentEl.innerHTML = '';
+        
+        // Generate dynamic color theme based on pattern data
+        // This replaces hardcoded CSS colors with pattern-specific colors
+        generatePatternTheme(PATTERN_DATA);
+        
         generateGlossary(PATTERN_DATA);
         generateInstructions(PATTERN_DATA);
         
@@ -1111,7 +1098,10 @@
         updateFooterMetadata();
         
         // Load progress and setup interactions
-        loadProgress();
+        const currentStepInput = document.getElementById('current-step-input');
+        if (currentStepInput && window.currentProject) {
+            currentStepInput.value = window.currentProject.currentStep || 1;
+        }
         setupInteractiveFeatures();
         
         console.log('✅ Viewer setup complete for:', name);
@@ -2168,6 +2158,18 @@
     }
 
     // Add missing updateFooterMetadata function
+    function updateCurrentStepDisplay() {
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.value = currentStep;
+        }
+        
+        // Highlight current step
+        highlightCurrentStep(true);
+        
+        console.log('🔧 Current step display updated to:', currentStep);
+    }
+    
     function updateFooterMetadata() {
         console.log('🏷️ updateFooterMetadata called');
         const currentPatternName = document.getElementById('current-pattern-name');

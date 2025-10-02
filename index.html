@@ -1556,31 +1556,6 @@
 
     // saveProgress is imported from viewer-logic.js - no local definition needed
 
-    // Add missing findStepElement function at global scope
-    function findStepElement(stepNumber) {
-        console.log(`Looking for step element: ${stepNumber}`);
-        
-        // Try exact step match first
-        let element = document.querySelector(`[data-step="${stepNumber}"]`);
-        if (element) {
-            console.log(`Found exact step element for ${stepNumber}`);
-            return element;
-        }
-        
-        // Try step range match
-        const rangeElements = document.querySelectorAll('[data-step-start][data-step-end]');
-        for (const el of rangeElements) {
-            const start = parseInt(el.dataset.stepStart, 10);
-            const end = parseInt(el.dataset.stepEnd, 10);
-            if (stepNumber >= start && stepNumber <= end) {
-                console.log(`Found step range element for ${stepNumber} (${start}-${end})`);
-                return el;
-            }
-        }
-        
-        console.log(`No element found for step ${stepNumber}`);
-        return null;
-    }
         const findStitchBtn = document.getElementById('find-stitch-btn');
         const stitchInput = document.getElementById('stitch-input');        function findStitch() {
             const stitchNumber = parseInt(stitchInput.value);

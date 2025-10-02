@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const vision = require('@google-cloud/vision');
-const cors = require('cors')({ origin: 'https://nyantoasty.github.io' });
+// Note: CORS is automatically handled by Firebase onCall functions
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(functions.config().gemini.key); // Set with: firebase functions:config:set gemini.key="your-api-key"
@@ -132,13 +132,12 @@ Return ONLY the complete JSON structure following the schema exactly. Do not inc
 
 // Rate limiting function
 exports.checkAiUsage = functions.https.onCall(async (data, context) => {
-  // Handle CORS
-  return cors(data, context, async () => {
+  try {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
     }
 
-  const admin = require('firebase-admin');
+    const admin = require('firebase-admin');
   const db = admin.firestore();
   
   const today = new Date().toISOString().split('T')[0];
@@ -159,23 +158,25 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
     lastUsed: admin.firestore.FieldValue.serverTimestamp()
   }, { merge: true });
   
-  return { 
-    remaining: dailyLimit - (currentCount + 1),
-    limit: dailyLimit 
-  };
-  });
+    return { 
+      remaining: dailyLimit - (currentCount + 1),
+      limit: dailyLimit 
+    };
+  } catch (error) {
+    console.error('AI usage check error:', error);
+    throw new functions.https.HttpsError('internal', 'Failed to check AI usage');
+  }
 });
 
 // OCR Processing Function
 exports.processOCR = functions.https.onCall(async (data, context) => {
-  // Handle CORS
-  return cors(data, context, async () => {
+  try {
     // Ensure user is authenticated
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use OCR');
     }
 
-  const { fileData, fileName, mimeType } = data;
+    const { fileData, fileName, mimeType } = data;
 
   if (!fileData) {
     throw new functions.https.HttpsError('invalid-argument', 'File data is required');
@@ -254,5 +255,4 @@ exports.processOCR = functions.https.onCall(async (data, context) => {
     
     throw new functions.https.HttpsError('internal', `Failed to process ${fileName}: ${error.message}`);
   }
-  });
 });

@@ -513,20 +513,29 @@ export function generatePatternTheme(PATTERN_DATA) {
     
     console.log('Generated pattern theme for categories:', Array.from(categories));
     
-    // Define color mappings
+    // Define color mappings using CSS custom properties
     const colorMap = {
-        main: '#93c5fd',
-        increase: '#86efac', 
-        edge: '#d8b4fe',
-        decrease: '#f87171',
-        spine: '#f87171',
-        bobble: '#fbbf24'  // Golden yellow for bobbles
+        main: 'var(--color-main)',
+        increase: 'var(--color-increase)', 
+        edge: 'var(--color-edge)',
+        decrease: 'var(--color-decrease)',
+        spine: 'var(--color-spine)',
+        bobble: 'var(--color-bobble)',
+        lace: 'var(--color-lace)',
+        cable: 'var(--color-cable)',
+        texture: 'var(--color-texture)',
+        stitch: 'var(--color-stitch)',
+        special: 'var(--color-special)',
+        marker: 'var(--color-marker)',
+        repeat: 'var(--color-repeat)',
+        bind: 'var(--color-bind)',
+        cast: 'var(--color-cast)'
     };
     
     // Generate CSS rules
     let cssRules = 'CSS Rules: ';
     categories.forEach(cat => {
-        const color = colorMap[cat] || '#93c5fd';
+        const color = colorMap[cat] || 'var(--color-main)';
         cssRules += `.${cat} { color: ${color}; } `;
     });
     
@@ -539,11 +548,60 @@ export function generatePatternTheme(PATTERN_DATA) {
         styleEl.id = 'pattern-theme';
         document.head.appendChild(styleEl);
     }
-    
+
     const dynamicCSS = Array.from(categories).map(cat => {
-        const color = colorMap[cat] || '#93c5fd';
+        const color = colorMap[cat] || 'var(--color-main)';
         return `.${cat} { color: ${color}; font-weight: 500; }`;
     }).join('\n');
     
     styleEl.textContent = dynamicCSS;
+    
+    // Update sidebar color key
+    updateSidebarColorKey(categories, colorMap);
+}
+
+// Function to update the sidebar color key dynamically
+function updateSidebarColorKey(categories, colorMap) {
+    const sidebarColorKey = document.getElementById('sidebar-color-key');
+    if (!sidebarColorKey) return;
+    
+    // Define category descriptions
+    const categoryDescriptions = {
+        main: 'Basic stitches',
+        increase: 'Increase stitches',
+        decrease: 'Decrease stitches',
+        edge: 'Edge/border stitches',
+        spine: 'Spine stitches',
+        bobble: 'Bobble stitches',
+        lace: 'Lace stitches',
+        cable: 'Cable stitches',
+        texture: 'Texture stitches',
+        stitch: 'Special stitches',
+        special: 'Special techniques',
+        marker: 'Stitch markers',
+        repeat: 'Repeat sections',
+        bind: 'Bind off',
+        cast: 'Cast on'
+    };
+    
+    let colorKeyHTML = '';
+    
+    // Show only categories that exist in the current pattern
+    Array.from(categories).forEach(cat => {
+        const description = categoryDescriptions[cat] || cat;
+        const color = colorMap[cat] || 'var(--color-main)';
+        
+        colorKeyHTML += `
+            <div class="flex items-center gap-2">
+                <span class="${cat} font-semibold">${cat}:</span>
+                <span class="text-gray-400">${description}</span>
+            </div>
+        `;
+    });
+    
+    if (colorKeyHTML === '') {
+        colorKeyHTML = '<div class="text-gray-400 text-sm">No color categories found</div>';
+    }
+    
+    sidebarColorKey.innerHTML = colorKeyHTML;
 }

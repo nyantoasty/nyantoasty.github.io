@@ -16,6 +16,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* CSS Custom Properties for Light/Dark Mode Theming */
+        :root {
+            /* Dark mode colors (default) */
+            --color-main: #93c5fd;
+            --color-increase: #86efac;
+            --color-decrease: #f87171;
+            --color-edge: #d8b4fe;
+            --color-spine: #f87171;
+            --color-bobble: #fbbf24;
+            --color-lace: #fb7185;
+            --color-cable: #60a5fa;
+            --color-texture: #fcd34d;
+            --color-stitch: #a78bfa;
+            --color-special: #34d399;
+            --color-marker: #ff9800;
+            --color-repeat: #ff6b6b;
+            --color-bind: #9ca3af;
+            --color-cast: #9ca3af;
+        }
+        
+        /* Light mode colors */
+        [data-theme="light"] {
+            --color-main: #1e40af;
+            --color-increase: #059669;
+            --color-decrease: #dc2626;
+            --color-edge: #7c3aed;
+            --color-spine: #dc2626;
+            --color-bobble: #d97706;
+            --color-lace: #e11d48;
+            --color-cable: #2563eb;
+            --color-texture: #ca8a04;
+            --color-stitch: #7c2d12;
+            --color-special: #047857;
+            --color-marker: #ea580c;
+            --color-repeat: #dc2626;
+            --color-bind: #4b5563;
+            --color-cast: #4b5563;
+        }
+
         body { font-family: 'Inter', sans-serif; background-color: #111827; }
         .mono { font-family: 'Roboto Mono', monospace; }
         .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
@@ -38,12 +77,42 @@
         .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
         .stitch-clickable:hover { opacity: 0.8; }
         .bobble { color: #fbbf24 !important; font-weight: 600; }
-        .increase { color: #86efac !important; font-weight: 500; }
-        .decrease { color: #f87171 !important; font-weight: 500; }
-        .main { color: #93c5fd !important; font-weight: 400; }
+        /* Stitch Color Classes - Using CSS Custom Properties */
+        .main { color: var(--color-main) !important; font-weight: 400; }
+        .increase { color: var(--color-increase) !important; font-weight: 500; }
+        .decrease { color: var(--color-decrease) !important; font-weight: 500; }
+        .edge { color: var(--color-edge) !important; font-weight: 500; }
+        .spine { color: var(--color-spine) !important; font-weight: 600; }
+        .bobble { color: var(--color-bobble) !important; font-weight: 600; }
+        .lace { color: var(--color-lace) !important; font-weight: 500; }
+        .cable { color: var(--color-cable) !important; font-weight: 600; }
+        .texture { color: var(--color-texture) !important; font-weight: 500; }
+        .stitch { color: var(--color-stitch) !important; font-weight: 400; }
+        .special { color: var(--color-special) !important; font-weight: 600; }
+        .marker { color: var(--color-marker) !important; font-weight: 500; }
+        .repeat { color: var(--color-repeat) !important; font-weight: 500; }
+        .bind { color: var(--color-bind) !important; font-weight: 500; }
+        .cast { color: var(--color-cast) !important; font-weight: 500; }
+        
+        /* Color classes for sidebar use */
+        .color-main { color: var(--color-main) !important; }
+        .color-increase { color: var(--color-increase) !important; }
+        .color-decrease { color: var(--color-decrease) !important; }
+        .color-edge { color: var(--color-edge) !important; }
+        .color-spine { color: var(--color-spine) !important; }
+        .color-bobble { color: var(--color-bobble) !important; }
+        .color-lace { color: var(--color-lace) !important; }
+        .color-cable { color: var(--color-cable) !important; }
+        .color-texture { color: var(--color-texture) !important; }
+        .color-stitch { color: var(--color-stitch) !important; }
+        .color-special { color: var(--color-special) !important; }
+        .color-marker { color: var(--color-marker) !important; }
+        .color-repeat { color: var(--color-repeat) !important; }
+        .color-bind { color: var(--color-bind) !important; }
+        .color-cast { color: var(--color-cast) !important; }
+        
         .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
         .stitch-clickable:hover { opacity: 0.8; }
-        .bobble { color: #fbbf24; font-weight: 600; }
         
         /* Sidebar Styles */
         #pattern-sidebar {
@@ -71,7 +140,7 @@
     </button>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-20 z-50 hidden"></div>
 
     <!-- Pattern Tools Sidebar -->
     <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-gray-800 border-r border-gray-700 p-6 z-[60] overflow-y-auto">
@@ -102,19 +171,8 @@
             <!-- Color Key -->
             <div>
                 <h3 class="text-lg font-semibold text-gray-300 mb-3">Color Key</h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex items-center gap-2">
-                        <span class="increase font-semibold">kfb, YO:</span>
-                        <span class="text-gray-400">Increase</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="decrease font-semibold">k2tog, BO1:</span>
-                        <span class="text-gray-400">Decrease</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="bobble font-semibold">MB3/5/7/9:</span>
-                        <span class="text-gray-400">Make Bobble</span>
-                    </div>
+                <div id="sidebar-color-key" class="space-y-2 text-sm">
+                    <!-- Will be populated dynamically from pattern data -->
                 </div>
             </div>
 
@@ -1572,13 +1630,24 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
             return;
         }
         
+        // Clear any existing event listeners
+        const newSidebarGlossary = sidebarGlossary.cloneNode(false);
+        sidebarGlossary.parentNode.replaceChild(newSidebarGlossary, sidebarGlossary);
+        
         let glossaryHTML = '';
+        const usedCategories = new Set();
+        
         for (const [key, item] of Object.entries(PATTERN_DATA.glossary)) {
             if (item && item.name) {
                 const category = getInstructionCategory(key, PATTERN_DATA);
+                usedCategories.add(category);
+                
+                // Get the color for this category from CSS variables
+                const colorClass = `color-${category}`;
+                
                 glossaryHTML += `
                     <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
-                        <div class="${category} font-bold text-lg mb-1">${key}</div>
+                        <div class="${colorClass} font-bold text-lg mb-1" style="color: var(--color-${category})">${key}</div>
                         <div class="text-gray-300 font-medium mb-1">${item.name}</div>
                         ${item.description ? `<div class="text-gray-400 text-sm leading-relaxed">${item.description}</div>` : ''}
                     </div>
@@ -1586,16 +1655,19 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
             }
         }
         
-        sidebarGlossary.innerHTML = glossaryHTML;
+        newSidebarGlossary.innerHTML = glossaryHTML;
         
         // Add click handlers for sidebar glossary items
-        sidebarGlossary.addEventListener('click', (e) => {
+        newSidebarGlossary.addEventListener('click', (e) => {
             const stitchDiv = e.target.closest('[data-stitch]');
             if (stitchDiv) {
                 const stitchCode = stitchDiv.dataset.stitch;
                 showStitchDefinition(stitchCode);
             }
         });
+        
+        // Update the sidebar color key to reflect the actual categories used
+        updateSidebarColorKey(usedCategories);
     }
     
     closeStitchModal.addEventListener('click', hideStitchDefinition);

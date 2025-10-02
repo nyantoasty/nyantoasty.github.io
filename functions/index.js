@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const vision = require('@google-cloud/vision');
+const cors = require('cors')({ origin: 'https://nyantoasty.github.io' });
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(functions.config().gemini.key); // Set with: firebase functions:config:set gemini.key="your-api-key"
@@ -49,10 +50,12 @@ const LOGIC_GUIDE_PROMPT = `You are an expert knitting pattern parser. Your task
 Return only valid JSON, no explanations.`;
 
 exports.generatePattern = functions.https.onCall(async (data, context) => {
-  // Ensure user is authenticated
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use AI generation');
-  }
+  // Handle CORS
+  return cors(data, context, async () => {
+    // Ensure user is authenticated
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use AI generation');
+    }
 
   const { patternText, patternName, patternAuthor } = data;
 
@@ -124,13 +127,16 @@ Return ONLY the complete JSON structure following the schema exactly. Do not inc
     
     throw new functions.https.HttpsError('internal', 'Failed to generate pattern');
   }
+  });
 });
 
 // Rate limiting function
 exports.checkAiUsage = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
-  }
+  // Handle CORS
+  return cors(data, context, async () => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
+    }
 
   const admin = require('firebase-admin');
   const db = admin.firestore();
@@ -157,14 +163,17 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
     remaining: dailyLimit - (currentCount + 1),
     limit: dailyLimit 
   };
+  });
 });
 
 // OCR Processing Function
 exports.processOCR = functions.https.onCall(async (data, context) => {
-  // Ensure user is authenticated
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use OCR');
-  }
+  // Handle CORS
+  return cors(data, context, async () => {
+    // Ensure user is authenticated
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use OCR');
+    }
 
   const { fileData, fileName, mimeType } = data;
 
@@ -245,4 +254,5 @@ exports.processOCR = functions.https.onCall(async (data, context) => {
     
     throw new functions.https.HttpsError('internal', `Failed to process ${fileName}: ${error.message}`);
   }
+  });
 });

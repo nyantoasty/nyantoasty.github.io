@@ -513,8 +513,27 @@ export function generatePatternTheme(PATTERN_DATA) {
     
     console.log('Generated pattern theme for categories:', Array.from(categories));
     
-    // Define color mappings using CSS custom properties
-    const colorMap = {
+    // Define a palette of colors to cycle through
+    const colorPalette = [
+        'var(--color-main)',
+        'var(--color-increase)', 
+        'var(--color-decrease)',
+        'var(--color-edge)',
+        'var(--color-spine)',
+        'var(--color-bobble)',
+        'var(--color-lace)',
+        'var(--color-cable)',
+        'var(--color-texture)',
+        'var(--color-stitch)',
+        'var(--color-special)',
+        'var(--color-marker)',
+        'var(--color-repeat)',
+        'var(--color-bind)',
+        'var(--color-cast)'
+    ];
+    
+    // Define color mappings for known categories
+    const predefinedColorMap = {
         main: 'var(--color-main)',
         increase: 'var(--color-increase)', 
         edge: 'var(--color-edge)',
@@ -532,7 +551,19 @@ export function generatePatternTheme(PATTERN_DATA) {
         cast: 'var(--color-cast)'
     };
     
-    // Generate CSS rules
+    // Create dynamic color map by assigning colors to categories by index
+    const colorMap = {};
+    const categoriesArray = Array.from(categories);
+    categoriesArray.forEach((cat, index) => {
+        if (predefinedColorMap[cat]) {
+            colorMap[cat] = predefinedColorMap[cat];
+        } else {
+            // Assign color by index, cycling through palette if needed
+            colorMap[cat] = colorPalette[index % colorPalette.length];
+        }
+    });
+    
+    // Generate CSS rules for debugging
     let cssRules = 'CSS Rules: ';
     categories.forEach(cat => {
         const color = colorMap[cat] || 'var(--color-main)';
@@ -540,6 +571,7 @@ export function generatePatternTheme(PATTERN_DATA) {
     });
     
     console.log(cssRules);
+    console.log('Final color map:', colorMap);
     
     // Inject or update the dynamic theme
     let styleEl = document.getElementById('pattern-theme');
@@ -561,9 +593,28 @@ export function generatePatternTheme(PATTERN_DATA) {
 }
 
 // Function to update the sidebar color key dynamically
-export function updateSidebarColorKey(categories, colorMap) {
+export function updateSidebarColorKey(categories, colorMap = null) {
     const sidebarColorKey = document.getElementById('sidebar-color-key');
     if (!sidebarColorKey) return;
+    
+    // Define a palette of colors to cycle through
+    const colorPalette = [
+        'var(--color-main)',
+        'var(--color-increase)', 
+        'var(--color-decrease)',
+        'var(--color-edge)',
+        'var(--color-spine)',
+        'var(--color-bobble)',
+        'var(--color-lace)',
+        'var(--color-cable)',
+        'var(--color-texture)',
+        'var(--color-stitch)',
+        'var(--color-special)',
+        'var(--color-marker)',
+        'var(--color-repeat)',
+        'var(--color-bind)',
+        'var(--color-cast)'
+    ];
     
     // Define category descriptions
     const categoryDescriptions = {
@@ -586,14 +637,23 @@ export function updateSidebarColorKey(categories, colorMap) {
     
     let colorKeyHTML = '';
     
-    // Show only categories that exist in the current pattern
-    Array.from(categories).forEach(cat => {
+    // Convert categories to array and assign colors by index
+    const categoriesArray = Array.from(categories);
+    categoriesArray.forEach((cat, index) => {
         const description = categoryDescriptions[cat] || cat;
-        const color = colorMap[cat] || 'var(--color-main)';
+        
+        // Get color from colorMap if provided, otherwise assign by index from palette
+        let color;
+        if (colorMap && colorMap[cat]) {
+            color = colorMap[cat];
+        } else {
+            // Cycle through palette if we have more categories than colors
+            color = colorPalette[index % colorPalette.length];
+        }
         
         colorKeyHTML += `
             <div class="flex items-center gap-2">
-                <span class="${cat} font-semibold">${cat}:</span>
+                <span class="${cat} font-semibold" style="color: ${color};">${cat}:</span>
                 <span class="text-gray-400">${description}</span>
             </div>
         `;

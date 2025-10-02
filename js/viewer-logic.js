@@ -101,41 +101,28 @@ export function updateDisplay(currentStep, shouldScroll = true) {
         }
     }
     
-    // Highlight current step and add outlines to previous steps
+    // PERFORMANCE FIX: Use CSS classes instead of inline styles and batch DOM operations
+    // Remove current step highlighting from all elements at once
     const allSteps = document.querySelectorAll('[data-step], [data-step-start]');
     allSteps.forEach(el => {
-        el.classList.remove('current-step');
-        el.style.backgroundColor = '';
-        el.style.padding = '';
-        el.style.margin = '';
-        el.style.borderRadius = '';
-        el.style.border = '';
+        el.classList.remove('current-step', 'previous-step');
     });
     
-    // Add subtle outlines to all previous steps
-    for (let i = 1; i < currentStep; i++) {
-        const prevStepEl = findStepElement(i);
-        if (prevStepEl) {
-            prevStepEl.style.border = '1px solid rgba(139, 92, 246, 0.3)';
-            prevStepEl.style.borderRadius = '0.25rem';
-            prevStepEl.style.padding = '0.25rem';
-            prevStepEl.style.margin = '0.125rem 0';
-        }
-    }
-    
-    // Highlight current step with stronger styling
+    // Only highlight the current step - no more looping through hundreds of previous steps!
     const currentStepEl = findStepElement(currentStep);
     if (currentStepEl) {
         currentStepEl.classList.add('current-step');
-        // Enhanced highlighting with better visibility
-        currentStepEl.style.backgroundColor = 'rgba(139, 92, 246, 0.3)';
-        currentStepEl.style.padding = '0.75rem';
-        currentStepEl.style.margin = '0.25rem 0';
-        currentStepEl.style.borderRadius = '0.5rem';
-        currentStepEl.style.border = '2px solid rgba(139, 92, 246, 0.5)';
         
         if (shouldScroll) {
             currentStepEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    
+    // Optional: Mark only the immediately previous step if needed
+    if (currentStep > 1) {
+        const prevStepEl = findStepElement(currentStep - 1);
+        if (prevStepEl) {
+            prevStepEl.classList.add('previous-step');
         }
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02-debug-row-navigation -->
+<!-- Version: v2025-10-02- fixing inefficient code -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -97,8 +97,23 @@
         }
         
         .mono { font-family: 'Roboto Mono', monospace; }
-        .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
-        [data-theme="light"] .current-step { background-color: rgba(139, 92, 246, 0.1); }
+        /* PERFORMANCE OPTIMIZED: Use CSS classes instead of inline styles for step highlighting */
+        .current-step { 
+            background-color: rgba(139, 92, 246, 0.3) !important; 
+            border-radius: 0.5rem !important;
+            padding: 0.75rem !important;
+            margin: 0.25rem 0 !important;
+            border: 2px solid rgba(139, 92, 246, 0.5) !important;
+        }
+        .previous-step {
+            border: 1px solid rgba(139, 92, 246, 0.3) !important;
+            border-radius: 0.25rem !important;
+            padding: 0.25rem !important;
+            margin: 0.125rem 0 !important;
+        }
+        [data-theme="light"] .current-step { 
+            background-color: rgba(139, 92, 246, 0.2) !important; 
+        }
         .pattern-text p { 
             padding: 0.5rem 0.75rem; 
             margin-bottom: 0.25rem; 
@@ -514,6 +529,7 @@
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
     import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
     import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
     
     // --- CONFIG & STATE ---
@@ -1416,9 +1432,8 @@
         
         try {
             const userId = auth.currentUser.uid;
-            const projectId = projectName || `Project_${Date.now()}`;
             
-            // Load pattern metadata
+            // Load pattern metadata to get the actual pattern name and author
             const patternDoc = await getDoc(doc(db, 'patterns', patternId));
             if (!patternDoc.exists()) {
                 alert('Selected pattern not found.');
@@ -1426,9 +1441,24 @@
             }
             
             const patternData = patternDoc.data();
+            const patternName = patternData.metadata?.name || patternData.name || 'Unknown Pattern';
+            const patternAuthor = patternData.metadata?.author || patternData.author || 'Unknown Author';
             
-            // Create initial progress entry using createNewProject
-            await createNewProject(db, userId, patternId, projectId, patternData.metadata?.name || patternId);
+            // Use user's custom project name or create a meaningful default
+            const finalProjectName = projectName || `${patternName} Project`;
+            
+            // Create project with proper pattern information
+            const newProject = await createNewProject(db, userId, patternId, finalProjectName);
+            
+            // Update the project with pattern metadata that wasn't included in createNewProject
+            const progressId = `${userId}_${patternId}_${newProject.projectId}`;
+            await updateDoc(doc(db, 'user_pattern_progress', progressId), {
+                patternName: patternName,
+                patternAuthor: patternAuthor,
+                'patternMetadata.name': patternName,
+                'patternMetadata.author': patternAuthor,
+                'patternMetadata.source': 'firestore'
+            });
             
             // Close modal
             document.getElementById('new-project-modal').remove();
@@ -2312,13 +2342,11 @@
         if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
             stepInput.setAttribute('data-listener-added', 'true');
             stepInput.addEventListener('change', async () => {
-                console.log('📍 Step input change event fired! Old value:', currentStep, 'New input value:', stepInput.value);
                 currentStep = parseInt(stepInput.value) || 1;
                 if (currentStep < 1) currentStep = 1;
                 if (currentStep > maxSteps) currentStep = maxSteps;
                 stepInput.value = currentStep;
                 window.currentStep = currentStep; // Update global
-                console.log('📍 Step input changed to:', currentStep);
                 
                 if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
                     await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
@@ -2345,12 +2373,10 @@
         if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
             prevBtn.setAttribute('data-listener-added', 'true');
             prevBtn.addEventListener('click', async () => {
-                console.log('🔍 Previous button clicked - BEFORE:', currentStep);
                 if (currentStep > 1) {
                     currentStep--;
                     stepInput.value = currentStep;
                     window.currentStep = currentStep; // Update global
-                    console.log('📍 Previous button clicked - AFTER:', currentStep);
                     
                     if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
                         await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
@@ -2377,12 +2403,10 @@
         if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
             nextBtn.setAttribute('data-listener-added', 'true');
             nextBtn.addEventListener('click', async () => {
-                console.log('🔍 Next button clicked - BEFORE:', currentStep);
                 if (currentStep < maxSteps) {
                     currentStep++;
                     stepInput.value = currentStep;
                     window.currentStep = currentStep; // Update global
-                    console.log('📍 Next button clicked - AFTER:', currentStep);
                     
                     if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
                         await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
@@ -2427,7 +2451,6 @@
         if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
             jumpToStartBtn.setAttribute('data-listener-added', 'true');
             jumpToStartBtn.addEventListener('click', async () => {
-                console.log('🏠 Jump to Start clicked');
                 currentStep = 1;
                 stepInput.value = 1;
                 if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
@@ -2478,11 +2501,9 @@
                 
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                     e.preventDefault();
-                    console.log('⌨️ Arrow right/down pressed - BEFORE:', currentStep);
                     if (currentStep < maxSteps) {
                         currentStep++;
                         stepInput.value = currentStep;
-                        console.log('📍 Keyboard nav - AFTER:', currentStep);
                         if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
                             await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                                 currentStep: currentStep
@@ -2497,11 +2518,9 @@
                 
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                     e.preventDefault();
-                    console.log('⌨️ Arrow left/up pressed - BEFORE:', currentStep);
                     if (currentStep > 1) {
                         currentStep--;
                         stepInput.value = currentStep;
-                        console.log('📍 Keyboard nav - AFTER:', currentStep);
                         if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
                             await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                                 currentStep: currentStep

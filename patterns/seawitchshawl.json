@@ -1,0 +1,2569 @@
+{
+  "metadata": {
+    "name": "Sea Witch - Tentacle Spiral Scarf",
+    "author": "Jay Edwards",
+    "craft": "knitting",
+    "maxSteps": 280
+  },
+  "glossary": {
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "p": {
+      "name": "Purl",
+      "description": "Purl stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "kfb": {
+      "name": "Knit Front & Back",
+      "description": "Knit into the front then back of the same stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 2
+    },
+    "k2tog": {
+      "name": "Knit 2 Together",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "yo": {
+      "name": "Yarn Over",
+      "description": "Increase.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 1
+    },
+    "BO1": {
+      "name": "Bind Off 1",
+      "description": "Knit 2 stitches, then slip the first stitch over the second stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 0
+    },
+"MB3": {
+  "name": "Make Bobble 3",
+  "description": "Into one stitch: (Knit, YO) 1 time, then knit again (3 sts total). Turn, p3. Turn, k3. To finish, pass the second stitch on the right needle over the first stitch 2 times.",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1
+},
+"MB5": {
+  "name": "Make Bobble 5",
+  "description": "Into one stitch: (Knit, YO) 2 times, then knit again (5 sts total). Turn, p5. Turn, k5. Repeat the last two rows 1 more time. To finish, pass the second stitch on the right needle over the first stitch 4 times.",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1
+},
+"MB7": {
+  "name": "Make Bobble 7",
+  "description": "Into one stitch: (Knit, YO) 3 times, then knit again (7 sts total). Turn, p7. Turn, k7. Repeat the last two rows 1 more time. To finish, pass the second stitch on the right needle over the first stitch 6 times.",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1
+},
+"MB9": {
+  "name": "Make Bobble 9",
+  "description": "Into one stitch: (Knit, YO) 4 times, then knit again (9 sts total). Turn, p9. Turn, k9. Repeat the last two rows 2 more times. To finish, pass the second stitch on the right needle over the first stitch 8 times.",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1
+}
+  },
+  "steps": [
+    {
+      "step": 0,
+      "description": "Cast on 3 sts.",
+      "section": "Section 1: Setup",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 1,
+      "startingStitchCount": 3,
+      "endingStitchCount": 4,
+      "instruction": "k1, kfb, k1",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 2,
+      "startingStitchCount": 4,
+      "endingStitchCount": 4,
+      "instruction": "BO1, kfb, k1",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 3,
+      "startingStitchCount": 4,
+      "endingStitchCount": 5,
+      "instruction": "k2, kfb, k1",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 4,
+      "startingStitchCount": 5,
+      "endingStitchCount": 5,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 5,
+      "startingStitchCount": 5,
+      "endingStitchCount": 6,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 6,
+      "startingStitchCount": 6,
+      "endingStitchCount": 6,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 7,
+      "startingStitchCount": 6,
+      "endingStitchCount": 7,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 8,
+      "startingStitchCount": 7,
+      "endingStitchCount": 7,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 9,
+      "startingStitchCount": 7,
+      "endingStitchCount": 8,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 10,
+      "startingStitchCount": 8,
+      "endingStitchCount": 8,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 11,
+      "startingStitchCount": 8,
+      "endingStitchCount": 9,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 12,
+      "startingStitchCount": 9,
+      "endingStitchCount": 9,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 13,
+      "startingStitchCount": 9,
+      "endingStitchCount": 10,
+      "instruction": "k2, kfb, k1, MB3, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 14,
+      "startingStitchCount": 10,
+      "endingStitchCount": 10,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 15,
+      "startingStitchCount": 10,
+      "endingStitchCount": 11,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 16,
+      "startingStitchCount": 11,
+      "endingStitchCount": 11,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 17,
+      "startingStitchCount": 11,
+      "endingStitchCount": 12,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 18,
+      "startingStitchCount": 12,
+      "endingStitchCount": 12,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 19,
+      "startingStitchCount": 12,
+      "endingStitchCount": 13,
+      "instruction": "k2, kfb, k1, MB3, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 20,
+      "startingStitchCount": 13,
+      "endingStitchCount": 13,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 21,
+      "startingStitchCount": 13,
+      "endingStitchCount": 14,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 22,
+      "startingStitchCount": 14,
+      "endingStitchCount": 14,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 23,
+      "startingStitchCount": 14,
+      "endingStitchCount": 15,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 24,
+      "startingStitchCount": 15,
+      "endingStitchCount": 15,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 25,
+      "startingStitchCount": 15,
+      "endingStitchCount": 16,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 26,
+      "startingStitchCount": 16,
+      "endingStitchCount": 16,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 27,
+      "startingStitchCount": 16,
+      "endingStitchCount": 17,
+      "instruction": "k2, kfb, k3, MB5, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 28,
+      "startingStitchCount": 17,
+      "endingStitchCount": 17,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 29,
+      "startingStitchCount": 17,
+      "endingStitchCount": 18,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 30,
+      "startingStitchCount": 18,
+      "endingStitchCount": 18,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 31,
+      "startingStitchCount": 18,
+      "endingStitchCount": 19,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 32,
+      "startingStitchCount": 19,
+      "endingStitchCount": 19,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 33,
+      "startingStitchCount": 19,
+      "endingStitchCount": 20,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 34,
+      "startingStitchCount": 20,
+      "endingStitchCount": 20,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 35,
+      "startingStitchCount": 20,
+      "endingStitchCount": 21,
+      "instruction": "k2, kfb, k3, MB5, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 36,
+      "startingStitchCount": 21,
+      "endingStitchCount": 21,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 37,
+      "startingStitchCount": 21,
+      "endingStitchCount": 22,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 38,
+      "startingStitchCount": 22,
+      "endingStitchCount": 22,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 39,
+      "startingStitchCount": 22,
+      "endingStitchCount": 23,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 40,
+      "startingStitchCount": 23,
+      "endingStitchCount": 23,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 41,
+      "startingStitchCount": 23,
+      "endingStitchCount": 24,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 42,
+      "startingStitchCount": 24,
+      "endingStitchCount": 24,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 43,
+      "startingStitchCount": 24,
+      "endingStitchCount": 25,
+      "instruction": "k2, kfb, k3, MB5, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 44,
+      "startingStitchCount": 25,
+      "endingStitchCount": 25,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 45,
+      "startingStitchCount": 25,
+      "endingStitchCount": 26,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 46,
+      "startingStitchCount": 26,
+      "endingStitchCount": 26,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 47,
+      "startingStitchCount": 26,
+      "endingStitchCount": 27,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 48,
+      "startingStitchCount": 27,
+      "endingStitchCount": 27,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 49,
+      "startingStitchCount": 27,
+      "endingStitchCount": 28,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 50,
+      "startingStitchCount": 28,
+      "endingStitchCount": 28,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 51,
+      "startingStitchCount": 28,
+      "endingStitchCount": 29,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 52,
+      "startingStitchCount": 29,
+      "endingStitchCount": 29,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 53,
+      "startingStitchCount": 29,
+      "endingStitchCount": 30,
+      "instruction": "k2, kfb, k4, MB7, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 54,
+      "startingStitchCount": 30,
+      "endingStitchCount": 30,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 55,
+      "startingStitchCount": 30,
+      "endingStitchCount": 31,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 56,
+      "startingStitchCount": 31,
+      "endingStitchCount": 31,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 57,
+      "startingStitchCount": 31,
+      "endingStitchCount": 32,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 58,
+      "startingStitchCount": 32,
+      "endingStitchCount": 32,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 59,
+      "startingStitchCount": 32,
+      "endingStitchCount": 33,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 60,
+      "startingStitchCount": 33,
+      "endingStitchCount": 33,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 61,
+      "startingStitchCount": 33,
+      "endingStitchCount": 34,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 62,
+      "startingStitchCount": 34,
+      "endingStitchCount": 34,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 63,
+      "startingStitchCount": 34,
+      "endingStitchCount": 35,
+      "instruction": "k2, kfb, k4, MB7, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 64,
+      "startingStitchCount": 35,
+      "endingStitchCount": 35,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 65,
+      "startingStitchCount": 35,
+      "endingStitchCount": 36,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 66,
+      "startingStitchCount": 36,
+      "endingStitchCount": 36,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 67,
+      "startingStitchCount": 36,
+      "endingStitchCount": 37,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 68,
+      "startingStitchCount": 37,
+      "endingStitchCount": 37,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 69,
+      "startingStitchCount": 37,
+      "endingStitchCount": 38,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 70,
+      "startingStitchCount": 38,
+      "endingStitchCount": 38,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 71,
+      "startingStitchCount": 38,
+      "endingStitchCount": 39,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 72,
+      "startingStitchCount": 39,
+      "endingStitchCount": 39,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 73,
+      "startingStitchCount": 39,
+      "endingStitchCount": 40,
+      "instruction": "k2, kfb, k4, MB7, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 74,
+      "startingStitchCount": 40,
+      "endingStitchCount": 40,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 75,
+      "startingStitchCount": 40,
+      "endingStitchCount": 41,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 76,
+      "startingStitchCount": 41,
+      "endingStitchCount": 41,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 77,
+      "startingStitchCount": 41,
+      "endingStitchCount": 42,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 78,
+      "startingStitchCount": 42,
+      "endingStitchCount": 42,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 79,
+      "startingStitchCount": 42,
+      "endingStitchCount": 43,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 80,
+      "startingStitchCount": 43,
+      "endingStitchCount": 43,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 81,
+      "startingStitchCount": 43,
+      "endingStitchCount": 44,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 82,
+      "startingStitchCount": 44,
+      "endingStitchCount": 44,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 83,
+      "startingStitchCount": 44,
+      "endingStitchCount": 45,
+      "instruction": "k2, kfb, k4, MB7, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 84,
+      "startingStitchCount": 45,
+      "endingStitchCount": 45,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 85,
+      "startingStitchCount": 45,
+      "endingStitchCount": 46,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 86,
+      "startingStitchCount": 46,
+      "endingStitchCount": 46,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 87,
+      "startingStitchCount": 46,
+      "endingStitchCount": 47,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 88,
+      "startingStitchCount": 47,
+      "endingStitchCount": 47,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 89,
+      "startingStitchCount": 47,
+      "endingStitchCount": 48,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 90,
+      "startingStitchCount": 48,
+      "endingStitchCount": 48,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 91,
+      "startingStitchCount": 48,
+      "endingStitchCount": 49,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 92,
+      "startingStitchCount": 49,
+      "endingStitchCount": 49,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 93,
+      "startingStitchCount": 49,
+      "endingStitchCount": 50,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 94,
+      "startingStitchCount": 50,
+      "endingStitchCount": 50,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 95,
+      "startingStitchCount": 50,
+      "endingStitchCount": 51,
+      "instruction": "k2, kfb, k5, MB9, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 96,
+      "startingStitchCount": 51,
+      "endingStitchCount": 51,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 97,
+      "startingStitchCount": 51,
+      "endingStitchCount": 52,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 98,
+      "startingStitchCount": 52,
+      "endingStitchCount": 52,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 99,
+      "startingStitchCount": 52,
+      "endingStitchCount": 53,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 100,
+      "startingStitchCount": 53,
+      "endingStitchCount": 53,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 101,
+      "startingStitchCount": 53,
+      "endingStitchCount": 54,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 102,
+      "startingStitchCount": 54,
+      "endingStitchCount": 54,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 103,
+      "startingStitchCount": 54,
+      "endingStitchCount": 55,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 104,
+      "startingStitchCount": 55,
+      "endingStitchCount": 55,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 105,
+      "startingStitchCount": 55,
+      "endingStitchCount": 56,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 106,
+      "startingStitchCount": 56,
+      "endingStitchCount": 56,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 107,
+      "startingStitchCount": 56,
+      "endingStitchCount": 57,
+      "instruction": "k2, kfb, k5, MB9, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 108,
+      "startingStitchCount": 57,
+      "endingStitchCount": 57,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 109,
+      "startingStitchCount": 57,
+      "endingStitchCount": 58,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 110,
+      "startingStitchCount": 58,
+      "endingStitchCount": 58,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 111,
+      "startingStitchCount": 58,
+      "endingStitchCount": 59,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 112,
+      "startingStitchCount": 59,
+      "endingStitchCount": 59,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 113,
+      "startingStitchCount": 59,
+      "endingStitchCount": 60,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 114,
+      "startingStitchCount": 60,
+      "endingStitchCount": 60,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 115,
+      "startingStitchCount": 60,
+      "endingStitchCount": 61,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 116,
+      "startingStitchCount": 61,
+      "endingStitchCount": 61,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 117,
+      "startingStitchCount": 61,
+      "endingStitchCount": 62,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 118,
+      "startingStitchCount": 62,
+      "endingStitchCount": 62,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 119,
+      "startingStitchCount": 62,
+      "endingStitchCount": 63,
+      "instruction": "k2, kfb, k5, MB9, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 120,
+      "startingStitchCount": 63,
+      "endingStitchCount": 63,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 121,
+      "startingStitchCount": 63,
+      "endingStitchCount": 64,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 122,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to last 3 sts, kfb, k2",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 123,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 124,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 125,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 126,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 127,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 128,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 129,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 130,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 131,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 132,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 133,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k5, MB9, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 134,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 135,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k2, kfb, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 136,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "BO1, k to end",
+      "section": "Section 1: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 137,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 138,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 139,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 140,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 141,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 142,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 143,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k across",
+      "section": "Section 2: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 144,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 145,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 146,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 147,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k9, MB9, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 148,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 149,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 150,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 151,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 152,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 153,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 154,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 155,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 156,
+      "startingStitchCount": 64,
+      "endingStitchCount": 65,
+      "instruction": "k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 157,
+      "startingStitchCount": 65,
+      "endingStitchCount": 64,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 158,
+      "startingStitchCount": 64,
+      "endingStitchCount": 64,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 159,
+      "startingStitchCount": 64,
+      "endingStitchCount": 63,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 160,
+      "startingStitchCount": 63,
+      "endingStitchCount": 63,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 161,
+      "startingStitchCount": 63,
+      "endingStitchCount": 62,
+      "instruction": "k9, MB9, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 162,
+      "startingStitchCount": 62,
+      "endingStitchCount": 62,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 163,
+      "startingStitchCount": 62,
+      "endingStitchCount": 61,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 164,
+      "startingStitchCount": 61,
+      "endingStitchCount": 61,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 165,
+      "startingStitchCount": 61,
+      "endingStitchCount": 60,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 166,
+      "startingStitchCount": 60,
+      "endingStitchCount": 60,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 167,
+      "startingStitchCount": 60,
+      "endingStitchCount": 59,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 168,
+      "startingStitchCount": 59,
+      "endingStitchCount": 59,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 169,
+      "startingStitchCount": 59,
+      "endingStitchCount": 58,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 170,
+      "startingStitchCount": 58,
+      "endingStitchCount": 58,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 171,
+      "startingStitchCount": 58,
+      "endingStitchCount": 57,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 172,
+      "startingStitchCount": 57,
+      "endingStitchCount": 57,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 173,
+      "startingStitchCount": 57,
+      "endingStitchCount": 56,
+      "instruction": "k9, MB9, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 174,
+      "startingStitchCount": 56,
+      "endingStitchCount": 56,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 175,
+      "startingStitchCount": 56,
+      "endingStitchCount": 55,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 176,
+      "startingStitchCount": 55,
+      "endingStitchCount": 55,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 177,
+      "startingStitchCount": 55,
+      "endingStitchCount": 54,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 178,
+      "startingStitchCount": 54,
+      "endingStitchCount": 54,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 179,
+      "startingStitchCount": 54,
+      "endingStitchCount": 53,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 180,
+      "startingStitchCount": 53,
+      "endingStitchCount": 53,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 181,
+      "startingStitchCount": 53,
+      "endingStitchCount": 52,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 182,
+      "startingStitchCount": 52,
+      "endingStitchCount": 52,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 183,
+      "startingStitchCount": 52,
+      "endingStitchCount": 51,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 184,
+      "startingStitchCount": 51,
+      "endingStitchCount": 51,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 185,
+      "startingStitchCount": 51,
+      "endingStitchCount": 50,
+      "instruction": "k9, MB9, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 186,
+      "startingStitchCount": 50,
+      "endingStitchCount": 50,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 187,
+      "startingStitchCount": 50,
+      "endingStitchCount": 49,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 188,
+      "startingStitchCount": 49,
+      "endingStitchCount": 49,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 189,
+      "startingStitchCount": 49,
+      "endingStitchCount": 48,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 190,
+      "startingStitchCount": 48,
+      "endingStitchCount": 48,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 191,
+      "startingStitchCount": 48,
+      "endingStitchCount": 47,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 192,
+      "startingStitchCount": 47,
+      "endingStitchCount": 47,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 193,
+      "startingStitchCount": 47,
+      "endingStitchCount": 46,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 194,
+      "startingStitchCount": 46,
+      "endingStitchCount": 46,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 195,
+      "startingStitchCount": 46,
+      "endingStitchCount": 45,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 9 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 196,
+      "startingStitchCount": 45,
+      "endingStitchCount": 44,
+      "instruction": "k8, MB7, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 197,
+      "startingStitchCount": 44,
+      "endingStitchCount": 44,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 198,
+      "startingStitchCount": 44,
+      "endingStitchCount": 43,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 199,
+      "startingStitchCount": 43,
+      "endingStitchCount": 43,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 200,
+      "startingStitchCount": 43,
+      "endingStitchCount": 42,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 201,
+      "startingStitchCount": 42,
+      "endingStitchCount": 42,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 202,
+      "startingStitchCount": 42,
+      "endingStitchCount": 41,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 203,
+      "startingStitchCount": 41,
+      "endingStitchCount": 41,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 204,
+      "startingStitchCount": 41,
+      "endingStitchCount": 40,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 205,
+      "startingStitchCount": 40,
+      "endingStitchCount": 40,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 206,
+      "startingStitchCount": 40,
+      "endingStitchCount": 39,
+      "instruction": "k8, MB7, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 207,
+      "startingStitchCount": 39,
+      "endingStitchCount": 39,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 208,
+      "startingStitchCount": 39,
+      "endingStitchCount": 38,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 209,
+      "startingStitchCount": 38,
+      "endingStitchCount": 38,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 210,
+      "startingStitchCount": 38,
+      "endingStitchCount": 37,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 211,
+      "startingStitchCount": 37,
+      "endingStitchCount": 37,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 212,
+      "startingStitchCount": 37,
+      "endingStitchCount": 36,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 213,
+      "startingStitchCount": 36,
+      "endingStitchCount": 36,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 214,
+      "startingStitchCount": 36,
+      "endingStitchCount": 35,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 215,
+      "startingStitchCount": 35,
+      "endingStitchCount": 35,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 216,
+      "startingStitchCount": 35,
+      "endingStitchCount": 34,
+      "instruction": "k8, MB7, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 217,
+      "startingStitchCount": 34,
+      "endingStitchCount": 34,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 218,
+      "startingStitchCount": 34,
+      "endingStitchCount": 33,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 219,
+      "startingStitchCount": 33,
+      "endingStitchCount": 33,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 220,
+      "startingStitchCount": 33,
+      "endingStitchCount": 32,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 221,
+      "startingStitchCount": 32,
+      "endingStitchCount": 32,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 222,
+      "startingStitchCount": 32,
+      "endingStitchCount": 31,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 223,
+      "startingStitchCount": 31,
+      "endingStitchCount": 31,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 224,
+      "startingStitchCount": 31,
+      "endingStitchCount": 30,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 225,
+      "startingStitchCount": 30,
+      "endingStitchCount": 30,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 226,
+      "startingStitchCount": 30,
+      "endingStitchCount": 29,
+      "instruction": "k8, MB7, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 227,
+      "startingStitchCount": 29,
+      "endingStitchCount": 29,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 228,
+      "startingStitchCount": 29,
+      "endingStitchCount": 28,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 229,
+      "startingStitchCount": 28,
+      "endingStitchCount": 28,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 230,
+      "startingStitchCount": 28,
+      "endingStitchCount": 27,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 231,
+      "startingStitchCount": 27,
+      "endingStitchCount": 27,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 232,
+      "startingStitchCount": 27,
+      "endingStitchCount": 26,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 233,
+      "startingStitchCount": 26,
+      "endingStitchCount": 26,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 234,
+      "startingStitchCount": 26,
+      "endingStitchCount": 25,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 7 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 235,
+      "startingStitchCount": 25,
+      "endingStitchCount": 24,
+      "instruction": "k6, MB5, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 236,
+      "startingStitchCount": 24,
+      "endingStitchCount": 24,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 237,
+      "startingStitchCount": 24,
+      "endingStitchCount": 23,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 238,
+      "startingStitchCount": 23,
+      "endingStitchCount": 23,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 239,
+      "startingStitchCount": 23,
+      "endingStitchCount": 22,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 240,
+      "startingStitchCount": 22,
+      "endingStitchCount": 22,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 241,
+      "startingStitchCount": 22,
+      "endingStitchCount": 21,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 242,
+      "startingStitchCount": 21,
+      "endingStitchCount": 21,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 243,
+      "startingStitchCount": 21,
+      "endingStitchCount": 20,
+      "instruction": "k6, MB5, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 244,
+      "startingStitchCount": 20,
+      "endingStitchCount": 20,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 245,
+      "startingStitchCount": 20,
+      "endingStitchCount": 19,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 246,
+      "startingStitchCount": 19,
+      "endingStitchCount": 19,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 247,
+      "startingStitchCount": 19,
+      "endingStitchCount": 18,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 248,
+      "startingStitchCount": 18,
+      "endingStitchCount": 18,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 249,
+      "startingStitchCount": 18,
+      "endingStitchCount": 17,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 250,
+      "startingStitchCount": 17,
+      "endingStitchCount": 17,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 251,
+      "startingStitchCount": 17,
+      "endingStitchCount": 16,
+      "instruction": "k6, MB5, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 252,
+      "startingStitchCount": 16,
+      "endingStitchCount": 16,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 253,
+      "startingStitchCount": 16,
+      "endingStitchCount": 15,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 254,
+      "startingStitchCount": 15,
+      "endingStitchCount": 15,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 255,
+      "startingStitchCount": 15,
+      "endingStitchCount": 14,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 256,
+      "startingStitchCount": 14,
+      "endingStitchCount": 14,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 257,
+      "startingStitchCount": 14,
+      "endingStitchCount": 13,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 5 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 258,
+      "startingStitchCount": 13,
+      "endingStitchCount": 12,
+      "instruction": "k4, MB3, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 259,
+      "startingStitchCount": 12,
+      "endingStitchCount": 12,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 260,
+      "startingStitchCount": 12,
+      "endingStitchCount": 11,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 261,
+      "startingStitchCount": 11,
+      "endingStitchCount": 11,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 262,
+      "startingStitchCount": 11,
+      "endingStitchCount": 10,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 263,
+      "startingStitchCount": 10,
+      "endingStitchCount": 10,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 264,
+      "startingStitchCount": 10,
+      "endingStitchCount": 9,
+      "instruction": "k4, MB3, k to last 4 sts, k2tog, k2",
+      "section": "Section 2: 3 Stitch Bobbles",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 265,
+      "startingStitchCount": 9,
+      "endingStitchCount": 9,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 266,
+      "startingStitchCount": 9,
+      "endingStitchCount": 8,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 267,
+      "startingStitchCount": 8,
+      "endingStitchCount": 8,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 268,
+      "startingStitchCount": 8,
+      "endingStitchCount": 7,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 269,
+      "startingStitchCount": 7,
+      "endingStitchCount": 7,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 270,
+      "startingStitchCount": 7,
+      "endingStitchCount": 6,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 271,
+      "startingStitchCount": 6,
+      "endingStitchCount": 6,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 272,
+      "startingStitchCount": 6,
+      "endingStitchCount": 5,
+      "instruction": "k to last 4 sts, k2tog, k2",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 273,
+      "startingStitchCount": 5,
+      "endingStitchCount": 5,
+      "instruction": "k2, k2tog, k to last st, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 274,
+      "startingStitchCount": 5,
+      "endingStitchCount": 4,
+      "instruction": "k1, k2tog, k2",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 275,
+      "startingStitchCount": 4,
+      "endingStitchCount": 4,
+      "instruction": "k1, k2tog, kfb",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 276,
+      "startingStitchCount": 4,
+      "endingStitchCount": 3,
+      "instruction": "k1, k2tog, k1",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 277,
+      "description": "Bind off.",
+      "section": "Finishing",
+      "type": "specialInstruction"
+    }
+  ]
+}
+

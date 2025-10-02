@@ -55,7 +55,24 @@
             --color-cast: #4b5563;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; transition: background-color 0.3s ease; }
+        
+        /* Light mode body styling */
+        [data-theme="light"] body {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        
+        /* Light mode text colors */
+        [data-theme="light"] .text-white { color: #111827 !important; }
+        [data-theme="light"] .text-gray-300 { color: #374151 !important; }
+        [data-theme="light"] .text-gray-400 { color: #6b7280 !important; }
+        [data-theme="light"] .bg-gray-900 { background-color: #f9fafb !important; }
+        [data-theme="light"] .bg-gray-800 { background-color: #ffffff !important; }
+        [data-theme="light"] .bg-gray-700 { background-color: #f3f4f6 !important; }
+        [data-theme="light"] .border-gray-700 { border-color: #d1d5db !important; }
+        [data-theme="light"] .border-gray-600 { border-color: #9ca3af !important; }
+        
         .mono { font-family: 'Roboto Mono', monospace; }
         .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
         .pattern-text p { 
@@ -286,7 +303,7 @@
                     </div>
                 </div>
             </header>
-            <main id="pattern-content" class="space-y-8"></main>
+            <main id="pattern-content" class="space-y-8 pb-40"></main>
             <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
                 <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
                 <div id="popup-content"></div>
@@ -331,15 +348,40 @@
 
     <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm border-t border-gray-700 p-4">
         <div id="footer-controls" class="max-w-4xl mx-auto hidden">
+            <!-- Pattern Metadata -->
+            <div id="pattern-metadata" class="text-center mb-2">
+                <div class="text-sm text-gray-400">
+                    <span id="current-pattern-name" class="text-violet-300 font-medium">No pattern selected</span>
+                    <span class="mx-2">•</span>
+                    <span id="pattern-progress-info">Row <span id="footer-current-step">1</span> of <span id="footer-max-steps">1</span></span>
+                </div>
+            </div>
+            
             <div class="relative h-20">
-                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-center space-x-6 transition-opacity duration-300">
-                    <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
-                    <div class="text-center">
-                        <div id="step-type" class="text-sm text-gray-400">ROW</div>
-                        <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-between transition-opacity duration-300">
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
+                        <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                        <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="hidden lg:inline text-xs ml-1">Theme</span>
+                    </button>
+                    
+                    <!-- Row Counter Section -->
+                    <div class="flex items-center space-x-6">
+                        <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
+                        <div class="text-center">
+                            <div id="step-type" class="text-sm text-gray-400">ROW</div>
+                            <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                        </div>
+                        <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
                     </div>
-                    <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
-                    <button id="mark-previous-complete" class="ml-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
+                    
+                    <!-- Mark Previous Button -->
+                    <button id="mark-previous-complete" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
                         <i class="fas fa-check-double mr-1"></i>
                         <span class="hidden lg:inline text-xs">Previous</span>
                     </button>
@@ -802,6 +844,9 @@
     console.log('Current URL:', window.location.href);
     console.log('URL params:', window.location.search);
     
+    // Initialize theme toggle 
+    initThemeToggle();
+    
     // Add global error handlers to catch any errors we might miss
     window.addEventListener('error', (event) => {
         console.log('🚨 GLOBAL ERROR CAUGHT:', event.error);
@@ -904,11 +949,62 @@
             stepInput.max = maxSteps;
             progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
             
+            // Update footer metadata
+            updateFooterMetadata();
+            
             patternContentEl.innerHTML = '';
             generateGlossary(PATTERN_DATA);
             generateInstructions(PATTERN_DATA);
             loadProgress();
             setupInteractiveFeatures();
+        }
+        
+        function updateFooterMetadata() {
+            const currentPatternName = document.getElementById('current-pattern-name');
+            const footerCurrentStep = document.getElementById('footer-current-step');
+            const footerMaxSteps = document.getElementById('footer-max-steps');
+            
+            if (PATTERN_DATA && currentPatternName && footerCurrentStep && footerMaxSteps) {
+                currentPatternName.textContent = PATTERN_DATA.metadata.name;
+                footerCurrentStep.textContent = currentStep;
+                footerMaxSteps.textContent = maxSteps;
+            }
+        }
+        
+        // Theme toggle functionality
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const html = document.documentElement;
+            
+            // Get saved theme or default to dark
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            
+            function updateTheme(theme) {
+                if (theme === 'light') {
+                    html.setAttribute('data-theme', 'light');
+                    themeIconDark.classList.add('hidden');
+                    themeIconLight.classList.remove('hidden');
+                } else {
+                    html.removeAttribute('data-theme');
+                    themeIconDark.classList.remove('hidden');
+                    themeIconLight.classList.add('hidden');
+                }
+                localStorage.setItem('theme', theme);
+            }
+            
+            // Set initial theme
+            updateTheme(savedTheme);
+            
+            // Toggle theme on click
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    updateTheme(newTheme);
+                });
+            }
         }
         function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
         
@@ -1179,12 +1275,18 @@
             } else {
                 console.log(`No element found for step ${currentStep}`);
             }
+            
+            // Update footer metadata when step changes
+            updateFooterMetadata();
         }
         
         // Navigation handled by setupRowNavigation() function - keyboard listeners removed to prevent double triggers
         toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Row Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
         closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
         findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
+        
+        // Initialize theme toggle
+        initThemeToggle();
 
         // Pattern will be loaded when selected from dropdown
         // setupViewer will be called by loadSelectedPattern

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02-restored-showSection-function -->
+<!-- Version: v2025-10-02-debug-row-navigation -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Project Manager with Navigation Fixed v2025-10-02</title>
+    <title>Stitch Witch - Debug Row Navigation v2025-10-02</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -1080,7 +1080,15 @@
             // Initialize with current project step if available
             if (window.currentProject && window.currentProject.currentStep) {
                 currentStep = window.currentProject.currentStep;
+                window.currentStep = currentStep;
                 stepInput.value = currentStep;
+                console.log('🔧 Set initial step from project:', currentStep);
+            } else {
+                // Default to step 1
+                currentStep = 1;
+                window.currentStep = currentStep;
+                stepInput.value = currentStep;
+                console.log('🔧 Set default step:', currentStep);
             }
         }
         
@@ -1107,6 +1115,7 @@
         setupInteractiveFeatures();
         
         console.log('✅ Viewer setup complete for:', name);
+        console.log('✅ Current step:', currentStep, 'Max steps:', maxSteps);
     }
 
     // PROJECT MANAGEMENT FUNCTIONS
@@ -1264,6 +1273,15 @@
         window.currentProject = project;
         window.currentStep = project.currentStep;
         currentStep = project.currentStep; // Set local variable too
+        
+        console.log('🔧 Project loaded, setting currentStep to:', currentStep);
+        
+        // Update step input if it exists
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.value = currentStep;
+            console.log('🔧 Step input value set to:', stepInput.value);
+        }
         
         if (window.currentStepRef) {
             window.currentStepRef.value = project.currentStep;
@@ -2165,18 +2183,25 @@
         console.log('🏷️ Pattern data:', {
             PATTERN_DATA: !!PATTERN_DATA,
             patternName: PATTERN_DATA?.metadata?.name,
-            currentStep,
-            maxSteps
+            currentStep: window.currentStep || currentStep,
+            maxSteps: window.maxSteps || maxSteps
         });
         
-        if (PATTERN_DATA && currentPatternName && footerCurrentStep && footerMaxSteps) {
-            const patternName = PATTERN_DATA.metadata?.name || 'Unknown Pattern';
-            console.log('🏷️ Updating footer with:', { patternName, currentStep, maxSteps });
+        if (currentPatternName && footerCurrentStep && footerMaxSteps) {
+            const patternName = PATTERN_DATA?.metadata?.name || 'Unknown Pattern';
+            const activeCurrentStep = window.currentStep || currentStep || 1;
+            const activeMaxSteps = window.maxSteps || maxSteps || 1;
+            
+            console.log('🏷️ Updating footer with:', { patternName, activeCurrentStep, activeMaxSteps });
             currentPatternName.textContent = patternName;
-            footerCurrentStep.textContent = currentStep;
-            footerMaxSteps.textContent = maxSteps;
+            footerCurrentStep.textContent = activeCurrentStep;
+            footerMaxSteps.textContent = activeMaxSteps;
         } else {
-            console.log('🏷️ Cannot update footer - missing requirements');
+            console.log('🏷️ Cannot update footer - missing elements:', {
+                currentPatternName: !!currentPatternName,
+                footerCurrentStep: !!footerCurrentStep,
+                footerMaxSteps: !!footerMaxSteps
+            });
         }
     }
 
@@ -2231,23 +2256,52 @@
     }
     
     function setupRowNavigation() {
+        console.log('🔧 Setting up row navigation...');
+        console.log('🔧 Current values:', { currentStep, maxSteps, PATTERN_DATA: !!PATTERN_DATA });
+        
         const stepInput = document.getElementById('current-step-input');
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         const markPreviousBtn = document.getElementById('mark-previous-complete');
         
+        console.log('🔧 Found elements:', {
+            stepInput: !!stepInput,
+            prevBtn: !!prevBtn,
+            nextBtn: !!nextBtn,
+            markPreviousBtn: !!markPreviousBtn
+        });
+        
+        // Ensure we have global references
+        window.currentStep = currentStep;
+        window.maxSteps = maxSteps;
+        
         // Remove existing listeners to prevent duplicates
         if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
             stepInput.setAttribute('data-listener-added', 'true');
             stepInput.addEventListener('change', () => {
+                console.log('📍 Step input change event fired! Old value:', currentStep, 'New input value:', stepInput.value);
                 currentStep = parseInt(stepInput.value) || 1;
                 if (currentStep < 1) currentStep = 1;
                 if (currentStep > maxSteps) currentStep = maxSteps;
                 stepInput.value = currentStep;
+                window.currentStep = currentStep; // Update global
                 console.log('📍 Step input changed to:', currentStep);
-                saveProgress();
-                updateDisplay(currentStep, true);
+                
+                if (typeof saveProgress === 'function') {
+                    saveProgress();
+                } else {
+                    console.warn('⚠️ saveProgress not available');
+                }
+                
+                if (typeof updateDisplay === 'function') {
+                    updateDisplay(currentStep, true);
+                } else {
+                    console.warn('⚠️ updateDisplay not available, using local update');
+                    updateFooterMetadata();
+                    highlightCurrentStep(true);
+                }
             });
+            console.log('✅ Step input listener added');
         }
         
         if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
@@ -2257,11 +2311,25 @@
                 if (currentStep > 1) {
                     currentStep--;
                     stepInput.value = currentStep;
+                    window.currentStep = currentStep; // Update global
                     console.log('📍 Previous button clicked - AFTER:', currentStep);
-                    saveProgress();
-                    updateDisplay(currentStep, true);
+                    
+                    if (typeof saveProgress === 'function') {
+                        saveProgress();
+                    } else {
+                        console.warn('⚠️ saveProgress not available');
+                    }
+                    
+                    if (typeof updateDisplay === 'function') {
+                        updateDisplay(currentStep, true);
+                    } else {
+                        console.warn('⚠️ updateDisplay not available, using local update');
+                        updateFooterMetadata();
+                        highlightCurrentStep(true);
+                    }
                 }
             });
+            console.log('✅ Previous button listener added');
         }
         
         if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
@@ -2271,11 +2339,25 @@
                 if (currentStep < maxSteps) {
                     currentStep++;
                     stepInput.value = currentStep;
+                    window.currentStep = currentStep; // Update global
                     console.log('📍 Next button clicked - AFTER:', currentStep);
-                    saveProgress();
-                    updateDisplay(currentStep, true);
+                    
+                    if (typeof saveProgress === 'function') {
+                        saveProgress();
+                    } else {
+                        console.warn('⚠️ saveProgress not available');
+                    }
+                    
+                    if (typeof updateDisplay === 'function') {
+                        updateDisplay(currentStep, true);
+                    } else {
+                        console.warn('⚠️ updateDisplay not available, using local update');
+                        updateFooterMetadata();
+                        highlightCurrentStep(true);
+                    }
                 }
             });
+            console.log('✅ Next button listener added');
         }
         
         if (markPreviousBtn && !markPreviousBtn.hasAttribute('data-listener-added')) {

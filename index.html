@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02- fixing inefficient code -->
+<!-- Version: v2025-10-02- network interrupted last fix -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -351,7 +351,10 @@
                                 ➕ New
                             </button>
                             <button id="delete-project-btn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" disabled title="Archive or Permanently Delete Project">
-                                �️ Archive
+                                🗃️ Archive
+                            </button>
+                            <button id="show-archived-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" title="View Archived Projects">
+                                📦 Archived
                             </button>
                         </div>
                     </div>
@@ -684,6 +687,16 @@
         const selector = document.getElementById('project-selector');
         if (!selector.value) {
             alert('Please select a project to delete.');
+            return;
+        }
+        
+        // Check if we're in archived view and this is an unarchive action
+        if (showArchivedProjects) {
+            // Unarchive the project
+            const confirmation = confirm('Restore this project to your active projects list?');
+            if (!confirmation) return;
+            
+            await unarchiveProject(selector.value);
             return;
         }
         
@@ -1185,9 +1198,13 @@
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 
-                // Skip archived projects unless user specifically wants to see them
-                if (data.status === 'archived') {
+                // Filter projects based on archive status and user preference
+                if (data.status === 'archived' && !showArchivedProjects) {
                     console.log('📦 Skipping archived project:', data.projectId);
+                    return;
+                }
+                if (data.status !== 'archived' && showArchivedProjects) {
+                    console.log('🏃 Skipping active project (showing archived only):', data.projectId);
                     return;
                 }
                 
@@ -1201,6 +1218,8 @@
                         startDate: data.createdAt?.toDate?.() || new Date(),
                         lastUpdate: data.updatedAt?.toDate?.() || new Date(),
                         currentStep: data.currentStep || 1,
+                        status: data.status || 'in_progress', // Include status for proper handling
+                        projectDetails: data.projectDetails, // Include project details
                         notes: data.notes || [],
                         id: doc.id
                     });
@@ -1253,14 +1272,16 @@
         const userProjects = await loadUserProjects();
         
         if (userProjects.length === 0) {
-            selector.innerHTML = '<option value="">No projects yet</option>';
+            const emptyMessage = showArchivedProjects ? 'No archived projects' : 'No active projects yet';
+            selector.innerHTML = `<option value="">${emptyMessage}</option>`;
             projectInfo.classList.add('hidden');
             noProjectState.classList.remove('hidden');
             return;
         }
         
         noProjectState.classList.add('hidden');
-        selector.innerHTML = '<option value="">-- Select a project --</option>';
+        const selectMessage = showArchivedProjects ? '-- Select archived project --' : '-- Select a project --';
+        selector.innerHTML = `<option value="">${selectMessage}</option>`;
         
         userProjects.forEach(project => {
             const option = document.createElement('option');
@@ -1286,21 +1307,31 @@
                 displayName += ` (for ${project.projectDetails.recipient})`;
             }
             
+            // Add status indicator for archived projects
+            if (showArchivedProjects && project.status === 'archived') {
+                displayName += ' [ARCHIVED]';
+            }
+            
             option.textContent = displayName;
             selector.appendChild(option);
         });
         
-        // Load last selected project from localStorage
-        const lastProject = localStorage.getItem('lastSelectedProject');
-        if (lastProject && userProjects.some(p => `${p.patternId}_${p.projectId}` === lastProject)) {
-            selector.value = lastProject;
-            await loadSelectedProject(lastProject, userProjects);
+        // Load last selected project from localStorage (only for active projects)
+        if (!showArchivedProjects) {
+            const lastProject = localStorage.getItem('lastSelectedProject');
+            if (lastProject && userProjects.some(p => `${p.patternId}_${p.projectId}` === lastProject)) {
+                selector.value = lastProject;
+                await loadSelectedProject(lastProject, userProjects);
+            }
         }
         
         selector.addEventListener('change', async (e) => {
             if (e.target.value) {
                 await loadSelectedProject(e.target.value, userProjects);
-                localStorage.setItem('lastSelectedProject', e.target.value);
+                // Only save active projects as last selected (not archived ones)
+                if (!showArchivedProjects) {
+                    localStorage.setItem('lastSelectedProject', e.target.value);
+                }
             } else {
                 projectInfo.classList.add('hidden');
                 resetViewer();
@@ -1339,6 +1370,24 @@
         projectProgressSummary.textContent = `Step ${project.currentStep}`;
         
         projectInfo.classList.remove('hidden');
+        
+        // Update archive/unarchive button based on project status and current view
+        const deleteBtn = document.getElementById('delete-project-btn');
+        if (showArchivedProjects && project.status === 'archived') {
+            // Viewing archived project - show unarchive option
+            deleteBtn.textContent = '📤 Restore';
+            deleteBtn.title = 'Restore to Active Projects';
+            deleteBtn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+            deleteBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            deleteBtn.disabled = false;
+        } else {
+            // Viewing active project - show archive option
+            deleteBtn.textContent = '🗃️ Archive';
+            deleteBtn.title = 'Archive or Permanently Delete Project';
+            deleteBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            deleteBtn.classList.add('bg-orange-600', 'hover:bg-orange-700');
+            deleteBtn.disabled = false;
+        }
         
         // Load the pattern data from Firestore - this will populate pattern-name and pattern-author elements
         await loadPatternFromFirestore(project.patternId);
@@ -1539,6 +1588,69 @@
             console.error('❌ Error creating project:', error);
             console.error('❌ Error details:', error.message, error.stack);
             alert(`Error creating project: ${error.message}`);
+        }
+    }
+    
+    // ARCHIVED PROJECTS FUNCTIONALITY
+    async function toggleArchivedProjects() {
+        showArchivedProjects = !showArchivedProjects;
+        
+        const btn = document.getElementById('show-archived-btn');
+        const selector = document.getElementById('project-selector');
+        
+        if (showArchivedProjects) {
+            // Switching to archived view
+            btn.textContent = '🏃 Active';
+            btn.title = 'View Active Projects';
+            btn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            selector.innerHTML = '<option value="">Loading archived projects...</option>';
+        } else {
+            // Switching to active view
+            btn.textContent = '📦 Archived';
+            btn.title = 'View Archived Projects';
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+            selector.innerHTML = '<option value="">Loading active projects...</option>';
+        }
+        
+        // Clear current selection and reload projects
+        const projectInfo = document.getElementById('project-info');
+        projectInfo.classList.add('hidden');
+        window.currentProject = null;
+        
+        // Reload project list with new filter
+        await populateProjectSelector();
+        
+        console.log(`✅ Toggled to ${showArchivedProjects ? 'archived' : 'active'} projects view`);
+    }
+    
+    async function unarchiveProject(projectKey) {
+        if (!projectKey) return;
+        
+        try {
+            const userId = auth.currentUser.uid;
+            const [patternId, projectId] = projectKey.split('_');
+            const progressId = `${userId}_${patternId}_${projectId}`;
+            
+            console.log('📤 Unarchiving project:', progressId);
+            
+            const docRef = doc(db, 'user_pattern_progress', progressId);
+            await updateDoc(docRef, {
+                status: 'in_progress',
+                unarchivedAt: serverTimestamp(),
+                lastUpdated: serverTimestamp()
+            });
+            
+            console.log('✅ Project unarchived successfully');
+            alert('Project restored to active projects!');
+            
+            // Refresh the current view
+            await populateProjectSelector();
+            
+        } catch (error) {
+            console.error('❌ Error unarchiving project:', error);
+            alert(`Error restoring project: ${error.message}`);
         }
     }
     

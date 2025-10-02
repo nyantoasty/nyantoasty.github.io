@@ -512,6 +512,7 @@
     import { generateGlossary, generateInstructions, generatePatternTheme, updateSidebarColorKey } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
+    import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
     import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
     // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
     
@@ -1198,10 +1199,27 @@
         userProjects.forEach(project => {
             const option = document.createElement('option');
             option.value = `${project.patternId}_${project.projectId}`;
-            // Show the custom project name prominently
-            const displayName = project.projectId.startsWith('Project_') 
-                ? `${project.patternName} - ${project.projectId}` // Auto-generated name
-                : project.projectId; // Custom name from user
+            
+            // Create meaningful display name prioritizing user's project name
+            let displayName;
+            if (project.projectDetails?.projectName && 
+                project.projectDetails.projectName !== `New Project ${new Date().toLocaleDateString()}` &&
+                !project.projectDetails.projectName.includes('New Project')) {
+                // User gave a custom project name - use it
+                displayName = project.projectDetails.projectName;
+            } else if (project.patternName) {
+                // Use pattern name as fallback
+                displayName = `${project.patternName} Project`;
+            } else {
+                // Last resort - use pattern ID
+                displayName = `Pattern ${project.patternId}`;
+            }
+            
+            // Add recipient info if available
+            if (project.projectDetails?.recipient) {
+                displayName += ` (for ${project.projectDetails.recipient})`;
+            }
+            
             option.textContent = displayName;
             selector.appendChild(option);
         });
@@ -2028,8 +2046,15 @@
             // Store current pattern ID for progress tracking
             currentPatternId = patternId;
             
-            // Use pattern ID for progress key (pattern-specific, not user-specific)
-            progressKey = `pattern-progress-${patternId}`;
+            // Use project-specific progress key for proper project isolation
+            if (window.currentProject && window.currentProject.projectId) {
+                progressKey = `project-progress-${window.currentProject.projectId}`;
+                console.log('📁 Using project-specific progress key:', progressKey);
+            } else {
+                // Fallback to pattern-only for compatibility
+                progressKey = `pattern-progress-${patternId}`;
+                console.log('📄 Using pattern-only progress key (no project selected):', progressKey);
+            }
             
             // Clear and regenerate content
             patternContentEl.innerHTML = '';
@@ -2039,9 +2064,15 @@
             // Set up interactive features AFTER pattern content is generated
             setupInteractiveFeatures();
             
-            // Load saved progress for this specific pattern (now uses Firestore)
-            currentStep = await loadProgressSimple(progressKey);
-            console.log('📍 Loaded currentStep:', currentStep);
+            // Load saved progress for this specific project
+            if (window.currentProject && window.currentProject.currentStep) {
+                currentStep = window.currentProject.currentStep;
+                console.log('📍 Loaded currentStep from project:', currentStep);
+            } else {
+                // Fallback to localStorage for compatibility
+                currentStep = await loadProgressSimple(progressKey);
+                console.log('📍 Loaded currentStep from localStorage:', currentStep);
+            }
             
             // Ensure currentStep is valid
             if (currentStep < 1) currentStep = 1;
@@ -2280,7 +2311,7 @@
         // Remove existing listeners to prevent duplicates
         if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
             stepInput.setAttribute('data-listener-added', 'true');
-            stepInput.addEventListener('change', () => {
+            stepInput.addEventListener('change', async () => {
                 console.log('📍 Step input change event fired! Old value:', currentStep, 'New input value:', stepInput.value);
                 currentStep = parseInt(stepInput.value) || 1;
                 if (currentStep < 1) currentStep = 1;
@@ -2289,10 +2320,15 @@
                 window.currentStep = currentStep; // Update global
                 console.log('📍 Step input changed to:', currentStep);
                 
-                if (typeof saveProgress === 'function') {
-                    saveProgress(progressKey, currentStep);
+                if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                    await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: currentStep
+                    });
+                    // Update the local project object
+                    window.currentProject.currentStep = currentStep;
                 } else {
-                    console.warn('⚠️ saveProgress not available');
+                    console.warn('⚠️ saveProjectProgress not available or no project selected, using localStorage fallback');
+                    localStorage.setItem(progressKey, currentStep);
                 }
                 
                 if (typeof updateDisplay === 'function') {
@@ -2308,7 +2344,7 @@
         
         if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
             prevBtn.setAttribute('data-listener-added', 'true');
-            prevBtn.addEventListener('click', () => {
+            prevBtn.addEventListener('click', async () => {
                 console.log('🔍 Previous button clicked - BEFORE:', currentStep);
                 if (currentStep > 1) {
                     currentStep--;
@@ -2316,10 +2352,14 @@
                     window.currentStep = currentStep; // Update global
                     console.log('📍 Previous button clicked - AFTER:', currentStep);
                     
-                    if (typeof saveProgress === 'function') {
-                        saveProgress(progressKey, currentStep);
+                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                        await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            currentStep: currentStep
+                        });
+                        window.currentProject.currentStep = currentStep;
                     } else {
-                        console.warn('⚠️ saveProgress not available');
+                        console.warn('⚠️ saveProjectProgress not available, using localStorage fallback');
+                        localStorage.setItem(progressKey, currentStep);
                     }
                     
                     if (typeof updateDisplay === 'function') {
@@ -2336,7 +2376,7 @@
         
         if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
             nextBtn.setAttribute('data-listener-added', 'true');
-            nextBtn.addEventListener('click', () => {
+            nextBtn.addEventListener('click', async () => {
                 console.log('🔍 Next button clicked - BEFORE:', currentStep);
                 if (currentStep < maxSteps) {
                     currentStep++;
@@ -2344,10 +2384,14 @@
                     window.currentStep = currentStep; // Update global
                     console.log('📍 Next button clicked - AFTER:', currentStep);
                     
-                    if (typeof saveProgress === 'function') {
-                        saveProgress(progressKey, currentStep);
+                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                        await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            currentStep: currentStep
+                        });
+                        window.currentProject.currentStep = currentStep;
                     } else {
-                        console.warn('⚠️ saveProgress not available');
+                        console.warn('⚠️ saveProjectProgress not available, using localStorage fallback');
+                        localStorage.setItem(progressKey, currentStep);
                     }
                     
                     if (typeof updateDisplay === 'function') {
@@ -2382,11 +2426,18 @@
         const jumpToStartBtn = document.getElementById('jump-to-start');
         if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
             jumpToStartBtn.setAttribute('data-listener-added', 'true');
-            jumpToStartBtn.addEventListener('click', () => {
+            jumpToStartBtn.addEventListener('click', async () => {
                 console.log('🏠 Jump to Start clicked');
                 currentStep = 1;
                 stepInput.value = 1;
-                saveProgress(progressKey, currentStep);
+                if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                    await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: currentStep
+                    });
+                    window.currentProject.currentStep = currentStep;
+                } else {
+                    localStorage.setItem(progressKey, currentStep);
+                }
                 updateDisplay(currentStep, true);
             });
         }
@@ -2419,7 +2470,7 @@
         // Keyboard navigation - avoid calling button.click() to prevent double triggers
         if (!window.keyboardNavSetup) {
             window.keyboardNavSetup = true;
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keydown', async (e) => {
                 // Skip if user is typing in an input field
                 if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {
                     return;
@@ -2432,7 +2483,14 @@
                         currentStep++;
                         stepInput.value = currentStep;
                         console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress(progressKey, currentStep);
+                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                                currentStep: currentStep
+                            });
+                            window.currentProject.currentStep = currentStep;
+                        } else {
+                            localStorage.setItem(progressKey, currentStep);
+                        }
                         updateDisplay(currentStep, true);
                     }
                 }
@@ -2444,7 +2502,14 @@
                         currentStep--;
                         stepInput.value = currentStep;
                         console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress(progressKey, currentStep);
+                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                                currentStep: currentStep
+                            });
+                            window.currentProject.currentStep = currentStep;
+                        } else {
+                            localStorage.setItem(progressKey, currentStep);
+                        }
                         updateDisplay(currentStep, true);
                     }
                 }

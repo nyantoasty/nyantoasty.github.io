@@ -245,21 +245,31 @@
 
     <!-- Auth Container: Shown when logged out -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center">
-        <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700">
-            <h1 class="text-3xl font-bold text-white mb-4">Welcome to your Pattern Hub</h1>
-            <p class="text-gray-400 mb-8">Please sign in to access your patterns and tools.</p>
-            <div class="space-y-4">
-                <button id="login-btn" class="bg-violet-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-violet-700 transition-colors flex items-center justify-center mx-auto">
-                    <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
-                    Sign in with Google
-                </button>
-                <div class="text-gray-500 text-sm">or</div>
-                <button id="guest-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                    Use AI Pattern Generator (No Sign-in Required)
-                </button>
-                <button id="debug-btn" class="bg-gray-600 text-white font-medium py-1 px-3 rounded text-xs">
-                    🔧 Debug Firebase
-                </button>
+        <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 max-w-md mx-auto">
+            <div class="mb-6">
+                <div class="w-16 h-16 bg-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                <p class="text-gray-400">Sign in to access your pattern library</p>
+            </div>
+            
+            <button id="login-btn" class="w-full bg-violet-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-violet-700 transition-colors flex items-center justify-center">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
+                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+                    <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
+                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <div class="mt-6 pt-6 border-t border-gray-700">
+                <p class="text-xs text-gray-500">
+                    By signing in, you agree to our terms of service and privacy policy
+                </p>
             </div>
         </div>
     </div>
@@ -409,7 +419,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // Import our modular functions
@@ -452,8 +462,6 @@
     const appContainer = document.getElementById('app-container');
     const standaloneGenerator = document.getElementById('standalone-generator');
     const loginBtn = document.getElementById('login-btn');
-    const guestGeneratorBtn = document.getElementById('guest-generator-btn');
-    const debugBtn = document.getElementById('debug-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const generatorNavBtn = document.getElementById('generator-nav-btn');
     const backToMainBtn = document.getElementById('back-to-main');
@@ -476,63 +484,77 @@
     
     async function signInWithGoogle() {
         console.log('=== LOGIN BUTTON CLICKED ===');
-        console.log('Testing POPUP auth instead of redirect...');
+        console.log('Using redirect auth for better mobile compatibility...');
         console.log('Auth object:', auth);
         console.log('Provider object:', provider);
         
         try {
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Opening popup...';
+            loginBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Redirecting to Google...
+            `;
             
-            console.log('Calling signInWithPopup...');
-            const result = await signInWithPopup(auth, provider);
-            console.log('✅ signInWithPopup result:', result);
-            console.log('User from popup:', result.user.email);
-            
-            // Don't need to do anything here - onAuthStateChanged will handle it
+            console.log('Calling signInWithRedirect...');
+            await signInWithRedirect(auth, provider);
+            // Note: This will redirect the page, so code after this won't execute
             
         } catch (error) {
-            console.log('❌ signInWithPopup failed:');
+            console.log('❌ signInWithRedirect failed:');
             console.log('Error object:', error);
             console.log('Error code:', error.code);
             console.log('Error message:', error.message);
             
-            if (error.code === 'auth/popup-blocked') {
-                alert('Popup was blocked! Please allow popups for this site and try again.');
-            } else if (error.code === 'auth/popup-closed-by-user') {
-                console.log('User closed popup');
-            } else {
-                alert('Sign in failed: ' + error.code + ' - ' + error.message);
-            }
+            alert('Sign in failed: ' + error.code + ' - ' + error.message);
             
+            // Reset button
             loginBtn.disabled = false;
-            loginBtn.textContent = 'Sign in with Google';
+            loginBtn.innerHTML = `
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
+                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+                    <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
+                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                </svg>
+                Continue with Google
+            `;
+        }
+    }
+    
+    // Check for redirect result when page loads
+    async function checkRedirectResult() {
+        console.log('=== CHECKING REDIRECT RESULT ===');
+        try {
+            const result = await getRedirectResult(auth);
+            if (result) {
+                console.log('✅ Found redirect result:', result);
+                console.log('User from redirect:', result.user.email);
+                // Don't need to do anything here - onAuthStateChanged will handle it
+            } else {
+                console.log('No redirect result found');
+            }
+        } catch (error) {
+            console.error('❌ Error getting redirect result:', error);
+            // Reset button if there was an error
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `
+                    <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
+                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+                        <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+                        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
+                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                    </svg>
+                    Continue with Google
+                `;
+            }
         }
     }
     
     loginBtn.addEventListener('click', signInWithGoogle);
-
-    debugBtn.addEventListener('click', () => {
-        console.log('=== 🔧 FIREBASE DEBUG INFO ===');
-        console.log('Firebase app:', app);
-        console.log('Firebase auth:', auth);
-        console.log('Firebase auth currentUser:', auth.currentUser);
-        console.log('Provider:', provider);
-        console.log('Current URL:', window.location.href);
-        console.log('Document referrer:', document.referrer);
-        console.log('Local storage keys:', Object.keys(localStorage));
-        console.log('Session storage keys:', Object.keys(sessionStorage));
-        
-        // Try to manually call getRedirectResult
-        console.log('Manually calling getRedirectResult...');
-        getRedirectResult(auth).then(result => {
-            console.log('Manual getRedirectResult result:', result);
-        }).catch(error => {
-            console.log('Manual getRedirectResult error:', error);
-        });
-        
-        alert('Debug info logged to console!');
-    });
 
     generatorNavBtn.addEventListener('click', () => {
         window.location.href = 'pattern-upload.html';
@@ -882,6 +904,9 @@
     
     // Initialize theme toggle 
     initThemeToggle();
+    
+    // Check for redirect result first (for mobile compatibility)
+    checkRedirectResult();
     
     // Add global error handlers to catch any errors we might miss
     window.addEventListener('error', (event) => {

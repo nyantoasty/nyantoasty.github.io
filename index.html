@@ -964,12 +964,7 @@
             }
         }
         
-        function updateDisplay() {
-            const stepInput = document.getElementById('current-step-input');
-            if (stepInput && typeof currentStep !== 'undefined') {
-                stepInput.value = currentStep;
-            }
-        }
+
         
 
         function getStitchCount(stepNumber){
@@ -1135,19 +1130,7 @@
             }
             return null;
         }
-        function loadProgress(){const savedStep=localStorage.getItem(progressKey);currentStep=savedStep?parseInt(savedStep,10):1;updateDisplay(false);}
-        function saveProgress() { localStorage.setItem(progressKey, currentStep); }
-        function updateDisplay(shouldScroll=true){
-            stepInput.value=currentStep;
-            const currentInstruction=findInstructionForStep(currentStep);
-            console.log(`Step ${currentStep}: Found instruction:`, currentInstruction);
-            if(currentInstruction){
-                stepTypeEl.textContent=currentInstruction.type?.toUpperCase()||'STEP';
-            }
-            highlightCurrentStep(shouldScroll);
-            saveProgress();
-            if(isStitchLocatorMode)stitchInput.max=getStitchCount(currentStep);
-        }
+
         function findInstructionForStep(stepNumber) { 
             return PATTERN_DATA.instructions.find(instr=>{
                 if(instr.step) return instr.step===stepNumber;
@@ -1264,9 +1247,8 @@
             document.getElementById('current-step-input').value = currentStep;
             
             // Update display and scroll to current row (with timeout to ensure DOM is ready)
-            updateDisplay();
             setTimeout(() => {
-                scrollToCurrentRow();
+                updateDisplay(currentStep, true);
             }, 100);
             
             footerControls.classList.remove('hidden');
@@ -1417,9 +1399,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                 if (currentStep > maxSteps) currentStep = maxSteps;
                 stepInput.value = currentStep;
                 console.log('📍 Step input changed to:', currentStep);
-                scrollToCurrentRow();
                 saveProgress();
-                updateDisplay();
+                updateDisplay(currentStep, true);
             });
         }
         
@@ -1429,9 +1410,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                     currentStep--;
                     stepInput.value = currentStep;
                     console.log('📍 Previous button clicked, currentStep:', currentStep);
-                    scrollToCurrentRow();
                     saveProgress();
-                    updateDisplay();
+                    updateDisplay(currentStep, true);
                 }
             });
         }
@@ -1442,9 +1422,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                     currentStep++;
                     stepInput.value = currentStep;
                     console.log('📍 Next button clicked, currentStep:', currentStep);
-                    scrollToCurrentRow();
                     saveProgress();
-                    updateDisplay();
+                    updateDisplay(currentStep, true);
                 }
             });
         }

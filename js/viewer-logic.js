@@ -57,7 +57,7 @@ export function updateDisplay(currentStep, shouldScroll = true) {
         }
     }
     
-    // Highlight current step in pattern - Enhanced highlighting
+    // Highlight current step and add outlines to previous steps
     const allSteps = document.querySelectorAll('[data-step], [data-step-start]');
     allSteps.forEach(el => {
         el.classList.remove('current-step');
@@ -65,8 +65,21 @@ export function updateDisplay(currentStep, shouldScroll = true) {
         el.style.padding = '';
         el.style.margin = '';
         el.style.borderRadius = '';
+        el.style.border = '';
     });
     
+    // Add subtle outlines to all previous steps
+    for (let i = 1; i < currentStep; i++) {
+        const prevStepEl = findStepElement(i);
+        if (prevStepEl) {
+            prevStepEl.style.border = '1px solid rgba(139, 92, 246, 0.3)';
+            prevStepEl.style.borderRadius = '0.25rem';
+            prevStepEl.style.padding = '0.25rem';
+            prevStepEl.style.margin = '0.125rem 0';
+        }
+    }
+    
+    // Highlight current step with stronger styling
     const currentStepEl = findStepElement(currentStep);
     if (currentStepEl) {
         currentStepEl.classList.add('current-step');

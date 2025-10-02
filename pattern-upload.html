@@ -9,10 +9,9 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1f2937">
     <style>
-        .tab-button.active {
-            color: #c084fc;
-            border-color: #c084fc;
-        }
+        .tab-button { padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .tab-button.active { background-color: #8b5cf6; color: white; }
+        .tab-button:not(.active):hover { background-color: #4a5568; }
         .tab-content.hidden {
             display: none;
         }
@@ -23,23 +22,31 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- Navigation Header -->
-        <nav class="flex items-center justify-between mb-6">
-            <a href="/" class="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-                <i class="fas fa-home mr-2"></i>
-                <span class="text-lg font-semibold">Back to Pattern Hub</span>
-            </a>
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-400 text-sm">Upload Pattern</span>
+        <!-- Header matching the main Pattern Hub -->
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-gray-700 pb-4">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
+                <p class="text-sm text-gray-400">AI Pattern Generator</p>
+                <p class="text-xs text-gray-500">v2025-10-02 - Upload & Convert Patterns</p>
             </div>
-        </nav>
-
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
-                <i class="fas fa-magic"></i> Upload Pattern
-            </h1>
-            <p class="text-gray-300">Upload your knitting pattern to Stitch Witch</p>
+            <div class="flex items-center space-x-4">
+                <nav class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
+                    <a href="/" class="tab-button">Viewer</a>
+                    <span class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg text-sm">Generator</span>
+                </nav>
+                <a href="/" class="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                    <i class="fas fa-home mr-2"></i>Back to Hub
+                </a>
+            </div>
         </header>
+
+        <!-- Generator Section Header -->
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
+                <i class="fas fa-magic"></i> AI Pattern Generator
+            </h2>
+            <p class="text-gray-300">Upload files or enter text to convert patterns using AI</p>
+        </div>
 
         <!-- Upload Steps -->
         <div class="bg-gray-800 rounded-lg p-6 mb-6">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02 Correcting upload button -->
+<!-- Version: v2025-10-02- correcting security rules + code for AI generation -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -172,9 +172,12 @@
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
                     <button data-view="viewer" class="tab-button active">Viewer</button>
-                    <button data-view="generator" class="tab-button">Generator</button>
+                    <button id="generator-nav-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Generator</button>
                 </nav>
+<<<<<<< HEAD
+=======
                 <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🚀 Setup Progress System</button>
+>>>>>>> 20972094d136b87f9d0fdad6cdc2dc653690648b
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
         </header>
@@ -327,7 +330,12 @@
     const guestGeneratorBtn = document.getElementById('guest-generator-btn');
     const debugBtn = document.getElementById('debug-btn');
     const logoutBtn = document.getElementById('logout-btn');
+<<<<<<< HEAD
+    const generatorNavBtn = document.getElementById('generator-nav-btn');
+    const backToMainBtn = document.getElementById('back-to-main');
+=======
     const initFirestoreBtn = document.getElementById('init-firestore-btn');
+>>>>>>> 20972094d136b87f9d0fdad6cdc2dc653690648b
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
     const viewerSection = document.getElementById('viewer-section');
@@ -405,14 +413,21 @@
         alert('Debug info logged to console!');
     });
 
+<<<<<<< HEAD
+    generatorNavBtn.addEventListener('click', () => {
+        window.location.href = 'pattern-upload.html';
+=======
     guestGeneratorBtn.addEventListener('click', () => {
         window.location.href = 'pattern-upload.html';
+>>>>>>> 20972094d136b87f9d0fdad6cdc2dc653690648b
     });
 
     logoutBtn.addEventListener('click', () => {
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
 
+<<<<<<< HEAD
+=======
     initFirestoreBtn.addEventListener('click', async () => {
         initFirestoreBtn.disabled = true;
         initFirestoreBtn.textContent = '⏳ Setting up system...';
@@ -464,6 +479,7 @@
         }
     });
 
+>>>>>>> 20972094d136b87f9d0fdad6cdc2dc653690648b
     // --- AUTHORIZATION & APP STATE ---
     
     function showNotAuthorized(user) {
@@ -815,7 +831,7 @@
                     action: 'section_switch',
                     section: view,
                     patternId: PATTERN_DATA?.id || 'unknown'
-                }, db);
+                }, db, auth);
             }
             
             if (view === 'viewer') {
@@ -1492,7 +1508,7 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                 stitchCode: stitchCode,
                 rowNumber: currentStep,
                 patternId: PATTERN_DATA?.id || 'unknown'
-            });
+            }, db, auth);
         }
         
         const glossaryEntry = PATTERN_DATA.glossary[stitchCode];

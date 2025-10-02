@@ -1,11 +1,16 @@
 // stitch-witch.js - Analytics and user interaction tracking
 // Version: v2025-09-29-modular
 
-export async function logStitchWitchQuery(queryData, db = null) {
+export async function logStitchWitchQuery(queryData, db = null, auth = null) {
     try {
         // If db is not provided, try to get it from global context
         if (!db && typeof window !== 'undefined' && window.db) {
             db = window.db;
+        }
+        
+        // If auth is not provided, try to get it from global context
+        if (!auth && typeof window !== 'undefined' && window.auth) {
+            auth = window.auth;
         }
         
         if (!db) {
@@ -13,12 +18,18 @@ export async function logStitchWitchQuery(queryData, db = null) {
             return null;
         }
         
+        if (!auth || !auth.currentUser) {
+            console.warn('No authenticated user available for logging');
+            return null;
+        }
+        
         // Import Firestore functions
         const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
         
-        // Add timestamp and generate session ID if not provided
+        // Add timestamp, userId, and generate session ID if not provided
         const docData = {
             ...queryData,
+            userId: auth.currentUser.uid,
             timestamp: serverTimestamp(),
             sessionId: queryData.sessionId || generateSessionId()
         };

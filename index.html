@@ -713,58 +713,55 @@
         const { createNewProject, saveProjectProgress, addProjectNote } = await import('./js/progress-tracking.js');
         
         console.log('Creating sample progress entry...');
+        console.log('Pattern data:', window.PATTERN_DATA);
+        console.log('User ID:', userId);
+        console.log('Pattern ID:', patternId);
         
-        // Create a new project instance
-        const projectId = await createNewProject(
+        // Create a new project instance with correct function signature
+        const projectResult = await createNewProject(
             window.db, 
             userId, 
             patternId, 
-            {
-                projectName: `My ${window.PATTERN_DATA.metadata.name} Project`,
-                startDate: new Date(),
-                yarn: {
-                    brand: 'Red Heart',
-                    colorway: 'Soft Navy',
-                    weight: 'DK',
-                    yardage: 300,
-                    dyelot: 'A123'
-                },
-                tools: {
-                    needles: 'US 6 (4.0mm)',
-                    notions: ['stitch markers', 'tapestry needle']
-                },
-                notes: 'Starting my first project with this pattern!'
-            }
+            `My ${window.PATTERN_DATA.metadata.name} Project`, // projectName
+            'personal', // purpose
+            null // recipient
         );
         
-        // Save some progress
+        const projectId = projectResult.projectId;
+        console.log('Created project:', projectResult);
+        
+        // Update project with additional details using saveProjectProgress
         await saveProjectProgress(
             window.db,
             userId,
             patternId,
             projectId,
             {
+                'projectDetails.yarns': [{
+                    brand: 'Red Heart',
+                    colorway: 'Soft Navy', 
+                    weight: 'DK',
+                    yardage: 300,
+                    dyelot: 'A123'
+                }],
+                'projectDetails.tools.needleSize': 'US 6 (4.0mm)',
+                'projectDetails.tools.otherTools': ['stitch markers', 'tapestry needle'],
+                'notes.general': 'Starting my first project with this pattern!',
                 currentStep: 5,
                 completedSteps: [1, 2, 3, 4, 5],
-                timeSpent: 120, // 2 hours in minutes
-                modifications: ['Using different needle size for better gauge'],
-                notes: 'Progress is going well, really enjoying this pattern!'
+                'experience.timeSpent.totalMinutes': 120,
+                'projectDetails.modifications': ['Using different needle size for better gauge']
             }
         );
         
-        // Add a project note
+        // Add a project note using addProjectNote
         await addProjectNote(
             window.db,
             userId,
             patternId,
             projectId,
-            {
-                type: 'progress',
-                content: 'Completed the setup rows, moving on to the main pattern section.',
-                step: 5,
-                images: [],
-                tags: ['milestone']
-            }
+            'Completed the setup rows, moving on to the main pattern section.',
+            5 // step number
         );
         
         console.log('✅ Sample progress entry created!');

@@ -1,28 +1,6 @@
 // progress-setup.js - Setup script for Firestore progress tracking system
 // Version: v2025-10-02-progress-tracking
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-// Firebase config (replace with your actual config)
-const firebaseConfig = {
-    apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
-    authDomain: "arachne-edda2.firebaseapp.com",
-    projectId: "arachne-edda2",
-    storageBucket: "arachne-edda2.firebasestorage.app",
-    messagingSenderId: "285468127259",
-    appId: "1:285468127259:web:9a1285684a1a6b9b1548be",
-    measurementId: "G-208TQKEXGG"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// progress-setup.js - Setup script for Firestore progress tracking system
-// Version: v2025-10-02-progress-tracking
-
 import { doc, setDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 /**

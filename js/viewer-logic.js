@@ -1,5 +1,7 @@
 // viewer-logic.js - Pattern viewer navigation and progress functions
-// Version: v2025-09-29-modular
+// Version: v2025-10-01-firestore-progress
+
+import { getCurrentStep, setCurrentStep } from './progress-tracking.js';
 
 export function loadProgressSimple(progressKey) {
     const savedStep = localStorage.getItem(progressKey);
@@ -16,6 +18,22 @@ export function loadProgress(progressKey, currentStepRef, updateDisplayFn) {
 
 export function saveProgress(progressKey, currentStep) {
     localStorage.setItem(progressKey, currentStep);
+}
+
+// NEW: Firestore-based progress functions
+export async function loadProgressFirestore(db, userId, patternId, currentStepRef, updateDisplayFn) {
+    const currentStep = await getCurrentStep(db, userId, patternId);
+    if (currentStepRef) {
+        currentStepRef.value = currentStep;
+    }
+    if (updateDisplayFn) {
+        updateDisplayFn(false);
+    }
+    return currentStep;
+}
+
+export async function saveProgressFirestore(db, userId, patternId, currentStep) {
+    await setCurrentStep(db, userId, patternId, currentStep);
 }
 
 export function updateDisplay(currentStep, shouldScroll = true) {

@@ -296,7 +296,8 @@
     import { getInstructionCategory } from "./js/utils.js";
     import { generateGlossary, generateInstructions, generatePatternTheme } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
-    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple } from "./js/viewer-logic.js";
+    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
+    import { getCurrentStep, setCurrentStep, loadUserProgress } from "./js/progress-tracking.js";
     import { createSeaWitchPattern } from "./scripts/create-sea-witch-pattern.js";
     
     // --- CONFIG & STATE ---
@@ -320,6 +321,7 @@
     
     let PATTERN_DATA = null;
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
+    let currentPatternId = null;
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
 
@@ -913,36 +915,46 @@
             return document.querySelector(`[data-step="${stepNumber}"]`);
         }
         
-        function saveProgress() {
-            if (progressKey && currentStep) {
-                localStorage.setItem(progressKey, currentStep.toString());
-            }
-        }
-        
-        function loadProgress() {
-            if (progressKey) {
-                const saved = localStorage.getItem(progressKey);
-                if (saved) {
-                    currentStep = parseInt(saved, 10) || 1;
-                    document.getElementById('current-step-input').value = currentStep;
+        async function saveProgress() {
+            if (currentStep && currentPatternId) {
+                const userId = auth.currentUser?.uid;
+                if (userId && db) {
+                    await saveProgressFirestore(db, userId, currentPatternId, currentStep);
+                } else {
+                    // Fallback for anonymous users
+                    if (progressKey) {
+                        localStorage.setItem(progressKey, currentStep.toString());
+                    }
                 }
             }
         }
         
-        function loadProgressSimple(key) {
-            if (key) {
-                const saved = localStorage.getItem(key);
-                return parseInt(saved, 10) || 1;
+        async function loadProgress() {
+            const userId = auth.currentUser?.uid;
+            if (userId && db && currentPatternId) {
+                currentStep = await getCurrentStep(db, userId, currentPatternId);
+            } else {
+                // Fallback for anonymous users
+                if (progressKey) {
+                    const saved = localStorage.getItem(progressKey);
+                    currentStep = saved ? parseInt(saved, 10) : 1;
+                }
             }
-            return 1;
+            document.getElementById('current-step-input').value = currentStep;
         }
         
-        function loadProgressSimple(key) {
-            if (key) {
-                const saved = localStorage.getItem(key);
-                return parseInt(saved, 10) || 1;
+        async function loadProgressSimple(key) {
+            const userId = auth.currentUser?.uid;
+            if (userId && db && currentPatternId) {
+                return await getCurrentStep(db, userId, currentPatternId);
+            } else {
+                // Fallback for anonymous users or when using old key system
+                if (key) {
+                    const saved = localStorage.getItem(key);
+                    return parseInt(saved, 10) || 1;
+                }
+                return 1;
             }
-            return 1;
         }
         
         function updateDisplay() {
@@ -1240,6 +1252,9 @@
             maxSteps = max;
             document.getElementById('current-step-input').max = maxSteps;
             
+            // Store current pattern ID for progress tracking
+            currentPatternId = patternId;
+            
             // Use pattern ID for progress key (pattern-specific, not user-specific)
             progressKey = `pattern-progress-${patternId}`;
             
@@ -1251,15 +1266,24 @@
             // Set up interactive features AFTER pattern content is generated
             setupInteractiveFeatures();
             
-            // Load saved progress for this specific pattern
-            currentStep = loadProgressSimple(progressKey);
+            // Load saved progress for this specific pattern (now uses Firestore)
+            currentStep = await loadProgressSimple(progressKey);
             
             // Set up the current step display
             document.getElementById('current-step-input').value = currentStep;
             
-            // Update display and scroll to current row
+            // Update display and scroll to current row (with timeout to ensure DOM is ready)
             updateDisplay();
-            scrollToCurrentRow();
+            setTimeout(() => {
+                const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
+                if (currentRowElement) {
+                    currentRowElement.classList.add('current-step');
+                    currentRowElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            }, 100);
             
             footerControls.classList.remove('hidden');
             

@@ -41,15 +41,15 @@ const seaWitchPattern = {
     },
     
     glossary: {
-        'k': { name: 'Knit', description: 'Knit stitch.', stitchIndex: 1 },
-        'kfb': { name: 'Knit Front and Back', description: 'Knit into the front then back of the same stitch. This is a one-stitch increase.', stitchIndex: 2 },
-        'k2tog': { name: 'Knit 2 Together', description: 'Insert the righthand needle into the first two stitches on the lefthand needle from left to right, then wrap the yarn and pull through as with a normal knit stitch. This is a one-stitch decrease.', stitchIndex: 1 },
-        'YO': { name: 'Yarn Over', description: 'Bring yarn to the front as if to purl. Wrap the yarn over the righthand needle to the back, then knit. This creates an extra stitch and a small decorative hole.', stitchIndex: 1 },
-        'BO1': { name: 'Bind Off 1', description: 'Knit 2 stitches, then slip the first stitch over the second stitch and off the needle. This binds off one stitch.', stitchIndex: 0 },
-        'MB3': { name: 'Make Bobble 3', description: 'k, yo, k into same st, drop from left (3 loops on needle). Turn, p3. Turn, k3. Bind off until 1 loop on needle.', stitchIndex: 1 },
-        'MB5': { name: 'Make Bobble 5', description: '[k, yo] twice, k into same st, drop from left (5 loops on needle). Turn, p5. Turn, k5. Turn, p5. Turn, k5. Bind off until 1 loop on needle.', stitchIndex: 1 },
-        'MB7': { name: 'Make Bobble 7', description: '[k, yo] three times, k into same st, drop from left (7 loops on needle). Turn, p7. Turn, k7. Turn, p7. Turn, k7. Bind off until 1 loop on needle.', stitchIndex: 1 },
-        'MB9': { name: 'Make Bobble 9', description: '[k, yo] four times, k into same st, drop from left (9 loops on needle). Turn, p9. Turn, k9. Turn, p9. Turn, k9. Turn, p9. Turn, k9. Bind off until 1 loop on needle.', stitchIndex: 1 }
+        'k': { name: 'Knit', description: 'Knit stitch.', stitchesUsed: 1, stitchesCreated: 1 },
+        'kfb': { name: 'Knit Front and Back', description: 'Knit into the front then back of the same stitch. This is a one-stitch increase.', stitchesUsed: 1, stitchesCreated: 2 },
+        'k2tog': { name: 'Knit 2 Together', description: 'Insert the righthand needle into the first two stitches on the lefthand needle from left to right, then wrap the yarn and pull through as with a normal knit stitch. This is a one-stitch decrease.', stitchesUsed: 2, stitchesCreated: 1 },
+        'YO': { name: 'Yarn Over', description: 'Bring yarn to the front as if to purl. Wrap the yarn over the righthand needle to the back, then knit. This creates an extra stitch and a small decorative hole.', stitchesUsed: 0, stitchesCreated: 1 },
+        'BO1': { name: 'Bind Off 1', description: 'Knit 2 stitches, then slip the first stitch over the second stitch and off the needle. This binds off one stitch.', stitchesUsed: 1, stitchesCreated: 0 },
+        'MB3': { name: 'Make Bobble 3', description: 'k, yo, k into same st, drop from left (3 loops on needle). Turn, p3. Turn, k3. Bind off until 1 loop on needle.', stitchesUsed: 1, stitchesCreated: 1 },
+        'MB5': { name: 'Make Bobble 5', description: '[k, yo] twice, k into same st, drop from left (5 loops on needle). Turn, p5. Turn, k5. Turn, p5. Turn, k5. Bind off until 1 loop on needle.', stitchesUsed: 1, stitchesCreated: 1 },
+        'MB7': { name: 'Make Bobble 7', description: '[k, yo] three times, k into same st, drop from left (7 loops on needle). Turn, p7. Turn, k7. Turn, p7. Turn, k7. Bind off until 1 loop on needle.', stitchesUsed: 1, stitchesCreated: 1 },
+        'MB9': { name: 'Make Bobble 9', description: '[k, yo] four times, k into same st, drop from left (9 loops on needle). Turn, p9. Turn, k9. Turn, p9. Turn, k9. Turn, p9. Turn, k9. Bind off until 1 loop on needle.', stitchesUsed: 1, stitchesCreated: 1 }
     },
     
     sections: [
@@ -385,16 +385,24 @@ function generateSeaWitchSteps() {
     ];
 
     // Convert to proper step format with all required fields
-    allRows.forEach(row => {
+    let currentStitchCount = 3; // Starting with cast on 3
+    
+    allRows.forEach((row, index) => {
+        // Starting count is the current count before this row
+        const startingCount = currentStitchCount;
+        
         steps.push({
             step: row.step,
-            section: row.section,
-            side: row.step % 2 === 1 ? 'rs' : 'ws',
-            startingStitchCount: row.step === 1 ? 3 : row.sts, // Simplified - could be calculated
+            startingStitchCount: startingCount,
             endingStitchCount: row.sts,
             instruction: row.instruction,
-            type: 'row'
+            section: row.section,
+            side: row.step % 2 === 1 ? 'RS' : 'WS',
+            type: 'regular'
         });
+        
+        // Update current stitch count to this row's ending count
+        currentStitchCount = row.sts;
     });
     
     // Add final instruction
@@ -435,6 +443,7 @@ export async function createSeaWitchPattern() {
             viewCount: 0,
             forkCount: 0,
             tags: ['scarf', 'bobbles', 'intermediate', 'tentacle', 'spiral', 'sea-witch'],
+            lastExportedAt: null,
             exportCount: 0
         };
         

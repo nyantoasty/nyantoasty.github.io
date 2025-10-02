@@ -319,6 +319,7 @@
     
     // Make db globally available for analytics
     window.db = db;
+    window.auth = auth;
     
     let PATTERN_DATA = null;
     let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
@@ -430,7 +431,7 @@
         try {
             // First, set up the progress tracking system with sample data
             console.log('🚀 Setting up progress tracking system...');
-            await setupProgressTracking();
+            await setupProgressTracking(db, auth);
             
             // Then create the Sea Witch pattern with updated schema
             console.log('🧙‍♀️ Creating Sea Witch pattern...');

@@ -38,6 +38,11 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
+    // Roles collection - authenticated users can read roles to check permissions
+    match /roles/{roleId} {
+      allow read: if isAuthenticated();
+    }
+
     // Patterns collection - read based on access, write for creators/editors, admins have full access
     match /patterns/{patternId} {
       allow read: if isAdmin() ||

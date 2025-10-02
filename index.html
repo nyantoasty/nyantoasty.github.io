@@ -971,24 +971,7 @@
             }
         }
         
-        function scrollToCurrentRow() {
-            const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
-            if (currentRowElement) {
-                // Remove previous highlights
-                document.querySelectorAll('.current-step').forEach(el => {
-                    el.classList.remove('current-step');
-                });
-                
-                // Add current step highlight
-                currentRowElement.classList.add('current-step');
-                
-                // Scroll to the row
-                currentRowElement.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            }
-        }
+
         function getStitchCount(stepNumber){
             if (!PATTERN_DATA || !PATTERN_DATA.steps) return 3;
             
@@ -1355,12 +1338,29 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         
         console.log('✅ Interactive features setup complete');
     }
-    
+
+    function scrollToCurrentRow() {
+        const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
+        if (currentRowElement) {
+            // Remove previous highlights
+            document.querySelectorAll('.current-step').forEach(el => {
+                el.classList.remove('current-step');
+            });
+            
+            // Add current step highlight
+            currentRowElement.classList.add('current-step');
+            
+            // Scroll to the row
+            currentRowElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+    }
+
     function setupStitchFinder() {
         const findStitchBtn = document.getElementById('find-stitch-btn');
-        const stitchInput = document.getElementById('stitch-input');
-        
-        function findStitch() {
+        const stitchInput = document.getElementById('stitch-input');        function findStitch() {
             const stitchNumber = parseInt(stitchInput.value);
             if (!stitchNumber || stitchNumber < 1) {
                 alert('Please enter a valid stitch number');
@@ -1573,8 +1573,10 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
             if (item && item.name) {
                 const category = getInstructionCategory(key, PATTERN_DATA);
                 glossaryHTML += `
-                    <div class="cursor-pointer hover:bg-gray-700 p-2 rounded" data-stitch="${key}">
-                        <span class="${category} font-semibold">${key}</span> - ${item.name}
+                    <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
+                        <div class="${category} font-bold text-lg mb-1">${key}</div>
+                        <div class="text-gray-300 font-medium mb-1">${item.name}</div>
+                        ${item.description ? `<div class="text-gray-400 text-sm leading-relaxed">${item.description}</div>` : ''}
                     </div>
                 `;
             }

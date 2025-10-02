@@ -519,7 +519,7 @@
     
     // Import our modular functions
     import { getInstructionCategory } from "./js/utils.js";
-    import { generateGlossary, generateInstructions, generatePatternTheme, updateSidebarColorKey, renderPattern } from "./js/pattern-functions.js";
+    import { generateGlossary, generateInstructions, generatePatternTheme, updateSidebarColorKey } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
     import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
@@ -1195,7 +1195,7 @@
                 
                 if (patternData.metadata && patternData.metadata.name) {
                     // Pattern loaded successfully, render it
-                    window.renderPattern(patternData);
+                    generateInstructions(patternData);
                     console.log('✅ Pattern loaded from Firestore:', patternData.metadata.name);
                 } else {
                     console.error('❌ Pattern data missing required metadata');

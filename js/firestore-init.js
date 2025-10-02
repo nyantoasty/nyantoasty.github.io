@@ -61,18 +61,21 @@ async function initializeFirestoreCollections() {
       steps: [
         {
           step: 1,
-          section: 'Setup',
           startingStitchCount: 10,
           endingStitchCount: 10,
-          chunks: [
-            {
-              id: 'row1-all',
-              type: 'static',
-              instructions: [
-                { stitch: 'k', count: 10 }
-              ]
-            }
-          ]
+          instruction: "k10",
+          section: "setup",
+          side: "RS",
+          type: "regular"
+        },
+        {
+          step: 2,
+          startingStitchCount: 10,
+          endingStitchCount: 10,
+          instruction: "p10",
+          section: "setup",
+          side: "WS",
+          type: "regular"
         }
       ],
       

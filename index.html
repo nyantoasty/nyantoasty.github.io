@@ -2461,42 +2461,7 @@
         console.log('🔧 Current step display updated to:', currentStep);
     }
     
-    function updateFooterMetadata() {
-        console.log('🏷️ updateFooterMetadata called');
-        const currentPatternName = document.getElementById('current-pattern-name');
-        const footerCurrentStep = document.getElementById('footer-current-step');
-        const footerMaxSteps = document.getElementById('footer-max-steps');
-        
-        console.log('🏷️ Footer elements:', {
-            currentPatternName: currentPatternName?.textContent,
-            footerCurrentStep: footerCurrentStep?.textContent,
-            footerMaxSteps: footerMaxSteps?.textContent
-        });
-        
-        console.log('🏷️ Pattern data:', {
-            PATTERN_DATA: !!PATTERN_DATA,
-            patternName: PATTERN_DATA?.metadata?.name,
-            currentStep: window.currentStep || currentStep,
-            maxSteps: window.maxSteps || maxSteps
-        });
-        
-        if (currentPatternName && footerCurrentStep && footerMaxSteps) {
-            const patternName = PATTERN_DATA?.metadata?.name || 'Unknown Pattern';
-            const activeCurrentStep = window.currentStep || currentStep || 1;
-            const activeMaxSteps = window.maxSteps || maxSteps || 1;
-            
-            console.log('🏷️ Updating footer with:', { patternName, activeCurrentStep, activeMaxSteps });
-            currentPatternName.textContent = patternName;
-            footerCurrentStep.textContent = activeCurrentStep;
-            footerMaxSteps.textContent = activeMaxSteps;
-        } else {
-            console.log('🏷️ Cannot update footer - missing elements:', {
-                currentPatternName: !!currentPatternName,
-                footerCurrentStep: !!footerCurrentStep,
-                footerMaxSteps: !!footerMaxSteps
-            });
-        }
-    }
+    // updateFooterMetadata is defined globally as window.updateFooterMetadata below
 
     // saveProgress is imported from viewer-logic.js - no local definition needed
 
@@ -2704,20 +2669,7 @@
         updateFooterMetadata();
     }
     
-    // UPDATE FOOTER METADATA FUNCTION
-    function updateFooterMetadata() {
-        const footerCurrentStep = document.getElementById('footer-current-step');
-        const footerMaxSteps = document.getElementById('footer-max-steps');
-        
-        if (footerCurrentStep && window.currentStep) {
-            footerCurrentStep.textContent = window.currentStep;
-        }
-        if (footerMaxSteps && window.maxSteps) {
-            footerMaxSteps.textContent = window.maxSteps;
-        }
-        
-        console.log('🔧 Footer updated:', { currentStep: window.currentStep, maxSteps: window.maxSteps });
-    }
+    // UPDATE FOOTER METADATA FUNCTION (defined globally as window.updateFooterMetadata below)
     
     // NOTES SIDEBAR FUNCTIONALITY
     function toggleNotesSidebar() {

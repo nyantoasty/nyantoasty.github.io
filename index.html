@@ -330,8 +330,9 @@
                     <button data-view="viewer" class="tab-button active">Viewer</button>
                     <button id="generator-nav-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Generator</button>
                 </nav>
-                <button id="create-sample-progress-btn" class="bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors text-sm">Create Sample Progress</button>
-                <button id="recreate-progress-collection-btn" class="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm">Recreate Progress Collection</button>
+                <!-- DEVELOPMENT BUTTONS - HIDDEN IN PRODUCTION -->
+                <!-- <button id="create-sample-progress-btn" class="bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors text-sm">Create Sample Progress</button> -->
+                <!-- <button id="recreate-progress-collection-btn" class="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm">Recreate Progress Collection</button> -->
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
         </header>
@@ -558,8 +559,8 @@
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const generatorNavBtn = document.getElementById('generator-nav-btn');
-    const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
-    const recreateProgressCollectionBtn = document.getElementById('recreate-progress-collection-btn');
+    // const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
+    // const recreateProgressCollectionBtn = document.getElementById('recreate-progress-collection-btn');
     const backToMainBtn = document.getElementById('back-to-main');
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
@@ -705,6 +706,8 @@
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
 
+    // DEVELOPMENT BUTTON EVENT HANDLERS - COMMENTED OUT FOR PRODUCTION
+    /*
     createSampleProgressBtn.addEventListener('click', async () => {
         try {
             createSampleProgressBtn.disabled = true;
@@ -752,6 +755,7 @@
             recreateProgressCollectionBtn.textContent = 'Recreate Progress Collection';
         }
     });
+    */
 
     // --- AUTHORIZATION & APP STATE ---
     
@@ -782,8 +786,7 @@
             window.currentUserData = userData;
             window.currentUserRole = roleData;
             
-            // Initialize Firestore and load user projects instead of discovering patterns
-            initializeFirestore();
+            // Load user projects since Firestore is already initialized
             populateProjectSelector().then(() => {
                 console.log('Projects loaded, initializing viewer');
                 initializeViewer();
@@ -1126,7 +1129,11 @@
         userProjects.forEach(project => {
             const option = document.createElement('option');
             option.value = `${project.patternId}_${project.projectId}`;
-            option.textContent = `${project.patternName} (${project.projectId})`;
+            // Show custom project name if different from projectId, otherwise show pattern name with projectId
+            const displayName = project.projectId !== project.patternName && !project.projectId.startsWith('Project_') 
+                ? `${project.projectId} (${project.patternName})`
+                : `${project.patternName} - ${project.projectId}`;
+            option.textContent = displayName;
             selector.appendChild(option);
         });
         
@@ -1166,8 +1173,8 @@
         const projectLastUpdate = document.getElementById('project-last-update');
         const projectProgressSummary = document.getElementById('project-progress-summary');
         
-        projectName.textContent = `${project.patternName} - ${project.projectId}`;
-        projectPatternInfo.textContent = `Working on step ${project.currentStep}`;
+        projectName.textContent = project.projectId; // Use the actual project name, not concatenated string
+        projectPatternInfo.textContent = `${project.patternName} - Working on step ${project.currentStep}`;
         projectPatternName.textContent = project.patternName;
         projectStartDate.textContent = project.startDate.toLocaleDateString();
         projectLastUpdate.textContent = project.lastUpdate.toLocaleDateString();
@@ -1178,11 +1185,22 @@
         // Load the pattern data from Firestore
         await loadPatternFromFirestore(project.patternId);
         
-        // Set current project and step
+        // Set current project and step - ensure all viewer components are updated
         window.currentProject = project;
         if (window.currentStepRef) {
             window.currentStepRef.value = project.currentStep;
-            window.updateStepDisplay(false);
+            // Force update the display to show pattern name and enable functionality
+            if (window.PATTERN_DATA && window.updateStepDisplay) {
+                window.updateStepDisplay(false);
+            }
+        }
+        
+        // Update footer to show pattern is loaded
+        if (window.PATTERN_DATA) {
+            const footerControls = document.getElementById('footer-controls');
+            if (footerControls) {
+                footerControls.classList.remove('hidden');
+            }
         }
     }
     
@@ -1194,8 +1212,8 @@
                 window.PATTERN_DATA = patternData;
                 
                 if (patternData.metadata && patternData.metadata.name) {
-                    // Pattern loaded successfully, render it
-                    generateInstructions(patternData);
+                    // Pattern loaded successfully, set up the viewer
+                    setupViewer(); // This will call generateInstructions and set up all components
                     console.log('✅ Pattern loaded from Firestore:', patternData.metadata.name);
                 } else {
                     console.error('❌ Pattern data missing required metadata');

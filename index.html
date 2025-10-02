@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02-restored-pattern-info-display -->
+<!-- Version: v2025-10-02-restored-showSection-function -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Project Manager with Pattern Info v2025-10-02</title>
+    <title>Stitch Witch - Project Manager with Navigation Fixed v2025-10-02</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -664,6 +664,10 @@
         showSection('generator');
     });
     
+    backToMainBtn.addEventListener('click', () => {
+        showSection('viewer');
+    });
+    
     // PROJECT MANAGEMENT EVENT HANDLERS
     const newProjectBtn = document.getElementById('new-project-btn');
     const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');
@@ -1048,7 +1052,12 @@
     
     // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
     window.setupViewer = function() {
-        if (!PATTERN_DATA) return;
+        if (!PATTERN_DATA) {
+            console.error('❌ setupViewer called without PATTERN_DATA');
+            return;
+        }
+        
+        console.log('🔧 Setting up viewer with pattern:', PATTERN_DATA.metadata?.name);
         
         const footerControls = document.getElementById('footer-controls');
         footerControls.classList.remove('hidden');
@@ -1061,21 +1070,43 @@
         if (patternNameEl) patternNameEl.textContent = name;
         if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
         
+        // Set global variables
+        window.maxSteps = max;
         maxSteps = max;
+        
         const stepInput = document.getElementById('current-step-input');
-        if (stepInput) stepInput.max = maxSteps;
+        if (stepInput) {
+            stepInput.max = maxSteps;
+            // Initialize with current project step if available
+            if (window.currentProject && window.currentProject.currentStep) {
+                currentStep = window.currentProject.currentStep;
+                stepInput.value = currentStep;
+            }
+        }
         
         progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
         
-        // Update footer metadata
-        updateFooterMetadata();
+        // Update footer metadata with actual pattern name immediately
+        const currentPatternName = document.getElementById('current-pattern-name');
+        if (currentPatternName) {
+            currentPatternName.textContent = name;
+            console.log('🏷️ Footer pattern name updated to:', name);
+        }
         
+        // Generate pattern content
         const patternContentEl = document.getElementById('pattern-content');
         patternContentEl.innerHTML = '';
         generateGlossary(PATTERN_DATA);
         generateInstructions(PATTERN_DATA);
+        
+        // Update footer metadata after content is generated
+        updateFooterMetadata();
+        
+        // Load progress and setup interactions
         loadProgress();
         setupInteractiveFeatures();
+        
+        console.log('✅ Viewer setup complete for:', name);
     }
 
     // PROJECT MANAGEMENT FUNCTIONS
@@ -1168,10 +1199,10 @@
         userProjects.forEach(project => {
             const option = document.createElement('option');
             option.value = `${project.patternId}_${project.projectId}`;
-            // Show custom project name if different from projectId, otherwise show pattern name with projectId
-            const displayName = project.projectId !== project.patternName && !project.projectId.startsWith('Project_') 
-                ? `${project.projectId} (${project.patternName})`
-                : `${project.patternName} - ${project.projectId}`;
+            // Show the custom project name prominently
+            const displayName = project.projectId.startsWith('Project_') 
+                ? `${project.patternName} - ${project.projectId}` // Auto-generated name
+                : project.projectId; // Custom name from user
             option.textContent = displayName;
             selector.appendChild(option);
         });
@@ -1213,7 +1244,11 @@
         const projectProgressSummary = document.getElementById('project-progress-summary');
         
         // Show the actual project name the user gave it
-        projectName.textContent = project.projectId; // This is the user's custom project name
+        const customProjectName = project.projectId.startsWith('Project_') 
+            ? `${project.patternName} Project` // Auto-generated, show pattern name
+            : project.projectId; // Custom name from user
+        
+        projectName.textContent = customProjectName;
         projectPatternInfo.textContent = `Working on step ${project.currentStep}`;
         projectPatternName.textContent = project.patternName; // This is the pattern name
         projectStartDate.textContent = project.startDate.toLocaleDateString();
@@ -1227,6 +1262,9 @@
         
         // Set current project and step - ensure all viewer components are updated
         window.currentProject = project;
+        window.currentStep = project.currentStep;
+        currentStep = project.currentStep; // Set local variable too
+        
         if (window.currentStepRef) {
             window.currentStepRef.value = project.currentStep;
             // Force update the display to show pattern name and enable functionality
@@ -2513,6 +2551,44 @@
             hideStitchDefinition();
         }
     });
+    
+    // --- SECTION MANAGEMENT ---
+    function showSection(sectionName) {
+        console.log('📍 Switching to section:', sectionName);
+        
+        // Hide all main sections
+        const viewerSection = document.getElementById('viewer-section');
+        const generatorSection = document.getElementById('generator-section');
+        const standaloneGenerator = document.getElementById('standalone-generator');
+        const appContainer = document.getElementById('app-container');
+        
+        // Reset visibility
+        if (viewerSection) viewerSection.classList.remove('hidden');
+        if (generatorSection) generatorSection.classList.add('hidden');
+        if (standaloneGenerator) standaloneGenerator.classList.add('hidden');
+        
+        switch(sectionName) {
+            case 'viewer':
+                // Default state - viewer section visible, others hidden
+                if (appContainer) appContainer.classList.remove('hidden');
+                break;
+                
+            case 'generator':
+                // Show standalone generator, hide app container
+                if (appContainer) appContainer.classList.add('hidden');
+                if (standaloneGenerator) standaloneGenerator.classList.remove('hidden');
+                break;
+                
+            default:
+                console.warn('Unknown section:', sectionName);
+                break;
+        }
+        
+        // Log analytics
+        if (auth.currentUser && window.db) {
+            logStitchWitchQuery('navigation', 'section_switch', sectionName);
+        }
+    }
     
     // Close modal with Escape key
     document.addEventListener('keydown', (e) => {

@@ -42,30 +42,30 @@
       "stitchesUsed": 1,
       "stitchesCreated": 0
     },
-"MB3": {
-  "name": "Make Bobble 3",
-  "description": "Into one stitch: (Knit, YO) 1 time, then knit again (3 sts total). Turn, p3. Turn, k3. To finish, pass the second stitch on the right needle over the first stitch 2 times.",
-  "stitchesUsed": 1,
-  "stitchesCreated": 1
-},
-"MB5": {
-  "name": "Make Bobble 5",
-  "description": "Into one stitch: (Knit, YO) 2 times, then knit again (5 sts total). Turn, p5. Turn, k5. Repeat the last two rows 1 more time. To finish, pass the second stitch on the right needle over the first stitch 4 times.",
-  "stitchesUsed": 1,
-  "stitchesCreated": 1
-},
-"MB7": {
-  "name": "Make Bobble 7",
-  "description": "Into one stitch: (Knit, YO) 3 times, then knit again (7 sts total). Turn, p7. Turn, k7. Repeat the last two rows 1 more time. To finish, pass the second stitch on the right needle over the first stitch 6 times.",
-  "stitchesUsed": 1,
-  "stitchesCreated": 1
-},
-"MB9": {
-  "name": "Make Bobble 9",
-  "description": "Into one stitch: (Knit, YO) 4 times, then knit again (9 sts total). Turn, p9. Turn, k9. Repeat the last two rows 2 more times. To finish, pass the second stitch on the right needle over the first stitch 8 times.",
-  "stitchesUsed": 1,
-  "stitchesCreated": 1
-}
+  "MB3": {
+    "name": "Make Bobble 3",
+    "description": "Into one stitch: (k1, yo) once, k1. (3 sts made).\nTurn, p3.\nTurn, k3.\nTo finish, pass the 2nd and 3rd stitches over the 1st stitch and off the needle. (1 st remains).",
+    "stitchesUsed": 1,
+    "stitchesCreated": 1
+  },
+  "MB5": {
+    "name": "Make Bobble 5",
+    "description": "Into one stitch: (k1, yo) twice, k1. (5 sts made).\nTurn, p5.\nTurn, k5.\nTurn, p5.\nTurn, k5.\nTo finish, pass the 2nd, 3rd, 4th, and 5th stitches over the 1st stitch and off the needle. (1 st remains).",
+    "stitchesUsed": 1,
+    "stitchesCreated": 1
+  },
+  "MB7": {
+    "name": "Make Bobble 7",
+    "description": "Into one stitch: (k1, yo) three times, k1. (7 sts made).\nTurn, p7.\nTurn, k7.\nTurn, p7.\nTurn, k7.\nTo finish, pass the 2nd through 7th stitches over the 1st stitch and off the needle. (1 st remains).",
+    "stitchesUsed": 1,
+    "stitchesCreated": 1
+  },
+  "MB9": {
+    "name": "Make Bobble 9",
+    "description": "Into one stitch: (k1, yo) four times, k1. (9 sts made).\nTurn, p9.\nTurn, k9.\nTurn, p9.\nTurn, k9.\nTurn, p9.\nTurn, k9.\nTo finish, pass the 2nd through 9th stitches over the 1st stitch and off the needle. (1 st remains).",
+    "stitchesUsed": 1,
+    "stitchesCreated": 1
+  }
   },
   "steps": [
     {

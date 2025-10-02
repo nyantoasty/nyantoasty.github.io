@@ -2341,22 +2341,22 @@
         // Remove existing listeners to prevent duplicates
         if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
             stepInput.setAttribute('data-listener-added', 'true');
-            stepInput.addEventListener('change', async () => {
+            stepInput.addEventListener('change', () => {
                 currentStep = parseInt(stepInput.value) || 1;
                 if (currentStep < 1) currentStep = 1;
                 if (currentStep > maxSteps) currentStep = maxSteps;
                 stepInput.value = currentStep;
                 window.currentStep = currentStep; // Update global
                 
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, currentStep);
+                window.currentProject.currentStep = currentStep;
+                
+                // Save to Firestore in background (non-blocking)
                 if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                    await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                    saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                         currentStep: currentStep
-                    });
-                    // Update the local project object
-                    window.currentProject.currentStep = currentStep;
-                } else {
-                    console.warn('⚠️ saveProjectProgress not available or no project selected, using localStorage fallback');
-                    localStorage.setItem(progressKey, currentStep);
+                    }).catch(err => console.warn('Background save failed:', err));
                 }
                 
                 if (typeof updateDisplay === 'function') {
@@ -2372,20 +2372,21 @@
         
         if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
             prevBtn.setAttribute('data-listener-added', 'true');
-            prevBtn.addEventListener('click', async () => {
+            prevBtn.addEventListener('click', () => {
                 if (currentStep > 1) {
                     currentStep--;
                     stepInput.value = currentStep;
                     window.currentStep = currentStep; // Update global
                     
+                    // Save immediately to localStorage for instant response
+                    localStorage.setItem(progressKey, currentStep);
+                    window.currentProject.currentStep = currentStep;
+                    
+                    // Save to Firestore in background (non-blocking)
                     if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                        await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                             currentStep: currentStep
-                        });
-                        window.currentProject.currentStep = currentStep;
-                    } else {
-                        console.warn('⚠️ saveProjectProgress not available, using localStorage fallback');
-                        localStorage.setItem(progressKey, currentStep);
+                        }).catch(err => console.warn('Background save failed:', err));
                     }
                     
                     if (typeof updateDisplay === 'function') {
@@ -2402,20 +2403,21 @@
         
         if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
             nextBtn.setAttribute('data-listener-added', 'true');
-            nextBtn.addEventListener('click', async () => {
+            nextBtn.addEventListener('click', () => {
                 if (currentStep < maxSteps) {
                     currentStep++;
                     stepInput.value = currentStep;
                     window.currentStep = currentStep; // Update global
                     
+                    // Save immediately to localStorage for instant response
+                    localStorage.setItem(progressKey, currentStep);
+                    window.currentProject.currentStep = currentStep;
+                    
+                    // Save to Firestore in background (non-blocking)
                     if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                        await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                             currentStep: currentStep
-                        });
-                        window.currentProject.currentStep = currentStep;
-                    } else {
-                        console.warn('⚠️ saveProjectProgress not available, using localStorage fallback');
-                        localStorage.setItem(progressKey, currentStep);
+                        }).catch(err => console.warn('Background save failed:', err));
                     }
                     
                     if (typeof updateDisplay === 'function') {
@@ -2450,16 +2452,18 @@
         const jumpToStartBtn = document.getElementById('jump-to-start');
         if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
             jumpToStartBtn.setAttribute('data-listener-added', 'true');
-            jumpToStartBtn.addEventListener('click', async () => {
+            jumpToStartBtn.addEventListener('click', () => {
                 currentStep = 1;
                 stepInput.value = 1;
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, currentStep);
+                if (window.currentProject) window.currentProject.currentStep = currentStep;
+                
+                // Save to Firestore in background (non-blocking)
                 if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                    await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                    saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                         currentStep: currentStep
-                    });
-                    window.currentProject.currentStep = currentStep;
-                } else {
-                    localStorage.setItem(progressKey, currentStep);
+                    }).catch(err => console.warn('Background save failed:', err));
                 }
                 updateDisplay(currentStep, true);
             });
@@ -2493,7 +2497,7 @@
         // Keyboard navigation - avoid calling button.click() to prevent double triggers
         if (!window.keyboardNavSetup) {
             window.keyboardNavSetup = true;
-            document.addEventListener('keydown', async (e) => {
+            document.addEventListener('keydown', (e) => {
                 // Skip if user is typing in an input field
                 if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {
                     return;
@@ -2504,13 +2508,15 @@
                     if (currentStep < maxSteps) {
                         currentStep++;
                         stepInput.value = currentStep;
+                        // Save immediately to localStorage for instant response
+                        localStorage.setItem(progressKey, currentStep);
+                        if (window.currentProject) window.currentProject.currentStep = currentStep;
+                        
+                        // Save to Firestore in background (non-blocking)
                         if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                                 currentStep: currentStep
-                            });
-                            window.currentProject.currentStep = currentStep;
-                        } else {
-                            localStorage.setItem(progressKey, currentStep);
+                            }).catch(err => console.warn('Background save failed:', err));
                         }
                         updateDisplay(currentStep, true);
                     }
@@ -2521,13 +2527,15 @@
                     if (currentStep > 1) {
                         currentStep--;
                         stepInput.value = currentStep;
+                        // Save immediately to localStorage for instant response
+                        localStorage.setItem(progressKey, currentStep);
+                        if (window.currentProject) window.currentProject.currentStep = currentStep;
+                        
+                        // Save to Firestore in background (non-blocking)
                         if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
                                 currentStep: currentStep
-                            });
-                            window.currentProject.currentStep = currentStep;
-                        } else {
-                            localStorage.setItem(progressKey, currentStep);
+                            }).catch(err => console.warn('Background save failed:', err));
                         }
                         updateDisplay(currentStep, true);
                     }

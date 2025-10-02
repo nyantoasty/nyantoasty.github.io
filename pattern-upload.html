@@ -8,9 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1f2937">
+    <style>
+        .tab-button.active {
+            color: #c084fc;
+            border-color: #c084fc;
+        }
+        .tab-content.hidden {
+            display: none;
+        }
+        .generating {
+            animation: pulse 2s infinite;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Navigation Header -->
+        <nav class="flex items-center justify-between mb-6">
+            <a href="/" class="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+                <i class="fas fa-home mr-2"></i>
+                <span class="text-lg font-semibold">Back to Pattern Hub</span>
+            </a>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-400 text-sm">Upload Pattern</span>
+            </div>
+        </nav>
+
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
                 <i class="fas fa-magic"></i> Upload Pattern
@@ -40,15 +63,27 @@
             </div>
         </div>
 
-        <!-- Step 1: JSON Input -->
-        <div id="json-input-section" class="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-code"></i> Step 1: Paste Your Pattern JSON</h2>
+        <!-- Step 1: Pattern Input -->
+        <div id="pattern-input-section" class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-code"></i> Step 1: Pattern Input</h2>
             
-            <div class="mb-4">
-                <textarea 
-                    id="pattern-json" 
-                    class="w-full h-96 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
-                    placeholder='Paste your pattern JSON here. Example:
+            <!-- Input Method Tabs -->
+            <div class="flex mb-6 border-b border-gray-600">
+                <button id="manual-tab" class="tab-button active px-6 py-3 font-semibold border-b-2 border-purple-500 text-purple-400">
+                    <i class="fas fa-code mr-2"></i>Manual JSON
+                </button>
+                <button id="ai-tab" class="tab-button px-6 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300">
+                    <i class="fas fa-magic mr-2"></i>AI Convert Pattern
+                </button>
+            </div>
+
+            <!-- Manual JSON Input -->
+            <div id="manual-input" class="tab-content">
+                <div class="mb-4">
+                    <textarea 
+                        id="pattern-json" 
+                        class="w-full h-96 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
+                        placeholder='Paste your pattern JSON here. Example:
 {
   "metadata": {
     "name": "My Pattern",
@@ -66,17 +101,82 @@
   },
   "steps": [...]
 }'></textarea>
+                </div>
+
+                <div id="validation-results" class="mb-4"></div>
+
+                <div class="flex space-x-4">
+                    <button id="validate-json" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-check-circle"></i> Validate JSON
+                    </button>
+                    <button id="load-example" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-file-code"></i> Load Example
+                    </button>
+                </div>
             </div>
 
-            <div id="validation-results" class="mb-4"></div>
+            <!-- AI Pattern Conversion -->
+            <div id="ai-input" class="tab-content hidden">
+                <div class="mb-6">
+                    <label for="pattern-text" class="block text-sm font-medium text-gray-300 mb-2">
+                        <i class="fas fa-file-text mr-1"></i> Paste your raw knitting pattern text:
+                    </label>
+                    <textarea 
+                        id="pattern-text" 
+                        class="w-full h-64 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
+                        placeholder="Paste your knitting pattern here. For example:
 
-            <div class="flex space-x-4">
-                <button id="validate-json" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors">
-                    <i class="fas fa-check-circle"></i> Validate JSON
-                </button>
-                <button id="load-example" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
-                    <i class="fas fa-file-code"></i> Load Example
-                </button>
+Cast on 42 sts.
+Row 1 (WS): K to end.
+Row 2 (RS): K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.
+Row 3 (WS): K2, p to last 2 sts, k2.
+Repeat rows 2-3 until...
+
+The AI will convert this into structured JSON following our pattern format."></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold mb-3 text-gray-300">Pattern Details (Optional)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="ai-pattern-name" class="block text-sm font-medium text-gray-400 mb-1">Pattern Name</label>
+                            <input 
+                                type="text" 
+                                id="ai-pattern-name" 
+                                class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                placeholder="My Beautiful Shawl">
+                        </div>
+                        <div>
+                            <label for="ai-pattern-author" class="block text-sm font-medium text-gray-400 mb-1">Designer Name</label>
+                            <input 
+                                type="text" 
+                                id="ai-pattern-author" 
+                                class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                placeholder="Jane Designer">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ai-conversion-results" class="mb-4"></div>
+
+                <div class="flex space-x-4">
+                    <button id="generate-pattern" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-magic"></i> Generate JSON Pattern
+                    </button>
+                    <button id="clear-ai-input" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+
+                <div class="mt-4 p-4 bg-blue-900 border border-blue-500 rounded-lg">
+                    <h5 class="font-semibold text-blue-200 mb-2"><i class="fas fa-info-circle"></i> How it works:</h5>
+                    <ul class="text-blue-300 text-sm space-y-1">
+                        <li>• AI converts your pattern text using our comprehensive logic guide</li>
+                        <li>• Automatically calculates stitch counts and enumerates all repeats</li>
+                        <li>• Generates proper JSON with glossary, metadata, and step-by-step instructions</li>
+                        <li>• You can review and edit the generated JSON before uploading</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -155,6 +255,20 @@
         const loadExampleBtn = document.getElementById('load-example');
         const validationResults = document.getElementById('validation-results');
         
+        // Tab elements
+        const manualTab = document.getElementById('manual-tab');
+        const aiTab = document.getElementById('ai-tab');
+        const manualInput = document.getElementById('manual-input');
+        const aiInput = document.getElementById('ai-input');
+        
+        // AI elements
+        const patternTextarea = document.getElementById('pattern-text');
+        const aiPatternName = document.getElementById('ai-pattern-name');
+        const aiPatternAuthor = document.getElementById('ai-pattern-author');
+        const generateBtn = document.getElementById('generate-pattern');
+        const clearAiBtn = document.getElementById('clear-ai-input');
+        const aiResults = document.getElementById('ai-conversion-results');
+        
         const previewSection = document.getElementById('preview-section');
         const previewContent = document.getElementById('pattern-preview-content');
         const proceedBtn = document.getElementById('proceed-upload');
@@ -169,6 +283,124 @@
 
         const authInfo = document.getElementById('auth-info');
         const signInBtn = document.getElementById('sign-in-btn');
+
+        // Tab switching functionality
+        function switchTab(activeTab, inactiveTab, activeContent, inactiveContent) {
+            activeTab.classList.add('active', 'text-purple-400', 'border-purple-500');
+            activeTab.classList.remove('text-gray-400', 'border-transparent');
+            
+            inactiveTab.classList.remove('active', 'text-purple-400', 'border-purple-500');
+            inactiveTab.classList.add('text-gray-400', 'border-transparent');
+            
+            activeContent.classList.remove('hidden');
+            inactiveContent.classList.add('hidden');
+        }
+
+        manualTab.addEventListener('click', () => {
+            switchTab(manualTab, aiTab, manualInput, aiInput);
+        });
+
+        aiTab.addEventListener('click', () => {
+            switchTab(aiTab, manualTab, aiInput, manualInput);
+        });
+
+        // AI Pattern Generation
+        async function generatePatternFromText() {
+            const patternText = patternTextarea.value.trim();
+            if (!patternText) {
+                showAiError('Please paste your pattern text first');
+                return;
+            }
+
+            if (!currentUser) {
+                showAiError('Please sign in first to use AI pattern generation');
+                return;
+            }
+
+            try {
+                generateBtn.disabled = true;
+                generateBtn.classList.add('generating');
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                
+                showAiStatus('Converting your pattern to JSON...', 'blue');
+
+                // Import Firebase Functions
+                const { getFunctions, httpsCallable } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js");
+                const functions = getFunctions();
+                const generatePattern = httpsCallable(functions, 'generatePattern');
+                
+                // Call the Firebase Function
+                const result = await generatePattern({
+                    patternText: patternText,
+                    patternName: aiPatternName.value || null,
+                    patternAuthor: aiPatternAuthor.value || null
+                });
+                
+                if (result.data.success) {
+                    // Populate the manual JSON textarea with generated content
+                    jsonTextarea.value = result.data.generatedJson;
+                    
+                    // Switch to manual tab to show result
+                    switchTab(manualTab, aiTab, manualInput, aiInput);
+                    
+                    showAiStatus('✅ Pattern generated successfully! Review the JSON in the Manual tab.', 'green');
+                    
+                    // Auto-validate the generated JSON
+                    setTimeout(() => {
+                        validateBtn.click();
+                    }, 500);
+                    
+                } else {
+                    showAiError('Failed to generate pattern. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('AI Generation error:', error);
+                
+                if (error.code === 'functions/unauthenticated') {
+                    showAiError('Please sign in to use AI pattern generation.');
+                } else if (error.code === 'functions/resource-exhausted') {
+                    showAiError('Daily AI generation limit reached. Try again tomorrow.');
+                } else if (error.code === 'functions/invalid-argument') {
+                    showAiError('Pattern text is too short. Please provide more details.');
+                } else {
+                    showAiError('Failed to generate pattern. Please try again or use manual input.');
+                }
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('generating');
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate JSON Pattern';
+            }
+        }
+
+        function showAiStatus(message, type = 'blue') {
+            const bgColor = type === 'green' ? 'bg-green-900 border-green-500' : 
+                           type === 'red' ? 'bg-red-900 border-red-500' : 
+                           'bg-blue-900 border-blue-500';
+            const textColor = type === 'green' ? 'text-green-300' : 
+                            type === 'red' ? 'text-red-300' : 
+                            'text-blue-300';
+            
+            aiResults.innerHTML = `
+                <div class="${bgColor} border rounded p-4 mb-4">
+                    <p class="${textColor}">${message}</p>
+                </div>
+            `;
+        }
+
+        function showAiError(message) {
+            showAiStatus(`❌ ${message}`, 'red');
+        }
+
+        // Event listeners for AI functionality
+        generateBtn.addEventListener('click', generatePatternFromText);
+        
+        clearAiBtn.addEventListener('click', () => {
+            patternTextarea.value = '';
+            aiPatternName.value = '';
+            aiPatternAuthor.value = '';
+            aiResults.innerHTML = '';
+        });
 
         // Authentication
         onAuthStateChanged(auth, (user) => {

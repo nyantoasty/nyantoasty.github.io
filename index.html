@@ -330,6 +330,7 @@
                     <button data-view="viewer" class="tab-button active">Viewer</button>
                     <button id="generator-nav-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Generator</button>
                 </nav>
+                <button id="create-sample-progress-btn" class="bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors text-sm">Create Sample Progress</button>
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
         </header>
@@ -530,6 +531,7 @@
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const generatorNavBtn = document.getElementById('generator-nav-btn');
+    const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
     const backToMainBtn = document.getElementById('back-to-main');
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
@@ -630,6 +632,30 @@
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
 
+    createSampleProgressBtn.addEventListener('click', async () => {
+        try {
+            createSampleProgressBtn.disabled = true;
+            createSampleProgressBtn.textContent = 'Creating...';
+            
+            await createSampleUserPatternProgress();
+            
+            createSampleProgressBtn.textContent = 'Created!';
+            createSampleProgressBtn.style.backgroundColor = '#059669'; // green
+            
+            setTimeout(() => {
+                createSampleProgressBtn.disabled = false;
+                createSampleProgressBtn.textContent = 'Create Sample Progress';
+                createSampleProgressBtn.style.backgroundColor = '#d97706'; // yellow
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error creating sample progress:', error);
+            alert('Error creating sample progress: ' + error.message);
+            createSampleProgressBtn.disabled = false;
+            createSampleProgressBtn.textContent = 'Create Sample Progress';
+        }
+    });
+
     // --- AUTHORIZATION & APP STATE ---
     
     function showNotAuthorized(user) {
@@ -667,6 +693,86 @@
             });
         } catch (error) {
             console.error('Error in showApplication:', error);
+        }
+    }
+
+    // Create sample user pattern progress entry for testing
+    async function createSampleUserPatternProgress() {
+        if (!auth.currentUser) {
+            throw new Error('User not authenticated');
+        }
+
+        if (!window.PATTERN_DATA) {
+            throw new Error('No pattern loaded. Please select a pattern first.');
+        }
+
+        const userId = auth.currentUser.uid;
+        const patternId = window.PATTERN_DATA.id;
+        
+        // Import the enhanced progress tracking functions
+        const { createNewProject, saveProjectProgress, addProjectNote } = await import('./js/progress-tracking.js');
+        
+        console.log('Creating sample progress entry...');
+        
+        // Create a new project instance
+        const projectId = await createNewProject(
+            window.db, 
+            userId, 
+            patternId, 
+            {
+                projectName: `My ${window.PATTERN_DATA.metadata.name} Project`,
+                startDate: new Date(),
+                yarn: {
+                    brand: 'Red Heart',
+                    colorway: 'Soft Navy',
+                    weight: 'DK',
+                    yardage: 300,
+                    dyelot: 'A123'
+                },
+                tools: {
+                    needles: 'US 6 (4.0mm)',
+                    notions: ['stitch markers', 'tapestry needle']
+                },
+                notes: 'Starting my first project with this pattern!'
+            }
+        );
+        
+        // Save some progress
+        await saveProjectProgress(
+            window.db,
+            userId,
+            patternId,
+            projectId,
+            {
+                currentStep: 5,
+                completedSteps: [1, 2, 3, 4, 5],
+                timeSpent: 120, // 2 hours in minutes
+                modifications: ['Using different needle size for better gauge'],
+                notes: 'Progress is going well, really enjoying this pattern!'
+            }
+        );
+        
+        // Add a project note
+        await addProjectNote(
+            window.db,
+            userId,
+            patternId,
+            projectId,
+            {
+                type: 'progress',
+                content: 'Completed the setup rows, moving on to the main pattern section.',
+                step: 5,
+                images: [],
+                tags: ['milestone']
+            }
+        );
+        
+        console.log('✅ Sample progress entry created!');
+        console.log('Project ID:', projectId);
+        
+        // Refresh the progress display
+        if (window.loadUserProgress) {
+            await window.loadUserProgress();
         }
     }
     

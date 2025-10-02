@@ -197,7 +197,7 @@ export async function setupProgressTracking(db = window.db, auth = window.auth) 
 /**
  * Clear existing progress data (for testing)
  */
-async function clearProgressData() {
+export async function clearProgressData() {
     console.log('🧹 Clearing existing progress data...');
     
     try {
@@ -222,5 +222,3 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('📝 Run setupProgressTracking() to initialize Firestore collections');
     console.log('🧹 Run clearProgressData() to clear existing data (if needed)');
 });
-
-export { setupProgressTracking, clearProgressData };

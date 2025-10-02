@@ -412,16 +412,27 @@
             
             <div class="relative h-20">
                 <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-between transition-opacity duration-300">
-                    <!-- Theme Toggle Button -->
-                    <button id="theme-toggle" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
-                        <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                        </svg>
-                        <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="hidden lg:inline text-xs ml-1">Theme</span>
-                    </button>
+                    <!-- Left Side Controls -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
+                            <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                            <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Theme</span>
+                        </button>
+                        
+                        <!-- Jump to Start Button -->
+                        <button id="jump-to-start" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Jump to row 1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Start</span>
+                        </button>
+                    </div>
                     
                     <!-- Row Counter Section -->
                     <div class="flex items-center space-x-6">
@@ -433,11 +444,24 @@
                         <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
                     </div>
                     
-                    <!-- Mark Previous Button -->
-                    <button id="mark-previous-complete" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
-                        <i class="fas fa-check-double mr-1"></i>
-                        <span class="hidden lg:inline text-xs">Previous</span>
-                    </button>
+                    <!-- Right Side Controls -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Add Note Button -->
+                        <button id="add-note" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Add note for current row">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Note</span>
+                        </button>
+                        
+                        <!-- Mark Previous Complete Button -->
+                        <button id="mark-previous-complete" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs">Previous</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="stitch-locator-ui" class="absolute inset-0 flex items-center justify-center space-x-4 transition-opacity duration-300 opacity-0 pointer-events-none">
                     <label for="stitch-input" class="text-lg">Stitch #:</label>
@@ -1063,20 +1087,18 @@
             setupInteractiveFeatures();
         }
         
-        function updateFooterMetadata() {
-            const currentPatternName = document.getElementById('current-pattern-name');
-            const footerCurrentStep = document.getElementById('footer-current-step');
-            const footerMaxSteps = document.getElementById('footer-max-steps');
-            
-            if (PATTERN_DATA && currentPatternName && footerCurrentStep && footerMaxSteps) {
-                currentPatternName.textContent = PATTERN_DATA.metadata.name;
-                footerCurrentStep.textContent = currentStep;
-                footerMaxSteps.textContent = maxSteps;
-            }
-        }
+        // updateFooterMetadata is defined globally - see below
         
 
-        function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
+        function addTooltips(text) {
+            if (!PATTERN_DATA.glossary) return text;
+            const regex = new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`, 'g');
+            return text.replace(regex, (match) => {
+                const term = PATTERN_DATA.glossary[match];
+                if (!term) return match;
+                return `<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;
+            });
+        }
         
         function findInstructionForStep(stepNumber) {
             if (!PATTERN_DATA || !PATTERN_DATA.steps) return null;
@@ -1311,7 +1333,9 @@
         }
 
         function findInstructionForStep(stepNumber) { 
-            return PATTERN_DATA.instructions.find(instr=>{
+            if (!PATTERN_DATA || !PATTERN_DATA.steps) return null;
+            
+            return PATTERN_DATA.steps.find(instr=>{
                 if(instr.step) return instr.step===stepNumber;
                 if(instr.stepRange){
                     const[start,end]=instr.stepRange;
@@ -1351,9 +1375,53 @@
         }
         
         // Navigation handled by setupRowNavigation() function - keyboard listeners removed to prevent double triggers
-        toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Row Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
+        toggleModeBtn.addEventListener('click', () => {
+            isStitchLocatorMode = !isStitchLocatorMode;
+            stitchPopup.classList.add('hidden');
+            document.getElementById('step-counter-ui').classList.toggle('opacity-0');
+            document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');
+            document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');
+            document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');
+            
+            if (isStitchLocatorMode) {
+                toggleModeBtn.textContent = 'Switch to Row Counter';
+                stitchInput.value = '';
+                stitchInput.max = getStitchCount(currentStep);
+                stitchInput.focus();
+            } else {
+                toggleModeBtn.textContent = 'Switch to Stitch Locator';
+            }
+        });
+        
         closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
-        findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
+        
+        findStitchBtn.addEventListener('click', () => {
+            const stitchNumber = parseInt(stitchInput.value);
+            const patternInfo = getPatternForStitch(currentStep, stitchNumber);
+            
+            if (patternInfo) {
+                popupContent.innerHTML = `
+                    <h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4>
+                    <p class="mb-4">${patternInfo.sectionName}</p>
+                    <h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4>
+                    <div class="result-chunk mono">${patternInfo.patternChunk}</div>
+                `;
+                stitchPopup.style.top = '50%';
+                stitchPopup.style.left = '50%';
+                stitchPopup.style.transform = 'translate(-50%, -50%)';
+                stitchPopup.classList.remove('hidden');
+            } else {
+                popupContent.innerHTML = `
+                    <div class="text-white text-center">
+                        <p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p>
+                    </div>
+                `;
+                stitchPopup.style.top = '50%';
+                stitchPopup.style.left = '50%';
+                stitchPopup.style.transform = 'translate(-50%, -50%)';
+                stitchPopup.classList.remove('hidden');
+            }
+        });
 
         // Pattern will be loaded when selected from dropdown
         // setupViewer will be called by loadSelectedPattern
@@ -1433,12 +1501,24 @@
             currentStep = await loadProgressSimple(progressKey);
             console.log('📍 Loaded currentStep:', currentStep);
             
+            // Ensure currentStep is valid
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > maxSteps) currentStep = maxSteps;
+            
             // Set up the current step display
-            document.getElementById('current-step-input').value = currentStep;
+            const stepInput = document.getElementById('current-step-input');
+            if (stepInput) {
+                stepInput.value = currentStep;
+                stepInput.max = maxSteps;
+            }
+            
+            // Update footer metadata immediately after pattern loads
+            updateFooterMetadata();
             
             // Update display and scroll to current row (with timeout to ensure DOM is ready)
             setTimeout(() => {
                 updateDisplay(currentStep, true);
+                console.log('🎯 Pattern loaded and display updated for step:', currentStep);
             }, 100);
             
             footerControls.classList.remove('hidden');
@@ -1450,30 +1530,6 @@
             patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern: ${error.message}</p>`;
         }
     }
-
-    // --- GENERATOR LOGIC (Your existing functions) ---
-    const patternTypeSelector=document.getElementById('pattern-type-selector');const imageInstructions=document.getElementById('image-instructions');const patternInput=document.getElementById('pattern-input');const promptOutput=document.getElementById('prompt-output');const copyButton=document.getElementById('copy-prompt-button');
-    const basePrompt=`# AI Prompt: Convert a Craft Pattern to a Smartly Grouped JSON
-
-## 1. The Goal & Persona
-
-You are an expert technical editor for fiber arts (knitting, crochet, Tunisian crochet) and a software developer. Your task is to convert a human-readable pattern into a strict, **craft-agnostic**, and efficiently grouped JSON format for a web application.
-
-## 2. The Input Pattern
-
-\`\`\`
-{{PATTERN_TEXT}}
-\`\`\`
-
-## 3. The Required JSON Output Structure
-... (Full prompt text) ...
-
-## 4. Detailed Instructions for Generating the \`instructions\` Array
-... (Full prompt text) ...`;
-    function updatePrompt(){const patternText=patternInput.value.trim();if(patternText){const fullPrompt=basePrompt.replace('{{PATTERN_TEXT}}',patternText);promptOutput.textContent=fullPrompt;}else{promptOutput.textContent='Paste pattern text to generate the prompt.';}}
-    patternTypeSelector.addEventListener('click',(e)=>{if(e.target.tagName==='BUTTON'){const type=e.target.dataset.type;patternTypeSelector.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));e.target.classList.add('active');if(type==='image'){imageInstructions.classList.remove('hidden');}else{imageInstructions.classList.add('hidden');}}});
-    patternInput.addEventListener('input',updatePrompt);
-    copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
 
     // --- INTERACTIVE FEATURES SETUP ---
     function setupInteractiveFeatures() {
@@ -1531,7 +1587,140 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         }
     }
 
-    function setupStitchFinder() {
+    // Add the missing updateDisplay function that's called by row navigation
+    function updateDisplay(stepNumber, shouldScroll = false) {
+        console.log(`📍 updateDisplay called for step ${stepNumber}, scroll: ${shouldScroll}`);
+        
+        // Update current step
+        currentStep = stepNumber;
+        
+        // Update the input field
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.value = currentStep;
+        }
+        
+        // Save progress automatically
+        saveProgress();
+        
+        // Update footer metadata
+        updateFooterMetadata();
+        
+        // Highlight and scroll to current step
+        highlightCurrentStep(shouldScroll);
+        
+        // Update stitch input max value if in stitch locator mode
+        const stitchInput = document.getElementById('stitch-input');
+        if (stitchInput && isStitchLocatorMode) {
+            stitchInput.max = getStitchCount(currentStep);
+        }
+    }
+
+    // Add missing highlightCurrentStep function
+    function highlightCurrentStep(shouldScroll = false) {
+        console.log(`Highlighting step ${currentStep}, scroll: ${shouldScroll}`);
+        
+        // Remove previous highlights
+        document.querySelectorAll('.current-step').forEach(el => {
+            el.classList.remove('current-step');
+        });
+        
+        // Find and highlight current step
+        const stepElement = findStepElement(currentStep);
+        if (stepElement) {
+            stepElement.classList.add('current-step');
+            console.log(`Highlighted step ${currentStep}`);
+            
+            if (shouldScroll) {
+                stepElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        } else {
+            console.log(`No element found for step ${currentStep}`);
+        }
+    }
+
+    // Add missing updateFooterMetadata function
+    function updateFooterMetadata() {
+        console.log('🏷️ updateFooterMetadata called');
+        const currentPatternName = document.getElementById('current-pattern-name');
+        const footerCurrentStep = document.getElementById('footer-current-step');
+        const footerMaxSteps = document.getElementById('footer-max-steps');
+        
+        console.log('🏷️ Footer elements:', {
+            currentPatternName: currentPatternName?.textContent,
+            footerCurrentStep: footerCurrentStep?.textContent,
+            footerMaxSteps: footerMaxSteps?.textContent
+        });
+        
+        console.log('🏷️ Pattern data:', {
+            PATTERN_DATA: !!PATTERN_DATA,
+            patternName: PATTERN_DATA?.metadata?.name,
+            currentStep,
+            maxSteps
+        });
+        
+        if (PATTERN_DATA && currentPatternName && footerCurrentStep && footerMaxSteps) {
+            const patternName = PATTERN_DATA.metadata?.name || 'Unknown Pattern';
+            console.log('🏷️ Updating footer with:', { patternName, currentStep, maxSteps });
+            currentPatternName.textContent = patternName;
+            footerCurrentStep.textContent = currentStep;
+            footerMaxSteps.textContent = maxSteps;
+        } else {
+            console.log('🏷️ Cannot update footer - missing requirements');
+        }
+    }
+
+    // Add missing saveProgress function at global scope
+    async function saveProgress() {
+        if (currentStep && currentPatternId) {
+            const userId = auth.currentUser?.uid;
+            if (userId && db) {
+                try {
+                    await saveProgressFirestore(db, userId, currentPatternId, currentStep);
+                    console.log(`✅ Progress saved: step ${currentStep} for pattern ${currentPatternId}`);
+                } catch (error) {
+                    console.error('❌ Failed to save progress to Firestore:', error);
+                    // Fallback to localStorage
+                    if (progressKey) {
+                        localStorage.setItem(progressKey, currentStep.toString());
+                        console.log(`📦 Progress saved to localStorage: ${progressKey} = ${currentStep}`);
+                    }
+                }
+            } else {
+                // Fallback for anonymous users
+                if (progressKey) {
+                    localStorage.setItem(progressKey, currentStep.toString());
+                    console.log(`📦 Progress saved to localStorage: ${progressKey} = ${currentStep}`);
+                }
+            }
+    // Add missing findStepElement function at global scope
+    function findStepElement(stepNumber) {
+        console.log(`Looking for step element: ${stepNumber}`);
+        
+        // Try exact step match first
+        let element = document.querySelector(`[data-step="${stepNumber}"]`);
+        if (element) {
+            console.log(`Found exact step element for ${stepNumber}`);
+            return element;
+        }
+        
+        // Try step range match
+        const rangeElements = document.querySelectorAll('[data-step-start][data-step-end]');
+        for (const el of rangeElements) {
+            const start = parseInt(el.dataset.stepStart, 10);
+            const end = parseInt(el.dataset.stepEnd, 10);
+            if (stepNumber >= start && stepNumber <= end) {
+                console.log(`Found step range element for ${stepNumber} (${start}-${end})`);
+                return el;
+            }
+        }
+        
+        console.log(`No element found for step ${stepNumber}`);
+        return null;
+    }
         const findStitchBtn = document.getElementById('find-stitch-btn');
         const stitchInput = document.getElementById('stitch-input');        function findStitch() {
             const stitchNumber = parseInt(stitchInput.value);
@@ -1638,6 +1827,44 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                 setTimeout(() => {
                     markPreviousBtn.innerHTML = originalText;
                 }, 2000);
+            });
+        }
+        
+        // Setup Jump to Start button
+        const jumpToStartBtn = document.getElementById('jump-to-start');
+        if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
+            jumpToStartBtn.setAttribute('data-listener-added', 'true');
+            jumpToStartBtn.addEventListener('click', () => {
+                console.log('🏠 Jump to Start clicked');
+                currentStep = 1;
+                stepInput.value = 1;
+                saveProgress();
+                updateDisplay(currentStep, true);
+            });
+        }
+        
+        // Setup Add Note button  
+        const addNoteBtn = document.getElementById('add-note');
+        if (addNoteBtn && !addNoteBtn.hasAttribute('data-listener-added')) {
+            addNoteBtn.setAttribute('data-listener-added', 'true');
+            addNoteBtn.addEventListener('click', () => {
+                const note = prompt(`Add a note for row ${currentStep}:`);
+                if (note && note.trim()) {
+                    console.log('📝 Adding note for row', currentStep, ':', note.trim());
+                    // Store note in localStorage for now
+                    const notes = JSON.parse(localStorage.getItem('pattern-notes') || '{}');
+                    const patternKey = PATTERN_DATA?.metadata?.title || 'unknown-pattern';
+                    if (!notes[patternKey]) notes[patternKey] = {};
+                    notes[patternKey][currentStep] = note.trim();
+                    localStorage.setItem('pattern-notes', JSON.stringify(notes));
+                    
+                    // Show confirmation
+                    const originalText = addNoteBtn.innerHTML;
+                    addNoteBtn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg><span class="hidden lg:inline text-xs ml-1">Saved!</span>';
+                    setTimeout(() => {
+                        addNoteBtn.innerHTML = originalText;
+                    }, 2000);
+                }
             });
         }
         
@@ -1871,7 +2098,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     // --- PWA Service Worker ---
     // Temporarily disabled to fix caching issues during development
     // if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
+
+    // Script initialization complete
 </script>
 </body>
 </html>
-

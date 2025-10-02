@@ -178,11 +178,10 @@ exports.processOCR = functions.https.onCall(async (data, context) => {
 
     const { fileData, fileName, mimeType } = data;
 
-  if (!fileData) {
-    throw new functions.https.HttpsError('invalid-argument', 'File data is required');
-  }
+    if (!fileData) {
+      throw new functions.https.HttpsError('invalid-argument', 'File data is required');
+    }
 
-  try {
     let extractedText = '';
     
     if (mimeType && mimeType.includes('image')) {

@@ -1,8 +1,12 @@
 const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const vision = require('@google-cloud/vision');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(functions.config().gemini.key); // Set with: firebase functions:config:set gemini.key="your-api-key"
+
+// Initialize Cloud Vision client
+const visionClient = new vision.ImageAnnotatorClient();
 
 // Your LogicGuide.md content as system prompt
 const LOGIC_GUIDE_PROMPT = `You are an expert knitting pattern parser. Your task is to convert human-readable knitting patterns into structured JSON format following this exact schema and logic:
@@ -153,4 +157,92 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
     remaining: dailyLimit - (currentCount + 1),
     limit: dailyLimit 
   };
+});
+
+// OCR Processing Function
+exports.processOCR = functions.https.onCall(async (data, context) => {
+  // Ensure user is authenticated
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use OCR');
+  }
+
+  const { fileData, fileName, mimeType } = data;
+
+  if (!fileData) {
+    throw new functions.https.HttpsError('invalid-argument', 'File data is required');
+  }
+
+  try {
+    let extractedText = '';
+    
+    if (mimeType && mimeType.includes('image')) {
+      // Process images with Cloud Vision OCR
+      const imageBuffer = Buffer.from(fileData, 'base64');
+      
+      const [result] = await visionClient.textDetection({
+        image: { content: imageBuffer }
+      });
+      
+      const detections = result.textAnnotations;
+      if (detections && detections.length > 0) {
+        extractedText = detections[0].description;
+      }
+      
+    } else if (mimeType && mimeType.includes('pdf')) {
+      // Process PDFs with Cloud Vision Document AI
+      const pdfBuffer = Buffer.from(fileData, 'base64');
+      
+      const [result] = await visionClient.documentTextDetection({
+        image: { content: pdfBuffer }
+      });
+      
+      const fullTextAnnotation = result.fullTextAnnotation;
+      if (fullTextAnnotation) {
+        extractedText = fullTextAnnotation.text;
+      }
+      
+    } else if (mimeType && (mimeType.includes('text') || mimeType.includes('plain'))) {
+      // Process plain text files
+      extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
+      
+    } else {
+      // For other file types, try generic OCR
+      const fileBuffer = Buffer.from(fileData, 'base64');
+      
+      const [result] = await visionClient.textDetection({
+        image: { content: fileBuffer }
+      });
+      
+      const detections = result.textAnnotations;
+      if (detections && detections.length > 0) {
+        extractedText = detections[0].description;
+      }
+    }
+
+    // Clean up the extracted text
+    extractedText = extractedText.trim();
+    
+    if (!extractedText) {
+      throw new functions.https.HttpsError('internal', 'No text could be extracted from the file');
+    }
+
+    // Log usage for monitoring
+    console.log(`OCR processed for user ${context.auth.uid}: ${fileName} (${extractedText.length} chars)`);
+
+    return {
+      success: true,
+      text: extractedText,
+      fileName: fileName,
+      charCount: extractedText.length
+    };
+
+  } catch (error) {
+    console.error('OCR processing error:', error);
+    
+    if (error instanceof functions.https.HttpsError) {
+      throw error;
+    }
+    
+    throw new functions.https.HttpsError('internal', `Failed to process ${fileName}: ${error.message}`);
+  }
 });

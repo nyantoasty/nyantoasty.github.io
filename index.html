@@ -2290,7 +2290,7 @@
                 console.log('📍 Step input changed to:', currentStep);
                 
                 if (typeof saveProgress === 'function') {
-                    saveProgress();
+                    saveProgress(progressKey, currentStep);
                 } else {
                     console.warn('⚠️ saveProgress not available');
                 }
@@ -2317,7 +2317,7 @@
                     console.log('📍 Previous button clicked - AFTER:', currentStep);
                     
                     if (typeof saveProgress === 'function') {
-                        saveProgress();
+                        saveProgress(progressKey, currentStep);
                     } else {
                         console.warn('⚠️ saveProgress not available');
                     }
@@ -2345,7 +2345,7 @@
                     console.log('📍 Next button clicked - AFTER:', currentStep);
                     
                     if (typeof saveProgress === 'function') {
-                        saveProgress();
+                        saveProgress(progressKey, currentStep);
                     } else {
                         console.warn('⚠️ saveProgress not available');
                     }
@@ -2386,7 +2386,7 @@
                 console.log('🏠 Jump to Start clicked');
                 currentStep = 1;
                 stepInput.value = 1;
-                saveProgress();
+                saveProgress(progressKey, currentStep);
                 updateDisplay(currentStep, true);
             });
         }
@@ -2432,7 +2432,7 @@
                         currentStep++;
                         stepInput.value = currentStep;
                         console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress();
+                        saveProgress(progressKey, currentStep);
                         updateDisplay(currentStep, true);
                     }
                 }
@@ -2444,7 +2444,7 @@
                         currentStep--;
                         stepInput.value = currentStep;
                         console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress();
+                        saveProgress(progressKey, currentStep);
                         updateDisplay(currentStep, true);
                     }
                 }

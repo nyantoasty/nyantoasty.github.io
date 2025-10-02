@@ -576,13 +576,17 @@
             
             userPatterns.forEach(docSnapshot => {
                 const data = docSnapshot.data();
+                console.log('📋 Pattern data from Firestore:', data);
+                
+                // Handle both flat structure and nested metadata structure
+                const metadata = data.metadata || data;
                 availablePatterns.push({
                     id: docSnapshot.id,
                     filename: docSnapshot.id, // Use Firestore ID as filename for compatibility
-                    name: data.name,
-                    author: data.author,
-                    craft: data.craft || 'Unknown',
-                    maxSteps: data.metadata?.maxSteps || 'Unknown',
+                    name: metadata.name || data.name || 'Unknown Pattern',
+                    author: metadata.author || data.author || 'Unknown Author',
+                    craft: metadata.craft || data.craft || 'Unknown',
+                    maxSteps: metadata.maxSteps || data.maxSteps || 'Unknown',
                     source: 'firestore'
                 });
             });
@@ -1220,7 +1224,18 @@
                     throw new Error('Pattern not found in Firestore');
                 }
                 
-                PATTERN_DATA = docSnap.data();
+                const firestoreData = docSnap.data();
+                console.log('🔍 Raw Firestore data:', firestoreData);
+                
+                // Extract pattern data from Firestore document
+                // The pattern JSON was spread into the document, so we need to extract the pattern-specific fields
+                PATTERN_DATA = {
+                    metadata: firestoreData.metadata,
+                    glossary: firestoreData.glossary,
+                    steps: firestoreData.steps
+                };
+                
+                console.log('🔍 Extracted pattern data:', PATTERN_DATA);
                 
             } else {
                 // Fallback to JSON file loading (for compatibility)
@@ -1471,8 +1486,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         }
         
         // Keyboard navigation - avoid calling button.click() to prevent double triggers
-        if (!document.hasAttribute('data-keyboard-nav-added')) {
-            document.setAttribute('data-keyboard-nav-added', 'true');
+        if (!window.keyboardNavSetup) {
+            window.keyboardNavSetup = true;
             document.addEventListener('keydown', (e) => {
                 // Skip if user is typing in an input field
                 if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {

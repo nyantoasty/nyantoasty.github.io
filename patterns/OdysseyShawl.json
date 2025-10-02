@@ -1,0 +1,1182 @@
+{
+  "metadata": {
+    "name": "Odyssey Shawl",
+    "author": "Joji Locatelli",
+    "craft": "knitting",
+    "maxSteps": 121
+  },
+  "glossary": {
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "p": {
+      "name": "Purl",
+      "description": "Purl stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "sl1": {
+      "name": "Slip 1",
+      "description": "Slip one stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "kfb": {
+      "name": "Knit Front and Back",
+      "description": "Knit through the front and back loops of the same st (1 st increased).",
+      "stitchesUsed": 1,
+      "stitchesCreated": 2
+    },
+    "yo": {
+      "name": "Yarn Over",
+      "description": "Increase.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 1
+    },
+    "k2tog": {
+      "name": "Knit 2 Together",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "ssk": {
+      "name": "Slip, Slip, Knit",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "p2tog": {
+      "name": "Purl 2 Together",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "p2togtbl": {
+      "name": "Purl 2 Together Through Back Loop",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "MH": {
+      "name": "Make Hole",
+      "description": "With the left needle, from the front, lift up the bar in-between sts, k1, yo, k1, yo, k1, yo into that bar.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 6
+    },
+    "pm": {
+      "name": "Place Marker",
+      "description": "Place a stitch marker.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "sm": {
+      "name": "Slip Marker",
+      "description": "Slip a stitch marker.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "BO": {
+      "name": "Bind Off",
+      "description": "Bind off stitches.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 0
+    }
+  },
+  "steps": [
+    {
+      "step": 0,
+      "description": "With color 1, cast on 3 sts.",
+      "section": "Garter Tab",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 1,
+      "description": "Knit 6 rows in garter st.",
+      "section": "Garter Tab",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 2,
+      "startingStitchCount": 3,
+      "endingStitchCount": 9,
+      "instruction": "K3, pick up and knit 3 sts along the side, pick up 3 sts from the bottom edge.",
+      "section": "Garter Tab",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 3,
+      "startingStitchCount": 9,
+      "endingStitchCount": 9,
+      "instruction": "Sl1, k8",
+      "section": "Garter Tab",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 4,
+      "startingStitchCount": 9,
+      "endingStitchCount": 13,
+      "instruction": "Sl1, k1, kfb, kfb, k5, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 5,
+      "startingStitchCount": 13,
+      "endingStitchCount": 13,
+      "instruction": "Sl1, k12.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 6,
+      "startingStitchCount": 13,
+      "endingStitchCount": 17,
+      "instruction": "Sl1, k1, kfb, kfb, k9, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 7,
+      "startingStitchCount": 17,
+      "endingStitchCount": 17,
+      "instruction": "Sl1, k16.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 8,
+      "startingStitchCount": 17,
+      "endingStitchCount": 21,
+      "instruction": "Sl1, k1, kfb, kfb, k13, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 9,
+      "startingStitchCount": 21,
+      "endingStitchCount": 21,
+      "instruction": "Sl1, k20.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 10,
+      "startingStitchCount": 21,
+      "endingStitchCount": 25,
+      "instruction": "Sl1, k1, kfb, kfb, k17, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 11,
+      "startingStitchCount": 25,
+      "endingStitchCount": 25,
+      "instruction": "Sl1, k24.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 12,
+      "startingStitchCount": 25,
+      "endingStitchCount": 29,
+      "instruction": "Sl1, k1, kfb, kfb, k21, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 13,
+      "startingStitchCount": 29,
+      "endingStitchCount": 29,
+      "instruction": "Sl1, k28.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 14,
+      "startingStitchCount": 29,
+      "endingStitchCount": 33,
+      "instruction": "Sl1, k1, kfb, kfb, k25, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 15,
+      "startingStitchCount": 33,
+      "endingStitchCount": 33,
+      "instruction": "Sl1, k32.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 16,
+      "startingStitchCount": 33,
+      "endingStitchCount": 37,
+      "instruction": "Sl1, k1, kfb, kfb, k29, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 17,
+      "startingStitchCount": 37,
+      "endingStitchCount": 37,
+      "instruction": "Sl1, k36.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 18,
+      "startingStitchCount": 37,
+      "endingStitchCount": 41,
+      "instruction": "Sl1, k1, kfb, kfb, k33, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 19,
+      "startingStitchCount": 41,
+      "endingStitchCount": 41,
+      "instruction": "Sl1, k40.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 20,
+      "startingStitchCount": 41,
+      "endingStitchCount": 45,
+      "instruction": "Sl1, k1, kfb, kfb, k37, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 21,
+      "startingStitchCount": 45,
+      "endingStitchCount": 45,
+      "instruction": "Sl1, k44.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 22,
+      "startingStitchCount": 45,
+      "endingStitchCount": 49,
+      "instruction": "Sl1, k1, kfb, kfb, k41, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 23,
+      "startingStitchCount": 49,
+      "endingStitchCount": 49,
+      "instruction": "Sl1, k48.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 24,
+      "startingStitchCount": 49,
+      "endingStitchCount": 53,
+      "instruction": "Sl1, k1, kfb, kfb, k45, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 25,
+      "startingStitchCount": 53,
+      "endingStitchCount": 53,
+      "instruction": "Sl1, k52.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 26,
+      "startingStitchCount": 53,
+      "endingStitchCount": 57,
+      "instruction": "Sl1, k1, kfb, kfb, k49, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 27,
+      "startingStitchCount": 57,
+      "endingStitchCount": 57,
+      "instruction": "Sl1, k56.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 28,
+      "startingStitchCount": 57,
+      "endingStitchCount": 61,
+      "instruction": "Sl1, k1, kfb, kfb, k53, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 29,
+      "startingStitchCount": 61,
+      "endingStitchCount": 61,
+      "instruction": "Sl1, k60.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 30,
+      "startingStitchCount": 61,
+      "endingStitchCount": 65,
+      "instruction": "Sl1, k1, kfb, kfb, k57, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 31,
+      "startingStitchCount": 65,
+      "endingStitchCount": 65,
+      "instruction": "Sl1, k64.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 32,
+      "startingStitchCount": 65,
+      "endingStitchCount": 69,
+      "instruction": "Sl1, k1, kfb, kfb, k61, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 33,
+      "startingStitchCount": 69,
+      "endingStitchCount": 69,
+      "instruction": "Sl1, k68.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 34,
+      "startingStitchCount": 69,
+      "endingStitchCount": 73,
+      "instruction": "Sl1, k1, kfb, kfb, k65, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 35,
+      "startingStitchCount": 73,
+      "endingStitchCount": 73,
+      "instruction": "Sl1, k72.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 36,
+      "startingStitchCount": 73,
+      "endingStitchCount": 77,
+      "instruction": "Sl1, k1, kfb, kfb, k69, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 37,
+      "startingStitchCount": 77,
+      "endingStitchCount": 77,
+      "instruction": "Sl1, k76.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 38,
+      "startingStitchCount": 77,
+      "endingStitchCount": 81,
+      "instruction": "Sl1, k1, kfb, kfb, k73, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 39,
+      "startingStitchCount": 81,
+      "endingStitchCount": 81,
+      "instruction": "Sl1, k80.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 40,
+      "startingStitchCount": 81,
+      "endingStitchCount": 85,
+      "instruction": "Sl1, k1, kfb, kfb, k77, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 41,
+      "startingStitchCount": 85,
+      "endingStitchCount": 85,
+      "instruction": "Sl1, k84.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 42,
+      "startingStitchCount": 85,
+      "endingStitchCount": 89,
+      "instruction": "Sl1, k1, kfb, kfb, k81, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 43,
+      "startingStitchCount": 89,
+      "endingStitchCount": 89,
+      "instruction": "Sl1, k88.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 44,
+      "startingStitchCount": 89,
+      "endingStitchCount": 93,
+      "instruction": "Sl1, k1, kfb, kfb, k85, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 45,
+      "startingStitchCount": 93,
+      "endingStitchCount": 93,
+      "instruction": "Sl1, k92.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 46,
+      "startingStitchCount": 93,
+      "endingStitchCount": 97,
+      "instruction": "Sl1, k1, kfb, kfb, k89, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 47,
+      "startingStitchCount": 97,
+      "endingStitchCount": 97,
+      "instruction": "Sl1, k96.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 48,
+      "startingStitchCount": 97,
+      "endingStitchCount": 101,
+      "instruction": "Sl1, k1, kfb, kfb, k93, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 49,
+      "startingStitchCount": 101,
+      "endingStitchCount": 101,
+      "instruction": "Sl1, k100.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 50,
+      "startingStitchCount": 101,
+      "endingStitchCount": 105,
+      "instruction": "Sl1, k1, kfb, kfb, k97, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 51,
+      "startingStitchCount": 105,
+      "endingStitchCount": 105,
+      "instruction": "Sl1, k104.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 52,
+      "startingStitchCount": 105,
+      "endingStitchCount": 109,
+      "instruction": "Sl1, k1, kfb, kfb, k101, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 53,
+      "startingStitchCount": 109,
+      "endingStitchCount": 109,
+      "instruction": "Sl1, k108.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 54,
+      "startingStitchCount": 109,
+      "endingStitchCount": 113,
+      "instruction": "Sl1, k1, kfb, kfb, k105, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 55,
+      "startingStitchCount": 113,
+      "endingStitchCount": 113,
+      "instruction": "Sl1, k112.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 56,
+      "startingStitchCount": 113,
+      "endingStitchCount": 117,
+      "instruction": "Sl1, k1, kfb, kfb, k109, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 57,
+      "startingStitchCount": 117,
+      "endingStitchCount": 117,
+      "instruction": "Sl1, k116.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 58,
+      "startingStitchCount": 117,
+      "endingStitchCount": 121,
+      "instruction": "Sl1, k1, kfb, kfb, k113, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 59,
+      "startingStitchCount": 121,
+      "endingStitchCount": 121,
+      "instruction": "Sl1, k120.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 60,
+      "startingStitchCount": 121,
+      "endingStitchCount": 125,
+      "instruction": "Sl1, k1, kfb, kfb, k117, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 61,
+      "startingStitchCount": 125,
+      "endingStitchCount": 125,
+      "instruction": "Sl1, k124.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 62,
+      "startingStitchCount": 125,
+      "endingStitchCount": 129,
+      "instruction": "Sl1, k1, kfb, kfb, k121, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 63,
+      "startingStitchCount": 129,
+      "endingStitchCount": 129,
+      "instruction": "Sl1, k128.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 64,
+      "startingStitchCount": 129,
+      "endingStitchCount": 133,
+      "instruction": "Sl1, k1, kfb, kfb, k125, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 65,
+      "startingStitchCount": 133,
+      "endingStitchCount": 133,
+      "instruction": "Sl1, k132.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 66,
+      "startingStitchCount": 133,
+      "endingStitchCount": 137,
+      "instruction": "Sl1, k1, kfb, kfb, k129, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 67,
+      "startingStitchCount": 137,
+      "endingStitchCount": 137,
+      "instruction": "Sl1, k136.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 68,
+      "startingStitchCount": 137,
+      "endingStitchCount": 141,
+      "instruction": "Sl1, k1, kfb, kfb, k133, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 69,
+      "startingStitchCount": 141,
+      "endingStitchCount": 141,
+      "instruction": "Sl1, k140.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 70,
+      "startingStitchCount": 141,
+      "endingStitchCount": 145,
+      "instruction": "Sl1, k1, kfb, kfb, k137, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 71,
+      "startingStitchCount": 145,
+      "endingStitchCount": 145,
+      "instruction": "Sl1, k144.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 72,
+      "startingStitchCount": 145,
+      "endingStitchCount": 149,
+      "instruction": "Sl1, k1, kfb, kfb, k141, kfb, kfb, k2.",
+      "section": "Color 1 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 73,
+      "startingStitchCount": 149,
+      "endingStitchCount": 149,
+      "instruction": "Sl1, k148.",
+      "section": "Color 1 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 74,
+      "startingStitchCount": 149,
+      "endingStitchCount": 153,
+      "instruction": "Sl1, k1, kfb, kfb, pm, p to 5 sts from end, pm, p1, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 75,
+      "startingStitchCount": 153,
+      "endingStitchCount": 153,
+      "instruction": "Sl1, k to end.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 76,
+      "startingStitchCount": 153,
+      "endingStitchCount": 157,
+      "instruction": "Sl1, k1, kfb, kfb, p to m, sm, p to m, sm, p to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 77,
+      "startingStitchCount": 157,
+      "endingStitchCount": 157,
+      "instruction": "Sl1, k3, p to m, sm, p to m, sm, p to 4 sts from end, k4.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 78,
+      "startingStitchCount": 157,
+      "endingStitchCount": 161,
+      "instruction": "Sl1, k1, kfb, kfb, k to m, sm, (ssk, k5, MH, k5, k2tog) to m, sm, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 79,
+      "startingStitchCount": 161,
+      "endingStitchCount": 161,
+      "instruction": "Sl1, k3, p to m, sm, (p2tog, p14, p2togtbl) to m, sm, p to 4 sts from end, k4.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 80,
+      "startingStitchCount": 161,
+      "endingStitchCount": 165,
+      "instruction": "Sl1, k1, kfb, kfb, k to m, sm, [ssk, k3, (k1, yo) 6 times, k3, k2tog] to m, sm, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 81,
+      "startingStitchCount": 165,
+      "endingStitchCount": 165,
+      "instruction": "Sl1, k3, p to m, sm, (p2tog, p16, p2togtbl) to m, sm, p to 4 sts from end, k4.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 82,
+      "startingStitchCount": 165,
+      "endingStitchCount": 169,
+      "instruction": "Sl1, k1, kfb, kfb, k to m, sm, (ssk, k14, k2tog) to m, sm, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 83,
+      "startingStitchCount": 169,
+      "endingStitchCount": 169,
+      "instruction": "Sl1, k3, p to m, sm, (p2tog, p12, p2togtbl) to m, sm, p to 4 sts from end, k4.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 84,
+      "startingStitchCount": 169,
+      "endingStitchCount": 173,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 85,
+      "startingStitchCount": 173,
+      "endingStitchCount": 173,
+      "instruction": "Sl1, k to end.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 86,
+      "startingStitchCount": 173,
+      "endingStitchCount": 177,
+      "instruction": "Sl1, k1, kfb, kfb, p to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 87,
+      "startingStitchCount": 177,
+      "endingStitchCount": 177,
+      "instruction": "Sl1, k to end.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 88,
+      "startingStitchCount": 177,
+      "endingStitchCount": 181,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Lace Band 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 89,
+      "startingStitchCount": 181,
+      "endingStitchCount": 181,
+      "instruction": "Sl1, k to end.",
+      "section": "Lace Band 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 90,
+      "startingStitchCount": 181,
+      "endingStitchCount": 185,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 91,
+      "startingStitchCount": 185,
+      "endingStitchCount": 185,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 92,
+      "startingStitchCount": 185,
+      "endingStitchCount": 189,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 93,
+      "startingStitchCount": 189,
+      "endingStitchCount": 189,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 94,
+      "startingStitchCount": 189,
+      "endingStitchCount": 193,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 95,
+      "startingStitchCount": 193,
+      "endingStitchCount": 193,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 96,
+      "startingStitchCount": 193,
+      "endingStitchCount": 197,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 97,
+      "startingStitchCount": 197,
+      "endingStitchCount": 197,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 98,
+      "startingStitchCount": 197,
+      "endingStitchCount": 201,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 99,
+      "startingStitchCount": 201,
+      "endingStitchCount": 201,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 100,
+      "startingStitchCount": 201,
+      "endingStitchCount": 205,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 101,
+      "startingStitchCount": 205,
+      "endingStitchCount": 205,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 102,
+      "startingStitchCount": 205,
+      "endingStitchCount": 209,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 103,
+      "startingStitchCount": 209,
+      "endingStitchCount": 209,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 104,
+      "startingStitchCount": 209,
+      "endingStitchCount": 213,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 105,
+      "startingStitchCount": 213,
+      "endingStitchCount": 213,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 106,
+      "startingStitchCount": 213,
+      "endingStitchCount": 217,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 2 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 107,
+      "startingStitchCount": 217,
+      "endingStitchCount": 217,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 2 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 108,
+      "description": "Lace Band 2 is worked here. Final stitch count is 253.",
+      "section": "Lace Band 2",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 109,
+      "startingStitchCount": 253,
+      "endingStitchCount": 257,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 110,
+      "startingStitchCount": 257,
+      "endingStitchCount": 257,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 111,
+      "startingStitchCount": 257,
+      "endingStitchCount": 261,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 112,
+      "startingStitchCount": 261,
+      "endingStitchCount": 261,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 113,
+      "startingStitchCount": 261,
+      "endingStitchCount": 265,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 114,
+      "startingStitchCount": 265,
+      "endingStitchCount": 265,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 115,
+      "startingStitchCount": 265,
+      "endingStitchCount": 269,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 116,
+      "startingStitchCount": 269,
+      "endingStitchCount": 269,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 117,
+      "startingStitchCount": 269,
+      "endingStitchCount": 273,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 118,
+      "startingStitchCount": 273,
+      "endingStitchCount": 273,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 119,
+      "startingStitchCount": 273,
+      "endingStitchCount": 277,
+      "instruction": "Sl1, k1, kfb, kfb, k to 4 sts from end, kfb, kfb, k2.",
+      "section": "Color 3 Garter Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 120,
+      "startingStitchCount": 277,
+      "endingStitchCount": 277,
+      "instruction": "Sl1, k to end.",
+      "section": "Color 3 Garter Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 121,
+      "description": "Lace Band 3 is worked here. Final stitch count before bind off is 309.",
+      "section": "Lace Band 3",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 122,
+      "description": "Picot Bind Off all stitches.",
+      "section": "Finishing",
+      "type": "specialInstruction"
+    }
+  ]
+}

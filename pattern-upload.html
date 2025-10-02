@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Pattern - Stitch Witch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f2937">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
+                <i class="fas fa-magic"></i> Upload Pattern
+            </h1>
+            <p class="text-gray-300">Upload your knitting pattern to Stitch Witch</p>
+        </header>
+
+        <!-- Upload Steps -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <div id="step1" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">1</div>
+                        <span>Paste JSON</span>
+                    </div>
+                    <div class="w-8 h-1 bg-gray-600" id="progress1"></div>
+                    <div id="step2" class="flex items-center space-x-2 text-gray-500">
+                        <div class="w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">2</div>
+                        <span>Preview</span>
+                    </div>
+                    <div class="w-8 h-1 bg-gray-600" id="progress2"></div>
+                    <div id="step3" class="flex items-center space-x-2 text-gray-500">
+                        <div class="w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">3</div>
+                        <span>Upload</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: JSON Input -->
+        <div id="json-input-section" class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-code"></i> Step 1: Paste Your Pattern JSON</h2>
+            
+            <div class="mb-4">
+                <textarea 
+                    id="pattern-json" 
+                    class="w-full h-96 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
+                    placeholder='Paste your pattern JSON here. Example:
+{
+  "metadata": {
+    "name": "My Pattern",
+    "author": "Your Name",
+    "craft": "knitting",
+    "maxSteps": 10
+  },
+  "glossary": {
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    }
+  },
+  "steps": [...]
+}'></textarea>
+            </div>
+
+            <div id="validation-results" class="mb-4"></div>
+
+            <div class="flex space-x-4">
+                <button id="validate-json" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-check-circle"></i> Validate JSON
+                </button>
+                <button id="load-example" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-file-code"></i> Load Example
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Pattern Preview -->
+        <div id="preview-section" class="bg-gray-800 rounded-lg p-6 mb-6 hidden">
+            <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-eye"></i> Step 2: Preview Your Pattern</h2>
+            
+            <div id="pattern-preview-content">
+                <!-- Preview content will be populated here -->
+            </div>
+
+            <div class="flex space-x-4 mt-6">
+                <button id="proceed-upload" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-upload"></i> Upload Pattern
+                </button>
+                <button id="back-to-json" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-arrow-left"></i> Back to Edit
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Upload Status -->
+        <div id="upload-section" class="bg-gray-800 rounded-lg p-6 mb-6 hidden">
+            <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-cloud-upload-alt"></i> Step 3: Upload to Firestore</h2>
+            
+            <div id="upload-status" class="mb-4">
+                <!-- Upload status will be shown here -->
+            </div>
+
+            <div id="upload-actions" class="flex space-x-4 hidden">
+                <button id="confirm-upload" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-check"></i> Keep Pattern
+                </button>
+                <button id="cancel-upload" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-trash"></i> Delete Pattern
+                </button>
+                <a id="view-pattern" href="#" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors inline-block">
+                    <i class="fas fa-external-link-alt"></i> View Pattern
+                </a>
+            </div>
+        </div>
+
+        <!-- Authentication Status -->
+        <div id="auth-status" class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-2">Authentication Status</h3>
+            <div id="auth-info" class="text-gray-400">Checking authentication...</div>
+            <button id="sign-in-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mt-2 hidden">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Firebase and App Scripts -->
+    <script src="js/firestore-init.js" type="module"></script>
+    <script type="module">
+        import { auth, db } from './js/firestore-init.js';
+        import { 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            doc, 
+            setDoc, 
+            deleteDoc, 
+            collection, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables
+        let currentUser = null;
+        let uploadedPatternId = null;
+        let validatedPattern = null;
+
+        // DOM elements
+        const jsonTextarea = document.getElementById('pattern-json');
+        const validateBtn = document.getElementById('validate-json');
+        const loadExampleBtn = document.getElementById('load-example');
+        const validationResults = document.getElementById('validation-results');
+        
+        const previewSection = document.getElementById('preview-section');
+        const previewContent = document.getElementById('pattern-preview-content');
+        const proceedBtn = document.getElementById('proceed-upload');
+        const backBtn = document.getElementById('back-to-json');
+        
+        const uploadSection = document.getElementById('upload-section');
+        const uploadStatus = document.getElementById('upload-status');
+        const uploadActions = document.getElementById('upload-actions');
+        const confirmBtn = document.getElementById('confirm-upload');
+        const cancelBtn = document.getElementById('cancel-upload');
+        const viewBtn = document.getElementById('view-pattern');
+
+        const authInfo = document.getElementById('auth-info');
+        const signInBtn = document.getElementById('sign-in-btn');
+
+        // Authentication
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                authInfo.textContent = `Signed in as ${user.displayName || user.email}`;
+                signInBtn.classList.add('hidden');
+            } else {
+                authInfo.textContent = 'Please sign in to upload patterns';
+                signInBtn.classList.remove('hidden');
+            }
+        });
+
+        signInBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showError('Failed to sign in: ' + error.message);
+            }
+        });
+
+        // Example pattern for testing
+        const examplePattern = {
+            metadata: {
+                name: "Simple Dishcloth",
+                author: "Example Author",
+                craft: "knitting",
+                maxSteps: 6
+            },
+            glossary: {
+                k: {
+                    name: "Knit",
+                    description: "Knit stitch.",
+                    stitchesUsed: 1,
+                    stitchesCreated: 1
+                },
+                p: {
+                    name: "Purl", 
+                    description: "Purl stitch.",
+                    stitchesUsed: 1,
+                    stitchesCreated: 1
+                }
+            },
+            steps: [
+                {
+                    step: 0,
+                    description: "Cast on 20 stitches.",
+                    section: "setup",
+                    type: "specialInstruction"
+                },
+                {
+                    step: 1,
+                    startingStitchCount: 20,
+                    endingStitchCount: 20,
+                    instruction: "k20",
+                    section: "body",
+                    side: "RS",
+                    type: "regular"
+                },
+                {
+                    step: 2,
+                    startingStitchCount: 20,
+                    endingStitchCount: 20,
+                    instruction: "p20",
+                    section: "body",
+                    side: "WS",
+                    type: "regular"
+                }
+            ]
+        };
+
+        // Load example pattern
+        loadExampleBtn.addEventListener('click', () => {
+            jsonTextarea.value = JSON.stringify(examplePattern, null, 2);
+        });
+
+        // Validation function
+        function validatePattern(jsonText) {
+            const errors = [];
+            const warnings = [];
+            
+            try {
+                const pattern = JSON.parse(jsonText);
+                
+                // Required top-level properties
+                if (!pattern.metadata) errors.push('Missing required "metadata" object');
+                if (!pattern.glossary) errors.push('Missing required "glossary" object');
+                if (!pattern.steps) errors.push('Missing required "steps" array');
+                
+                // Metadata validation
+                if (pattern.metadata) {
+                    if (!pattern.metadata.name) errors.push('metadata.name is required');
+                    if (!pattern.metadata.author) errors.push('metadata.author is required');
+                    if (!pattern.metadata.craft) errors.push('metadata.craft is required');
+                    if (!pattern.metadata.maxSteps) errors.push('metadata.maxSteps is required');
+                }
+                
+                // Glossary validation
+                if (pattern.glossary) {
+                    for (const [key, stitch] of Object.entries(pattern.glossary)) {
+                        if (!stitch.name) errors.push(`glossary.${key}.name is required`);
+                        if (!stitch.description) errors.push(`glossary.${key}.description is required`);
+                        if (stitch.stitchesUsed === undefined) errors.push(`glossary.${key}.stitchesUsed is required`);
+                        if (stitch.stitchesCreated === undefined) errors.push(`glossary.${key}.stitchesCreated is required`);
+                        
+                        // Check for old schema
+                        if (stitch.stitchIndex !== undefined) {
+                            warnings.push(`glossary.${key} uses deprecated "stitchIndex". Use "stitchesUsed" and "stitchesCreated"`);
+                        }
+                    }
+                }
+                
+                // Steps validation
+                if (pattern.steps && Array.isArray(pattern.steps)) {
+                    pattern.steps.forEach((step, index) => {
+                        if (step.step === undefined) errors.push(`steps[${index}].step is required`);
+                        if (!step.type) errors.push(`steps[${index}].type is required`);
+                        
+                        if (step.type === 'regular') {
+                            if (!step.instruction) errors.push(`steps[${index}].instruction is required for regular steps`);
+                        } else if (step.type === 'specialInstruction') {
+                            if (!step.description) errors.push(`steps[${index}].description is required for special instructions`);
+                        }
+                    });
+                } else {
+                    errors.push('steps must be an array');
+                }
+                
+                return { pattern, errors, warnings };
+                
+            } catch (e) {
+                errors.push('Invalid JSON: ' + e.message);
+                return { pattern: null, errors, warnings };
+            }
+        }
+
+        // Show validation results
+        function showValidationResults(errors, warnings) {
+            let html = '';
+            
+            if (errors.length > 0) {
+                html += '<div class="bg-red-900 border border-red-500 rounded p-4 mb-4">';
+                html += '<h4 class="font-semibold text-red-200 mb-2"><i class="fas fa-exclamation-triangle"></i> Errors</h4>';
+                html += '<ul class="text-red-300 text-sm space-y-1">';
+                errors.forEach(error => {
+                    html += `<li>• ${error}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (warnings.length > 0) {
+                html += '<div class="bg-yellow-900 border border-yellow-500 rounded p-4 mb-4">';
+                html += '<h4 class="font-semibold text-yellow-200 mb-2"><i class="fas fa-exclamation-circle"></i> Warnings</h4>';
+                html += '<ul class="text-yellow-300 text-sm space-y-1">';
+                warnings.forEach(warning => {
+                    html += `<li>• ${warning}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (errors.length === 0 && warnings.length === 0) {
+                html += '<div class="bg-green-900 border border-green-500 rounded p-4 mb-4">';
+                html += '<h4 class="font-semibold text-green-200"><i class="fas fa-check-circle"></i> Pattern is valid!</h4>';
+                html += '</div>';
+            }
+            
+            validationResults.innerHTML = html;
+        }
+
+        // Generate pattern preview
+        function generatePreview(pattern) {
+            let html = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-300">Pattern Details</h3>
+                        <div class="bg-gray-700 rounded p-4 space-y-2">
+                            <p><strong>Name:</strong> ${pattern.metadata.name}</p>
+                            <p><strong>Author:</strong> ${pattern.metadata.author}</p>
+                            <p><strong>Craft:</strong> ${pattern.metadata.craft}</p>
+                            <p><strong>Total Steps:</strong> ${pattern.metadata.maxSteps}</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-300">Stitch Glossary</h3>
+                        <div class="bg-gray-700 rounded p-4 max-h-64 overflow-y-auto">
+            `;
+            
+            for (const [key, stitch] of Object.entries(pattern.glossary)) {
+                html += `
+                    <div class="mb-2 pb-2 border-b border-gray-600 last:border-b-0">
+                        <div class="font-semibold text-violet-300">${stitch.name} (${key})</div>
+                        <div class="text-sm text-gray-400">${stitch.description}</div>
+                        <div class="text-xs text-gray-500">Uses: ${stitch.stitchesUsed}, Creates: ${stitch.stitchesCreated}</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold mb-3 text-purple-300">First 5 Steps</h3>
+                    <div class="bg-gray-700 rounded p-4 space-y-3">
+            `;
+            
+            const firstSteps = pattern.steps.slice(0, 5);
+            firstSteps.forEach(step => {
+                html += `
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <div class="font-semibold text-violet-300">Step ${step.step}</div>
+                        <div class="text-sm text-gray-300">
+                            ${step.instruction || step.description || 'No instruction'}
+                        </div>
+                        ${step.startingStitchCount ? `<div class="text-xs text-gray-500">Stitches: ${step.startingStitchCount} → ${step.endingStitchCount}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            if (pattern.steps.length > 5) {
+                html += `<div class="text-gray-500 italic">... and ${pattern.steps.length - 5} more steps</div>`;
+            }
+            
+            html += '</div></div>';
+            
+            return html;
+        }
+
+        // Update progress indicators
+        function updateProgress(step) {
+            // Reset all steps
+            document.querySelectorAll('[id^="step"]').forEach(el => {
+                el.className = el.className.replace('text-purple-400', 'text-gray-500');
+                const circle = el.querySelector('div');
+                circle.className = circle.className.replace('bg-purple-600', 'bg-gray-600');
+            });
+            
+            document.querySelectorAll('[id^="progress"]').forEach(el => {
+                el.className = el.className.replace('bg-purple-600', 'bg-gray-600');
+            });
+            
+            // Update current step
+            for (let i = 1; i <= step; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                stepEl.className = stepEl.className.replace('text-gray-500', 'text-purple-400');
+                const circle = stepEl.querySelector('div');
+                circle.className = circle.className.replace('bg-gray-600', 'bg-purple-600');
+                
+                if (i < step) {
+                    const progress = document.getElementById(`progress${i}`);
+                    progress.className = progress.className.replace('bg-gray-600', 'bg-purple-600');
+                }
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            validationResults.innerHTML = `
+                <div class="bg-red-900 border border-red-500 rounded p-4 mb-4">
+                    <h4 class="font-semibold text-red-200 mb-2"><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                    <p class="text-red-300">${message}</p>
+                </div>
+            `;
+        }
+
+        // Event listeners
+        validateBtn.addEventListener('click', () => {
+            const jsonText = jsonTextarea.value.trim();
+            if (!jsonText) {
+                showError('Please paste your pattern JSON first');
+                return;
+            }
+            
+            const { pattern, errors, warnings } = validatePattern(jsonText);
+            showValidationResults(errors, warnings);
+            
+            if (errors.length === 0) {
+                validatedPattern = pattern;
+                previewContent.innerHTML = generatePreview(pattern);
+                previewSection.classList.remove('hidden');
+                updateProgress(2);
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            previewSection.classList.add('hidden');
+            uploadSection.classList.add('hidden');
+            updateProgress(1);
+        });
+
+        proceedBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                showError('Please sign in first');
+                return;
+            }
+            
+            if (!validatedPattern) {
+                showError('Please validate your pattern first');
+                return;
+            }
+            
+            try {
+                updateProgress(3);
+                uploadSection.classList.remove('hidden');
+                uploadStatus.innerHTML = '<div class="text-blue-300"><i class="fas fa-spinner fa-spin"></i> Uploading pattern to Firestore...</div>';
+                
+                // Create pattern document
+                const patternRef = doc(collection(db, 'patterns'));
+                uploadedPatternId = patternRef.id;
+                
+                const patternData = {
+                    id: uploadedPatternId,
+                    ...validatedPattern,
+                    createdBy: currentUser.uid,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                    visibility: 'private',
+                    shareCount: 0,
+                    viewCount: 0,
+                    forkCount: 0,
+                    tags: [],
+                    lastExportedAt: null,
+                    exportCount: 0
+                };
+                
+                await setDoc(patternRef, patternData);
+                
+                uploadStatus.innerHTML = `
+                    <div class="bg-green-900 border border-green-500 rounded p-4">
+                        <h4 class="font-semibold text-green-200 mb-2"><i class="fas fa-check-circle"></i> Upload Successful!</h4>
+                        <p class="text-green-300">Your pattern "${validatedPattern.metadata.name}" has been uploaded to Firestore.</p>
+                        <p class="text-green-400 text-sm mt-1">Pattern ID: ${uploadedPatternId}</p>
+                    </div>
+                `;
+                
+                viewBtn.href = `/?pattern=${uploadedPatternId}`;
+                uploadActions.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadStatus.innerHTML = `
+                    <div class="bg-red-900 border border-red-500 rounded p-4">
+                        <h4 class="font-semibold text-red-200 mb-2"><i class="fas fa-exclamation-triangle"></i> Upload Failed</h4>
+                        <p class="text-red-300">${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            uploadStatus.innerHTML = `
+                <div class="bg-blue-900 border border-blue-500 rounded p-4">
+                    <h4 class="font-semibold text-blue-200 mb-2"><i class="fas fa-check"></i> Pattern Saved</h4>
+                    <p class="text-blue-300">Your pattern is now permanently saved in your collection!</p>
+                </div>
+            `;
+            uploadActions.classList.add('hidden');
+        });
+
+        cancelBtn.addEventListener('click', async () => {
+            if (!uploadedPatternId) return;
+            
+            try {
+                uploadStatus.innerHTML = '<div class="text-yellow-300"><i class="fas fa-spinner fa-spin"></i> Deleting pattern...</div>';
+                
+                await deleteDoc(doc(db, 'patterns', uploadedPatternId));
+                
+                uploadStatus.innerHTML = `
+                    <div class="bg-yellow-900 border border-yellow-500 rounded p-4">
+                        <h4 class="font-semibold text-yellow-200 mb-2"><i class="fas fa-trash"></i> Pattern Deleted</h4>
+                        <p class="text-yellow-300">The pattern has been removed from Firestore.</p>
+                    </div>
+                `;
+                uploadActions.classList.add('hidden');
+                uploadedPatternId = null;
+                
+            } catch (error) {
+                console.error('Delete error:', error);
+                uploadStatus.innerHTML = `
+                    <div class="bg-red-900 border border-red-500 rounded p-4">
+                        <h4 class="font-semibold text-red-200 mb-2"><i class="fas fa-exclamation-triangle"></i> Delete Failed</h4>
+                        <p class="text-red-300">${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

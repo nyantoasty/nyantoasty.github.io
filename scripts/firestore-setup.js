@@ -64,17 +64,20 @@ async function setupFirestore() {
         'k': {
           name: 'Knit',
           description: 'Knit stitch.',
-          stitchIndex: 1
+          stitchesUsed: 1,
+          stitchesCreated: 1
         },
         'p': {
           name: 'Purl', 
           description: 'Purl stitch.',
-          stitchIndex: 1
+          stitchesUsed: 1,
+          stitchesCreated: 1
         },
         'kfb': {
           name: 'Knit Front and Back',
           description: 'Increase stitch.',
-          stitchIndex: 2
+          stitchesUsed: 1,
+          stitchesCreated: 2
         }
       },
       

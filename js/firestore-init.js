@@ -54,8 +54,8 @@ async function initializeFirestoreCollections() {
       },
       
       glossary: {
-        'k': { name: 'Knit', description: 'Knit stitch.', stitchIndex: 1 },
-        'p': { name: 'Purl', description: 'Purl stitch.', stitchIndex: 1 }
+        'k': { name: 'Knit', description: 'Knit stitch.', stitchesUsed: 1, stitchesCreated: 1 },
+        'p': { name: 'Purl', description: 'Purl stitch.', stitchesUsed: 1, stitchesCreated: 1 }
       },
       
       steps: [

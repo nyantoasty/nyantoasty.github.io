@@ -1,0 +1,678 @@
+{
+  "metadata": {
+    "name": "Colonnade Shawl",
+    "author": "Stephen West",
+    "craft": "knitting",
+    "maxSteps": 69
+  },
+  "glossary": {
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "p": {
+      "name": "Purl",
+      "description": "Purl stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "yo": {
+      "name": "Yarn Over",
+      "description": "Increase.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 1
+    },
+    "k2tog": {
+      "name": "Knit 2 Together",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "pm": {
+      "name": "Place Marker",
+      "description": "Place a stitch marker.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "slm": {
+      "name": "Slip Marker",
+      "description": "Slip a stitch marker.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "BO": {
+      "name": "Bind Off",
+      "description": "Bind off stitches.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 0
+    }
+  },
+  "steps": [
+    {
+      "step": 0,
+      "description": "Using MC, Cast on 42 sts.",
+      "section": "setup",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 1,
+      "startingStitchCount": 42,
+      "endingStitchCount": 42,
+      "instruction": "K to end of row.",
+      "section": "setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 2,
+      "startingStitchCount": 42,
+      "endingStitchCount": 42,
+      "instruction": "K to end of row.",
+      "section": "setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 3,
+      "startingStitchCount": 42,
+      "endingStitchCount": 42,
+      "instruction": "K to end of row.",
+      "section": "setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 4,
+      "startingStitchCount": 42,
+      "endingStitchCount": 50,
+      "instruction": "k2, yo, k8, yo, k1, pm, k1, yo, k8, yo, k1, pm, k1, yo, k8, yo, k1, pm, k1, yo, k8, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 5,
+      "startingStitchCount": 50,
+      "endingStitchCount": 50,
+      "instruction": "k2, p46, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 6,
+      "startingStitchCount": 50,
+      "endingStitchCount": 58,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 7,
+      "startingStitchCount": 58,
+      "endingStitchCount": 58,
+      "instruction": "k2, p54, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 8,
+      "startingStitchCount": 58,
+      "endingStitchCount": 66,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 9,
+      "startingStitchCount": 66,
+      "endingStitchCount": 66,
+      "instruction": "k2, p62, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 10,
+      "startingStitchCount": 66,
+      "endingStitchCount": 74,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 11,
+      "startingStitchCount": 74,
+      "endingStitchCount": 74,
+      "instruction": "k2, p70, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 12,
+      "startingStitchCount": 74,
+      "endingStitchCount": 82,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 13,
+      "startingStitchCount": 82,
+      "endingStitchCount": 82,
+      "instruction": "k2, p78, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 14,
+      "startingStitchCount": 82,
+      "endingStitchCount": 90,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 15,
+      "startingStitchCount": 90,
+      "endingStitchCount": 90,
+      "instruction": "k2, p86, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 16,
+      "startingStitchCount": 90,
+      "endingStitchCount": 98,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 17,
+      "startingStitchCount": 98,
+      "endingStitchCount": 98,
+      "instruction": "k2, p94, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 18,
+      "startingStitchCount": 98,
+      "endingStitchCount": 106,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 19,
+      "startingStitchCount": 106,
+      "endingStitchCount": 106,
+      "instruction": "k2, p102, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 20,
+      "startingStitchCount": 106,
+      "endingStitchCount": 114,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 21,
+      "startingStitchCount": 114,
+      "endingStitchCount": 114,
+      "instruction": "k2, p110, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 22,
+      "startingStitchCount": 114,
+      "endingStitchCount": 122,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 23,
+      "startingStitchCount": 122,
+      "endingStitchCount": 122,
+      "instruction": "k2, p118, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 24,
+      "startingStitchCount": 122,
+      "endingStitchCount": 130,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 25,
+      "startingStitchCount": 130,
+      "endingStitchCount": 130,
+      "instruction": "k2, p126, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 26,
+      "startingStitchCount": 130,
+      "endingStitchCount": 138,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 27,
+      "startingStitchCount": 138,
+      "endingStitchCount": 138,
+      "instruction": "k2, p134, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 28,
+      "startingStitchCount": 138,
+      "endingStitchCount": 146,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 29,
+      "startingStitchCount": 146,
+      "endingStitchCount": 146,
+      "instruction": "k2, p142, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 30,
+      "startingStitchCount": 146,
+      "endingStitchCount": 154,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 31,
+      "startingStitchCount": 154,
+      "endingStitchCount": 154,
+      "instruction": "k2, p150, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 32,
+      "startingStitchCount": 154,
+      "endingStitchCount": 162,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 33,
+      "startingStitchCount": 162,
+      "endingStitchCount": 162,
+      "instruction": "k2, p158, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 34,
+      "startingStitchCount": 162,
+      "endingStitchCount": 170,
+      "instruction": "K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.",
+      "section": "Stockinette Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 35,
+      "startingStitchCount": 170,
+      "endingStitchCount": 170,
+      "instruction": "k2, p166, k2.",
+      "section": "Stockinette Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 36,
+      "startingStitchCount": 170,
+      "endingStitchCount": 178,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 37,
+      "startingStitchCount": 178,
+      "endingStitchCount": 178,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 38,
+      "startingStitchCount": 178,
+      "endingStitchCount": 186,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 39,
+      "startingStitchCount": 186,
+      "endingStitchCount": 186,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 40,
+      "startingStitchCount": 186,
+      "endingStitchCount": 194,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 41,
+      "startingStitchCount": 194,
+      "endingStitchCount": 194,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 42,
+      "startingStitchCount": 194,
+      "endingStitchCount": 202,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 43,
+      "startingStitchCount": 202,
+      "endingStitchCount": 202,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 44,
+      "startingStitchCount": 202,
+      "endingStitchCount": 210,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 45,
+      "startingStitchCount": 210,
+      "endingStitchCount": 210,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 46,
+      "startingStitchCount": 210,
+      "endingStitchCount": 218,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 47,
+      "startingStitchCount": 218,
+      "endingStitchCount": 218,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 48,
+      "startingStitchCount": 218,
+      "endingStitchCount": 226,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 49,
+      "startingStitchCount": 226,
+      "endingStitchCount": 226,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 50,
+      "startingStitchCount": 226,
+      "endingStitchCount": 234,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 51,
+      "startingStitchCount": 234,
+      "endingStitchCount": 234,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 52,
+      "startingStitchCount": 234,
+      "endingStitchCount": 242,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 53,
+      "startingStitchCount": 242,
+      "endingStitchCount": 242,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 54,
+      "startingStitchCount": 242,
+      "endingStitchCount": 250,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 55,
+      "startingStitchCount": 250,
+      "endingStitchCount": 250,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 56,
+      "startingStitchCount": 250,
+      "endingStitchCount": 258,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 57,
+      "startingStitchCount": 258,
+      "endingStitchCount": 258,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 58,
+      "startingStitchCount": 258,
+      "endingStitchCount": 266,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 59,
+      "startingStitchCount": 266,
+      "endingStitchCount": 266,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 60,
+      "startingStitchCount": 266,
+      "endingStitchCount": 274,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 61,
+      "startingStitchCount": 274,
+      "endingStitchCount": 274,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 62,
+      "startingStitchCount": 274,
+      "endingStitchCount": 282,
+      "instruction": "K2, yo, k2, yo twice, k2tog twice; repeat from to 1 st before first m, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 3 sts before next marker, k2, yo, k1, slm, k1, yo, k2, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k1 sim, k1, yo, *k2tog twice, yo twice; repeat from to last 4 sts, k2, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 63,
+      "startingStitchCount": 282,
+      "endingStitchCount": 282,
+      "instruction": "K2, *(p to double yo, k1/p1 into double yo) until there are no more double yo's before m, p to m, slm; repeat from two more times, (p to double yo, k1/p1 into double yo) until there are no more double yo's before end of row, p to end of row.",
+      "section": "Lace Column Section",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 64,
+      "startingStitchCount": 282,
+      "endingStitchCount": 290,
+      "instruction": "K2, yo, k4, yo twice, k2tog twice; repeat from to 1 st before first marker, yo, k1, slm, k1, yo, *k2tog twice, yo twice; repeat from to 5 sts before next marker, k4, yo, k1,slm, k1, yo, k4, *yo twice, k2tog twice; repeat from to 1 st before next marker, yo, k, slm, k1, yo, *k2tog twice, yo twice; repeat from to last 6 sts, k4, yo, k2.",
+      "section": "Lace Column Section",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 65,
+      "startingStitchCount": 290,
+      "endingStitchCount": 290,
+      "instruction": "K to end of row.",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 66,
+      "startingStitchCount": 290,
+      "endingStitchCount": 290,
+      "instruction": "K to end of row.",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 67,
+      "startingStitchCount": 290,
+      "endingStitchCount": 290,
+      "instruction": "K to end of row.",
+      "section": "Finishing",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 68,
+      "startingStitchCount": 290,
+      "endingStitchCount": 290,
+      "instruction": "K to end of row.",
+      "section": "Finishing",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 69,
+      "description": "Loosely BO all sts.",
+      "section": "finishing",
+      "type": "specialInstruction"
+    }
+  ]
+}

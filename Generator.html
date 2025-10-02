@@ -314,7 +314,8 @@ async function createPatternInFirestore() {
       "k": {
         "name": "Knit",
         "description": "Knit stitch.",
-        "stitchIndex": 1
+        "stitchesUsed": 1,
+        "stitchesCreated": 1
       }
       // ... complete glossary based on stitches used
     },
@@ -376,7 +377,7 @@ async function createPatternInFirestore() {
 - Each chunk needs an **id** and **type** (static, dynamic, repeat)
 
 ### Stitch Index
-- Every stitch in glossary needs **stitchIndex** (how many needle positions it creates)
+- Every stitch in glossary needs **stitchesUsed** and **stitchesCreated** (how many stitches are consumed and created)
 - k=1, kfb=2, k2tog=1, yo=1, pm=0, etc.
 
 ### Step Counting

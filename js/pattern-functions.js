@@ -208,7 +208,7 @@ export function calculateStepStitches(step, PATTERN_DATA) {
         
         processedInstructions.forEach(instr => {
             const glossaryEntry = PATTERN_DATA.glossary[instr.stitch];
-            totalStitches += (instr.count * glossaryEntry.stitchIndex);
+            totalStitches += (instr.count * glossaryEntry.stitchesCreated);
         });
     });
     
@@ -227,7 +227,7 @@ export function getStitchAtPosition(step, position, PATTERN_DATA) {
         
         for (const instr of processedInstructions) {
             const glossaryEntry = PATTERN_DATA.glossary[instr.stitch];
-            const stitchCount = instr.count * glossaryEntry.stitchIndex;
+            const stitchCount = instr.count * glossaryEntry.stitchesCreated;
             
             if (position >= currentPosition && position < currentPosition + stitchCount) {
                 return {
@@ -258,8 +258,8 @@ export function generateGlossary(PATTERN_DATA) {
     for (const key in PATTERN_DATA.glossary) {
         const item = PATTERN_DATA.glossary[key];
         if (item && item.name && item.description) {
-            // Use stitchIndex for the new format
-            const stitchInfo = item.stitchIndex !== undefined ? ` (${item.stitchIndex} st)` : '';
+            // Use stitchesCreated for the new format
+            const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
             glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
         }
     }

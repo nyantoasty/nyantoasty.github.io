@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02- network interrupted last fix -->
+<!-- Version: v2025-10-02- Adding notes sidebar -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Debug Row Navigation v2025-10-02</title>
+    <title>Stitch Witch - Adding notes sidebar v2025-10-02</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -399,6 +399,62 @@
             </div>
         </div>
         
+        <!-- PROJECT NOTES SIDEBAR -->
+        <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-gray-900 border-l border-gray-700 transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white">Project Notes</h3>
+                    <button id="close-notes-sidebar" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- General Notes -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">General Notes</label>
+                    <textarea id="general-notes" class="w-full h-24 bg-gray-800 border border-gray-600 text-white rounded px-3 py-2 resize-none" placeholder="General project notes..."></textarea>
+                </div>
+                
+                <!-- Current Row Note -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Row <span id="current-row-note-label">1</span> Note</label>
+                    <textarea id="current-row-note" class="w-full h-20 bg-gray-800 border border-gray-600 text-white rounded px-3 py-2 resize-none" placeholder="Note for current row..."></textarea>
+                    <button id="save-row-note" class="mt-2 bg-violet-600 hover:bg-violet-700 text-white px-3 py-1 rounded text-sm">Save Row Note</button>
+                </div>
+                
+                <!-- Yarn Details -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-300 mb-3">Yarn & Materials</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Yarn Brand & Color</label>
+                            <input id="yarn-info" type="text" class="w-full bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm" placeholder="e.g., Red Heart Soft Navy">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Needle/Hook Size</label>
+                            <input id="tool-info" type="text" class="w-full bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm" placeholder="e.g., US 6 (4.0mm)">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Modifications</label>
+                            <textarea id="modifications" class="w-full h-16 bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm resize-none" placeholder="Pattern modifications..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row Notes List -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-300 mb-3">All Row Notes</h4>
+                    <div id="row-notes-list" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Row notes will be populated here -->
+                    </div>
+                </div>
+                
+                <button id="save-all-notes" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Save All Notes</button>
+            </div>
+        </div>
+
         <!-- GENERATOR SECTION -->
         <div id="generator-section" class="hidden bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
             <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">AI Prompt Generator</h2>
@@ -490,12 +546,13 @@
                             <span class="hidden lg:inline text-xs ml-1">Note</span>
                         </button>
                         
-                        <!-- Mark Previous Complete Button -->
-                        <button id="mark-previous-complete" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
+                        <!-- Notes Toggle Button -->
+                        <button id="toggle-notes-sidebar" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="View/Edit Project Notes">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
                             </svg>
-                            <span class="hidden lg:inline text-xs">Previous</span>
+                            <span class="hidden lg:inline text-xs ml-1">Notes</span>
                         </button>
                     </div>
                 </div>
@@ -2498,13 +2555,13 @@
         const stepInput = document.getElementById('current-step-input');
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
-        const markPreviousBtn = document.getElementById('mark-previous-complete');
+        const toggleNotesBtn = document.getElementById('toggle-notes-sidebar');
         
         console.log('🔧 Found elements:', {
             stepInput: !!stepInput,
             prevBtn: !!prevBtn,
             nextBtn: !!nextBtn,
-            markPreviousBtn: !!markPreviousBtn
+            toggleNotesBtn: !!toggleNotesBtn
         });
         
         // Ensure we have global references
@@ -2634,21 +2691,287 @@
             console.log('✅ Next button listener added');
         }
         
-        if (markPreviousBtn && !markPreviousBtn.hasAttribute('data-listener-added')) {
-            markPreviousBtn.setAttribute('data-listener-added', 'true');
-            markPreviousBtn.addEventListener('click', () => {
-                console.log('✅ Mark Previous Complete clicked for steps 1 to', currentStep - 1);
-                // Force update display to show all previous steps as complete
-                updateDisplay(currentStep, false);
-                
-                // Show confirmation
-                const originalText = markPreviousBtn.innerHTML;
-                markPreviousBtn.innerHTML = '<i class="fas fa-check mr-1"></i><span class="hidden lg:inline text-xs">Done!</span>';
-                setTimeout(() => {
-                    markPreviousBtn.innerHTML = originalText;
-                }, 2000);
+        // Notes sidebar toggle
+        if (toggleNotesBtn && !toggleNotesBtn.hasAttribute('data-listener-added')) {
+            toggleNotesBtn.setAttribute('data-listener-added', 'true');
+            toggleNotesBtn.addEventListener('click', () => {
+                toggleNotesSidebar();
+            });
+            console.log('✅ Notes toggle button listener added');
+        }
+        
+        // Update footer when current step changes
+        updateFooterMetadata();
+    }
+    
+    // UPDATE FOOTER METADATA FUNCTION
+    function updateFooterMetadata() {
+        const footerCurrentStep = document.getElementById('footer-current-step');
+        const footerMaxSteps = document.getElementById('footer-max-steps');
+        
+        if (footerCurrentStep && window.currentStep) {
+            footerCurrentStep.textContent = window.currentStep;
+        }
+        if (footerMaxSteps && window.maxSteps) {
+            footerMaxSteps.textContent = window.maxSteps;
+        }
+        
+        console.log('🔧 Footer updated:', { currentStep: window.currentStep, maxSteps: window.maxSteps });
+    }
+    
+    // NOTES SIDEBAR FUNCTIONALITY
+    function toggleNotesSidebar() {
+        const sidebar = document.getElementById('notes-sidebar');
+        const isOpen = !sidebar.classList.contains('translate-x-full');
+        
+        if (isOpen) {
+            // Close sidebar
+            sidebar.classList.add('translate-x-full');
+        } else {
+            // Open sidebar and load current project notes
+            sidebar.classList.remove('translate-x-full');
+            loadProjectNotes();
+        }
+    }
+    
+    async function loadProjectNotes() {
+        if (!window.currentProject) return;
+        
+        // Load general notes
+        const generalNotes = document.getElementById('general-notes');
+        if (generalNotes && window.currentProject.notes?.general) {
+            generalNotes.value = window.currentProject.notes.general;
+        }
+        
+        // Load current row note
+        const currentRowNote = document.getElementById('current-row-note');
+        const currentRowLabel = document.getElementById('current-row-note-label');
+        if (currentRowLabel) {
+            currentRowLabel.textContent = window.currentStep || 1;
+        }
+        if (currentRowNote && window.currentProject.notes?.stepNotes?.[window.currentStep]) {
+            currentRowNote.value = window.currentProject.notes.stepNotes[window.currentStep];
+        } else if (currentRowNote) {
+            currentRowNote.value = '';
+        }
+        
+        // Load project details
+        const yarnInfo = document.getElementById('yarn-info');
+        const toolInfo = document.getElementById('tool-info');
+        const modifications = document.getElementById('modifications');
+        
+        if (yarnInfo && window.currentProject.projectDetails?.yarns?.[0]) {
+            const yarn = window.currentProject.projectDetails.yarns[0];
+            yarnInfo.value = `${yarn.brand || ''} ${yarn.colorway || ''}`.trim();
+        }
+        
+        if (toolInfo && window.currentProject.projectDetails?.tools?.needleSize) {
+            toolInfo.value = window.currentProject.projectDetails.tools.needleSize;
+        }
+        
+        if (modifications && window.currentProject.projectDetails?.modifications) {
+            modifications.value = window.currentProject.projectDetails.modifications.join('\n');
+        }
+        
+        // Update row notes list
+        updateRowNotesList();
+    }
+    
+    function updateRowNotesList() {
+        const rowNotesList = document.getElementById('row-notes-list');
+        if (!rowNotesList || !window.currentProject?.notes?.stepNotes) return;
+        
+        rowNotesList.innerHTML = '';
+        
+        Object.entries(window.currentProject.notes.stepNotes).forEach(([step, note]) => {
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'p-2 bg-gray-800 rounded text-sm';
+            noteDiv.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="font-medium text-violet-300">Row ${step}:</span>
+                    <button onclick="goToRowWithNote(${step})" class="text-xs text-blue-400 hover:text-blue-300">Go to</button>
+                </div>
+                <div class="text-gray-300 mt-1">${note}</div>
+            `;
+            rowNotesList.appendChild(noteDiv);
+        });
+    }
+    
+    function goToRowWithNote(step) {
+        // Jump to the specified row
+        window.currentStep = parseInt(step);
+        currentStep = window.currentStep;
+        
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.value = currentStep;
+        }
+        
+        if (typeof updateDisplay === 'function') {
+            updateDisplay(currentStep, true);
+        } else {
+            updateFooterMetadata();
+            highlightCurrentStep(true);
+        }
+        
+        // Update current row note in sidebar
+        const currentRowNote = document.getElementById('current-row-note');
+        const currentRowLabel = document.getElementById('current-row-note-label');
+        if (currentRowLabel) {
+            currentRowLabel.textContent = step;
+        }
+        if (currentRowNote && window.currentProject.notes?.stepNotes?.[step]) {
+            currentRowNote.value = window.currentProject.notes.stepNotes[step];
+        } else if (currentRowNote) {
+            currentRowNote.value = '';
+        }
+    }
+    
+    // Setup notes sidebar event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeNotesBtn = document.getElementById('close-notes-sidebar');
+        const saveRowNoteBtn = document.getElementById('save-row-note');
+        const saveAllNotesBtn = document.getElementById('save-all-notes');
+        
+        if (closeNotesBtn) {
+            closeNotesBtn.addEventListener('click', () => {
+                const sidebar = document.getElementById('notes-sidebar');
+                sidebar.classList.add('translate-x-full');
             });
         }
+        
+        if (saveRowNoteBtn) {
+            saveRowNoteBtn.addEventListener('click', async () => {
+                await saveCurrentRowNote();
+            });
+        }
+        
+        if (saveAllNotesBtn) {
+            saveAllNotesBtn.addEventListener('click', async () => {
+                await saveAllProjectNotes();
+            });
+        }
+    });
+    
+    async function saveCurrentRowNote() {
+        if (!window.currentProject || !auth.currentUser) return;
+        
+        const currentRowNote = document.getElementById('current-row-note');
+        const noteText = currentRowNote?.value?.trim();
+        
+        if (!noteText) {
+            alert('Please enter a note first.');
+            return;
+        }
+        
+        try {
+            const stepNotesPath = `notes.stepNotes.${window.currentStep}`;
+            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                [stepNotesPath]: noteText
+            });
+            
+            // Update local project data
+            if (!window.currentProject.notes) window.currentProject.notes = {};
+            if (!window.currentProject.notes.stepNotes) window.currentProject.notes.stepNotes = {};
+            window.currentProject.notes.stepNotes[window.currentStep] = noteText;
+            
+            updateRowNotesList();
+            addRowNoteIndicator(window.currentStep);
+            
+            alert('Row note saved!');
+        } catch (error) {
+            console.error('Error saving row note:', error);
+            alert('Error saving note. Please try again.');
+        }
+    }
+    
+    async function saveAllProjectNotes() {
+        if (!window.currentProject || !auth.currentUser) return;
+        
+        const generalNotes = document.getElementById('general-notes')?.value?.trim();
+        const yarnInfo = document.getElementById('yarn-info')?.value?.trim();
+        const toolInfo = document.getElementById('tool-info')?.value?.trim();
+        const modifications = document.getElementById('modifications')?.value?.trim();
+        
+        try {
+            const updateData = {};
+            
+            if (generalNotes) {
+                updateData['notes.general'] = generalNotes;
+            }
+            
+            if (yarnInfo) {
+                updateData['projectDetails.yarns'] = [{
+                    brand: yarnInfo.split(' ')[0] || '',
+                    colorway: yarnInfo.split(' ').slice(1).join(' ') || '',
+                    weight: 'DK', // Default
+                    yardage: null,
+                    dyelot: null
+                }];
+            }
+            
+            if (toolInfo) {
+                updateData['projectDetails.tools.needleSize'] = toolInfo;
+            }
+            
+            if (modifications) {
+                updateData['projectDetails.modifications'] = modifications.split('\n').filter(m => m.trim());
+            }
+            
+            await saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, updateData);
+            
+            alert('All notes saved!');
+        } catch (error) {
+            console.error('Error saving project notes:', error);
+            alert('Error saving notes. Please try again.');
+        }
+    }
+    
+    function addRowNoteIndicator(step) {
+        // Add visual indicator to row that has a note
+        const stepElements = document.querySelectorAll(`[data-step="${step}"], [data-step-start="${step}"]`);
+        stepElements.forEach(el => {
+            if (!el.querySelector('.note-indicator')) {
+                const indicator = document.createElement('span');
+                indicator.className = 'note-indicator inline-block w-2 h-2 bg-yellow-400 rounded-full ml-2';
+                indicator.title = 'This row has a note';
+                el.appendChild(indicator);
+            }
+        });
+    }
+    
+    // Load notes indicators when pattern is displayed
+    function loadRowNoteIndicators() {
+        if (!window.currentProject?.notes?.stepNotes) return;
+        
+        Object.keys(window.currentProject.notes.stepNotes).forEach(step => {
+            addRowNoteIndicator(parseInt(step));
+        });
+    }
+    
+    function highlightCurrentStep(shouldScroll) {
+        if (!PATTERN_DATA || !currentStep) return;
+        
+        // Remove existing highlights
+        document.querySelectorAll('.current-step').forEach(el => {
+            el.classList.remove('current-step');
+        });
+        
+        // Find and highlight current step
+        const stepElement = findStepElement(currentStep);
+        if (stepElement) {
+            stepElement.classList.add('current-step');
+            if (shouldScroll) {
+                stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Update footer
+        updateFooterMetadata();
+        
+        // Load note indicators
+        loadRowNoteIndicators();
+    }
         
         // Setup Jump to Start button
         const jumpToStartBtn = document.getElementById('jump-to-start');
@@ -2744,7 +3067,25 @@
                 }
             });
         }
-    }
+    
+
+    // --- GLOBAL FOOTER UPDATE FUNCTION ---
+    window.updateFooterMetadata = function() {
+        const footerCurrentStep = document.getElementById('footer-current-step');
+        const footerMaxSteps = document.getElementById('footer-max-steps');
+        
+        if (footerCurrentStep && (window.currentStep || currentStep)) {
+            footerCurrentStep.textContent = window.currentStep || currentStep;
+        }
+        if (footerMaxSteps && (window.maxSteps || maxSteps)) {
+            footerMaxSteps.textContent = window.maxSteps || maxSteps;
+        }
+        
+        console.log('🔧 Footer updated:', { 
+            currentStep: window.currentStep || currentStep, 
+            maxSteps: window.maxSteps || maxSteps 
+        });
+    };
 
     // --- STITCH MODAL FUNCTIONALITY ---
     const stitchModal = document.getElementById('stitch-modal');

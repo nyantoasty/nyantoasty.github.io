@@ -125,6 +125,11 @@ export function updateDisplay(currentStep, shouldScroll = true) {
             prevStepEl.classList.add('previous-step');
         }
     }
+    
+    // Update footer metadata when display updates
+    if (typeof window.updateFooterMetadata === 'function') {
+        window.updateFooterMetadata();
+    }
 }
 
 export function findInstructionForStep(stepNumber, PATTERN_DATA) {

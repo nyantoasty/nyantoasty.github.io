@@ -561,7 +561,7 @@ export function generatePatternTheme(PATTERN_DATA) {
 }
 
 // Function to update the sidebar color key dynamically
-function updateSidebarColorKey(categories, colorMap) {
+export function updateSidebarColorKey(categories, colorMap) {
     const sidebarColorKey = document.getElementById('sidebar-color-key');
     if (!sidebarColorKey) return;
     

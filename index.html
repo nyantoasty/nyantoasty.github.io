@@ -1432,6 +1432,8 @@
         try {
             const userId = auth.currentUser.uid;
             
+            console.log('🔧 Creating project with:', { patternId, projectName, userId });
+            
             // Load pattern metadata to get the actual pattern name and author
             const patternDoc = await getDoc(doc(db, 'patterns', patternId));
             if (!patternDoc.exists()) {
@@ -1443,11 +1445,17 @@
             const patternName = patternData.metadata?.name || patternData.name || 'Unknown Pattern';
             const patternAuthor = patternData.metadata?.author || patternData.author || 'Unknown Author';
             
+            console.log('📖 Loaded pattern data:', { patternName, patternAuthor });
+            
             // Use user's custom project name or create a meaningful default
             const finalProjectName = projectName || `${patternName} Project`;
             
+            console.log('📝 Final project name:', finalProjectName);
+            
             // Create project with proper pattern information
             const newProject = await createNewProject(db, userId, patternId, finalProjectName);
+            
+            console.log('✅ Project created:', newProject);
             
             // Update the project with pattern metadata that wasn't included in createNewProject
             const progressId = `${userId}_${patternId}_${newProject.projectId}`;
@@ -1459,6 +1467,8 @@
                 'patternMetadata.source': 'firestore'
             });
             
+            console.log('✅ Project metadata updated');
+            
             // Close modal
             document.getElementById('new-project-modal').remove();
             
@@ -1467,16 +1477,17 @@
             
             // Auto-select new project
             const selector = document.getElementById('project-selector');
-            const newProjectKey = `${patternId}_${projectId}`;
+            const newProjectKey = `${patternId}_${newProject.projectId}`;
             selector.value = newProjectKey;
             
             const userProjects = await loadUserProjects();
             await loadSelectedProject(newProjectKey, userProjects);
             
-            console.log('✅ New project created:', projectId);
+            console.log('✅ New project created and selected:', newProject.projectId);
         } catch (error) {
             console.error('❌ Error creating project:', error);
-            alert('Error creating project. Please try again.');
+            console.error('❌ Error details:', error.message, error.stack);
+            alert(`Error creating project: ${error.message}`);
         }
     }
     

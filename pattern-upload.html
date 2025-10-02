@@ -128,9 +128,8 @@
     </div>
 
     <!-- Firebase and App Scripts -->
-    <script src="js/firestore-init.js" type="module"></script>
     <script type="module">
-        import { auth, db } from './js/firestore-init.js';
+        import { auth, db } from './js/firebase-config.js';
         import { 
             signInWithPopup, 
             GoogleAuthProvider, 
@@ -138,9 +137,10 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             doc, 
+            collection,
+            addDoc,
             setDoc, 
             deleteDoc, 
-            collection, 
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02-project-centric-firestore-ui -->
+<!-- Version: v2025-10-02-restored-pattern-info-display -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Project-Centric Pattern Hub v2025-10-02</title>
+    <title>Stitch Witch - Project Manager with Pattern Info v2025-10-02</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -363,6 +363,13 @@
                     <div id="project-info" class="hidden">
                         <h2 id="project-name" class="text-3xl font-bold text-white mb-2"></h2>
                         <p id="project-pattern-info" class="text-lg text-violet-300 mb-2"></p>
+                        
+                        <!-- PATTERN INFORMATION -->
+                        <div class="mb-4 text-center">
+                            <h3 id="pattern-name" class="text-2xl font-bold text-emerald-400 mb-1">Pattern Name</h3>
+                            <p id="pattern-author" class="text-lg text-gray-300">by Pattern Author</p>
+                        </div>
+                        
                         <div id="project-details" class="mt-3 p-4 bg-gray-800 rounded-lg border border-gray-600">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                                 <div><span class="text-gray-400">Pattern:</span> <span id="project-pattern-name" class="text-white"></span></div>
@@ -1173,16 +1180,17 @@
         const projectLastUpdate = document.getElementById('project-last-update');
         const projectProgressSummary = document.getElementById('project-progress-summary');
         
-        projectName.textContent = project.projectId; // Use the actual project name, not concatenated string
-        projectPatternInfo.textContent = `${project.patternName} - Working on step ${project.currentStep}`;
-        projectPatternName.textContent = project.patternName;
+        // Show the actual project name the user gave it
+        projectName.textContent = project.projectId; // This is the user's custom project name
+        projectPatternInfo.textContent = `Working on step ${project.currentStep}`;
+        projectPatternName.textContent = project.patternName; // This is the pattern name
         projectStartDate.textContent = project.startDate.toLocaleDateString();
         projectLastUpdate.textContent = project.lastUpdate.toLocaleDateString();
-        projectProgressSummary.textContent = `Step ${project.currentStep} of pattern`;
+        projectProgressSummary.textContent = `Step ${project.currentStep}`;
         
         projectInfo.classList.remove('hidden');
         
-        // Load the pattern data from Firestore
+        // Load the pattern data from Firestore - this will populate pattern-name and pattern-author elements
         await loadPatternFromFirestore(project.patternId);
         
         // Set current project and step - ensure all viewer components are updated
@@ -1633,12 +1641,21 @@
 
         function setupViewer() {
             if (!PATTERN_DATA) return;
+            
             footerControls.classList.remove('hidden');
             const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
-            patternNameEl.textContent = name;
-            patternAuthorEl.textContent = `by ${author}`;
+            
+            // Update pattern display elements (now visible in project view)
+            const patternNameEl = document.getElementById('pattern-name');
+            const patternAuthorEl = document.getElementById('pattern-author');
+            
+            if (patternNameEl) patternNameEl.textContent = name;
+            if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
+            
             maxSteps = max;
-            stepInput.max = maxSteps;
+            const stepInput = document.getElementById('current-step-input');
+            if (stepInput) stepInput.max = maxSteps;
+            
             progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
             
             // Update footer metadata

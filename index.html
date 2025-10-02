@@ -350,8 +350,8 @@
                             <button id="new-project-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" title="Start New Project">
                                 ➕ New
                             </button>
-                            <button id="delete-project-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" disabled title="Delete Current Project">
-                                🗑️ Delete
+                            <button id="delete-project-btn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" disabled title="Archive or Permanently Delete Project">
+                                �️ Archive
                             </button>
                         </div>
                     </div>
@@ -556,6 +556,8 @@
     let currentPatternId = null;
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
+    let showArchivedProjects = false; // Track whether we're showing archived projects
+    let showArchivedProjects = false;
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
@@ -670,44 +672,87 @@
     const newProjectBtn = document.getElementById('new-project-btn');
     const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');
     const deleteProjectBtn = document.getElementById('delete-project-btn');
+    const showArchivedBtn = document.getElementById('show-archived-btn');
     
     newProjectBtn.addEventListener('click', showNewProjectModal);
     welcomeNewProjectBtn.addEventListener('click', showNewProjectModal);
     
+    if (showArchivedBtn) {
+        showArchivedBtn.addEventListener('click', toggleArchivedProjects);
+    }
+    
     deleteProjectBtn.addEventListener('click', async () => {
         const selector = document.getElementById('project-selector');
-        if (!selector.value) return;
+        if (!selector.value) {
+            alert('Please select a project to delete.');
+            return;
+        }
         
-        const confirmation = confirm('Are you sure you want to delete this project? This action cannot be undone.');
-        if (!confirmation) return;
+        // Show options for what to do with the project
+        const action = confirm('What would you like to do with this project?\n\nOK = Archive (hide from list, keep all data for analytics)\nCancel = Permanently Delete (removes all historical data)');
         
         try {
             const userId = auth.currentUser.uid;
             const [patternId, projectId] = selector.value.split('_');
             
-            // Delete all progress entries for this project
-            const progressQuery = query(
-                collection(db, 'user_pattern_progress'),
-                where('userId', '==', userId),
-                where('patternId', '==', patternId),
-                where('projectId', '==', projectId)
-            );
+            // Construct the document ID directly
+            const progressId = `${userId}_${patternId}_${projectId}`;
             
-            const querySnapshot = await getDocs(progressQuery);
-            const deletePromises = [];
-            querySnapshot.forEach((doc) => {
-                deletePromises.push(deleteDoc(doc.ref));
+            console.log('�️ Managing project:', { 
+                userId, 
+                patternId, 
+                projectId, 
+                progressId,
+                action: action ? 'archive' : 'delete',
+                selectorValue: selector.value 
             });
             
-            await Promise.all(deletePromises);
+            // Check if document exists before trying to modify
+            const docRef = doc(db, 'user_pattern_progress', progressId);
+            const docSnapshot = await getDoc(docRef);
+            
+            if (!docSnapshot.exists()) {
+                console.warn('⚠️ Document not found:', progressId);
+                alert('Project not found. It may have already been deleted.');
+                await populateProjectSelector(); // Refresh to show current state
+                return;
+            }
+            
+            if (action) {
+                // Archive - preserve all data but mark as archived
+                console.log('�️ Archiving project:', progressId);
+                await updateDoc(docRef, {
+                    status: 'archived',
+                    archivedAt: serverTimestamp(),
+                    archivedReason: 'user_request',
+                    lastUpdated: serverTimestamp()
+                });
+                console.log('✅ Project archived successfully');
+                alert('Project archived! All progress data preserved but hidden from active projects.');
+            } else {
+                // Permanent delete - remove all historical data
+                const confirmDelete = confirm('⚠️ PERMANENT DELETE WARNING ⚠️\n\nThis will permanently remove ALL progress data, notes, photos, and analytics for this project. This cannot be undone.\n\nAre you absolutely sure?');
+                if (!confirmDelete) return;
+                
+                console.log('🗑️ Permanently deleting project:', progressId);
+                await deleteDoc(docRef);
+                console.log('✅ Project permanently deleted');
+                alert('Project permanently deleted.');
+            }
+            console.log('✅ All documents deleted successfully');
+            
+            // Clear current project selection
+            window.currentProject = null;
             
             // Refresh project list
             await populateProjectSelector();
             
-            console.log('✅ Project deleted:', projectId);
+            console.log('✅ Project deleted and UI refreshed:', projectId);
+            alert('Project deleted successfully!');
         } catch (error) {
             console.error('❌ Error deleting project:', error);
-            alert('Error deleting project. Please try again.');
+            console.error('❌ Error details:', error.message, error.stack);
+            alert(`Error deleting project: ${error.message}`);
         }
     });
 
@@ -1140,6 +1185,13 @@
             
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                
+                // Skip archived projects unless user specifically wants to see them
+                if (data.status === 'archived') {
+                    console.log('📦 Skipping archived project:', data.projectId);
+                    return;
+                }
+                
                 const projectKey = `${data.patternId}_${data.projectId}`;
                 
                 if (!projects.has(projectKey)) {
@@ -2351,22 +2403,29 @@
         // Remove existing listeners to prevent duplicates
         if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
             stepInput.setAttribute('data-listener-added', 'true');
-            stepInput.addEventListener('change', () => {
-                currentStep = parseInt(stepInput.value) || 1;
-                if (currentStep < 1) currentStep = 1;
-                if (currentStep > maxSteps) currentStep = maxSteps;
+            
+            // Add BOTH input and change listeners for better UX
+            const handleStepChange = (value, shouldSave = true) => {
+                const newStep = parseInt(value) || 1;
+                if (newStep < 1 || newStep > maxSteps) return;
+                
+                currentStep = newStep;
                 stepInput.value = currentStep;
                 window.currentStep = currentStep; // Update global
                 
-                // Save immediately to localStorage for instant response
-                localStorage.setItem(progressKey, currentStep);
-                window.currentProject.currentStep = currentStep;
-                
-                // Save to Firestore in background (non-blocking)
-                if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                    saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
-                        currentStep: currentStep
-                    }).catch(err => console.warn('Background save failed:', err));
+                if (shouldSave) {
+                    // Save immediately to localStorage for instant response
+                    localStorage.setItem(progressKey, currentStep);
+                    if (window.currentProject) {
+                        window.currentProject.currentStep = currentStep;
+                    }
+                    
+                    // Save to Firestore in background (non-blocking)
+                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                        saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            currentStep: currentStep
+                        }).catch(err => console.warn('Background save failed:', err));
+                    }
                 }
                 
                 if (typeof updateDisplay === 'function') {
@@ -2375,6 +2434,28 @@
                     console.warn('⚠️ updateDisplay not available, using local update');
                     updateFooterMetadata();
                     highlightCurrentStep(true);
+                }
+            };
+            
+            // Real-time input for immediate visual feedback (no save spam)
+            stepInput.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                if (value >= 1 && value <= maxSteps) {
+                    handleStepChange(value, false); // Don't save on every keystroke
+                }
+            });
+            
+            // Final change event when user finishes typing (save to database)
+            stepInput.addEventListener('change', (e) => {
+                handleStepChange(e.target.value, true); // Save when user finishes
+            });
+            
+            // Enter key for instant jump
+            stepInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleStepChange(e.target.value, true);
+                    e.target.blur(); // Remove focus after enter
                 }
             });
             console.log('✅ Step input listener added');

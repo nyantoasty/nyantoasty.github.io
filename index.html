@@ -808,9 +808,6 @@
         const userId = auth.currentUser.uid;
         const patternId = window.PATTERN_DATA.id;
         
-        // Import the enhanced progress tracking functions
-        const { createNewProject, saveProjectProgress, addProjectNote } = await import('./js/progress-tracking.js');
-        
         console.log('Creating sample progress entry...');
         console.log('Pattern data:', window.PATTERN_DATA);
         console.log('User ID:', userId);
@@ -1274,13 +1271,13 @@
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         
         // Event handlers
-        document.getElementById('create-project-btn').addEventListener('click', createNewProject);
+        document.getElementById('create-project-btn').addEventListener('click', createNewProjectUI);
         document.getElementById('cancel-project-btn').addEventListener('click', () => {
             document.getElementById('new-project-modal').remove();
         });
     }
     
-    async function createNewProject() {
+    async function createNewProjectUI() {
         const patternId = document.getElementById('new-project-pattern').value;
         const projectName = document.getElementById('new-project-name').value.trim();
         

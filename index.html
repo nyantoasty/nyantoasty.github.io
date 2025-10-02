@@ -839,6 +839,42 @@
         appContainer.classList.add('hidden');
     }
 
+    // --- THEME TOGGLE FUNCTIONALITY ---
+    function initThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIconDark = document.getElementById('theme-icon-dark');
+        const themeIconLight = document.getElementById('theme-icon-light');
+        const html = document.documentElement;
+        
+        // Get saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        
+        function updateTheme(theme) {
+            if (theme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                themeIconDark.classList.add('hidden');
+                themeIconLight.classList.remove('hidden');
+            } else {
+                html.removeAttribute('data-theme');
+                themeIconDark.classList.remove('hidden');
+                themeIconLight.classList.add('hidden');
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Set initial theme
+        updateTheme(savedTheme);
+        
+        // Toggle theme on click
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                updateTheme(newTheme);
+            });
+        }
+    }
+
     // --- INITIALIZATION ---
     console.log('Script loaded, initializing app...');
     console.log('Current URL:', window.location.href);
@@ -971,41 +1007,7 @@
             }
         }
         
-        // Theme toggle functionality
-        function initThemeToggle() {
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIconDark = document.getElementById('theme-icon-dark');
-            const themeIconLight = document.getElementById('theme-icon-light');
-            const html = document.documentElement;
-            
-            // Get saved theme or default to dark
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            
-            function updateTheme(theme) {
-                if (theme === 'light') {
-                    html.setAttribute('data-theme', 'light');
-                    themeIconDark.classList.add('hidden');
-                    themeIconLight.classList.remove('hidden');
-                } else {
-                    html.removeAttribute('data-theme');
-                    themeIconDark.classList.remove('hidden');
-                    themeIconLight.classList.add('hidden');
-                }
-                localStorage.setItem('theme', theme);
-            }
-            
-            // Set initial theme
-            updateTheme(savedTheme);
-            
-            // Toggle theme on click
-            if (themeToggle) {
-                themeToggle.addEventListener('click', () => {
-                    const currentTheme = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                    updateTheme(newTheme);
-                });
-            }
-        }
+
         function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
         
         function findInstructionForStep(stepNumber) {
@@ -1284,9 +1286,6 @@
         toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Row Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
         closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
         findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
-        
-        // Initialize theme toggle
-        initThemeToggle();
 
         // Pattern will be loaded when selected from dropdown
         // setupViewer will be called by loadSelectedPattern

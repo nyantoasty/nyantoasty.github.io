@@ -1,7 +1,12 @@
 const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const vision = require('@google-cloud/vision');
-// Note: CORS is automatically handled by Firebase onCall functions
+const admin = require('firebase-admin');
+
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(functions.config().gemini.key); // Set with: firebase functions:config:set gemini.key="your-api-key"
@@ -50,20 +55,18 @@ const LOGIC_GUIDE_PROMPT = `You are an expert knitting pattern parser. Your task
 Return only valid JSON, no explanations.`;
 
 exports.generatePattern = functions.https.onCall(async (data, context) => {
-  // Handle CORS
-  return cors(data, context, async () => {
+  try {
     // Ensure user is authenticated
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use AI generation');
     }
 
-  const { patternText, patternName, patternAuthor } = data;
+    const { patternText, patternName, patternAuthor } = data;
 
-  if (!patternText || patternText.trim().length < 50) {
-    throw new functions.https.HttpsError('invalid-argument', 'Pattern text must be at least 50 characters');
-  }
+    if (!patternText || patternText.trim().length < 50) {
+      throw new functions.https.HttpsError('invalid-argument', 'Pattern text must be at least 50 characters');
+    }
 
-  try {
     // Get the generative model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
@@ -127,7 +130,6 @@ Return ONLY the complete JSON structure following the schema exactly. Do not inc
     
     throw new functions.https.HttpsError('internal', 'Failed to generate pattern');
   }
-  });
 });
 
 // Rate limiting function
@@ -137,8 +139,7 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
       throw new functions.https.HttpsError('unauthenticated', 'Must be logged in');
     }
 
-    const admin = require('firebase-admin');
-  const db = admin.firestore();
+    const db = admin.firestore();
   
   const today = new Date().toISOString().split('T')[0];
   const usageRef = db.collection('ai_usage').doc(`${context.auth.uid}_${today}`);
@@ -170,7 +171,6 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
 
 // OCR Processing Function
 exports.processOCR = functions.https.onCall(async (data, context) => {
-  response.set('Access-Control-Allow-Origin', 'https://nyantoasty.github.io');
   try {
     // Ensure user is authenticated
     if (!context.auth) {

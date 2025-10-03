@@ -280,7 +280,7 @@ The AI will convert this into structured JSON following our pattern format."></t
 
     <!-- Firebase and App Scripts -->
     <script type="module">
-        import { auth, db } from './js/firebase-config.js';
+        import { auth, db, app } from './js/firebase-config.js';
         import { 
             signInWithPopup, 
             GoogleAuthProvider, 
@@ -388,7 +388,8 @@ The AI will convert this into structured JSON following our pattern format."></t
 
                 // Import Firebase Functions
                 const { getFunctions, httpsCallable } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js");
-                const functions = getFunctions();
+                const functions = getFunctions(app, 'us-central1'); // Explicitly set region
+                
                 const generatePattern = httpsCallable(functions, 'generatePattern');
                 
                 // Call the Firebase Function
@@ -538,8 +539,9 @@ The AI will convert this into structured JSON following our pattern format."></t
                 `;
 
                 // Import Firebase Functions
-                const { getFunctions, httpsCallable } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js");
-                const functions = getFunctions();
+                const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js");
+                const functions = getFunctions(app, 'us-central1'); // Explicitly set region
+                
                 const processOCR = httpsCallable(functions, 'processOCR');
 
                 let allExtractedText = '';

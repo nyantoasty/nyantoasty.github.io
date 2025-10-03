@@ -10,7 +10,7 @@ The new client-side OCR functionality allows users to upload pattern images/PDFs
 ## API Key Setup
 
 ### Current Status
-- ✅ Gemini API key already configured: `AIzaSyAEiDASYq5WHALAYaQ1bs8ztZ--avzU0a4`
+- ✅ Gemini API key already configured: 
 - ✅ Cloud Vision API already enabled for project `arachne-edda2`
 - ⚠️ Need to verify Vision API key access
 
@@ -61,4 +61,5 @@ This new functionality:
 - Check browser console for API errors
 - Verify API key has both Vision and Gemini access
 - Ensure API key domain restrictions include your site
+
 - Test with clear, high-contrast pattern images first

@@ -34,9 +34,6 @@
                     <a href="/" class="tab-button">Viewer</a>
                     <span class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg text-sm">Generator</span>
                 </nav>
-                <a href="/" class="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors text-sm">
-                    <i class="fas fa-home mr-2"></i>Back to Hub
-                </a>
             </div>
         </header>
 
@@ -281,6 +278,7 @@ The AI will convert this into structured JSON following our pattern format."></t
     <!-- Firebase and App Scripts -->
     <script type="module">
         import { auth, db, app } from './js/firebase-config.js';
+        import { initializeOCRIntegration } from './js/pattern-ocr-integration.js';
         import { 
             signInWithPopup, 
             GoogleAuthProvider, 
@@ -686,6 +684,9 @@ The AI will convert this into structured JSON following our pattern format."></t
 
         // Initialize drag and drop
         setupDragAndDrop();
+        
+        // Initialize OCR integration
+        initializeOCRIntegration();
 
         // Authentication
         onAuthStateChanged(auth, (user) => {

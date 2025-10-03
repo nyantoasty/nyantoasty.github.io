@@ -41,6 +41,48 @@ def health_check():
         'version': '1.0.0'
     })
 
+@app.route('/extract-text', methods=['POST'])
+def extract_text_only():
+    """
+    Extract text from image/PDF without generating full pattern
+    For integration with Generator.html workflow
+    
+    Expected payload:
+    {
+        "imageData": "base64-encoded-image"
+    }
+    """
+    try:
+        logger.info("🔍 Starting text extraction request")
+        
+        # Validate request
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        if 'imageData' not in data:
+            return jsonify({'error': 'Missing required field: imageData'}), 400
+        
+        image_data = data['imageData']
+        
+        # Extract text from image using Vision API
+        extracted_text = extract_text_from_image(image_data)
+        logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
+        
+        return jsonify({
+            'success': True,
+            'extractedText': extracted_text,
+            'message': f'Successfully extracted {len(extracted_text)} characters of text'
+        })
+        
+    except Exception as e:
+        logger.error(f"❌ Text extraction failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f'Text extraction failed: {str(e)}'
+        }), 500
+
 @app.route('/process-ocr', methods=['POST'])
 def process_ocr():
     """
@@ -256,21 +298,75 @@ def save_pattern_to_firestore(pattern_data: Dict[str, Any], user_id: str) -> str
     return pattern_id
 
 def get_logic_guide_prompt() -> str:
-    """Get the LogicGuide prompt for pattern processing"""
-    # For now, return a basic prompt - you can enhance this
+    """Get the comprehensive LogicGuide prompt for pattern processing"""
     return """
-    Convert this knitting pattern to a JSON object with the following structure:
+    # Logic Guide for Interpreting and Enumerating Knitting Patterns
+
+    ## Objective
+    To translate a condensed, human-readable knitting pattern into a fully enumerated, step-by-step Firestore document. This creates a rich, interactive experience for the crafter, with features like color-coded stitches, clickable definitions, and precise row-by-row navigation.
+
+    The core philosophy is to **transform ambiguity into certainty**. We will eliminate all loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
+
+    ## The Target Firestore Schema
+    ```json
     {
-      "metadata": {"name": "Pattern Name", "author": "Author", "craft": "knitting", "maxSteps": 0},
-      "glossary": {"k": {"name": "Knit", "description": "Standard knit stitch", "stitchesUsed": 1, "stitchesCreated": 1}},
-      "steps": [{"step": 1, "startingStitchCount": 0, "endingStitchCount": 0, "instruction": "", "section": "setup", "side": "RS", "type": "regular"}]
+      "metadata": {
+        "name": "Pattern Name",
+        "author": "Designer Name",
+        "craft": "knitting", 
+        "maxSteps": 280
+      },
+      "glossary": {
+        "k": { "name": "Knit", "description": "A standard knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 },
+        "kfb": { "name": "Knit Front and Back", "description": "A one-stitch increase.", "stitchesUsed": 1, "stitchesCreated": 2 },
+        "k2tog": { "name": "Knit 2 Together", "description": "A one-stitch decrease.", "stitchesUsed": 2, "stitchesCreated": 1 }
+      },
+      "steps": [
+        {
+          "step": 1,
+          "startingStitchCount": 3,
+          "endingStitchCount": 4,
+          "instruction": "k1, kfb, k1",
+          "section": "setup",
+          "side": "RS",
+          "type": "regular"
+        }
+      ]
     }
-    
-    Follow these rules:
-    1. Create a complete glossary for all stitches used
-    2. Enumerate all steps without repeats or loops
-    3. Calculate accurate stitch counts for each step
-    4. Resolve all variables like "knit to end"
+    ```
+
+    ## Core Rules for Translation
+
+    ### 1. The Glossary: Foundation of Automation
+    For every stitch abbreviation used in the pattern:
+    - **stitchesUsed**: Stitches taken off the left needle
+    - **stitchesCreated**: Stitches placed on the right needle
+    - Net change = stitchesCreated - stitchesUsed
+
+    ### 2. Full Step Enumeration (NO Repeats)
+    - Convert "Rows 3-10: k all" into 8 separate step objects (3,4,5,6,7,8,9,10)
+    - Convert "(yo, k2tog) 5 times" into "yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog"
+    - Calculate "k to end" based on current stitch count
+
+    ### 3. Precise Stitch Count Tracking
+    - Every step MUST have startingStitchCount and endingStitchCount
+    - endingStitchCount of step N = startingStitchCount of step N+1
+    - Calculate by parsing every stitch using glossary values
+
+    ### 4. Step Object Schema
+    ```json
+    {
+      "step": 63,
+      "startingStitchCount": 137,
+      "endingStitchCount": 139,
+      "instruction": "k3, kfb, yo, ssk, k7, k2tog, yo, k1",
+      "section": "body",
+      "side": "RS",
+      "type": "regular"
+    }
+    ```
+
+    Convert the provided pattern text into this exact JSON structure with complete enumeration.
     """
 
 @app.route('/analytics/stats', methods=['GET'])

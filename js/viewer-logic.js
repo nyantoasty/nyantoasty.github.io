@@ -582,10 +582,10 @@ window.hideStitchDefinition = hideStitchDefinition;
 export function setupPatternSidebar() {
     console.log('🔧 Setting up pattern sidebar...');
     
-    const sidebar = document.getElementById('pattern-sidebar');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebarClose = document.getElementById('sidebar-close');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    let sidebar = document.getElementById('pattern-sidebar');
+    let sidebarToggle = document.getElementById('sidebar-toggle');
+    let sidebarClose = document.getElementById('sidebar-close');
+    let sidebarOverlay = document.getElementById('sidebar-overlay');
     const returnToRowBtn = document.getElementById('return-to-row');
     
     console.log('Sidebar elements found:', {
@@ -627,22 +627,67 @@ export function setupPatternSidebar() {
         }
     }
     
-    if (sidebarToggle) {
+    // Prevent duplicate event listeners
+    if (sidebarToggle && !sidebarToggle.hasAttribute('data-sidebar-listener-added')) {
         console.log('✅ Adding click handler to sidebar toggle');
+        sidebarToggle.setAttribute('data-sidebar-listener-added', 'true');
+        
+        // Remove any existing event listeners first
+        const newToggleBtn = sidebarToggle.cloneNode(true);
+        sidebarToggle.parentNode.replaceChild(newToggleBtn, sidebarToggle);
+        
+        // Update reference to the new button
+        sidebarToggle = newToggleBtn;
+        
+        // Add single click event listener only
         sidebarToggle.addEventListener('click', toggleSidebar);
+    } else if (sidebarToggle) {
+        console.log('⚠️ Sidebar toggle already has listener');
     } else {
         console.error('❌ Sidebar toggle button not found!');
     }
     
-    if (sidebarClose) {
+    // Close button handling - prevent duplicates here too
+    if (sidebarClose && !sidebarClose.hasAttribute('data-close-listener-added')) {
+        console.log('✅ Adding close handler to sidebar close button');
+        sidebarClose.setAttribute('data-close-listener-added', 'true');
         sidebarClose.addEventListener('click', closeSidebar);
     }
     
-    if (sidebarOverlay) {
+    // Overlay click to close - prevent duplicates here too
+    if (sidebarOverlay && !sidebarOverlay.hasAttribute('data-overlay-listener-added')) {
+        console.log('✅ Adding close handler to sidebar overlay');
+        sidebarOverlay.setAttribute('data-overlay-listener-added', 'true');
         sidebarOverlay.addEventListener('click', closeSidebar);
     }
     
-    if (returnToRowBtn) {
+    // Populate the sidebar with glossary data
+    populateSidebarGlossary();
+    
+    // Return to current row functionality
+    if (returnToRowBtn && !returnToRowBtn.hasAttribute('data-return-listener-added')) {
+        returnToRowBtn.setAttribute('data-return-listener-added', 'true');
+        returnToRowBtn.addEventListener('click', () => {
+            console.log('🔄 Returning to current row:', window.currentStep);
+            if (window.currentStep) {
+                updateDisplay(window.currentStep, true);
+                closeSidebar();
+            }
+        });
+    }
+    
+    if (sidebarClose && !sidebarClose.hasAttribute('data-sidebar-listener-added')) {
+        sidebarClose.setAttribute('data-sidebar-listener-added', 'true');
+        sidebarClose.addEventListener('click', closeSidebar);
+    }
+    
+    if (sidebarOverlay && !sidebarOverlay.hasAttribute('data-sidebar-listener-added')) {
+        sidebarOverlay.setAttribute('data-sidebar-listener-added', 'true');
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    }
+    
+    if (returnToRowBtn && !returnToRowBtn.hasAttribute('data-sidebar-listener-added')) {
+        returnToRowBtn.setAttribute('data-sidebar-listener-added', 'true');
         returnToRowBtn.addEventListener('click', () => {
             scrollToCurrentRow();
             closeSidebar();

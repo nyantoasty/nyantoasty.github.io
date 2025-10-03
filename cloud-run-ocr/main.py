@@ -1,7 +1,24 @@
 """
 Stitch Witch OCR Service
 Python-based Cloud Run service for pattern OCR processing
-Avoids Node.js entirely for security and maintainability
+Avoids No    try:
+        logger.info("DEBUG: Starting OCR processing request")
+        logger.info("CHECKPOINT 1: Entered process_ocr function")
+        
+        # Basic validation with explicit error handling
+        try:
+            logger.info("CHECKPOINT 2: About to check request.is_json")
+            if not request.is_json:
+                logger.error("ERROR: Request is not JSON")
+                return jsonify({'error': 'Request must be JSON'}), 400
+            logger.info("CHECKPOINT 3: Request is JSON")
+            
+            logger.info("CHECKPOINT 4: About to get JSON data")
+            data = request.get_json()
+            logger.info(f"CHECKPOINT 5: Got data with keys: {list(data.keys()) if data else 'None'}")
+        except Exception as e:
+            logger.error(f"ERROR: CHECKPOINT ERROR in basic validation: {str(e)}")
+            raise e security and maintainability
 """
 
 import os
@@ -40,7 +57,7 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'service': 'stitch-witch-ocr',
-        'version': '1.0.0'
+        'version': '2.1.0-debug'
     })
 
 @app.route('/extract-text', methods=['POST'])
@@ -55,7 +72,7 @@ def extract_text_only():
     }
     """
     try:
-        logger.info("🔍 Starting text extraction request")
+        logger.info("DEBUG: Starting text extraction request")
         
         # Validate request
         if not request.is_json:
@@ -70,7 +87,7 @@ def extract_text_only():
         
         # Extract text from image using Vision API
         extracted_text = extract_text_from_image(image_data)
-        logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
+        logger.info(f"INFO: Text extraction complete: {len(extracted_text)} characters")
         
         return jsonify({
             'success': True,
@@ -79,7 +96,7 @@ def extract_text_only():
         })
         
     except Exception as e:
-        logger.error(f"❌ Text extraction failed: {str(e)}")
+        logger.error(f"ERROR: Text extraction failed: {str(e)}")
         return jsonify({
             'success': False,
             'error': f'Text extraction failed: {str(e)}'
@@ -98,35 +115,40 @@ def process_ocr():
     }
     """
     try:
-        logger.info("🔍 Starting OCR processing request")
-        logger.info("🚀 VERSION CHECK: This is the latest code with comprehensive debugging - v2.1")
+        logger.info("DEBUG: Starting text extraction request")
+        logger.info("DEBUG CHECKPOINT 1: Entered process_ocr function")
         
-        # Validate request
-        logger.info("🔍 Step 1: Validating request format...")
-        if not request.is_json:
-            logger.error("❌ Request is not JSON")
-            return jsonify({'error': 'Request must be JSON'}), 400
-        
-        logger.info("🔍 Getting JSON data...")
-        data = request.get_json()
-        logger.info(f"🔍 Received data keys: {list(data.keys()) if data else 'None'}")
+        # Basic validation with explicit error handling
+        try:
+            logger.info("DEBUG CHECKPOINT 2: About to check request.is_json")
+            if not request.is_json:
+                logger.error("DEBUG Request is not JSON")
+                return jsonify({'error': 'Request must be JSON'}), 400
+            logger.info("DEBUG CHECKPOINT 3: Request is JSON")
+            
+            logger.info("DEBUG CHECKPOINT 4: About to get JSON data")
+            data = request.get_json()
+            logger.info(f"DEBUG CHECKPOINT 5: Got data with keys: {list(data.keys()) if data else 'None'}")
+        except Exception as e:
+            logger.error(f"DEBUG CHECKPOINT ERROR in basic validation: {str(e)}")
+            raise e
         
         required_fields = ['imageData', 'patternName', 'authorName', 'userId']
-        logger.info(f"🔍 Checking required fields: {required_fields}")
+        logger.info(f"DEBUG: Checking required fields: {required_fields}")
         
         for field in required_fields:
             if field not in data:
-                logger.error(f"❌ Missing required field: {field}")
+                logger.error(f"ERROR: Missing required field: {field}")
                 return jsonify({'error': f'Missing required field: {field}'}), 400
         
-        logger.info("🔍 Extracting fields from data...")
+        logger.info("DEBUG: Extracting fields from data...")
         image_data = data['imageData']
         pattern_name = data['patternName']
         author_name = data['authorName']
         user_id = data['userId']
         file_type = data.get('fileType', None)  # Optional field
         
-        logger.info(f"🔍 Successfully extracted fields:")
+        logger.info(f"DEBUG: Successfully extracted fields:")
         logger.info(f"  - pattern_name: {pattern_name}")
         logger.info(f"  - author_name: {author_name}")
         logger.info(f"  - user_id: {user_id}")
@@ -137,20 +159,20 @@ def process_ocr():
         
         # Step 1: Extract text from file (PDF or image)
         try:
-            logger.info(f"🔍 About to call extract_text_from_file with file_type: {repr(file_type)}")
+            logger.info(f"DEBUG: About to call extract_text_from_file with file_type: {repr(file_type)}")
             extracted_text = extract_text_from_file(image_data, file_type)
-            logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
+            logger.info(f"DEBUG: Text extraction complete: {len(extracted_text)} characters")
         except Exception as e:
-            logger.error(f"❌ extract_text_from_file failed: {str(e)}")
+            logger.error(f"ERROR: extract_text_from_file failed: {str(e)}")
             raise e
         
         # Step 2: Process text with Gemini to create structured pattern
         pattern_data = process_text_to_pattern(extracted_text, pattern_name, author_name)
-        logger.info("🧠 Pattern structure generation complete")
+        logger.info("AI: Pattern structure generation complete")
         
         # Step 3: Save pattern to Firestore
         pattern_id = save_pattern_to_firestore(pattern_data, user_id)
-        logger.info(f"💾 Pattern saved to Firestore: {pattern_id}")
+        logger.info(f"SAVE: Pattern saved to Firestore: {pattern_id}")
         
         return jsonify({
             'success': True,
@@ -160,7 +182,7 @@ def process_ocr():
         })
         
     except Exception as e:
-        logger.error(f"❌ OCR processing failed: {str(e)}")
+        logger.error(f"ERROR: OCR processing failed: {str(e)}")
         return jsonify({
             'error': 'Processing failed',
             'details': str(e)
@@ -169,39 +191,39 @@ def process_ocr():
 def extract_text_from_file(image_data: str, file_type: str = None) -> str:
     """Extract text from file - handle both PDFs and images"""
     try:
-        logger.info(f"🔍 ENTERING extract_text_from_file")
-        logger.info(f"🔍 file_type parameter: {repr(file_type)}")
-        logger.info(f"🔍 image_data length: {len(image_data) if image_data else 'None'}")
+        logger.info(f"DEBUG: ENTERING extract_text_from_file")
+        logger.info(f"DEBUG: file_type parameter: {repr(file_type)}")
+        logger.info(f"DEBUG: image_data length: {len(image_data) if image_data else 'None'}")
         
         # Decode base64 data
         file_bytes = base64.b64decode(image_data)
-        logger.info(f"📄 Decoded file size: {len(file_bytes)} bytes")
-        logger.info(f"🔍 First 10 bytes: {file_bytes[:10]}")
+        logger.info(f"DEBUG: Decoded file size: {len(file_bytes)} bytes")
+        logger.info(f"DEBUG: First 10 bytes: {file_bytes[:10]}")
         
         # Check if it's a PDF (either by file_type or by checking magic bytes)
         is_pdf_by_type = file_type == 'application/pdf'
         is_pdf_by_magic = file_bytes.startswith(b'%PDF')
         
-        logger.info(f"🔍 PDF detection results:")
+        logger.info(f"DEBUG: PDF detection results:")
         logger.info(f"  - file_type == 'application/pdf': {is_pdf_by_type}")
         logger.info(f"  - file_bytes.startswith(b'%PDF'): {is_pdf_by_magic}")
         logger.info(f"  - Combined result: {is_pdf_by_type or is_pdf_by_magic}")
         
         if is_pdf_by_type or is_pdf_by_magic:
-            logger.info("📄 ROUTING TO PDF PROCESSING")
+            logger.info("DEBUG: ROUTING TO PDF PROCESSING")
             return extract_text_from_pdf(file_bytes)
         else:
-            logger.info("🖼️ ROUTING TO IMAGE PROCESSING")
+            logger.info("DEBUG: ROUTING TO IMAGE PROCESSING")
             return extract_text_from_image(image_data)
             
     except Exception as e:
-        logger.error(f"❌ extract_text_from_file error: {str(e)}")
+        logger.error(f"ERROR: extract_text_from_file error: {str(e)}")
         raise Exception(f"File processing error: {str(e)}")
 
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extract text from PDF using PyPDF2"""
     try:
-        logger.info("📖 Extracting text from PDF...")
+        logger.info("DEBUG: Extracting text from PDF...")
         
         pdf_file = io.BytesIO(pdf_bytes)
         pdf_reader = PyPDF2.PdfReader(pdf_file)
@@ -215,16 +237,16 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
         if not extracted_text.strip():
             raise Exception("No text found in PDF")
             
-        logger.info(f"✅ Extracted {len(extracted_text)} characters from {len(pdf_reader.pages)} pages")
+        logger.info(f"SUCCESS: Extracted {len(extracted_text)} characters from {len(pdf_reader.pages)} pages")
         return extracted_text.strip()
         
     except Exception as e:
-        logger.error(f"❌ PDF extraction failed: {str(e)}")
+        logger.error(f"ERROR: PDF extraction failed: {str(e)}")
         raise Exception(f"PDF extraction failed: {str(e)}")
 
 def extract_text_from_image(base64_image: str) -> str:
     """Extract text from image using Google Vision API"""
-    logger.info("🔍 Calling Vision API...")
+    logger.info("DEBUG: Calling Vision API...")
     
     # Prepare Vision API request
     vision_request = {
@@ -268,13 +290,13 @@ def extract_text_from_image(base64_image: str) -> str:
     
     # First annotation contains the full text
     extracted_text = text_annotations[0]['description']
-    logger.info(f"✅ Vision API extracted {len(extracted_text)} characters")
+    logger.info(f"SUCCESS: Vision API extracted {len(extracted_text)} characters")
     
     return extracted_text
 
 def process_text_to_pattern(text: str, pattern_name: str, author_name: str) -> Dict[str, Any]:
     """Process extracted text through Gemini to create structured pattern"""
-    logger.info("🧠 Calling Gemini API...")
+    logger.info("AI: Calling Gemini API...")
     
     # Load LogicGuide prompt (you'll need to include this file or inline it)
     logic_guide = get_logic_guide_prompt()
@@ -331,7 +353,7 @@ Please convert this knitting pattern into the exact Firestore JSON schema descri
         # Clean up response (remove markdown code blocks if present)
         clean_json = response_text.replace('```json\n', '').replace('```\n', '').replace('```', '').strip()
         pattern_data = json.loads(clean_json)
-        logger.info("✅ Gemini API generated structured pattern")
+        logger.info("SUCCESS: Gemini API generated structured pattern")
         return pattern_data
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse Gemini response as JSON: {response_text[:200]}...")
@@ -339,7 +361,7 @@ Please convert this knitting pattern into the exact Firestore JSON schema descri
 
 def save_pattern_to_firestore(pattern_data: Dict[str, Any], user_id: str) -> str:
     """Save the processed pattern to Firestore"""
-    logger.info("💾 Saving pattern to Firestore...")
+    logger.info("SAVE: Saving pattern to Firestore...")
     
     # Generate pattern ID
     pattern_id = f"ocr-pattern-{int(os.urandom(4).hex(), 16)}"
@@ -382,7 +404,7 @@ def save_pattern_to_firestore(pattern_data: Dict[str, Any], user_id: str) -> str
     
     db.collection('pattern_access').document(f"{pattern_id}_{user_id}").set(access_record)
     
-    logger.info(f"✅ Pattern saved: {pattern_id}")
+    logger.info(f"SUCCESS: Pattern saved: {pattern_id}")
     return pattern_id
 
 def get_logic_guide_prompt() -> str:

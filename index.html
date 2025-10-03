@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-03- Correcting imports and DOM element IDS pt 3 updated -->
+<!-- Version: v2025-10-03- Correcting imports and DOM element IDS pt 4 updated -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Correcting imports and DOM element IDS pt3 updated v2025-10-03</title>
+    <title>Stitch Witch - v2025-10-03</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -320,7 +320,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-10-02 - Fixed pattern loading & progress collection</p>
+                <p class="text-xs text-gray-500">v2025-10-03 More fixes with the pattern viewer</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
@@ -857,16 +857,17 @@
 
     // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
     window.setupViewer = function() {
-        if (!PATTERN_DATA) {
+        if (!window.PATTERN_DATA) {
             console.error('❌ setupViewer called without PATTERN_DATA');
+            console.log('❌ window.PATTERN_DATA is:', window.PATTERN_DATA);
             return;
         }
         
-        console.log('🔧 Setting up viewer with pattern:', PATTERN_DATA.metadata?.name);
+        console.log('🔧 Setting up viewer with pattern:', window.PATTERN_DATA.metadata?.name);
         
         const footerControls = document.getElementById('footer-controls');
         footerControls.classList.remove('hidden');
-        const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
+        const { name, author, maxSteps: max } = window.PATTERN_DATA.metadata;
         
         // Update pattern display elements (now visible in project view)
         const patternNameEl = document.getElementById('pattern-name');
@@ -912,10 +913,10 @@
         
         // Generate dynamic color theme based on pattern data
         // This replaces hardcoded CSS colors with pattern-specific colors
-        generatePatternTheme(PATTERN_DATA);
+        generatePatternTheme(window.PATTERN_DATA);
         
-        generateGlossary(PATTERN_DATA);
-        generateInstructions(PATTERN_DATA);
+        generateGlossary(window.PATTERN_DATA);
+        generateInstructions(window.PATTERN_DATA);
         
         // Update footer metadata after content is generated
         updateFooterMetadata();
@@ -1013,7 +1014,7 @@
                     type: 'navigation',
                     action: 'section_switch',
                     section: view,
-                    patternId: PATTERN_DATA?.id || 'unknown'
+                    patternId: window.PATTERN_DATA?.id || 'unknown'
                 }, db, auth);
             }
             
@@ -1132,7 +1133,7 @@
                     console.log('📝 Adding note for row', currentStep, ':', note.trim());
                     // Store note in localStorage for now
                     const notes = JSON.parse(localStorage.getItem('pattern-notes') || '{}');
-                    const patternKey = PATTERN_DATA?.metadata?.title || 'unknown-pattern';
+                    const patternKey = window.PATTERN_DATA?.metadata?.title || 'unknown-pattern';
                     if (!notes[patternKey]) notes[patternKey] = {};
                     notes[patternKey][currentStep] = note.trim();
                     localStorage.setItem('pattern-notes', JSON.stringify(notes));

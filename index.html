@@ -799,7 +799,7 @@
             
             if (action) {
                 // Archive - preserve all data but mark as archived
-                console.log('�️ Archiving project:', progressId);
+                console.log('🔒 Archiving project:', progressId);
                 await updateDoc(docRef, {
                     status: 'archived',
                     archivedAt: serverTimestamp(),

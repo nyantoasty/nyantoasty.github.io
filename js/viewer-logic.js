@@ -276,3 +276,197 @@ function calculateStaticStitchCount(chunks) {
     });
     return total;
 }
+
+export function setupStitchFinder() {
+    const findStitchBtn = document.getElementById('find-stitch-btn');
+    const stitchInput = document.getElementById('stitch-input');
+    
+    function findStitch() {
+        const stitchNumber = parseInt(stitchInput.value);
+        if (!stitchNumber || stitchNumber < 1) {
+            alert('Please enter a valid stitch number');
+            return;
+        }
+        
+        // Find the current row's instruction element
+        const currentRowElement = document.querySelector(`[data-step="${window.currentStep}"]`);
+        if (!currentRowElement) {
+            alert('Current row not found');
+            return;
+        }
+        
+        // Highlight the stitch (basic implementation - could be enhanced)
+        currentRowElement.style.backgroundColor = '#8b5cf6';
+        currentRowElement.style.color = 'white';
+        currentRowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Clear highlight after 3 seconds
+        setTimeout(() => {
+            currentRowElement.style.backgroundColor = '';
+            currentRowElement.style.color = '';
+        }, 3000);
+        
+        // Analytics
+        if (window.auth && window.auth.currentUser && window.db) {
+            // Analytics tracking would go here
+            console.log('Stitch finder used:', { step: window.currentStep, stitch: stitchNumber });
+        }
+    }
+    
+    if (findStitchBtn) {
+        findStitchBtn.addEventListener('click', findStitch);
+    }
+    
+    if (stitchInput) {
+        stitchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                findStitch();
+            }
+        });
+    }
+}
+
+export function setupRowNavigation() {
+    console.log('🔧 Setting up row navigation...');
+    console.log('🔧 Current values:', { currentStep: window.currentStep, maxSteps: window.maxSteps });
+    
+    const stepInput = document.getElementById('current-step-input');
+    const prevBtn = document.getElementById('prev-step');
+    const nextBtn = document.getElementById('next-step');
+    const toggleNotesBtn = document.getElementById('toggle-notes-sidebar');
+    
+    console.log('🔧 Found elements:', {
+        stepInput: !!stepInput,
+        prevBtn: !!prevBtn,
+        nextBtn: !!nextBtn,
+        toggleNotesBtn: !!toggleNotesBtn
+    });
+    
+    // Get progress key from current project
+    const progressKey = window.currentProject ? 
+        `pattern-progress-${window.currentProject.patternId}` : 
+        'pattern-progress-default';
+    
+    // Remove existing listeners to prevent duplicates
+    if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
+        stepInput.setAttribute('data-listener-added', 'true');
+        
+        const handleStepChange = (value, shouldSave = true) => {
+            const newStep = parseInt(value) || 1;
+            if (newStep < 1 || newStep > window.maxSteps) return;
+            
+            window.currentStep = newStep;
+            stepInput.value = window.currentStep;
+            
+            if (shouldSave) {
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, window.currentStep);
+                if (window.currentProject) {
+                    window.currentProject.currentStep = window.currentStep;
+                }
+                
+                // Save to Firestore in background if functions available
+                if (typeof window.saveProjectProgress === 'function' && window.currentProject && window.auth.currentUser) {
+                    window.saveProjectProgress(window.db, window.auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: window.currentStep
+                    }).catch(err => console.warn('Background save failed:', err));
+                }
+            }
+            
+            updateDisplay(window.currentStep, true);
+        };
+        
+        // Real-time input for immediate visual feedback
+        stepInput.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            if (value >= 1 && value <= window.maxSteps) {
+                handleStepChange(value, false); // Don't save on every keystroke
+            }
+        });
+        
+        // Final change event when user finishes typing
+        stepInput.addEventListener('change', (e) => {
+            handleStepChange(e.target.value, true); // Save when user finishes
+        });
+        
+        // Enter key for instant jump
+        stepInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleStepChange(e.target.value, true);
+                e.target.blur();
+            }
+        });
+        console.log('✅ Step input listener added');
+    }
+    
+    if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
+        prevBtn.setAttribute('data-listener-added', 'true');
+        prevBtn.addEventListener('click', () => {
+            if (window.currentStep > 1) {
+                window.currentStep--;
+                stepInput.value = window.currentStep;
+                
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, window.currentStep);
+                if (window.currentProject) {
+                    window.currentProject.currentStep = window.currentStep;
+                }
+                
+                // Save to Firestore in background
+                if (typeof window.saveProjectProgress === 'function' && window.currentProject && window.auth.currentUser) {
+                    window.saveProjectProgress(window.db, window.auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: window.currentStep
+                    }).catch(err => console.warn('Background save failed:', err));
+                }
+                
+                updateDisplay(window.currentStep, true);
+            }
+        });
+        console.log('✅ Previous button listener added');
+    }
+    
+    if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
+        nextBtn.setAttribute('data-listener-added', 'true');
+        nextBtn.addEventListener('click', () => {
+            if (window.currentStep < window.maxSteps) {
+                window.currentStep++;
+                stepInput.value = window.currentStep;
+                
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, window.currentStep);
+                if (window.currentProject) {
+                    window.currentProject.currentStep = window.currentStep;
+                }
+                
+                // Save to Firestore in background
+                if (typeof window.saveProjectProgress === 'function' && window.currentProject && window.auth.currentUser) {
+                    window.saveProjectProgress(window.db, window.auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: window.currentStep
+                    }).catch(err => console.warn('Background save failed:', err));
+                }
+                
+                updateDisplay(window.currentStep, true);
+            }
+        });
+        console.log('✅ Next button listener added');
+    }
+    
+    // Notes sidebar toggle
+    if (toggleNotesBtn && !toggleNotesBtn.hasAttribute('data-listener-added')) {
+        toggleNotesBtn.setAttribute('data-listener-added', 'true');
+        toggleNotesBtn.addEventListener('click', () => {
+            if (typeof window.toggleNotesSidebar === 'function') {
+                window.toggleNotesSidebar();
+            }
+        });
+        console.log('✅ Notes toggle button listener added');
+    }
+    
+    // Update footer when current step changes
+    updateFooterMetadata();
+}
+
+// Expose functions globally for HTML access
+window.setupStitchFinder = setupStitchFinder;
+window.setupRowNavigation = setupRowNavigation;

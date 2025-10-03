@@ -3,6 +3,50 @@
 
 import { getCurrentStep, setCurrentStep, getOrCreateProject, saveProjectProgress, getCurrentProject } from './progress-tracking.js';
 
+// Global footer update function - available via window.updateFooterMetadata
+function updateFooterMetadata() {
+    console.log('🏷️ updateFooterMetadata called');
+    const currentPatternName = document.getElementById('current-pattern-name');
+    const footerCurrentStep = document.getElementById('footer-current-step');
+    const footerMaxSteps = document.getElementById('footer-max-steps');
+    
+    console.log('🏷️ Footer elements:', {
+        currentPatternName: currentPatternName?.textContent,
+        footerCurrentStep: footerCurrentStep?.textContent,
+        footerMaxSteps: footerMaxSteps?.textContent
+    });
+    
+    console.log('🏷️ Pattern data:', {
+        PATTERN_DATA: !!window.PATTERN_DATA,
+        patternName: window.PATTERN_DATA?.metadata?.name,
+        currentStep: window.currentStep,
+        maxSteps: window.maxSteps
+    });
+    
+    if (currentPatternName && footerCurrentStep && footerMaxSteps) {
+        const patternName = window.PATTERN_DATA?.metadata?.name || 'Unknown Pattern';
+        const activeCurrentStep = window.currentStep || 1;
+        const activeMaxSteps = window.maxSteps || 1;
+        
+        console.log('🏷️ Updating footer with:', { patternName, activeCurrentStep, activeMaxSteps });
+        currentPatternName.textContent = patternName;
+        footerCurrentStep.textContent = activeCurrentStep;
+        footerMaxSteps.textContent = activeMaxSteps;
+    } else {
+        console.log('🏷️ Cannot update footer - missing elements:', {
+            currentPatternName: !!currentPatternName,
+            footerCurrentStep: !!footerCurrentStep,
+            footerMaxSteps: !!footerMaxSteps
+        });
+    }
+}
+
+// Expose updateFooterMetadata globally
+window.updateFooterMetadata = updateFooterMetadata;
+
+// Expose updateDisplay globally for cross-module access
+window.updateDisplay = updateDisplay;
+
 export function loadProgressSimple(progressKey) {
     const savedStep = localStorage.getItem(progressKey);
     return savedStep ? parseInt(savedStep, 10) : 1;

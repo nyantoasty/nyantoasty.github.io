@@ -2749,35 +2749,7 @@
         });
     }
     
-    function goToRowWithNote(step) {
-        // Jump to the specified row
-        window.currentStep = parseInt(step);
-        currentStep = window.currentStep;
-        
-        const stepInput = document.getElementById('current-step-input');
-        if (stepInput) {
-            stepInput.value = currentStep;
-        }
-        
-        if (typeof updateDisplay === 'function') {
-            updateDisplay(currentStep, true);
-        } else {
-            updateFooterMetadata();
-            highlightCurrentStep(true);
-        }
-        
-        // Update current row note in sidebar
-        const currentRowNote = document.getElementById('current-row-note');
-        const currentRowLabel = document.getElementById('current-row-note-label');
-        if (currentRowLabel) {
-            currentRowLabel.textContent = step;
-        }
-        if (currentRowNote && window.currentProject.notes?.stepNotes?.[step]) {
-            currentRowNote.value = window.currentProject.notes.stepNotes[step];
-        } else if (currentRowNote) {
-            currentRowNote.value = '';
-        }
-    }
+    // goToRowWithNote function is defined in js/app-main.js
     
     // Setup notes sidebar event listeners
     document.addEventListener('DOMContentLoaded', () => {
@@ -3021,23 +2993,7 @@
         }
     
 
-    // --- GLOBAL FOOTER UPDATE FUNCTION ---
-    window.updateFooterMetadata = function() {
-        const footerCurrentStep = document.getElementById('footer-current-step');
-        const footerMaxSteps = document.getElementById('footer-max-steps');
-        
-        if (footerCurrentStep && (window.currentStep || currentStep)) {
-            footerCurrentStep.textContent = window.currentStep || currentStep;
-        }
-        if (footerMaxSteps && (window.maxSteps || maxSteps)) {
-            footerMaxSteps.textContent = window.maxSteps || maxSteps;
-        }
-        
-        console.log('🔧 Footer updated:', { 
-            currentStep: window.currentStep || currentStep, 
-            maxSteps: window.maxSteps || maxSteps 
-        });
-    };
+    // Footer update function is handled by viewer-logic.js
 
     // --- STITCH MODAL FUNCTIONALITY ---
     const stitchModal = document.getElementById('stitch-modal');

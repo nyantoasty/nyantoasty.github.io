@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, origins=["https://nyantoasty.github.io", "http://localhost:*"])
+CORS(app, origins=["*"])  # Allow all origins temporarily for testing
 
 # Initialize Firestore
 db = firestore.Client()

@@ -557,20 +557,19 @@ The AI will convert this into structured JSON following our pattern format."></t
                     // Convert file to base64
                     const base64 = await fileToBase64(file);
                     
-                    console.log(`🔍 Calling processOCR for ${file.name}`);
+                    console.log(`🔍 Calling Cloud Run OCR for ${file.name}`);
                     
-                    // Call OCR function using direct HTTP request
-                    const response = await fetch('https://us-central1-arachne-edda2.cloudfunctions.net/processOCR', {
+                    // Call Cloud Run OCR service
+                    const response = await fetch('https://stitch-witch-ocr-285468127259.us-central1.run.app/process-ocr', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            data: {
-                                fileData: base64,
-                                fileName: file.name,
-                                mimeType: file.type
-                            }
+                            imageData: base64,
+                            patternName: document.getElementById('ai-pattern-name').value || file.name.replace(/\.[^/.]+$/, ""),
+                            authorName: document.getElementById('ai-pattern-author').value || 'Unknown',
+                            userId: currentUser.uid
                         })
                     });
 

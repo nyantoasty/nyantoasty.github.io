@@ -20,18 +20,20 @@ export async function extractTextFromFile(file) {
         const base64Data = await fileToBase64(file);
         console.log('📝 File converted to base64');
 
-        // Prepare request payload
+        // Prepare request payload for full pattern processing
         const payload = {
-            imageData: base64Data
+            imageData: base64Data,
+            patternName: "Extracted Pattern",
+            authorName: "OCR Generated", 
+            userId: "temp-user-id"
         };
 
-        // Call Cloud Run service for text extraction only
+        // Call Cloud Run service for full pattern processing
         console.log('🚀 Calling Cloud Run OCR service...');
-        const response = await fetch(`${CLOUD_RUN_OCR_URL}/extract-text`, {
+        const response = await fetch(`${CLOUD_RUN_OCR_URL}/process-ocr`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
             },
             body: JSON.stringify(payload)
         });
@@ -48,7 +50,7 @@ export async function extractTextFromFile(file) {
         }
 
         console.log('✅ Text extraction completed successfully');
-        return result.extractedText;
+        return result.extractedText || result.message || "Text extraction completed";
 
     } catch (error) {
         console.error('❌ OCR text extraction failed:', error);

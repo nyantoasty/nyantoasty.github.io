@@ -170,6 +170,7 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
 
 // OCR Processing Function
 exports.processOCR = functions.https.onCall(async (data, context) => {
+  response.set('Access-Control-Allow-Origin', 'https://nyantoasty.github.io');
   try {
     // Ensure user is authenticated
     if (!context.auth) {

@@ -7,6 +7,7 @@
     <title>Stitch Witch - v2025-10-03</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#8b5cf6">
 
@@ -190,7 +191,7 @@
 <body class="bg-gray-900 text-gray-300 antialiased selection:bg-violet-500 selection:text-white">
 
     <!-- Sidebar Toggle Button -->
-    <button id="sidebar-toggle" class="fixed top-4 left-4 z-[70] bg-gray-800 text-white p-3 rounded-full shadow-lg border border-gray-700 hover:bg-gray-700 transition-colors">
+    <button id="sidebar-toggle" title="Toggle pattern tools sidebar" class="fixed top-4 left-4 z-[70] bg-gray-800 text-white p-3 rounded-full shadow-lg border border-gray-700 hover:bg-gray-700 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
@@ -394,7 +395,7 @@
             <div class="p-4">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-bold text-white">Project Notes</h3>
-                    <button id="close-notes-sidebar" class="text-gray-400 hover:text-white">
+                    <button id="close-notes-sidebar" title="Close notes sidebar" class="text-gray-400 hover:text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -521,7 +522,7 @@
                         <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
                         <div class="text-center">
                             <div id="step-type" class="text-sm text-gray-400">ROW</div>
-                            <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                            <input type="number" id="current-step-input" min="1" title="Current step number" aria-label="Current step number" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
                         </div>
                         <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
                     </div>

@@ -109,6 +109,15 @@ service cloud.firestore {
                              request.auth.uid == resource.data.userId;
     }
 
+    // StitchWitch analytics collection - users can write their own data
+    match /stitchWitch/{queryId} {
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.userId;
+      allow read: if isAuthenticated() && 
+                     (resource.data.userId == request.auth.uid ||
+                      isAdmin());
+    }
+
     // Deny all other requests
     match /{document=**} {
       allow read, write: if false;

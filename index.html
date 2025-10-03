@@ -1,24 +1,119 @@
 <!DOCTYPE html>
-<!-- Version: v2025-09-29-Implementing Generator -->
+<!-- Version: v2025-10-03- Correcting CORS errors + Vision status -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Pattern Hub</title>
+    <title>Stitch Witch - v2025-10-03</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#8b5cf6">
 
     <!-- Tailwind CSS CDN - for development/demo purposes -->
-    <!-- TODO: Replace with PostCSS build for production -->
+    <!-- TODO: Replace with PostCSS build for production to improve performance -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        /* CSS Custom Properties for Dynamic Pattern-Based Theming */
+        /* Colors will be dynamically injected by generatePatternTheme() */
+        :root {
+            /* Default fallback colors - will be overridden dynamically */
+            --color-main: #93c5fd;
+            --color-increase: #86efac;
+            --color-decrease: #f87171;
+            --color-edge: #d8b4fe;
+            --color-spine: #f87171;
+            --color-bobble: #fbbf24;
+            --color-lace: #fb7185;
+            --color-cable: #60a5fa;
+            --color-texture: #fcd34d;
+            --color-stitch: #a78bfa;
+            --color-special: #34d399;
+            --color-marker: #ff9800;
+            --color-repeat: #ff6b6b;
+            --color-bind: #9ca3af;
+            --color-cast: #9ca3af;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: #111827; color: #d1d5db; transition: all 0.3s ease; }
+        
+        /* Light mode styling */
+        [data-theme="light"] body {
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+        
+        /* Light mode overrides for all dark elements */
+        [data-theme="light"] .text-white { color: #1f2937 !important; }
+        [data-theme="light"] .text-gray-300 { color: #4b5563 !important; }
+        [data-theme="light"] .text-gray-400 { color: #6b7280 !important; }
+        [data-theme="light"] .text-gray-500 { color: #9ca3af !important; }
+        [data-theme="light"] .text-violet-300 { color: #7c3aed !important; }
+        
+        /* Light mode backgrounds */
+        [data-theme="light"] .bg-gray-900 { background-color: #ffffff !important; }
+        [data-theme="light"] .bg-gray-800 { background-color: #f8fafc !important; }
+        [data-theme="light"] .bg-gray-700 { background-color: #e2e8f0 !important; }
+        [data-theme="light"] .bg-gray-600 { background-color: #cbd5e1 !important; }
+        
+        /* Light mode borders */
+        [data-theme="light"] .border-gray-700 { border-color: #e5e7eb !important; }
+        [data-theme="light"] .border-gray-600 { border-color: #d1d5db !important; }
+        
+        /* Light mode buttons and interactive elements */
+        [data-theme="light"] .bg-violet-600 { background-color: #7c3aed !important; }
+        [data-theme="light"] .bg-blue-600 { background-color: #2563eb !important; }
+        [data-theme="light"] .bg-green-600 { background-color: #059669 !important; }
+        [data-theme="light"] .bg-red-600 { background-color: #dc2626 !important; }
+        
+        /* Light mode hover states */
+        [data-theme="light"] .hover\\:bg-gray-700:hover { background-color: #f1f5f9 !important; }
+        [data-theme="light"] .hover\\:bg-violet-700:hover { background-color: #6d28d9 !important; }
+        [data-theme="light"] .hover\\:bg-blue-700:hover { background-color: #1d4ed8 !important; }
+        [data-theme="light"] .hover\\:bg-green-700:hover { background-color: #047857 !important; }
+        [data-theme="light"] .hover\\:bg-red-700:hover { background-color: #b91c1c !important; }
+        
+        /* Light mode form elements */
+        [data-theme="light"] input, [data-theme="light"] select, [data-theme="light"] textarea {
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        /* Light mode code blocks */
+        [data-theme="light"] .code-block {
+            background-color: #f8fafc !important;
+            border-color: #e5e7eb !important;
+            color: #374151 !important;
+        }
+        
+        /* Light mode result chunks */
+        [data-theme="light"] .result-chunk {
+            background-color: #f1f5f9 !important;
+            color: #374151 !important;
+        }
+        
         .mono { font-family: 'Roboto Mono', monospace; }
-        .current-step { background-color: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; }
+        /* PERFORMANCE OPTIMIZED: Use CSS classes instead of inline styles for step highlighting */
+        .current-step { 
+            background-color: rgba(139, 92, 246, 0.3) !important; 
+            border-radius: 0.5rem !important;
+            padding: 0.75rem !important;
+            margin: 0.25rem 0 !important;
+            border: 2px solid rgba(139, 92, 246, 0.5) !important;
+        }
+        .previous-step {
+            border: 1px solid rgba(139, 92, 246, 0.3) !important;
+            border-radius: 0.25rem !important;
+            padding: 0.25rem !important;
+            margin: 0.125rem 0 !important;
+        }
+        [data-theme="light"] .current-step { 
+            background-color: rgba(139, 92, 246, 0.2) !important; 
+        }
         .pattern-text p { 
             padding: 0.5rem 0.75rem; 
             margin-bottom: 0.25rem; 
@@ -26,6 +121,7 @@
         }
         /* Dynamic pattern-specific colors will be injected here */
         .highlight { background-color: #E6E6FA; color: #1a1a2e; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        [data-theme="light"] .highlight { background-color: #ddd6fe; color: #1f2937; }
         .result-chunk { background-color: #374151; padding: 1em; border-radius: 5px; color: #e0e0e0; overflow-x: auto; white-space: pre; }
         #stitch-locator-ui { transition: opacity 0.3s ease-in-out; }
         .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; position: absolute; z-index: 10; bottom: 125%; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem; border-radius: 0.375rem; background-color: #1f2937; color: #d1d5db; font-size: 0.875rem; white-space: nowrap; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
@@ -38,12 +134,42 @@
         .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
         .stitch-clickable:hover { opacity: 0.8; }
         .bobble { color: #fbbf24 !important; font-weight: 600; }
-        .increase { color: #86efac !important; font-weight: 500; }
-        .decrease { color: #f87171 !important; font-weight: 500; }
-        .main { color: #93c5fd !important; font-weight: 400; }
+        /* Stitch Color Classes - Using CSS Custom Properties */
+        .main { color: var(--color-main) !important; font-weight: 400; }
+        .increase { color: var(--color-increase) !important; font-weight: 500; }
+        .decrease { color: var(--color-decrease) !important; font-weight: 500; }
+        .edge { color: var(--color-edge) !important; font-weight: 500; }
+        .spine { color: var(--color-spine) !important; font-weight: 600; }
+        .bobble { color: var(--color-bobble) !important; font-weight: 600; }
+        .lace { color: var(--color-lace) !important; font-weight: 500; }
+        .cable { color: var(--color-cable) !important; font-weight: 600; }
+        .texture { color: var(--color-texture) !important; font-weight: 500; }
+        .stitch { color: var(--color-stitch) !important; font-weight: 400; }
+        .special { color: var(--color-special) !important; font-weight: 600; }
+        .marker { color: var(--color-marker) !important; font-weight: 500; }
+        .repeat { color: var(--color-repeat) !important; font-weight: 500; }
+        .bind { color: var(--color-bind) !important; font-weight: 500; }
+        .cast { color: var(--color-cast) !important; font-weight: 500; }
+        
+        /* Color classes for sidebar use */
+        .color-main { color: var(--color-main) !important; }
+        .color-increase { color: var(--color-increase) !important; }
+        .color-decrease { color: var(--color-decrease) !important; }
+        .color-edge { color: var(--color-edge) !important; }
+        .color-spine { color: var(--color-spine) !important; }
+        .color-bobble { color: var(--color-bobble) !important; }
+        .color-lace { color: var(--color-lace) !important; }
+        .color-cable { color: var(--color-cable) !important; }
+        .color-texture { color: var(--color-texture) !important; }
+        .color-stitch { color: var(--color-stitch) !important; }
+        .color-special { color: var(--color-special) !important; }
+        .color-marker { color: var(--color-marker) !important; }
+        .color-repeat { color: var(--color-repeat) !important; }
+        .color-bind { color: var(--color-bind) !important; }
+        .color-cast { color: var(--color-cast) !important; }
+        
         .stitch-clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: opacity 0.2s; }
         .stitch-clickable:hover { opacity: 0.8; }
-        .bobble { color: #fbbf24; font-weight: 600; }
         
         /* Sidebar Styles */
         #pattern-sidebar {
@@ -71,7 +197,7 @@
     </button>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-20 z-50 hidden"></div>
 
     <!-- Pattern Tools Sidebar -->
     <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-gray-800 border-r border-gray-700 p-6 z-[60] overflow-y-auto">
@@ -102,19 +228,8 @@
             <!-- Color Key -->
             <div>
                 <h3 class="text-lg font-semibold text-gray-300 mb-3">Color Key</h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex items-center gap-2">
-                        <span class="increase font-semibold">kfb, YO:</span>
-                        <span class="text-gray-400">Increase</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="decrease font-semibold">k2tog, BO1:</span>
-                        <span class="text-gray-400">Decrease</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="bobble font-semibold">MB3/5/7/9:</span>
-                        <span class="text-gray-400">Make Bobble</span>
-                    </div>
+                <div id="sidebar-color-key" class="space-y-2 text-sm">
+                    <!-- Will be populated dynamically from pattern data -->
                 </div>
             </div>
 
@@ -170,21 +285,31 @@
 
     <!-- Auth Container: Shown when logged out -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center">
-        <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700">
-            <h1 class="text-3xl font-bold text-white mb-4">Welcome to your Pattern Hub</h1>
-            <p class="text-gray-400 mb-8">Please sign in to access your patterns and tools.</p>
-            <div class="space-y-4">
-                <button id="login-btn" class="bg-violet-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-violet-700 transition-colors flex items-center justify-center mx-auto">
-                    <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
-                    Sign in with Google
-                </button>
-                <div class="text-gray-500 text-sm">or</div>
-                <button id="guest-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                    Use AI Pattern Generator (No Sign-in Required)
-                </button>
-                <button id="debug-btn" class="bg-gray-600 text-white font-medium py-1 px-3 rounded text-xs">
-                    🔧 Debug Firebase
-                </button>
+        <div class="text-center p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 max-w-md mx-auto">
+            <div class="mb-6">
+                <div class="w-16 h-16 bg-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                <p class="text-gray-400">Sign in to access your pattern library</p>
+            </div>
+            
+            <button id="login-btn" class="w-full bg-violet-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-violet-700 transition-colors flex items-center justify-center">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
+                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+                    <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
+                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                </svg>
+                Continue with Google
+            </button>
+            
+            <div class="mt-6 pt-6 border-t border-gray-700">
+                <p class="text-xs text-gray-500">
+                    By signing in, you agree to our terms of service and privacy policy
+                </p>
             </div>
         </div>
     </div>
@@ -195,15 +320,16 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-gray-400">Welcome!</p>
-                <p class="text-xs text-gray-500">v2025-09-28-implementing generator</p>
+                <p class="text-xs text-gray-500">v2025-10-03 Correcting CORS errors + Vision status</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
                     <button data-view="viewer" class="tab-button active">Viewer</button>
-                    <button data-view="generator" class="tab-button">Generator</button>
+                    <button id="generator-nav-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Generator</button>
                 </nav>
-                <button id="init-firestore-btn" class="bg-orange-600 text-white font-medium py-2 px-3 rounded-lg hover:bg-orange-700 transition-colors text-xs">🚀 Setup Progress System</button>
-                <button id="standalone-generator-btn" class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm">Full Generator</button>
+                <!-- DEVELOPMENT BUTTONS - HIDDEN IN PRODUCTION -->
+                <!-- <button id="create-sample-progress-btn" class="bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors text-sm">Create Sample Progress</button> -->
+                <!-- <button id="recreate-progress-collection-btn" class="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm">Recreate Progress Collection</button> -->
                 <button id="logout-btn" class="bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm">Sign Out</button>
             </div>
         </header>
@@ -211,32 +337,124 @@
         <!-- VIEWER SECTION -->
         <div id="viewer-section">
             <header class="text-center mb-8">
-                <div class="mb-4">
-                    <label for="pattern-selector" class="block text-sm font-medium text-gray-300 mb-2">Select Pattern:</label>
-                    <div class="flex items-center justify-center space-x-4">
-                        <select id="pattern-selector" class="bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
-                            <option value="">Loading patterns...</option>
-                        </select>
-                        <button id="pattern-info-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors" disabled>ℹ️ Info</button>
+                <!-- PROJECT MANAGER -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-center space-x-4 mb-4">
+                        <div class="flex-1 max-w-lg">
+                            <label for="project-selector" class="block text-sm font-medium text-gray-300 mb-2">My Projects:</label>
+                            <select id="project-selector" class="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+                                <option value="">Loading your projects...</option>
+                            </select>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="new-project-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" title="Start New Project">
+                                ➕ New
+                            </button>
+                            <button id="delete-project-btn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" disabled title="Archive or Permanently Delete Project">
+                                🗃️ Archive
+                            </button>
+                            <button id="show-archived-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors" title="View Archived Projects">
+                                📦 Archived
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <h2 id="pattern-name" class="text-4xl font-bold text-white mb-2">Select a pattern to begin</h2>
-                <p id="pattern-author" class="text-lg text-violet-300"></p>
-                <div id="pattern-details" class="hidden mt-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div><span class="text-gray-400">Craft:</span> <span id="pattern-craft" class="text-white"></span></div>
-                        <div><span class="text-gray-400">Total Steps:</span> <span id="pattern-steps" class="text-white"></span></div>
-                        <div><span class="text-gray-400">File:</span> <span id="pattern-file" class="text-gray-300 text-xs"></span></div>
+                    
+                    <!-- PROJECT INFO DISPLAY -->
+                    <div id="project-info" class="hidden">
+                        <h2 id="project-name" class="text-3xl font-bold text-white mb-2"></h2>
+                        <p id="project-pattern-info" class="text-lg text-violet-300 mb-2"></p>
+                        
+                        <!-- PATTERN INFORMATION -->
+                        <div class="mb-4 text-center">
+                            <h3 id="pattern-name" class="text-2xl font-bold text-emerald-400 mb-1">Pattern Name</h3>
+                            <p id="pattern-author" class="text-lg text-gray-300">by Pattern Author</p>
+                        </div>
+                        
+                        <div id="project-details" class="mt-3 p-4 bg-gray-800 rounded-lg border border-gray-600">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div><span class="text-gray-400">Pattern:</span> <span id="project-pattern-name" class="text-white"></span></div>
+                                <div><span class="text-gray-400">Started:</span> <span id="project-start-date" class="text-white"></span></div>
+                                <div><span class="text-gray-400">Last Updated:</span> <span id="project-last-update" class="text-white"></span></div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-700">
+                                <div class="text-sm text-gray-400">Progress: <span id="project-progress-summary" class="text-violet-300"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NO PROJECT STATE -->
+                    <div id="no-project-state" class="text-center py-8">
+                        <h2 class="text-3xl font-bold text-white mb-4">Welcome to Stitch Witch! ✨</h2>
+                        <p class="text-lg text-gray-300 mb-6">Create your first project to start tracking your crafting journey with patterns from our Firestore database</p>
+                        <button id="welcome-new-project-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg text-lg transition-colors">
+                            ➕ Start Your First Project
+                        </button>
                     </div>
                 </div>
             </header>
-            <main id="pattern-content" class="space-y-8"></main>
+            <main id="pattern-content" class="space-y-8 pb-40"></main>
             <div id="stitch-popup" class="hidden fixed bg-gray-700 p-6 rounded-lg shadow-2xl z-50 border border-violet-500 w-11/12 max-w-md">
                 <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-gray-400 hover:text-white">&times;</button>
                 <div id="popup-content"></div>
             </div>
         </div>
         
+        <!-- PROJECT NOTES SIDEBAR -->
+        <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-gray-900 border-l border-gray-700 transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white">Project Notes</h3>
+                    <button id="close-notes-sidebar" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- General Notes -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">General Notes</label>
+                    <textarea id="general-notes" class="w-full h-24 bg-gray-800 border border-gray-600 text-white rounded px-3 py-2 resize-none" placeholder="General project notes..."></textarea>
+                </div>
+                
+                <!-- Current Row Note -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Row <span id="current-row-note-label">1</span> Note</label>
+                    <textarea id="current-row-note" class="w-full h-20 bg-gray-800 border border-gray-600 text-white rounded px-3 py-2 resize-none" placeholder="Note for current row..."></textarea>
+                    <button id="save-row-note" class="mt-2 bg-violet-600 hover:bg-violet-700 text-white px-3 py-1 rounded text-sm">Save Row Note</button>
+                </div>
+                
+                <!-- Yarn Details -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-300 mb-3">Yarn & Materials</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Yarn Brand & Color</label>
+                            <input id="yarn-info" type="text" class="w-full bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm" placeholder="e.g., Red Heart Soft Navy">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Needle/Hook Size</label>
+                            <input id="tool-info" type="text" class="w-full bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm" placeholder="e.g., US 6 (4.0mm)">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Modifications</label>
+                            <textarea id="modifications" class="w-full h-16 bg-gray-800 border border-gray-600 text-white rounded px-2 py-1 text-sm resize-none" placeholder="Pattern modifications..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row Notes List -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-300 mb-3">All Row Notes</h4>
+                    <div id="row-notes-list" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Row notes will be populated here -->
+                    </div>
+                </div>
+                
+                <button id="save-all-notes" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Save All Notes</button>
+            </div>
+        </div>
+
         <!-- GENERATOR SECTION -->
         <div id="generator-section" class="hidden bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
             <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">AI Prompt Generator</h2>
@@ -275,18 +493,68 @@
 
     <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm border-t border-gray-700 p-4">
         <div id="footer-controls" class="max-w-4xl mx-auto hidden">
+            <!-- Pattern Metadata -->
+            <div id="pattern-metadata" class="text-center mb-2">
+                <div class="text-sm text-gray-400">
+                    <span id="current-pattern-name" class="text-violet-300 font-medium">No pattern selected</span>
+                    <span class="mx-2">•</span>
+                    <span id="pattern-progress-info">Row <span id="footer-current-step">1</span> of <span id="footer-max-steps">1</span></span>
+                </div>
+            </div>
+            
             <div class="relative h-20">
-                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-center space-x-6 transition-opacity duration-300">
-                    <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
-                    <div class="text-center">
-                        <div id="step-type" class="text-sm text-gray-400">ROW</div>
-                        <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-between transition-opacity duration-300">
+                    <!-- Left Side Controls -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
+                            <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                            <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Theme</span>
+                        </button>
+                        
+                        <!-- Jump to Start Button -->
+                        <button id="jump-to-start" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Jump to row 1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Start</span>
+                        </button>
                     </div>
-                    <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
-                    <button id="mark-previous-complete" class="ml-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Mark all previous rows as complete">
-                        <i class="fas fa-check-double mr-1"></i>
-                        <span class="hidden lg:inline text-xs">Previous</span>
-                    </button>
+                    
+                    <!-- Row Counter Section -->
+                    <div class="flex items-center space-x-6">
+                        <button id="prev-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
+                        <div class="text-center">
+                            <div id="step-type" class="text-sm text-gray-400">ROW</div>
+                            <input type="number" id="current-step-input" min="1" class="text-4xl font-bold text-white bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-violet-500 rounded-lg">
+                        </div>
+                        <button id="next-step" class="w-14 h-14 bg-violet-600 text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
+                    </div>
+                    
+                    <!-- Right Side Controls -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Add Note Button -->
+                        <button id="add-note" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Add note for current row">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Note</span>
+                        </button>
+                        
+                        <!-- Notes Toggle Button -->
+                        <button id="toggle-notes-sidebar" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="View/Edit Project Notes">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden lg:inline text-xs ml-1">Notes</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="stitch-locator-ui" class="absolute inset-0 flex items-center justify-center space-x-4 transition-opacity duration-300 opacity-0 pointer-events-none">
                     <label for="stitch-input" class="text-lg">Stitch #:</label>
@@ -301,7 +569,7 @@
     </footer>
 
     <!-- Stitch Definition Modal -->
-    <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 pt-16 z-[70] hidden">
+    <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-start justify-center p-4 pt-16 z-[70] hidden">
         <div class="bg-gray-800 text-gray-200 rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content mx-4">
             <button id="close-stitch-modal" class="absolute top-2 right-3 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
             <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-white"></h3>
@@ -311,17 +579,41 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // Import our modular functions
     import { getInstructionCategory } from "./js/utils.js";
-    import { generateGlossary, generateInstructions, generatePatternTheme } from "./js/pattern-functions.js";
+    import { generateGlossary, generateInstructions, generatePatternTheme, updateSidebarColorKey } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
-    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
-    import { getCurrentStep, setCurrentStep, loadUserProgress } from "./js/progress-tracking.js";
-    import { createSeaWitchPattern } from "./scripts/create-sea-witch-pattern.js";
-    import { setupProgressTracking } from "./scripts/progress-setup.js";
+    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore, setupInteractiveFeatures, scrollToCurrentRow, updateCurrentStepDisplay, showStitchDefinition, hideStitchDefinition, setupPatternSidebar, populateSidebarGlossary } from "./js/viewer-logic.js";
+    import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
+    import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
+    import { 
+        signInWithGoogle, 
+        signOutUser, 
+        toggleNotesSidebar,
+        loadProjectNotes,
+        saveCurrentRowNote,
+        addRowNoteIndicator,
+        loadRowNoteIndicators,
+        goToRowWithNote,
+        loadSelectedPattern,
+        updateRowNotesList,
+        saveAllProjectNotes,
+        showSection,
+        initThemeToggle,
+        checkRedirectResult,
+        checkAuthState,
+        populateProjectSelector,
+        showNewProjectModal,
+        toggleArchivedProjects,
+        unarchiveProject,
+        loadUserProjects,
+        loadSelectedProject,
+        resetViewer
+    } from "./js/app-main.js";
+    // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
     
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -348,17 +640,17 @@
     let currentPatternId = null;
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
+    let showArchivedProjects = false; // Track whether we're showing archived projects
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
     const standaloneGenerator = document.getElementById('standalone-generator');
     const loginBtn = document.getElementById('login-btn');
-    const guestGeneratorBtn = document.getElementById('guest-generator-btn');
-    const debugBtn = document.getElementById('debug-btn');
     const logoutBtn = document.getElementById('logout-btn');
-    const initFirestoreBtn = document.getElementById('init-firestore-btn');
-    const standaloneGeneratorBtn = document.getElementById('standalone-generator-btn');
+    const generatorNavBtn = document.getElementById('generator-nav-btn');
+    // const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
+    // const recreateProgressCollectionBtn = document.getElementById('recreate-progress-collection-btn');
     const backToMainBtn = document.getElementById('back-to-main');
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
@@ -376,444 +668,351 @@
     provider.setCustomParameters({
         prompt: 'select_account'
     });
+
+    // signInWithGoogle function moved to js/app-main.js
     
-    async function signInWithGoogle() {
-        console.log('=== LOGIN BUTTON CLICKED ===');
-        console.log('Testing POPUP auth instead of redirect...');
-        console.log('Auth object:', auth);
-        console.log('Provider object:', provider);
-        
-        try {
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Opening popup...';
-            
-            console.log('Calling signInWithPopup...');
-            const result = await signInWithPopup(auth, provider);
-            console.log('✅ signInWithPopup result:', result);
-            console.log('User from popup:', result.user.email);
-            
-            // Don't need to do anything here - onAuthStateChanged will handle it
-            
-        } catch (error) {
-            console.log('❌ signInWithPopup failed:');
-            console.log('Error object:', error);
-            console.log('Error code:', error.code);
-            console.log('Error message:', error.message);
-            
-            if (error.code === 'auth/popup-blocked') {
-                alert('Popup was blocked! Please allow popups for this site and try again.');
-            } else if (error.code === 'auth/popup-closed-by-user') {
-                console.log('User closed popup');
-            } else {
-                alert('Sign in failed: ' + error.code + ' - ' + error.message);
-            }
-            
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Sign in with Google';
-        }
-    }
+    // checkRedirectResult function moved to js/app-main.js
     
     loginBtn.addEventListener('click', signInWithGoogle);
 
-    debugBtn.addEventListener('click', () => {
-        console.log('=== 🔧 FIREBASE DEBUG INFO ===');
-        console.log('Firebase app:', app);
-        console.log('Firebase auth:', auth);
-        console.log('Firebase auth currentUser:', auth.currentUser);
-        console.log('Provider:', provider);
-        console.log('Current URL:', window.location.href);
-        console.log('Document referrer:', document.referrer);
-        console.log('Local storage keys:', Object.keys(localStorage));
-        console.log('Session storage keys:', Object.keys(sessionStorage));
-        
-        // Try to manually call getRedirectResult
-        console.log('Manually calling getRedirectResult...');
-        getRedirectResult(auth).then(result => {
-            console.log('Manual getRedirectResult result:', result);
-        }).catch(error => {
-            console.log('Manual getRedirectResult error:', error);
-        });
-        
-        alert('Debug info logged to console!');
+    generatorNavBtn.addEventListener('click', () => {
+        showSection('generator');
     });
-
-    guestGeneratorBtn.addEventListener('click', () => {
-        authContainer.classList.add('hidden');
-        standaloneGenerator.classList.remove('hidden');
+    
+    backToMainBtn.addEventListener('click', () => {
+        showSection('viewer');
+    });
+    
+    // PROJECT MANAGEMENT EVENT HANDLERS
+    const newProjectBtn = document.getElementById('new-project-btn');
+    const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');
+    const deleteProjectBtn = document.getElementById('delete-project-btn');
+    const showArchivedBtn = document.getElementById('show-archived-btn');
+    const projectSelector = document.getElementById('project-selector');
+    
+    newProjectBtn.addEventListener('click', showNewProjectModal);
+    welcomeNewProjectBtn.addEventListener('click', showNewProjectModal);
+    
+    if (showArchivedBtn) {
+        showArchivedBtn.addEventListener('click', toggleArchivedProjects);
+    }
+    
+    // Project selector change event listener
+        projectSelector.addEventListener('change', async (e) => {
+            const projectKey = e.target.value;
+            if (projectKey) {
+                console.log('🎯 Project selected:', projectKey);
+                try {
+                    const userProjects = await loadUserProjects();
+                    await loadSelectedProject(projectKey, userProjects);
+                } catch (error) {
+                    console.error('❌ Error loading selected project:', error);
+                    alert('Error loading project: ' + error.message);
+                }
+            } else {
+                // No project selected - reset viewer
+                resetViewer();
+            }
+        });
+    
+    deleteProjectBtn.addEventListener('click', async () => {
+        const selector = document.getElementById('project-selector');
+        if (!selector.value) {
+            alert('Please select a project to delete.');
+            return;
+        }
+        
+        // Check if we're in archived view and this is an unarchive action
+        if (showArchivedProjects) {
+            // Unarchive the project
+            const confirmation = confirm('Restore this project to your active projects list?');
+            if (!confirmation) return;
+            
+            await unarchiveProject(selector.value);
+            return;
+        }
+        
+        // Show options for what to do with the project
+        const action = confirm('What would you like to do with this project?\n\nOK = Archive (hide from list, keep all data for analytics)\nCancel = Permanently Delete (removes all historical data)');
+        
+        try {
+            const userId = auth.currentUser.uid;
+            const [patternId, projectId] = selector.value.split('_');
+            
+            // Construct the document ID directly
+            const progressId = `${userId}_${patternId}_${projectId}`;
+            
+            console.log('🔮 Managing project:', { 
+                userId, 
+                patternId, 
+                projectId, 
+                progressId,
+                action: action ? 'archive' : 'delete',
+                selectorValue: selector.value 
+            });
+            
+            // Check if document exists before trying to modify
+            const docRef = doc(db, 'user_pattern_progress', progressId);
+            const docSnapshot = await getDoc(docRef);
+            
+            if (!docSnapshot.exists()) {
+                console.warn('⚠️ Document not found:', progressId);
+                alert('Project not found. It may have already been deleted.');
+                await populateProjectSelector(); // Refresh to show current state
+                return;
+            }
+            
+            if (action) {
+                // Archive - preserve all data but mark as archived
+                console.log('🔒 Archiving project:', progressId);
+                await updateDoc(docRef, {
+                    status: 'archived',
+                    archivedAt: serverTimestamp(),
+                    archivedReason: 'user_request',
+                    lastUpdated: serverTimestamp()
+                });
+                console.log('✅ Project archived successfully');
+                alert('Project archived! All progress data preserved but hidden from active projects.');
+            } else {
+                // Permanent delete - remove all historical data
+                const confirmDelete = confirm('⚠️ PERMANENT DELETE WARNING ⚠️\n\nThis will permanently remove ALL progress data, notes, photos, and analytics for this project. This cannot be undone.\n\nAre you absolutely sure?');
+                if (!confirmDelete) return;
+                
+                console.log('🗑️ Permanently deleting project:', progressId);
+                await deleteDoc(docRef);
+                console.log('✅ Project permanently deleted');
+                alert('Project permanently deleted.');
+            }
+            console.log('✅ All documents deleted successfully');
+            
+            // Clear current project selection
+            window.currentProject = null;
+            
+            // Refresh project list
+            await populateProjectSelector();
+            
+            console.log('✅ Project deleted and UI refreshed:', projectId);
+            alert('Project deleted successfully!');
+        } catch (error) {
+            console.error('❌ Error deleting project:', error);
+            console.error('❌ Error details:', error.message, error.stack);
+            alert(`Error deleting project: ${error.message}`);
+        }
     });
 
     logoutBtn.addEventListener('click', () => {
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
 
-    initFirestoreBtn.addEventListener('click', async () => {
-        initFirestoreBtn.disabled = true;
-        initFirestoreBtn.textContent = '⏳ Setting up system...';
-        
+    // DEVELOPMENT BUTTON EVENT HANDLERS - COMMENTED OUT FOR PRODUCTION
+    /*
+    createSampleProgressBtn.addEventListener('click', async () => {
         try {
-            // First, set up the progress tracking system with sample data
-            console.log('🚀 Setting up progress tracking system...');
-            await setupProgressTracking(db, auth);
+            createSampleProgressBtn.disabled = true;
+            createSampleProgressBtn.textContent = 'Creating...';
             
-            // Then create the Sea Witch pattern with updated schema
-            console.log('🧙‍♀️ Creating Sea Witch pattern...');
-            const patternId = await createSeaWitchPattern();
+            await createSampleUserPatternProgress();
             
-            if (patternId) {
-                initFirestoreBtn.textContent = '✅ System Ready!';
-                alert(`Progress tracking system initialized successfully!\n\n✅ Sample users and progress data created\n✅ Sea Witch Tentacle Scarf pattern created\n✅ Individual progress tracking enabled\n\nPattern ID: ${patternId}\n\nYou can now test the new progress tracking features!`);
-                
-                // Refresh patterns list and hide button
-                await discoverPatterns();
-                setTimeout(() => {
-                    initFirestoreBtn.style.display = 'none';
-                }, 3000);
-            } else {
-                initFirestoreBtn.textContent = '🚫 Cancelled';
-                setTimeout(() => {
-                    initFirestoreBtn.disabled = false;
-                    initFirestoreBtn.textContent = '🚀 Setup Progress System';
-                }, 3000);
-            }
-        } catch (error) {
-            initFirestoreBtn.textContent = '❌ Setup Error';
-            console.error('Progress system setup error:', error);
+            createSampleProgressBtn.textContent = 'Created!';
+            createSampleProgressBtn.style.backgroundColor = '#059669'; // green
             
-            // Show helpful error message
-            let errorMessage = error.message;
-            if (errorMessage.includes('permission')) {
-                errorMessage = `Permission Error: ${error.message}\n\n` +
-                              `Please update your Firestore security rules:\n` +
-                              `1. Go to Firebase Console > Firestore Database > Rules\n` +
-                              `2. Copy the rules from scripts/firestore-security-rules.js\n` +
-                              `3. Or temporarily use: allow read, write: if request.auth != null;`;
-            }
-            
-            alert(`Setup failed: ${errorMessage}\n\nCheck the console for details.`);
             setTimeout(() => {
-                initFirestoreBtn.disabled = false;
-                initFirestoreBtn.textContent = '🚀 Retry Setup';
-            }, 3000);
-        }
-    });
-
-    standaloneGeneratorBtn.addEventListener('click', () => {
-        authContainer.classList.add('hidden');
-        appContainer.classList.add('hidden');
-        standaloneGenerator.classList.remove('hidden');
-    });
-
-    backToMainBtn.addEventListener('click', () => {
-        standaloneGenerator.classList.add('hidden');
-        // Check if user is logged in to show appropriate screen
-        if (auth.currentUser) {
-            appContainer.classList.remove('hidden');
-        } else {
-            authContainer.classList.remove('hidden');
-        }
-    });
-
-    // --- AUTHORIZATION & APP STATE ---
-    
-    function showNotAuthorized(user) {
-        authContainer.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        userDisplay.textContent = `Access Denied for ${user.email}`;
-        viewerSection.innerHTML = `<div class="text-center p-8 bg-gray-800 rounded-lg"><h2 class="text-2xl font-bold text-red-400">Not Authorized</h2><p class="text-gray-400 mt-2">Your account does not have permission to view this content.</p></div>`;
-        generatorSection.classList.add('hidden');
-        footerControls.classList.add('hidden');
-    }
-
-    function showApplication(user, userData = null, roleData = null) {
-        try {
-            authContainer.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            
-            // Display user info with role
-            const roleName = roleData ? roleData.name : 'User';
-            userDisplay.textContent = `${user.displayName || user.email} (${roleName})`;
-            
-            console.log('Initializing application for user:', user.email);
-            console.log('User role:', userData?.role);
-            console.log('User permissions:', roleData?.permissions);
-            
-            // Store user data globally for use in other parts of the app
-            window.currentUser = user;
-            window.currentUserData = userData;
-            window.currentUserRole = roleData;
-            
-            discoverPatterns().then(() => {
-                console.log('Patterns discovered, initializing viewer');
-                initializeViewer();
-            }).catch(error => {
-                console.error('Error during pattern discovery or viewer initialization:', error);
-            });
-        } catch (error) {
-            console.error('Error in showApplication:', error);
-        }
-    }
-    
-    async function discoverPatterns() {
-        try {
-            const user = auth.currentUser;
-            if (!user) {
-                console.log('No user signed in - cannot load patterns');
-                availablePatterns = [];
-                populatePatternSelector();
-                return;
-            }
-            
-            console.log('🔍 Loading patterns from Firestore...');
-            availablePatterns = [];
-            
-            // Load patterns the user created
-            const userPatternsQuery = query(
-                collection(db, 'patterns'), 
-                where('createdBy', '==', user.uid)
-            );
-            
-            const userPatterns = await getDocs(userPatternsQuery);
-            
-            userPatterns.forEach(docSnapshot => {
-                const data = docSnapshot.data();
-                console.log('📋 Pattern data from Firestore:', data);
-                
-                // Handle both flat structure and nested metadata structure
-                const metadata = data.metadata || data;
-                availablePatterns.push({
-                    id: docSnapshot.id,
-                    filename: docSnapshot.id, // Use Firestore ID as filename for compatibility
-                    name: metadata.name || data.name || 'Unknown Pattern',
-                    author: metadata.author || data.author || 'Unknown Author',
-                    craft: metadata.craft || data.craft || 'Unknown',
-                    maxSteps: metadata.maxSteps || data.maxSteps || 'Unknown',
-                    source: 'firestore'
-                });
-            });
-            
-            // TODO: Also load patterns shared with the user via pattern_access collection
-            // For now, we're just loading user's own patterns
-            
-            console.log(`✅ Found ${availablePatterns.length} patterns`);
-            populatePatternSelector();
+                createSampleProgressBtn.disabled = false;
+                createSampleProgressBtn.textContent = 'Create Sample Progress';
+                createSampleProgressBtn.style.backgroundColor = '#d97706'; // yellow
+            }, 2000);
             
         } catch (error) {
-            console.error('Error discovering patterns:', error);
-            // Fallback to empty list
-            availablePatterns = [];
-            populatePatternSelector();
+            console.error('Error creating sample progress:', error);
+            alert('Error creating sample progress: ' + error.message);
+            createSampleProgressBtn.disabled = false;
+            createSampleProgressBtn.textContent = 'Create Sample Progress';
         }
-    }
-    
-    function populatePatternSelector() {
-        const selector = document.getElementById('pattern-selector');
-        selector.innerHTML = '<option value="">-- Select a pattern --</option>';
-        
-        availablePatterns.forEach(pattern => {
-            const option = document.createElement('option');
-            option.value = pattern.filename;
-            option.textContent = `${pattern.name} by ${pattern.author}`;
-            selector.appendChild(option);
-        });
-        
-        selector.addEventListener('change', async (e) => {
-            const infoBtn = document.getElementById('pattern-info-btn');
-            const detailsDiv = document.getElementById('pattern-details');
+    });
+
+    recreateProgressCollectionBtn.addEventListener('click', async () => {
+        try {
+            recreateProgressCollectionBtn.disabled = true;
+            recreateProgressCollectionBtn.textContent = 'Recreating...';
             
-            if (e.target.value && infoBtn && detailsDiv) {
-                infoBtn.disabled = false;
-                await loadSelectedPattern(e.target.value);
-            } else if (infoBtn && detailsDiv) {
-                infoBtn.disabled = true;
-                detailsDiv.classList.add('hidden');
-                resetViewer();
-            }
-        });
-        
-        // Add pattern info button functionality
-        const infoBtn = document.getElementById('pattern-info-btn');
-        if (infoBtn) {
-            infoBtn.addEventListener('click', () => {
-                const detailsDiv = document.getElementById('pattern-details');
-                const selectedPattern = availablePatterns.find(p => p.filename === document.getElementById('pattern-selector').value);
-                
-                if (selectedPattern && PATTERN_DATA && detailsDiv) {
-                    const craftEl = document.getElementById('pattern-craft');
-                    const stepsEl = document.getElementById('pattern-steps');
-                    const fileEl = document.getElementById('pattern-file');
-                    
-                    if (craftEl) craftEl.textContent = PATTERN_DATA.metadata.craft || 'Unknown';
-                    if (stepsEl) stepsEl.textContent = PATTERN_DATA.metadata.maxSteps || 'Unknown';
-                    if (fileEl) fileEl.textContent = selectedPattern.filename;
-                    detailsDiv.classList.toggle('hidden');
-                }
-            });
-        }
-    }
-    
-    function resetViewer() {
-        document.getElementById('pattern-name').textContent = 'Select a pattern to begin';
-        document.getElementById('pattern-author').textContent = '';
-        document.getElementById('pattern-content').innerHTML = '';
-        footerControls.classList.add('hidden');
-        PATTERN_DATA = null;
-        
-        // Remove pattern-specific theme
-        const existingStyle = document.getElementById('pattern-theme');
-        if (existingStyle) {
-            existingStyle.remove();
-        }
-    }
-    
-    async function checkAuthState() {
-        console.log('=== STEP 1: Starting checkAuthState ===');
-        
-        // Set up auth state listener FIRST to catch any immediate auth changes
-        console.log('=== STEP 1.5: Setting up auth state listener ===');
-        onAuthStateChanged(auth, async (user) => {
-            console.log('🔥 AUTH STATE CHANGED EVENT FIRED!');
-            console.log('Raw user object:', user);
-            console.log('User from auth state change:', user ? user.email : 'null');
-            console.log('User is null?', user === null);
-            console.log('User is undefined?', user === undefined);
+            await recreateUserPatternProgressCollection();
             
-            if (user) {
-                console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
-                console.log('User email:', user.email);
-                console.log('User UID:', user.uid);
-                console.log('User emailVerified:', user.emailVerified);
-                console.log('User providerData:', user.providerData);
-                
-                try {
-                    // Check if user exists in the users collection
-                    console.log('🔍 Checking user in Firebase users collection...');
-                    console.log('Looking for document path: users/' + user.uid);
-                    
-                    const userDocRef = doc(db, "users", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-                    
-                    console.log('User document exists:', userDocSnap.exists());
-                    
-                    if (userDocSnap.exists()) {
-                        // User exists, get their role and permissions
-                        const userData = userDocSnap.data();
-                        console.log('✅ User found in database:', userData);
-                        
-                        // Get role details
-                        const roleDocRef = doc(db, "roles", userData.role);
-                        const roleDocSnap = await getDoc(roleDocRef);
-                        
-                        if (roleDocSnap.exists()) {
-                            const roleData = roleDocSnap.data();
-                            console.log('✅ User role data:', roleData);
-                            
-                            // Check if user has permission to view patterns
-                            if (roleData.permissions && roleData.permissions.includes('view_patterns')) {
-                                console.log('🎉 User authorized - showing application');
-                                
-                                // Update last login
-                                await updateDoc(userDocRef, {
-                                    lastLogin: new Date().toISOString()
-                                });
-                                
-                                showApplication(user, userData, roleData);
-                            } else {
-                                console.log('❌ User role does not have view_patterns permission');
-                                showNotAuthorized(user);
-                            }
-                        } else {
-                            console.log('❌ User role not found in roles collection');
-                            showNotAuthorized(user);
-                        }
-                    } else {
-                        // User doesn't exist, create them with default 'viewer' role
-                        console.log('👤 New user detected - creating user document');
-                        console.log('User UID:', user.uid);
-                        console.log('User email:', user.email);
-                        console.log('User displayName:', user.displayName);
-                        
-                        try {
-                            const newUserData = {
-                                email: user.email,
-                                displayName: user.displayName || user.email.split('@')[0],
-                                role: 'viewer',
-                                createdAt: new Date().toISOString(),
-                                lastLogin: new Date().toISOString()
-                            };
-                            
-                            console.log('Creating user document with data:', newUserData);
-                            await setDoc(userDocRef, newUserData);
-                            console.log('✅ Successfully created new user document');
-                            
-                            // Get the viewer role permissions
-                            const roleDocRef = doc(db, "roles", "viewer");
-                            const roleDocSnap = await getDoc(roleDocRef);
-                            const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'], name: 'Viewer' };
-                            
-                            console.log('New user role data:', roleData);
-                            showApplication(user, newUserData, roleData);
-                            
-                        } catch (createError) {
-                            console.error('🚨 Error creating user document:', createError);
-                            console.log('Create error code:', createError.code);
-                            console.log('Create error message:', createError.message);
-                            
-                            if (createError.code === 'permission-denied') {
-                                alert('Permission denied when creating user account. Please check Firebase security rules.');
-                            } else {
-                                alert(`Error creating user account: ${createError.message}`);
-                            }
-                            
-                            showNotAuthorized(user);
-                        }
-                    }
-                    
-                } catch (error) {
-                    console.error('🚨 Error checking user authorization:', error);
-                    console.log('Error code:', error.code);
-                    console.log('Error message:', error.message);
-                    
-                    if (error.code === 'permission-denied') {
-                        alert('Permission denied. Please check your Firebase security rules.');
-                    } else {
-                        alert(`Authentication error: ${error.message}`);
-                    }
-                    
-                    showNotAuthorized(user);
-                }
-                
+            recreateProgressCollectionBtn.textContent = 'Recreated!';
+            recreateProgressCollectionBtn.style.backgroundColor = '#059669'; // green
+            
+            setTimeout(() => {
+                recreateProgressCollectionBtn.disabled = false;
+                recreateProgressCollectionBtn.textContent = 'Recreate Progress Collection';
+                recreateProgressCollectionBtn.style.backgroundColor = '#7c3aed'; // purple
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error recreating progress collection:', error);
+            alert('Error recreating progress collection: ' + error.message);
+            recreateProgressCollectionBtn.disabled = false;
+            recreateProgressCollectionBtn.textContent = 'Recreate Progress Collection';
+        }
+    });
+    */
+
+    // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
+    window.setupViewer = function() {
+        if (!window.PATTERN_DATA) {
+            console.error('❌ setupViewer called without PATTERN_DATA');
+            console.log('❌ window.PATTERN_DATA is:', window.PATTERN_DATA);
+            return;
+        }
+        
+        console.log('🔧 Setting up viewer with pattern:', window.PATTERN_DATA.metadata?.name);
+        
+        const footerControls = document.getElementById('footer-controls');
+        footerControls.classList.remove('hidden');
+        const { name, author, maxSteps: max } = window.PATTERN_DATA.metadata;
+        
+        // Update pattern display elements (now visible in project view)
+        const patternNameEl = document.getElementById('pattern-name');
+        const patternAuthorEl = document.getElementById('pattern-author');
+        
+        if (patternNameEl) patternNameEl.textContent = name;
+        if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
+        
+        // Set global variables
+        window.maxSteps = max;
+        maxSteps = max;
+        
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.max = maxSteps;
+            // Initialize with current project step if available
+            if (window.currentProject && window.currentProject.currentStep) {
+                currentStep = window.currentProject.currentStep;
+                window.currentStep = currentStep;
+                stepInput.value = currentStep;
+                console.log('🔧 Set initial step from project:', currentStep);
             } else {
-                console.log('Auth state change: no user - showing login screen');
-                authContainer.classList.remove('hidden');
-                appContainer.classList.add('hidden');
+                // Default to step 1
+                currentStep = 1;
+                window.currentStep = currentStep;
+                stepInput.value = currentStep;
+                console.log('🔧 Set default step:', currentStep);
             }
-        });
-        
-        console.log('=== STEP 2: Checking current auth state (popup method) ===');
-        console.log('Current URL:', window.location.href);
-        
-        // With popup auth, we don't need to check for redirect results
-        console.log('Using popup auth - skipping redirect result check');
-        
-        console.log('=== STEP 3: Checking current user ===');
-        const currentUser = auth.currentUser;
-        console.log('auth.currentUser:', currentUser);
-        
-        if (currentUser) {
-            console.log('✅ Current user found:', currentUser.email);
-            // Trigger the auth state change manually if needed
-            console.log('Current user exists, but auth state change should handle this');
         }
         
-        console.log('=== STEP 4: No user found, showing login screen ===');
-        authContainer.classList.remove('hidden');
-        appContainer.classList.add('hidden');
+        progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
+        
+        // Update footer metadata with actual pattern name immediately
+        const currentPatternName = document.getElementById('current-pattern-name');
+        if (currentPatternName) {
+            currentPatternName.textContent = name;
+            console.log('🏷️ Footer pattern name updated to:', name);
+        }
+        
+        // Generate pattern content
+        const patternContentEl = document.getElementById('pattern-content');
+        patternContentEl.innerHTML = '';
+        
+        // Generate dynamic color theme based on pattern data
+        // This replaces hardcoded CSS colors with pattern-specific colors
+        generatePatternTheme(window.PATTERN_DATA);
+        
+        // Make color key function globally available
+        window.updateSidebarColorKey = updateSidebarColorKey;
+        
+        generateGlossary(window.PATTERN_DATA);
+        generateInstructions(window.PATTERN_DATA);
+        
+        // Populate sidebar with pattern-specific content
+        populateSidebarGlossary();
+        
+        // Setup sidebar toggle functionality
+        setupPatternSidebar();
+        
+        // Update footer metadata after content is generated
+        updateFooterMetadata();
+        
+        // Load progress and setup interactions
+        const currentStepInput = document.getElementById('current-step-input');
+        if (currentStepInput && window.currentProject) {
+            currentStepInput.value = window.currentProject.currentStep || 1;
+            
+            // Add event listener for manual step changes
+            currentStepInput.addEventListener('change', (e) => {
+                const newStep = parseInt(e.target.value);
+                if (newStep >= 1 && newStep <= maxSteps) {
+                    currentStep = newStep;
+                    window.currentStep = newStep;
+                    if (window.currentProject) window.currentProject.currentStep = newStep;
+                    
+                    // Save to localStorage immediately
+                    localStorage.setItem(progressKey, newStep);
+                    
+                    // Save to Firestore
+                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                        saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            currentStep: newStep
+                        }).catch(err => console.warn('Failed to save step change:', err));
+                    }
+                    
+                    // Update display
+                    if (typeof updateDisplay === 'function') {
+                        updateDisplay(newStep, true);
+                    }
+                    
+                    // Update notes label to show current row
+                    const noteLabel = document.getElementById('current-row-note-label');
+                    if (noteLabel) {
+                        noteLabel.textContent = newStep;
+                    }
+                    
+                    console.log('💾 Step manually changed to:', newStep);
+                }
+            });
+        }
+        setupInteractiveFeatures();
+        
+        // Update notes label to show current row initially
+        const noteLabel = document.getElementById('current-row-note-label');
+        if (noteLabel) {
+            noteLabel.textContent = window.currentProject?.currentStep || currentStep || 1;
+        }
+        
+        console.log('✅ Viewer setup complete for:', name);
+        console.log('✅ Current step:', currentStep, 'Max steps:', maxSteps);
     }
+
+    // PROJECT MANAGEMENT FUNCTIONS
+    // loadUserProjects function moved to js/app-main.js
+    
+    // loadFirestorePatterns function moved to js/app-main.js
+    
+    // populateProjectSelector function moved to js/app-main.js
+    
+    // loadSelectedProject function moved to js/app-main.js
+    
+    // loadPatternFromFirestore function moved to js/app-main.js
+    
+    // resetViewer function moved to js/app-main.js
+    
+    // NEW PROJECT CREATION FUNCTIONS
+    // showNewProjectModal function moved to js/app-main.js
+    
+    // createNewProjectUI function moved to js/app-main.js
+    
+    // ARCHIVED PROJECTS FUNCTIONALITY
+    // toggleArchivedProjects function moved to js/app-main.js
+    
+    // unarchiveProject function moved to js/app-main.js
 
     // --- INITIALIZATION ---
     console.log('Script loaded, initializing app...');
     console.log('Current URL:', window.location.href);
     console.log('URL params:', window.location.search);
+    
+    // Initialize theme toggle 
+    initThemeToggle();
+    
+    // Check for redirect result first (for mobile compatibility)
+    checkRedirectResult();
     
     // Add global error handlers to catch any errors we might miss
     window.addEventListener('error', (event) => {
@@ -863,8 +1062,8 @@
                     type: 'navigation',
                     action: 'section_switch',
                     section: view,
-                    patternId: PATTERN_DATA?.id || 'unknown'
-                }, db);
+                    patternId: window.PATTERN_DATA?.id || 'unknown'
+                }, db, auth);
             }
             
             if (view === 'viewer') {
@@ -879,609 +1078,121 @@
         }
     });
 
-    // --- VIEWER LOGIC (Your existing functions) ---
-    async function initializeViewer() {
-        const patternNameEl = document.getElementById('pattern-name');
-        const patternAuthorEl = document.getElementById('pattern-author');
-        const patternContentEl = document.getElementById('pattern-content');
-        const stepInput = document.getElementById('current-step-input');
-        const prevBtn = document.getElementById('prev-step');
-        const nextBtn = document.getElementById('next-step');
-        const stepTypeEl = document.getElementById('step-type');
-        const toggleModeBtn = document.getElementById('toggle-mode');
-        const findStitchBtn = document.getElementById('find-stitch-btn');
-        const stitchInput = document.getElementById('stitch-input');
-        const stitchPopup = document.getElementById('stitch-popup');
-        const popupContent = document.getElementById('popup-content');
-        const closePopupBtn = document.getElementById('close-popup-btn');
-
-        async function loadPatternData(filename) {
-            try {
-                const response = await fetch(`/patterns/${filename}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                PATTERN_DATA = await response.json();
-            } catch (error) {
-                console.error("Could not load pattern data:", error);
-                patternNameEl.textContent = "Error";
-                patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern file. Check path and console.</p>`;
-            }
-        }
-
-        function setupViewer() {
-            if (!PATTERN_DATA) return;
-            footerControls.classList.remove('hidden');
-            const { name, author, maxSteps: max } = PATTERN_DATA.metadata;
-            patternNameEl.textContent = name;
-            patternAuthorEl.textContent = `by ${author}`;
-            maxSteps = max;
-            stepInput.max = maxSteps;
-            progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
-            
-            patternContentEl.innerHTML = '';
-            generateGlossary(PATTERN_DATA);
-            generateInstructions(PATTERN_DATA);
-            loadProgress();
-            setupInteractiveFeatures();
-        }
-        function addTooltips(text){if(!PATTERN_DATA.glossary)return text;const regex=new RegExp(`\\b(${Object.keys(PATTERN_DATA.glossary).join('|')})\\b(?![^<]*?>)`,'g');return text.replace(regex,(match)=>{const term=PATTERN_DATA.glossary[match];if(!term)return match;return`<span class="relative tooltip-trigger font-semibold cursor-pointer underline decoration-dotted decoration-1">${match}<span class="tooltip mono">${term.name}</span></span>`;});}
-        
-        function findInstructionForStep(stepNumber) {
-            if (!PATTERN_DATA || !PATTERN_DATA.steps) return null;
-            
-            // First check for exact step match
-            const exactStep = PATTERN_DATA.steps.find(step => step.step === stepNumber);
-            if (exactStep) {
-                return exactStep;
-            }
-            
-            // Check stepRange entries
-            const rangeStep = PATTERN_DATA.steps.find(step => 
-                step.stepRange && 
-                stepNumber >= step.stepRange[0] && 
-                stepNumber <= step.stepRange[1]
-            );
-            
-            return rangeStep || null;
-        }
-        
-        function findStepElement(stepNumber) {
-            return document.querySelector(`[data-step="${stepNumber}"]`);
-        }
-        
-        async function saveProgress() {
-            if (currentStep && currentPatternId) {
-                const userId = auth.currentUser?.uid;
-                if (userId && db) {
-                    await saveProgressFirestore(db, userId, currentPatternId, currentStep);
-                } else {
-                    // Fallback for anonymous users
-                    if (progressKey) {
-                        localStorage.setItem(progressKey, currentStep.toString());
-                    }
-                }
-            }
-        }
-        
-        async function loadProgress() {
-            const userId = auth.currentUser?.uid;
-            if (userId && db && currentPatternId) {
-                currentStep = await getCurrentStep(db, userId, currentPatternId);
-            } else {
-                // Fallback for anonymous users
-                if (progressKey) {
-                    const saved = localStorage.getItem(progressKey);
-                    currentStep = saved ? parseInt(saved, 10) : 1;
-                }
-            }
-            document.getElementById('current-step-input').value = currentStep;
-        }
-        
-        async function loadProgressSimple(key) {
-            const userId = auth.currentUser?.uid;
-            if (userId && db && currentPatternId) {
-                return await getCurrentStep(db, userId, currentPatternId);
-            } else {
-                // Fallback for anonymous users or when using old key system
-                if (key) {
-                    const saved = localStorage.getItem(key);
-                    return parseInt(saved, 10) || 1;
-                }
-                return 1;
-            }
-        }
-        
-
-        
-
-        function getStitchCount(stepNumber){
-            if (!PATTERN_DATA || !PATTERN_DATA.steps) return 3;
-            
-            if(stitchCountsCache[stepNumber]) return stitchCountsCache[stepNumber];
-            
-            const instr = findInstructionForStep(stepNumber);
-            
-            // Try to get endingStitchCount from current schema
-            if(instr && instr.endingStitchCount){
-                stitchCountsCache[stepNumber] = instr.endingStitchCount;
-                return instr.endingStitchCount;
-            }
-            
-            // For step ranges, calculate based on the stepRange template
-            if(instr && instr.stepRange && instr.startingStitchCount) {
-                // This is a template step, calculate for the specific step number
-                const stepOffset = stepNumber - instr.stepRange[0];
-                const stitchCountChange = instr.stitchCountChange || 0;
-                const count = instr.startingStitchCount + (stepOffset * stitchCountChange);
-                stitchCountsCache[stepNumber] = count;
-                return count;
-            }
-            
-            // Calculate based on previous step
-            if(stepNumber > 1){
-                const prevCount = getStitchCount(stepNumber - 1);
-                const stitchCountChange = instr?.stitchCountChange || 0;
-                const count = prevCount + stitchCountChange;
-                stitchCountsCache[stepNumber] = count;
-                return count;
-            }
-            
-            // Fallback to first step's starting count or default
-            const firstStep = PATTERN_DATA.steps[0];
-            return firstStep?.startingStitchCount || firstStep?.endingStitchCount || 3;
-        }
-        function expandPattern(patternArray){const expanded=[];patternArray.forEach(p=>{const match=p.match(/^([a-zA-Z_]+)(\d+)$/);if(match){const instruction=match[1];const count=parseInt(match[2],10);for(let i=0;i<count;i++)expanded.push(instruction);}else{expanded.push(p);}});return expanded;}
-        function generateDynamicChunks(stepNumber){
-            const instruction=findInstructionForStep(stepNumber);
-            if(!instruction||!instruction.dynamicChunks)return null;
-            
-            // Use the chunks from the instruction as a template
-            if(!instruction.chunks || !Array.isArray(instruction.chunks)) return null;
-            
-            const prevCount=getStitchCount(stepNumber-1);
-            
-            // Process each chunk, expanding dynamic placeholders
-            return instruction.chunks.map(chunk => {
-                const chunkCopy = {...chunk};
-                
-                // Handle dynamic count values
-                if(typeof chunkCopy.count === 'string') {
-                    if(chunkCopy.count === 'to marker') {
-                        // Calculate stitches to marker based on pattern structure
-                        chunkCopy.count = Math.max(1, Math.floor((prevCount - 7) / 2));
-                    } else if(chunkCopy.count === 'to last 3') {
-                        chunkCopy.count = Math.max(1, prevCount - 6);
-                    } else if(chunkCopy.count === 'to last 4') {
-                        chunkCopy.count = Math.max(1, Math.floor((prevCount - 7) / 2));
-                    }
-                    // Add more dynamic count patterns as needed
-                }
-                
-                return {
-                    name: `${chunkCopy.instruction.toUpperCase()}${chunkCopy.count > 1 ? chunkCopy.count : ''}`,
-                    category: getInstructionCategory(chunkCopy.instruction, PATTERN_DATA),
-                    pattern: [chunkCopy.count > 1 ? `${chunkCopy.instruction}${chunkCopy.count}` : chunkCopy.instruction]
-                };
-            });
-        }
-        
-        function convertJSONChunksToInternalFormat(jsonChunks) {
-            // Convert the JSON chunk format to the internal format expected by the stitch locator
-            const converted = [];
-            
-            jsonChunks.forEach(chunk => {
-                if (chunk.repeat) {
-                    // Handle repeat structures
-                    const pattern = chunk.repeat.instructions.map(inst => {
-                        if (inst.count > 1) {
-                            return `${inst.instruction}${inst.count}`;
-                        }
-                        return inst.instruction;
-                    });
-                    
-                    converted.push({
-                        name: `Repeat ${chunk.repeat.count} times`,
-                        category: "main", // Default category
-                        repeats: chunk.repeat.count,
-                        pattern: pattern
-                    });
-                } else {
-                    // Handle regular chunks
-                    const pattern = chunk.count > 1 ? [`${chunk.instruction}${chunk.count}`] : [chunk.instruction];
-                    converted.push({
-                        name: chunk.instruction.toUpperCase(),
-                        category: getInstructionCategory(chunk.instruction, PATTERN_DATA),
-                        pattern: pattern
-                    });
-                }
-            });
-            
-            return converted;
-        }
-        function getPatternForStitch(stepNumber,stitchNumber){
-            const totalStitches=getStitchCount(stepNumber);
-            if(stitchNumber<1||stitchNumber>totalStitches)return null;
-            
-            let instruction={...findInstructionForStep(stepNumber)};
-            let chunks = null;
-            
-            if(instruction.dynamicChunks){
-                chunks = generateDynamicChunks(stepNumber);
-            } else if (instruction.chunks) {
-                chunks = convertJSONChunksToInternalFormat(instruction.chunks);
-            }
-            
-            if(!chunks){
-                return{
-                    sectionName:"This is a repeating instruction section.",
-                    patternChunk:"Stitch-by-stitch data is not yet defined for this row type."
-                };
-            }
-            
-            let cumulativeStitches=0;
-            for(const chunk of chunks){
-                const expandedPattern=expandPattern(chunk.pattern);
-                const repeats=chunk.repeats||1;
-                const chunkStitchCount=expandedPattern.length*repeats;
-                
-                if(stitchNumber<=cumulativeStitches+chunkStitchCount){
-                    const stitchInSection=stitchNumber-cumulativeStitches;
-                    let sectionName=`<span class="${chunk.category||''}">${chunk.name}</span>`;
-                    let fullPatternSequence=[];
-                    
-                    for(let i=0;i<repeats;i++){
-                        fullPatternSequence.push(...expandedPattern);
-                    }
-                    
-                    if(repeats>1){
-                        const repeatNum=Math.ceil(stitchInSection/expandedPattern.length);
-                        sectionName+=` (Repeat ${repeatNum} of ${repeats})`;
-                    }
-                    
-                    const targetIndex=stitchInSection-1;
-                    const windowSize=4;
-                    const start=Math.max(0,targetIndex-windowSize);
-                    const end=Math.min(fullPatternSequence.length,targetIndex+windowSize+1);
-                    const patternWindow=fullPatternSequence.slice(start,end);
-                    
-                    let patternChunk=patternWindow.map((stitch,index)=>{
-                        return(start+index===targetIndex)?`<span class="highlight">${stitch}</span>`:stitch;
-                    }).join(' ');
-                    
-                    if(start>0)patternChunk='... '+patternChunk;
-                    if(end<fullPatternSequence.length)patternChunk+=' ...';
-                    
-                    return{sectionName,patternChunk};
-                }
-                cumulativeStitches+=chunkStitchCount;
-            }
-            return null;
-        }
-
-        function findInstructionForStep(stepNumber) { 
-            return PATTERN_DATA.instructions.find(instr=>{
-                if(instr.step) return instr.step===stepNumber;
-                if(instr.stepRange){
-                    const[start,end]=instr.stepRange;
-                    if(stepNumber>=start&&stepNumber<=end){
-                        if(!instr.stepType) return true;
-                        if(instr.stepType==='odd'&&stepNumber%2!==0) return true;
-                        if(instr.stepType==='even'&&stepNumber%2===0) return true;
-                    }
-                } 
-                return false;
-            });
-        }
-        function findStepElement(stepNumber) { 
-            const element = Array.from(document.querySelectorAll('[data-step], [data-step-start]')).find(el=>{
-                const step=parseInt(el.dataset.step,10);
-                if(step===stepNumber) return true;
-                const start=parseInt(el.dataset.stepStart,10);
-                const end=parseInt(el.dataset.stepEnd,10);
-                return(stepNumber>=start&&stepNumber<=end);
-            });
-            console.log(`Finding element for step ${stepNumber}:`, element);
-            return element;
-        }
-        function highlightCurrentStep(shouldScroll){
-            document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));
-            const stepElement=findStepElement(currentStep);
-            if(stepElement){
-                stepElement.classList.add('current-step');
-                console.log(`Highlighted step ${currentStep}, scrolling:`, shouldScroll);
-                if(shouldScroll) stepElement.scrollIntoView({behavior:'smooth',block:'center'});
-            } else {
-                console.log(`No element found for step ${currentStep}`);
-            }
-        }
-        
-        // Navigation handled by setupRowNavigation() function - keyboard listeners removed to prevent double triggers
-        toggleModeBtn.addEventListener('click',()=>{isStitchLocatorMode=!isStitchLocatorMode;stitchPopup.classList.add('hidden');document.getElementById('step-counter-ui').classList.toggle('opacity-0');document.getElementById('step-counter-ui').classList.toggle('pointer-events-none');document.getElementById('stitch-locator-ui').classList.toggle('opacity-0');document.getElementById('stitch-locator-ui').classList.toggle('pointer-events-none');if(isStitchLocatorMode){toggleModeBtn.textContent='Switch to Row Counter';stitchInput.value='';stitchInput.max=getStitchCount(currentStep);stitchInput.focus();}else{toggleModeBtn.textContent='Switch to Stitch Locator';}});
-        closePopupBtn.addEventListener('click', () => stitchPopup.classList.add('hidden'));
-        findStitchBtn.addEventListener('click',()=>{const stitchNumber=parseInt(stitchInput.value);const patternInfo=getPatternForStitch(currentStep,stitchNumber);if(patternInfo){popupContent.innerHTML=`<h4 class="text-xl font-semibold text-white mb-2">Location (Row ${currentStep}, Stitch ${stitchNumber}):</h4><p class="mb-4">${patternInfo.sectionName}</p><h4 class="text-xl font-semibold text-white mb-2">Your Current Position:</h4><div class="result-chunk mono">${patternInfo.patternChunk}</div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}else{popupContent.innerHTML=`<div class="text-white text-center"><p>Invalid stitch number for Row ${currentStep}. Please enter a number between 1 and ${getStitchCount(currentStep)}.</p></div>`;stitchPopup.style.top='50%';stitchPopup.style.left='50%';stitchPopup.style.transform='translate(-50%, -50%)';stitchPopup.classList.remove('hidden');}});
-
-        // Pattern will be loaded when selected from dropdown
-        // setupViewer will be called by loadSelectedPattern
-    }
+    // --- VIEWER LOGIC ---
+    // initializeViewer function removed - functionality now distributed across modular js files
     
-    async function loadSelectedPattern(patternId) {
-        const patternNameEl = document.getElementById('pattern-name');
-        const patternAuthorEl = document.getElementById('pattern-author');
-        const patternContentEl = document.getElementById('pattern-content');
-        
-        try {
-            patternNameEl.textContent = 'Loading...';
-            
-            // Find the selected pattern data from our loaded list
-            const selectedPattern = availablePatterns.find(p => p.filename === patternId);
-            
-            if (selectedPattern && selectedPattern.source === 'firestore') {
-                // Load from Firestore
-                console.log('📖 Loading pattern from Firestore:', patternId);
-                const docRef = doc(db, 'patterns', patternId);
-                const docSnap = await getDoc(docRef);
-                
-                if (!docSnap.exists()) {
-                    throw new Error('Pattern not found in Firestore');
-                }
-                
-                const firestoreData = docSnap.data();
-                console.log('🔍 Raw Firestore data:', firestoreData);
-                
-                // Extract pattern data from Firestore document
-                // The pattern JSON was spread into the document, so we need to extract the pattern-specific fields
-                PATTERN_DATA = {
-                    metadata: firestoreData.metadata,
-                    glossary: firestoreData.glossary,
-                    steps: firestoreData.steps
-                };
-                
-                console.log('🔍 Extracted pattern data:', PATTERN_DATA);
-                
-            } else {
-                // Fallback to JSON file loading (for compatibility)
-                console.log('📖 Loading pattern from JSON file:', patternId);
-                const cacheBust = new Date().getTime();
-                const response = await fetch(`/patterns/${patternId}?v=${cacheBust}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                PATTERN_DATA = await response.json();
-            }
-            
-            // Generate dynamic CSS for this pattern's categories
-            generatePatternTheme(PATTERN_DATA);
-            
-            // Update UI with pattern info
-            const name = PATTERN_DATA.name || PATTERN_DATA.metadata?.name;
-            const author = PATTERN_DATA.author || PATTERN_DATA.metadata?.author;
-            const max = PATTERN_DATA.metadata?.maxSteps;
-            
-            patternNameEl.textContent = name;
-            patternAuthorEl.textContent = `by ${author}`;
-            maxSteps = max;
-            document.getElementById('current-step-input').max = maxSteps;
-            
-            // Store current pattern ID for progress tracking
-            currentPatternId = patternId;
-            
-            // Use pattern ID for progress key (pattern-specific, not user-specific)
-            progressKey = `pattern-progress-${patternId}`;
-            
-            // Clear and regenerate content
-            patternContentEl.innerHTML = '';
-            generateGlossary(PATTERN_DATA);
-            generateInstructions(PATTERN_DATA);
-            
-            // Set up interactive features AFTER pattern content is generated
-            setupInteractiveFeatures();
-            
-            // Load saved progress for this specific pattern (now uses Firestore)
-            currentStep = await loadProgressSimple(progressKey);
-            console.log('📍 Loaded currentStep:', currentStep);
-            
-            // Set up the current step display
-            document.getElementById('current-step-input').value = currentStep;
-            
-            // Update display and scroll to current row (with timeout to ensure DOM is ready)
-            setTimeout(() => {
-                updateDisplay(currentStep, true);
-            }, 100);
-            
-            footerControls.classList.remove('hidden');
-            
-        } catch (error) {
-            console.error('Error loading pattern:', error);
-            patternNameEl.textContent = 'Error Loading Pattern';
-            patternAuthorEl.textContent = '';
-            patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern: ${error.message}</p>`;
-        }
-    }
-
-    // --- GENERATOR LOGIC (Your existing functions) ---
-    const patternTypeSelector=document.getElementById('pattern-type-selector');const imageInstructions=document.getElementById('image-instructions');const patternInput=document.getElementById('pattern-input');const promptOutput=document.getElementById('prompt-output');const copyButton=document.getElementById('copy-prompt-button');
-    const basePrompt=`# AI Prompt: Convert a Craft Pattern to a Smartly Grouped JSON
-
-## 1. The Goal & Persona
-
-You are an expert technical editor for fiber arts (knitting, crochet, Tunisian crochet) and a software developer. Your task is to convert a human-readable pattern into a strict, **craft-agnostic**, and efficiently grouped JSON format for a web application.
-
-## 2. The Input Pattern
-
-\`\`\`
-{{PATTERN_TEXT}}
-\`\`\`
-
-## 3. The Required JSON Output Structure
-... (Full prompt text) ...
-
-## 4. Detailed Instructions for Generating the \`instructions\` Array
-... (Full prompt text) ...`;
-    function updatePrompt(){const patternText=patternInput.value.trim();if(patternText){const fullPrompt=basePrompt.replace('{{PATTERN_TEXT}}',patternText);promptOutput.textContent=fullPrompt;}else{promptOutput.textContent='Paste pattern text to generate the prompt.';}}
-    patternTypeSelector.addEventListener('click',(e)=>{if(e.target.tagName==='BUTTON'){const type=e.target.dataset.type;patternTypeSelector.querySelectorAll('button').forEach(btn=>btn.classList.remove('active'));e.target.classList.add('active');if(type==='image'){imageInstructions.classList.remove('hidden');}else{imageInstructions.classList.add('hidden');}}});
-    patternInput.addEventListener('input',updatePrompt);
-    copyButton.addEventListener('click',()=>{const textToCopy=promptOutput.textContent;navigator.clipboard.writeText(textToCopy).then(()=>{const defaultSpan=document.getElementById('copy-default');const successSpan=document.getElementById('copy-success');defaultSpan.classList.add('hidden');successSpan.classList.remove('hidden');setTimeout(()=>{defaultSpan.classList.remove('hidden');successSpan.classList.add('hidden');},2000);}).catch(err=>{console.error('Failed to copy text: ',err);});});
+    // loadSelectedPattern function moved to js/app-main.js
 
     // --- INTERACTIVE FEATURES SETUP ---
-    function setupInteractiveFeatures() {
-        console.log('🔧 Setting up interactive features...');
-        
-        // Set up click handlers for color-coded stitches
-        const stitchElements = document.querySelectorAll('.stitch-clickable');
-        console.log('Found', stitchElements.length, 'clickable stitches');
-        stitchElements.forEach(element => {
-            element.addEventListener('click', (e) => {
-                e.preventDefault();
-                const stitchCode = element.dataset.stitch || element.textContent.trim();
-                showStitchDefinition(stitchCode);
-            });
-        });
-        
-        // Set up stitch finder functionality
-        setupStitchFinder();
-        
-        // Set up row navigation with auto-scroll
-        setupRowNavigation();
-        
-        // Set up pattern tools sidebar
-        setupPatternSidebar();
-        
-        // Populate sidebar glossary
-        populateSidebarGlossary();
-        
-        console.log('✅ Interactive features setup complete');
-    }
+    // setupInteractiveFeatures function moved to js/viewer-logic.js
 
-    function scrollToCurrentRow() {
-        if (typeof currentStep === 'undefined' || !currentStep) {
-            console.log('Current step is undefined, cannot scroll to row');
-            return;
-        }
-        
-        const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
-        if (currentRowElement) {
-            // Remove previous highlights
-            document.querySelectorAll('.current-step').forEach(el => {
-                el.classList.remove('current-step');
-            });
-            
-            // Add current step highlight
-            currentRowElement.classList.add('current-step');
-            
-            // Scroll to the row
-            currentRowElement.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-            });
-        } else {
-            console.log(`No element found for step ${currentStep}`);
-        }
-    }
+    // scrollToCurrentRow function moved to js/viewer-logic.js
 
-    function setupStitchFinder() {
-        const findStitchBtn = document.getElementById('find-stitch-btn');
-        const stitchInput = document.getElementById('stitch-input');        function findStitch() {
-            const stitchNumber = parseInt(stitchInput.value);
-            if (!stitchNumber || stitchNumber < 1) {
-                alert('Please enter a valid stitch number');
-                return;
-            }
-            
-            // Find the current row's instruction element
-            const currentRowElement = document.querySelector(`[data-step="${currentStep}"]`);
-            if (!currentRowElement) {
-                alert('Current row not found');
-                return;
-            }
-            
-            // Highlight the stitch (basic implementation - could be enhanced)
-            currentRowElement.style.backgroundColor = '#8b5cf6';
-            currentRowElement.style.color = 'white';
-            currentRowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Clear highlight after 3 seconds
-            setTimeout(() => {
-                currentRowElement.style.backgroundColor = '';
-                currentRowElement.style.color = '';
-            }, 3000);
-            
-            // Analytics
-            if (auth.currentUser && window.db) {
-                createStitchFinderQuery(currentStep, stitchNumber, auth.currentUser.uid, window.db);
-            }
-        }
-        
-        if (findStitchBtn) {
-            findStitchBtn.addEventListener('click', findStitch);
-        }
-        
-        if (stitchInput) {
-            stitchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    findStitch();
-                }
-            });
-        }
-    }
+    // updateDisplay function is imported from viewer-logic.js - no local definition needed
+
+    // highlightCurrentStep function is imported from viewer-logic.js
+
+
+    // updateCurrentStepDisplay function moved to js/viewer-logic.js
     
-    function setupRowNavigation() {
-        const stepInput = document.getElementById('current-step-input');
-        const prevBtn = document.getElementById('prev-step');
-        const nextBtn = document.getElementById('next-step');
-        const markPreviousBtn = document.getElementById('mark-previous-complete');
+    // updateFooterMetadata is defined globally as window.updateFooterMetadata below
+
+    // saveProgress is imported from viewer-logic.js - no local definition needed
+
+    // setupStitchFinder function moved to js/app-main.js
+    
+    // setupRowNavigation function moved to js/app-main.js
+    
+    // UPDATE FOOTER METADATA FUNCTION (defined globally as window.updateFooterMetadata below)
+    
+    // NOTES SIDEBAR FUNCTIONALITY
+    // toggleNotesSidebar function moved to js/app-main.js
+    
+    // loadProjectNotes function moved to js/app-main.js
+    
+    // updateRowNotesList function moved to js/app-main.js
+    
+    // goToRowWithNote function is defined in js/app-main.js
+    
+    // Setup notes sidebar event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeNotesBtn = document.getElementById('close-notes-sidebar');
+        const saveRowNoteBtn = document.getElementById('save-row-note');
+        const saveAllNotesBtn = document.getElementById('save-all-notes');
         
-        // Remove existing listeners to prevent duplicates
-        if (stepInput && !stepInput.hasAttribute('data-listener-added')) {
-            stepInput.setAttribute('data-listener-added', 'true');
-            stepInput.addEventListener('change', () => {
-                currentStep = parseInt(stepInput.value) || 1;
-                if (currentStep < 1) currentStep = 1;
-                if (currentStep > maxSteps) currentStep = maxSteps;
-                stepInput.value = currentStep;
-                console.log('📍 Step input changed to:', currentStep);
-                saveProgress();
+        if (closeNotesBtn) {
+            closeNotesBtn.addEventListener('click', () => {
+                const sidebar = document.getElementById('notes-sidebar');
+                sidebar.classList.add('translate-x-full');
+            });
+        }
+        
+        if (saveRowNoteBtn) {
+            saveRowNoteBtn.addEventListener('click', async () => {
+                await saveCurrentRowNote();
+            });
+        }
+        
+        if (saveAllNotesBtn) {
+            saveAllNotesBtn.addEventListener('click', async () => {
+                await saveAllProjectNotes();
+            });
+        }
+    });
+    
+    // saveCurrentRowNote function moved to js/app-main.js
+    
+    // saveAllProjectNotes function moved to js/app-main.js
+    
+    // addRowNoteIndicator function is defined in js/app-main.js
+    
+    // loadRowNoteIndicators function is defined in js/app-main.js
+    
+    // highlightCurrentStep function is imported from viewer-logic.js
+        
+        // Setup Jump to Start button
+        const jumpToStartBtn = document.getElementById('jump-to-start');
+        if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
+            jumpToStartBtn.setAttribute('data-listener-added', 'true');
+            jumpToStartBtn.addEventListener('click', () => {
+                currentStep = 1;
+                stepInput.value = 1;
+                // Save immediately to localStorage for instant response
+                localStorage.setItem(progressKey, currentStep);
+                if (window.currentProject) window.currentProject.currentStep = currentStep;
+                
+                // Save to Firestore in background (non-blocking)
+                if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                    saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                        currentStep: currentStep
+                    }).catch(err => console.warn('Background save failed:', err));
+                }
                 updateDisplay(currentStep, true);
             });
         }
         
-        if (prevBtn && !prevBtn.hasAttribute('data-listener-added')) {
-            prevBtn.setAttribute('data-listener-added', 'true');
-            prevBtn.addEventListener('click', () => {
-                console.log('🔍 Previous button clicked - BEFORE:', currentStep);
-                if (currentStep > 1) {
-                    currentStep--;
-                    stepInput.value = currentStep;
-                    console.log('📍 Previous button clicked - AFTER:', currentStep);
-                    saveProgress();
-                    updateDisplay(currentStep, true);
+        // Setup Add Note button  
+        const addNoteBtn = document.getElementById('add-note');
+        if (addNoteBtn && !addNoteBtn.hasAttribute('data-listener-added')) {
+            addNoteBtn.setAttribute('data-listener-added', 'true');
+            addNoteBtn.addEventListener('click', () => {
+                const note = prompt(`Add a note for row ${currentStep}:`);
+                if (note && note.trim()) {
+                    console.log('📝 Adding note for row', currentStep, ':', note.trim());
+                    // Store note in localStorage for now
+                    const notes = JSON.parse(localStorage.getItem('pattern-notes') || '{}');
+                    const patternKey = window.PATTERN_DATA?.metadata?.title || 'unknown-pattern';
+                    if (!notes[patternKey]) notes[patternKey] = {};
+                    notes[patternKey][currentStep] = note.trim();
+                    localStorage.setItem('pattern-notes', JSON.stringify(notes));
+                    
+                    // Show confirmation
+                    const originalText = addNoteBtn.innerHTML;
+                    addNoteBtn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg><span class="hidden lg:inline text-xs ml-1">Saved!</span>';
+                    setTimeout(() => {
+                        addNoteBtn.innerHTML = originalText;
+                    }, 2000);
                 }
-            });
-        }
-        
-        if (nextBtn && !nextBtn.hasAttribute('data-listener-added')) {
-            nextBtn.setAttribute('data-listener-added', 'true');
-            nextBtn.addEventListener('click', () => {
-                console.log('🔍 Next button clicked - BEFORE:', currentStep);
-                if (currentStep < maxSteps) {
-                    currentStep++;
-                    stepInput.value = currentStep;
-                    console.log('📍 Next button clicked - AFTER:', currentStep);
-                    saveProgress();
-                    updateDisplay(currentStep, true);
-                }
-            });
-        }
-        
-        if (markPreviousBtn && !markPreviousBtn.hasAttribute('data-listener-added')) {
-            markPreviousBtn.setAttribute('data-listener-added', 'true');
-            markPreviousBtn.addEventListener('click', () => {
-                console.log('✅ Mark Previous Complete clicked for steps 1 to', currentStep - 1);
-                // Force update display to show all previous steps as complete
-                updateDisplay(currentStep, false);
-                
-                // Show confirmation
-                const originalText = markPreviousBtn.innerHTML;
-                markPreviousBtn.innerHTML = '<i class="fas fa-check mr-1"></i><span class="hidden lg:inline text-xs">Done!</span>';
-                setTimeout(() => {
-                    markPreviousBtn.innerHTML = originalText;
-                }, 2000);
             });
         }
         
@@ -1489,6 +1200,9 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
         if (!window.keyboardNavSetup) {
             window.keyboardNavSetup = true;
             document.addEventListener('keydown', (e) => {
+                // Get stepInput reference each time to ensure it exists
+                const stepInput = document.getElementById('current-step-input');
+                
                 // Skip if user is typing in an input field
                 if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {
                     return;
@@ -1496,30 +1210,58 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
                 
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                     e.preventDefault();
-                    console.log('⌨️ Arrow right/down pressed - BEFORE:', currentStep);
                     if (currentStep < maxSteps) {
                         currentStep++;
-                        stepInput.value = currentStep;
-                        console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress();
+                        if (stepInput) stepInput.value = currentStep;
+                        // Save immediately to localStorage for instant response
+                        localStorage.setItem(progressKey, currentStep);
+                        if (window.currentProject) window.currentProject.currentStep = currentStep;
+                        
+                        // Save to Firestore in background (non-blocking)
+                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                                currentStep: currentStep
+                            }).catch(err => console.warn('Background save failed:', err));
+                        }
                         updateDisplay(currentStep, true);
+                        
+                        // Update notes label to show current row
+                        const noteLabel = document.getElementById('current-row-note-label');
+                        if (noteLabel) {
+                            noteLabel.textContent = currentStep;
+                        }
                     }
                 }
                 
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                     e.preventDefault();
-                    console.log('⌨️ Arrow left/up pressed - BEFORE:', currentStep);
                     if (currentStep > 1) {
                         currentStep--;
-                        stepInput.value = currentStep;
-                        console.log('📍 Keyboard nav - AFTER:', currentStep);
-                        saveProgress();
+                        if (stepInput) stepInput.value = currentStep;
+                        // Save immediately to localStorage for instant response
+                        localStorage.setItem(progressKey, currentStep);
+                        if (window.currentProject) window.currentProject.currentStep = currentStep;
+                        
+                        // Save to Firestore in background (non-blocking)
+                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                                currentStep: currentStep
+                            }).catch(err => console.warn('Background save failed:', err));
+                        }
                         updateDisplay(currentStep, true);
+                        
+                        // Update notes label to show current row
+                        const noteLabel = document.getElementById('current-row-note-label');
+                        if (noteLabel) {
+                            noteLabel.textContent = currentStep;
+                        }
                     }
                 }
             });
         }
-    }
+    
+
+    // Footer update function is handled by viewer-logic.js
 
     // --- STITCH MODAL FUNCTIONALITY ---
     const stitchModal = document.getElementById('stitch-modal');
@@ -1527,32 +1269,9 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     const stitchModalDefinition = document.getElementById('stitch-modal-definition');
     const closeStitchModal = document.getElementById('close-stitch-modal');
     
-    function showStitchDefinition(stitchCode) {
-        if (!PATTERN_DATA || !PATTERN_DATA.glossary || !PATTERN_DATA.glossary[stitchCode]) {
-            console.warn('No definition found for stitch:', stitchCode);
-            return;
-        }
-        
-        // Analytics: Track stitch definition views
-        if (auth.currentUser) {
-            logStitchWitchQuery({
-                type: 'stitch_finder',
-                action: 'view_definition',
-                stitchCode: stitchCode,
-                rowNumber: currentStep,
-                patternId: PATTERN_DATA?.id || 'unknown'
-            });
-        }
-        
-        const glossaryEntry = PATTERN_DATA.glossary[stitchCode];
-        stitchModalTitle.textContent = `${glossaryEntry.name} (${stitchCode})`;
-        stitchModalDefinition.textContent = glossaryEntry.description;
-        stitchModal.classList.remove('hidden');
-    }
+    // showStitchDefinition function moved to js/viewer-logic.js
     
-    function hideStitchDefinition() {
-        stitchModal.classList.add('hidden');
-    }
+    // hideStitchDefinition function moved to js/viewer-logic.js
     
     // Event listeners for stitch interactions
     document.addEventListener('click', (e) => {
@@ -1564,110 +1283,9 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     });
     
     // --- PATTERN TOOLS SIDEBAR FUNCTIONALITY ---
-    function setupPatternSidebar() {
-        console.log('🔧 Setting up pattern sidebar...');
-        
-        const sidebar = document.getElementById('pattern-sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarClose = document.getElementById('sidebar-close');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const returnToRowBtn = document.getElementById('return-to-row');
-        
-        console.log('Sidebar elements found:', {
-            sidebar: !!sidebar,
-            sidebarToggle: !!sidebarToggle,
-            sidebarClose: !!sidebarClose,
-            sidebarOverlay: !!sidebarOverlay,
-            returnToRowBtn: !!returnToRowBtn
-        });
-        
-        function toggleSidebar() {
-            console.log('🔄 Toggling sidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('open');
-                sidebarOverlay.classList.toggle('hidden');
-            }
-        }
-        
-        function closeSidebar() {
-            console.log('❌ Closing sidebar');
-            if (sidebar) {
-                sidebar.classList.remove('open');
-                sidebarOverlay.classList.add('hidden');
-            }
-        }
-        
-        if (sidebarToggle) {
-            console.log('✅ Adding click handler to sidebar toggle');
-            sidebarToggle.addEventListener('click', toggleSidebar);
-        } else {
-            console.error('❌ Sidebar toggle button not found!');
-        }
-        
-        if (sidebarClose) {
-            sidebarClose.addEventListener('click', closeSidebar);
-        }
-        
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        }
-        
-        if (returnToRowBtn) {
-            returnToRowBtn.addEventListener('click', () => {
-                scrollToCurrentRow();
-                closeSidebar();
-            });
-        }
-        
-        // Handle section navigation
-        const sidebarLinks = document.querySelector('.sidebar-links');
-        if (sidebarLinks) {
-            sidebarLinks.addEventListener('click', (e) => {
-                if (e.target.dataset.section) {
-                    e.preventDefault();
-                    const sectionElement = document.getElementById(e.target.dataset.section);
-                    if (sectionElement) {
-                        sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        closeSidebar();
-                    }
-                }
-            });
-        }
-        
-        console.log('✅ Pattern sidebar setup complete');
-    }
+    // setupPatternSidebar function migrated to js/viewer-logic.js
     
-    function populateSidebarGlossary() {
-        const sidebarGlossary = document.getElementById('sidebar-glossary');
-        if (!sidebarGlossary || !PATTERN_DATA || !PATTERN_DATA.glossary) {
-            return;
-        }
-        
-        let glossaryHTML = '';
-        for (const [key, item] of Object.entries(PATTERN_DATA.glossary)) {
-            if (item && item.name) {
-                const category = getInstructionCategory(key, PATTERN_DATA);
-                glossaryHTML += `
-                    <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
-                        <div class="${category} font-bold text-lg mb-1">${key}</div>
-                        <div class="text-gray-300 font-medium mb-1">${item.name}</div>
-                        ${item.description ? `<div class="text-gray-400 text-sm leading-relaxed">${item.description}</div>` : ''}
-                    </div>
-                `;
-            }
-        }
-        
-        sidebarGlossary.innerHTML = glossaryHTML;
-        
-        // Add click handlers for sidebar glossary items
-        sidebarGlossary.addEventListener('click', (e) => {
-            const stitchDiv = e.target.closest('[data-stitch]');
-            if (stitchDiv) {
-                const stitchCode = stitchDiv.dataset.stitch;
-                showStitchDefinition(stitchCode);
-            }
-        });
-    }
+    // populateSidebarGlossary function migrated to js/viewer-logic.js
     
     closeStitchModal.addEventListener('click', hideStitchDefinition);
     stitchModal.addEventListener('click', (e) => {
@@ -1675,6 +1293,9 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
             hideStitchDefinition();
         }
     });
+    
+    // --- SECTION MANAGEMENT ---
+    // showSection function moved to js/app-main.js
     
     // Close modal with Escape key
     document.addEventListener('keydown', (e) => {
@@ -1686,7 +1307,8 @@ You are an expert technical editor for fiber arts (knitting, crochet, Tunisian c
     // --- PWA Service Worker ---
     // Temporarily disabled to fix caching issues during development
     // if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
+
+    // Script initialization complete
 </script>
 </body>
 </html>
-

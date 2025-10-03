@@ -103,7 +103,7 @@
     <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">AI Pattern-to-Firestore Generator</h1>
-            <p class="text-lg text-gray-600">Generate prompts for AI to create patterns directly in Firestore with sharing capabilities.</p>
+            <p class="text-lg text-gray-600">Transform ambiguity into certainty: Generate fully enumerated patterns with precise stitch counting for Firestore.</p>
         </header>
 
         <main class="space-y-16">
@@ -153,13 +153,13 @@
 
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 3: Paste Your Pattern Text</h3>
-                        <p class="text-sm text-gray-500 mb-3">Paste the full, raw text of your pattern here. If you transcribed it from an image, paste that text.</p>
+                        <p class="text-sm text-gray-500 mb-3">Paste the full, raw text of your pattern here. The AI will transform all ambiguity into certainty by expanding repeats, resolving variables like "k to end", and creating fully enumerated steps.</p>
                         <textarea id="pattern-input" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition" placeholder="Paste pattern text here..."></textarea>
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 4: Generate Firestore Integration Prompt</h3>
-                        <p class="text-sm text-gray-500 mb-3">This generates a prompt for AI to create Firestore write operations instead of JSON files. The pattern will be stored directly in the database with sharing capabilities.</p>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 4: Generate Full Enumeration Prompt</h3>
+                        <p class="text-sm text-gray-500 mb-3">This generates a prompt for AI to create a fully enumerated pattern with NO loops, repeats, or variables. Every step will be calculated and explicit, with precise stitch counts throughout.</p>
                         <div class="relative">
                             <button id="copy-prompt-button" class="absolute top-3 right-3 bg-white hover:bg-stone-100 text-gray-600 font-medium py-1 px-3 border border-gray-300 rounded-md text-sm transition-colors">
                                 <span id="copy-default">Copy</span>
@@ -179,28 +179,25 @@
                         <h3 class="text-lg font-semibold text-gray-700 mb-3">JSON Structure Overview</h3>
                         <div class="code-block">
 <pre>{
-  <span class="json-key">"metadata"</span>: { ... }, <span class="text-gray-400">// Pattern info</span>
-  <span class="json-key">"glossary"</span>: { ... }, <span class="text-gray-400">// Stitch definitions</span>
-  <span class="json-key">"instructions"</span>: [ ... ] <span class="text-gray-400">// Array of step objects</span>
+  <span class="json-key">"metadata"</span>: { ... }, <span class="text-gray-400">// Pattern info with maxSteps</span>
+  <span class="json-key">"glossary"</span>: { ... }, <span class="text-gray-400">// Complete stitch definitions with usage counts</span>
+  <span class="json-key">"steps"</span>: [ ... ] <span class="text-gray-400">// Fully enumerated step objects</span>
 }</pre>
                         </div>
                     </div>
                     
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-700 mb-3">The `instruction` Object Schema</h3>
-                        <p class="text-sm text-gray-500 mb-3">Each object in the `instructions` array follows this schema. Hover over properties for details.</p>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">The `step` Object Schema</h3>
+                        <p class="text-sm text-gray-500 mb-3">Each object in the `steps` array follows this schema, with all variables resolved and stitch counts calculated. Hover over properties for details.</p>
                         <div class="code-block">
 <pre>{
-  <span class="relative tooltip-trigger"><span class="json-key">"step"</span><span class="tooltip">Use for a single, unique step.</span></span>: <span class="json-number">63</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"stepRange"</span><span class="tooltip">Use to group multiple identical steps.</span></span>: [<span class="json-number">4</span>, <span class="json-number">62</span>],
-  <span class="relative tooltip-trigger"><span class="json-key">"stepType"</span><span class="tooltip">Optional: 'even' or 'odd' to filter steps within a range.</span></span>: <span class="json-string">"even"</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"type"</span><span class="tooltip">The type of step, e.g., 'Row' or 'Round'.</span></span>: <span class="json-string">"Row"</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"side"</span><span class="tooltip">Optional: 'RS', 'WS', or omit if not applicable.</span></span>: <span class="json-string">"RS"</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"increase"</span><span class="tooltip">Net change in stitch count for this step.</span></span>: <span class="json-number">2</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"totalStitches"</span><span class="tooltip">The final stitch count after this step is completed.</span></span>: <span class="json-number">139</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"dynamicChunks"</span><span class="tooltip">Set to true if parts of the row (e.g., 'k to marker') need to be calculated by the app.</span></span>: <span class="json-boolean">false</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"displayText"</span><span class="tooltip">The original, human-readable instruction text.</span></span>: <span class="json-string">"&lt;b&gt;Row 63...&lt;/b&gt;"</span>,
-  <span class="relative tooltip-trigger"><span class="json-key">"chunks"</span><span class="tooltip">An array of logical sections of the pattern step.</span></span>: [ { ... } ]
+  <span class="relative tooltip-trigger"><span class="json-key">"step"</span><span class="tooltip">Sequential step number (no gaps or repeats).</span></span>: <span class="json-number">63</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"startingStitchCount"</span><span class="tooltip">Exact stitch count before this step begins.</span></span>: <span class="json-number">137</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"endingStitchCount"</span><span class="tooltip">Exact stitch count after this step is completed.</span></span>: <span class="json-number">139</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"instruction"</span><span class="tooltip">Fully resolved instruction with all variables calculated (no 'k to end').</span></span>: <span class="json-string">"k3, kfb, yo, ssk, k7, k2tog, yo, k1"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"section"</span><span class="tooltip">Pattern section: setup, body, decrease, etc.</span></span>: <span class="json-string">"body"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"side"</span><span class="tooltip">RS (right side) or WS (wrong side).</span></span>: <span class="json-string">"RS"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"type"</span><span class="tooltip">regular, specialInstruction, or note.</span></span>: <span class="json-string">"regular"</span>
 }</pre>
                         </div>
                     </div>
@@ -208,45 +205,52 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-700 mb-4">Examples</h3>
                         <div class="flex items-center space-x-2 mb-4 p-1 bg-stone-100 rounded-lg max-w-md">
-                            <button id="tab-ex1" class="tab-button w-1/2 active">Unique Row</button>
-                            <button id="tab-ex2" class="tab-button w-1/2">Grouped Rows</button>
+                            <button id="tab-ex1" class="tab-button w-1/2 active">Single Step</button>
+                            <button id="tab-ex2" class="tab-button w-1/2">Repeated Steps</button>
                         </div>
 
                         <div id="content-ex1" class="tab-content active space-y-3">
-                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Row 63 (RS): k3, kfb, (yo, ssk, k5, k2tog, yo, k1) 6 times, k3, m1L, k1, m1R, k3, ...</p>
-                            <p class="text-sm text-gray-500">This becomes a single object with a fully defined `chunks` array.</p>
+                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Row 63 (RS): k3, kfb, (yo, ssk, k5, k2tog, yo, k1) 6 times, k3, m1L, k1, m1R, k3</p>
+                            <p class="text-sm text-gray-500">This becomes a single step object with the repeat fully expanded and variables resolved.</p>
                             <div class="code-block">
 <pre>{
-  <span class="json-key">"step"</span>: <span class="json-number">63</span>, <span class="json-key">"type"</span>: <span class="json-string">"Row"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>, <span class="json-key">"increase"</span>: <span class="json-number">2</span>, <span class="json-key">"totalStitches"</span>: <span class="json-number">139</span>,
-  <span class="json-key">"displayText"</span>: <span class="json-string">"<b>Row 63 (RS):</b> ..."</span>,
-  <span class="json-key">"chunks"</span>: [
-    { <span class="json-key">"name"</span>: <span class="json-string">"Edge & Inc"</span>, <span class="json-key">"pattern"</span>: [<span class="json-string">"k3"</span>, <span class="json-string">"kfb"</span>] },
-    { <span class="json-key">"name"</span>: <span class="json-string">"Lace 1 Left"</span>, <span class="json-key">"repeats"</span>: <span class="json-number">6</span>, <span class="json-key">"pattern"</span>: [<span class="json-string">"yo"</span>, <span class="json-string">"ssk"</span>, <span class="json-string">"k5"</span>, ...] },
-    { <span class="json-key">"name"</span>: <span class="json-string">"Center Panel"</span>, <span class="json-key">"pattern"</span>: [<span class="json-string">"k3"</span>, <span class="json-string">"m1L"</span>, <span class="json-string">"k1"</span>, ...] },
-    { <span class="json-key">"name"</span>: <span class="json-string">"Lace 1 Right"</span>, <span class="json-key">"repeats"</span>: <span class="json-number">6</span>, <span class="json-key">"pattern"</span>: [<span class="json-string">"yo"</span>, <span class="json-string">"ssk"</span>, <span class="json-string">"k5"</span>, ...] },
-    { <span class="json-key">"name"</span>: <span class="json-string">"Inc & Edge"</span>, <span class="json-key">"pattern"</span>: [<span class="json-string">"kfb"</span>, <span class="json-string">"k3"</span>] }
-  ]
+  <span class="json-key">"step"</span>: <span class="json-number">63</span>,
+  <span class="json-key">"startingStitchCount"</span>: <span class="json-number">137</span>,
+  <span class="json-key">"endingStitchCount"</span>: <span class="json-number">139</span>,
+  <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, k3, m1L, k1, m1R, k3"</span>,
+  <span class="json-key">"section"</span>: <span class="json-string">"body"</span>,
+  <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>,
+  <span class="json-key">"type"</span>: <span class="json-string">"regular"</span>
 }</pre>
                             </div>
+                            <p class="text-xs text-gray-400 mt-2">Note: The (yo, ssk, k5, k2tog, yo, k1) repeat is fully expanded 6 times, and all increases are calculated into the final stitch count.</p>
                         </div>
 
                         <div id="content-ex2" class="tab-content space-y-3">
-                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Rows 3-61 (Odd, RS): ...k to marker... and Rows 4-62 (Even, WS): ...purl to last 3...</p>
-                            <p class="text-sm text-gray-500">These are grouped into two objects using `stepRange` and `stepType`. They use `dynamicChunks: true` because parts of the row change with each repeat.</p>
+                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Rows 3-4: k3, kfb, k to end. Repeat rows 3-4 twice more.</p>
+                            <p class="text-sm text-gray-500">This becomes 6 separate step objects (3,4,5,6,7,8) with all "k to end" resolved to exact stitch counts.</p>
                             <div class="code-block">
 <pre>[
   {
-    <span class="json-key">"stepRange"</span>: [<span class="json-number">3</span>, <span class="json-number">61</span>], <span class="json-key">"stepType"</span>: <span class="json-string">"odd"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>, <span class="json-key">"increase"</span>: <span class="json-number">4</span>,
-    <span class="json-key">"dynamicChunks"</span>: <span class="json-boolean">true</span>,
-    <span class="json-key">"displayText"</span>: <span class="json-string">"<b>Odd Rows 3-61 (RS):</b> k3, kfb, k to marker..."</span>
+    <span class="json-key">"step"</span>: <span class="json-number">3</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">15</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">16</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k11"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>
   },
   {
-    <span class="json-key">"stepRange"</span>: [<span class="json-number">4</span>, <span class="json-number">62</span>], <span class="json-key">"stepType"</span>: <span class="json-string">"even"</span>, <span class="json-key">"side"</span>: <span class="json-string">"WS"</span>, <span class="json-key">"increase"</span>: <span class="json-number">0</span>,
-    <span class="json-key">"dynamicChunks"</span>: <span class="json-boolean">true</span>,
-    <span class="json-key">"displayText"</span>: <span class="json-string">"<b>Even Rows 4-62 (WS):</b> k3, purl to last 3, k3."</span>
+    <span class="json-key">"step"</span>: <span class="json-number">4</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">16</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">17</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k12"</span>, <span class="json-key">"side"</span>: <span class="json-string">"WS"</span>
+  },
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">5</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">17</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">18</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k13"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>
+  },
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">6</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">18</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">19</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k14"</span>, <span class="json-key">"side"</span>: <span class="json-string">"WS"</span>
   }
+  <span class="text-gray-400">// ... steps 7 and 8 continue the pattern</span>
 ]</pre>
                             </div>
+                            <p class="text-xs text-gray-400 mt-2">Note: Each "k to end" is calculated based on that step's starting stitch count. No loops or variables remain.</p>
                         </div>
                     </div>
                 </div>
@@ -262,11 +266,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const promptOutput = document.getElementById('prompt-output');
     const copyButton = document.getElementById('copy-prompt-button');
 
-    const basePrompt = `# AI Prompt: Convert Craft Pattern to Firestore Write Operations
+    const basePrompt = `# AI Prompt: Transform Pattern Ambiguity into Firestore Certainty
 
-## 1. Goal & Context
+## 1. Philosophy: Transform Ambiguity into Certainty
 
-You are an expert at converting fiber arts patterns into structured data for a web application. Instead of generating JSON files, you'll create **Firestore write operations** that store the pattern directly in a database with sharing capabilities.
+You are an expert at converting condensed knitting patterns into fully enumerated, step-by-step Firestore documents. Your mission is to eliminate ALL loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
+
+**Core Principle**: Every "k to end", "repeat 5 times", or "(yo, k2tog) 3 times" must be calculated and expanded into the exact, final sequence of stitches.
+
+## 2. Critical Requirements
+
+### A. Complete Glossary Foundation
+The glossary is the foundation of automation. For EVERY stitch abbreviation used:
+- **stitchesUsed**: How many stitches consumed from left needle
+- **stitchesCreated**: How many stitches placed on right needle
+- Examples: k(1→1), kfb(1→2), k2tog(2→1), yo(0→1), pm(0→0)
+
+### B. Full Step Enumeration (NO Repeats)
+- Convert "Rows 3-10: k all" into 8 separate step objects numbered 3,4,5,6,7,8,9,10
+- Convert "(yo, k2tog) 5 times" into "yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog"
+- Calculate "k to end" based on current stitch count: if 15 stitches and "k3, yo, k to end" = "k3, yo, k11"
+
+### C. Precise Stitch Count Tracking
+- Every step MUST have startingStitchCount and endingStitchCount
+- endingStitchCount of step N = startingStitchCount of step N+1
+- Calculate by parsing every stitch in the resolved instruction using glossary values
 
 ## 2. Pattern Settings
 Craft Type: {{CRAFT_TYPE}}
@@ -311,34 +335,33 @@ async function createPatternInFirestore() {
     },
     
     glossary: {
-      "k": {
-        "name": "Knit",
-        "description": "Knit stitch.",
-        "stitchesUsed": 1,
-        "stitchesCreated": 1
-      }
-      // ... complete glossary based on stitches used
+      "k": { "name": "Knit", "description": "Knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 },
+      "kfb": { "name": "Knit Front and Back", "description": "Increase.", "stitchesUsed": 1, "stitchesCreated": 2 },
+      "k2tog": { "name": "Knit 2 Together", "description": "Decrease.", "stitchesUsed": 2, "stitchesCreated": 1 },
+      "yo": { "name": "Yarn Over", "description": "Increase.", "stitchesUsed": 0, "stitchesCreated": 1 }
+      // ... COMPLETE glossary for ALL stitches used in pattern
     },
     
     steps: [
       {
         "step": 1,
-        "section": "Setup",
-        "side": "rs",
-        "startingStitchCount": 9,
-        "endingStitchCount": 11,
-        "chunks": [
-          {
-            "id": "edge-left",
-            "type": "static",
-            "instructions": [
-              { "stitch": "k", "count": 3 }
-            ]
-          }
-          // ... more chunks
-        ]
+        "startingStitchCount": 3,
+        "endingStitchCount": 4,
+        "instruction": "k1, kfb, k1", // Fully resolved, no variables
+        "section": "setup",
+        "side": "RS",
+        "type": "regular"
+      },
+      {
+        "step": 2,
+        "startingStitchCount": 4,
+        "endingStitchCount": 5,
+        "instruction": "k2, kfb, k1", // "k to end" resolved to "k1"
+        "section": "setup",
+        "side": "WS",
+        "type": "regular"
       }
-      // ... more steps using stepRange for repeating patterns
+      // ... Every single step enumerated, NO repeats or loops
     ],
     
     // Analytics and sharing
@@ -368,28 +391,32 @@ async function createPatternInFirestore() {
 }
 \`\`\`
 
-## 5. Key Requirements
+## 3. Implementation Steps
 
-### Chunk Architecture
-- Use **stepRange** for repeating patterns (e.g., rows 3-61 odd)
-- Break instructions into logical **chunks** (edge, center, increases)
-- Use **dynamic chunks** for "k to marker" or "p to last 3" scenarios
-- Each chunk needs an **id** and **type** (static, dynamic, repeat)
+### Step 1: Build Complete Glossary
+- Scan entire pattern for ALL stitch abbreviations
+- Define stitchesUsed and stitchesCreated for each
+- This enables automatic stitch count calculation
 
-### Stitch Index
-- Every stitch in glossary needs **stitchesUsed** and **stitchesCreated** (how many stitches are consumed and created)
-- k=1, kfb=2, k2tog=1, yo=1, pm=0, etc.
+### Step 2: Initialize State
+- currentStepNumber = 1
+- currentStitchCount = (from cast on)
+- currentSection = "setup"
+- currentSide = "RS"
 
-### Step Counting
-- **startingStitchCount** and **endingStitchCount** for each step
-- Use **stitchCountChange** for stepRanges (+4, -2, 0)
+### Step 3: Process Each Line
+- **Resolve Variables**: Convert "k to end" to exact stitch count
+- **Expand Repeats**: Convert "(yo, k2tog) 3 times" to "yo, k2tog, yo, k2tog, yo, k2tog"
+- **Calculate Stitch Counts**: Parse resolved instruction using glossary
+- **Handle Loops**: "Repeat rows 3-5 twice" becomes 6 separate step objects
 
-### Sharing Ready
-- Pattern includes all metadata for sharing
-- Visibility setting determines access level
-- Tags help with pattern discovery
+### Step 4: Generate Firestore Operations
+- One step object per row/round with sequential numbering
+- Precise startingStitchCount and endingStitchCount for each
+- Fully resolved instructions with no ambiguity
+- Complete sharing metadata
 
-Generate the complete Firestore write operations for this pattern.`;
+**Output**: Generate the complete Firestore write operations that create a fully enumerated pattern with NO loops, repeats, or variables.`;
 
     function updatePrompt() {
         const patternText = patternInput.value.trim();

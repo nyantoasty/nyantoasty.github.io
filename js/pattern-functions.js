@@ -258,9 +258,26 @@ export function generateGlossary(PATTERN_DATA) {
     for (const key in PATTERN_DATA.glossary) {
         const item = PATTERN_DATA.glossary[key];
         if (item && item.name && item.description) {
+            // Get the category and color for this stitch
+            const category = getInstructionCategory(key, PATTERN_DATA);
+            const colorClass = `color-${category}`;
+            
             // Use stitchesCreated for the new format
             const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
-            glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+            
+            // Preserve newlines in description by replacing \n with <br>
+            const formattedDescription = item.description
+                .replace(/\\n/g, '<br>')
+                .replace(/\n/g, '<br>');
+            
+            glossaryHTML += `
+                <div class="cursor-pointer hover:bg-gray-700 p-3 rounded border-l-4 border-gray-600" data-stitch="${key}">
+                    <h3 class="font-bold ${colorClass} text-lg mb-1" style="color: var(--color-${category})">
+                        ${item.name} (${key})${stitchInfo}
+                    </h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">${formattedDescription}</p>
+                </div>
+            `;
         }
     }
     
@@ -268,6 +285,15 @@ export function generateGlossary(PATTERN_DATA) {
     const section = document.createElement('section');
     section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
     section.innerHTML = glossaryHTML;
+    
+    // Add click handlers for main glossary items to show modal
+    section.addEventListener('click', (e) => {
+        const stitchDiv = e.target.closest('[data-stitch]');
+        if (stitchDiv && window.showStitchDefinition) {
+            const stitchCode = stitchDiv.dataset.stitch;
+            window.showStitchDefinition(stitchCode);
+        }
+    });
     
     // Find the pattern content element dynamically
     const patternContentEl = document.getElementById('pattern-content');
@@ -511,39 +537,131 @@ export function generatePatternTheme(PATTERN_DATA) {
         }
     });
     
-    console.log('Generated pattern theme for categories:', Array.from(categories));
+    console.log('🎨 Generating pattern theme for categories:', Array.from(categories));
     
-    // Define color mappings
-    const colorMap = {
-        main: '#93c5fd',
-        increase: '#86efac', 
-        edge: '#d8b4fe',
-        decrease: '#f87171',
-        spine: '#f87171',
-        bobble: '#fbbf24'  // Golden yellow for bobbles
-    };
+    // Define fallback color palette for unknown categories
+    const fallbackColors = [
+        '#93c5fd', // blue-300
+        '#86efac', // green-300
+        '#f87171', // red-300
+        '#d8b4fe', // purple-300
+        '#fbbf24', // amber-400
+        '#fb7185', // rose-400
+        '#60a5fa', // blue-400
+        '#fcd34d', // amber-300
+        '#a78bfa', // violet-400
+        '#34d399', // emerald-400
+        '#ff9800', // orange-500
+        '#ff6b6b', // red-400
+        '#9ca3af', // gray-400
+        '#38bdf8', // sky-400
+        '#c084fc'  // purple-400
+    ];
     
-    // Generate CSS rules
-    let cssRules = 'CSS Rules: ';
-    categories.forEach(cat => {
-        const color = colorMap[cat] || '#93c5fd';
-        cssRules += `.${cat} { color: ${color}; } `;
+    // Standard categories that have predefined CSS variables
+    const standardCategories = new Set([
+        'main', 'increase', 'decrease', 'edge', 'spine', 'bobble', 
+        'lace', 'cable', 'texture', 'stitch', 'special', 'marker', 
+        'repeat', 'bind', 'cast'
+    ]);
+    
+    // Check for pattern-specific color overrides
+    const colorOverrides = PATTERN_DATA.colorTheme || {};
+    
+    // Create dynamic CSS for categories not covered by standard CSS
+    const root = document.documentElement;
+    let dynamicCSS = '';
+    let colorIndex = 0;
+    
+    categories.forEach(category => {
+        // Use pattern-specific color override if available
+        if (colorOverrides[category]) {
+            root.style.setProperty(`--color-${category}`, colorOverrides[category]);
+            console.log(`🎨 Applied pattern override for ${category}: ${colorOverrides[category]}`);
+        }
+        
+        // If category is not in standard CSS, create dynamic CSS
+        if (!standardCategories.has(category)) {
+            // Use override color or fallback color
+            const color = colorOverrides[category] || fallbackColors[colorIndex % fallbackColors.length];
+            
+            // Set CSS variable if not already set
+            if (!colorOverrides[category]) {
+                root.style.setProperty(`--color-${category}`, color);
+            }
+            
+            // Create CSS classes for this category
+            dynamicCSS += `.${category} { color: var(--color-${category}) !important; font-weight: 500; }\n`;
+            dynamicCSS += `.color-${category} { color: var(--color-${category}) !important; }\n`;
+            
+            console.log(`🎨 Created dynamic CSS for ${category}: ${color}`);
+            colorIndex++;
+        }
     });
     
-    console.log(cssRules);
-    
-    // Inject or update the dynamic theme
-    let styleEl = document.getElementById('pattern-theme');
-    if (!styleEl) {
-        styleEl = document.createElement('style');
-        styleEl.id = 'pattern-theme';
-        document.head.appendChild(styleEl);
+    // Inject dynamic CSS if any categories need it
+    if (dynamicCSS) {
+        let styleEl = document.getElementById('dynamic-pattern-colors');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'dynamic-pattern-colors';
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = dynamicCSS;
+        console.log('🎨 Injected dynamic color CSS:', dynamicCSS);
     }
     
-    const dynamicCSS = Array.from(categories).map(cat => {
-        const color = colorMap[cat] || '#93c5fd';
-        return `.${cat} { color: ${color}; font-weight: 500; }`;
-    }).join('\n');
+    console.log('✅ Pattern theme generation complete');
     
-    styleEl.textContent = dynamicCSS;
+    // Update sidebar color key
+    updateSidebarColorKey(categories);
+}
+
+// Function to update the sidebar color key dynamically
+export function updateSidebarColorKey(categories) {
+    const sidebarColorKey = document.getElementById('sidebar-color-key');
+    if (!sidebarColorKey) {
+        console.log('❌ Sidebar color key element not found');
+        return;
+    }
+    
+    // Define category descriptions
+    const categoryDescriptions = {
+        main: 'Basic stitches',
+        increase: 'Increase stitches',
+        decrease: 'Decrease stitches',
+        edge: 'Edge/border stitches',
+        spine: 'Spine stitches',
+        bobble: 'Bobble stitches',
+        lace: 'Lace stitches',
+        cable: 'Cable stitches',
+        texture: 'Texture stitches',
+        stitch: 'Special stitches',
+        special: 'Special techniques',
+        marker: 'Stitch markers',
+        repeat: 'Repeat sections',
+        bind: 'Bind off',
+        cast: 'Cast on'
+    };
+    
+    let colorKeyHTML = '';
+    
+    // Convert Set to Array and sort for consistent display
+    const sortedCategories = Array.from(categories).sort();
+    
+    // Create color key entries for each category
+    sortedCategories.forEach(category => {
+        const description = categoryDescriptions[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        
+        colorKeyHTML += `
+            <div class="flex items-center space-x-2 mb-1">
+                <div class="w-4 h-4 rounded" style="background-color: var(--color-${category})"></div>
+                <span class="color-${category} font-medium" style="color: var(--color-${category})">${category}</span>
+                <span class="text-gray-400 text-sm">- ${description}</span>
+            </div>
+        `;
+    });
+    
+    sidebarColorKey.innerHTML = colorKeyHTML;
+    console.log('🎨 Updated sidebar color key with', categories.size || categories.length, 'categories:', sortedCategories);
 }

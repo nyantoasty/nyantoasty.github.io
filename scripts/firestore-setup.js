@@ -84,28 +84,32 @@ async function setupFirestore() {
       steps: [
         {
           step: 1,
-          section: 'Setup',
-          side: 'rs',
           startingStitchCount: 9,
           endingStitchCount: 11,
-          chunks: [
-            {
-              id: 'setup1-edge-left',
-              type: 'static',
-              instructions: [
-                { stitch: 'k', count: 3 }
-              ]
-            },
-            {
-              id: 'setup1-increase',
-              type: 'static', 
-              instructions: [
-                { stitch: 'kfb', count: 1 }
-              ]
-            }
-          ]
+          instruction: "k3, kfb, k3, kfb, k1",
+          section: "setup",
+          side: "RS",
+          type: "regular"
+        },
+        {
+          step: 2,
+          startingStitchCount: 11,
+          endingStitchCount: 11,
+          instruction: "k11",
+          section: "setup",
+          side: "WS",
+          type: "regular"
+        },
+        {
+          step: 3,
+          startingStitchCount: 11,
+          endingStitchCount: 13,
+          instruction: "k3, kfb, k3, kfb, k3",
+          section: "body",
+          side: "RS",
+          type: "regular"
         }
-        // Add more steps as needed
+        // Additional steps would be fully enumerated here
       ],
       
       // Analytics

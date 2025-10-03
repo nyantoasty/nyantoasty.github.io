@@ -25,7 +25,8 @@ export async function extractTextFromFile(file) {
             imageData: base64Data,
             patternName: "Extracted Pattern",
             authorName: "OCR Generated", 
-            userId: "temp-user-id"
+            userId: "temp-user-id",
+            fileType: file.type
         };
 
         // Call Cloud Run service for full pattern processing

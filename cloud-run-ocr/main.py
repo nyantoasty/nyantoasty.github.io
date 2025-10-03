@@ -7,12 +7,14 @@ Avoids Node.js entirely for security and maintainability
 import os
 import json
 import base64
+import io
 from typing import Dict, Any
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 from google.cloud import firestore
 import logging
+import PyPDF2
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -113,11 +115,12 @@ def process_ocr():
         pattern_name = data['patternName']
         author_name = data['authorName']
         user_id = data['userId']
+        file_type = data.get('fileType', None)  # Optional field
         
-        logger.info(f"Processing pattern: {pattern_name} by {author_name}")
+        logger.info(f"Processing pattern: {pattern_name} by {author_name}, file type: {file_type}")
         
-        # Step 1: Extract text from image using Vision API
-        extracted_text = extract_text_from_image(image_data)
+        # Step 1: Extract text from file (PDF or image)
+        extracted_text = extract_text_from_file(image_data, file_type)
         logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
         
         # Step 2: Process text with Gemini to create structured pattern
@@ -141,6 +144,48 @@ def process_ocr():
             'error': 'Processing failed',
             'details': str(e)
         }), 500
+
+def extract_text_from_file(image_data: str, file_type: str = None) -> str:
+    """Extract text from file - handle both PDFs and images"""
+    try:
+        # Decode base64 data
+        file_bytes = base64.b64decode(image_data)
+        
+        # Check if it's a PDF (either by file_type or by checking magic bytes)
+        if file_type == 'application/pdf' or file_bytes.startswith(b'%PDF'):
+            logger.info("📄 Processing PDF file...")
+            return extract_text_from_pdf(file_bytes)
+        else:
+            logger.info("🖼️ Processing image file...")
+            return extract_text_from_image(image_data)
+            
+    except Exception as e:
+        logger.error(f"❌ File processing error: {str(e)}")
+        raise Exception(f"File processing error: {str(e)}")
+
+def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+    """Extract text from PDF using PyPDF2"""
+    try:
+        logger.info("📖 Extracting text from PDF...")
+        
+        pdf_file = io.BytesIO(pdf_bytes)
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        
+        extracted_text = ""
+        for page_num, page in enumerate(pdf_reader.pages):
+            page_text = page.extract_text()
+            if page_text.strip():  # Only add non-empty pages
+                extracted_text += f"\n--- Page {page_num + 1} ---\n{page_text}\n"
+        
+        if not extracted_text.strip():
+            raise Exception("No text found in PDF")
+            
+        logger.info(f"✅ Extracted {len(extracted_text)} characters from {len(pdf_reader.pages)} pages")
+        return extracted_text.strip()
+        
+    except Exception as e:
+        logger.error(f"❌ PDF extraction failed: {str(e)}")
+        raise Exception(f"PDF extraction failed: {str(e)}")
 
 def extract_text_from_image(base64_image: str) -> str:
     """Extract text from image using Google Vision API"""

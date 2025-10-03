@@ -542,7 +542,11 @@ The AI will convert this into structured JSON following our pattern format."></t
                 const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js");
                 const functions = getFunctions(app, 'us-central1'); // Explicitly set region
                 
+                console.log('🔧 Firebase Functions initialized:', functions);
+                console.log('🔐 Current user:', currentUser);
+                
                 const processOCR = httpsCallable(functions, 'processOCR');
+                console.log('📞 processOCR callable created:', processOCR);
 
                 let allExtractedText = '';
 
@@ -562,12 +566,16 @@ The AI will convert this into structured JSON following our pattern format."></t
                     // Convert file to base64
                     const base64 = await fileToBase64(file);
                     
+                    console.log(`🔍 Calling processOCR for ${file.name}`);
+                    
                     // Call OCR function
                     const result = await processOCR({
                         fileData: base64,
                         fileName: file.name,
                         mimeType: file.type
                     });
+
+                    console.log('✅ OCR result:', result);
 
                     if (result.data.success) {
                         allExtractedText += `\n--- From ${file.name} ---\n${result.data.text}\n`;

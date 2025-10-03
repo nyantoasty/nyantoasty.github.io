@@ -2,15 +2,14 @@ const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const vision = require('@google-cloud/vision');
 const admin = require('firebase-admin');
-const { defineSecret } = require('firebase-functions/params');
-
-// Define the secret
-const geminiApiKey = defineSecret('GEMINI_API_KEY');
 
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   admin.initializeApp();
 }
+
+// Initialize Gemini - use Firebase config for now
+const genAI = new GoogleGenerativeAI(functions.config().gemini.key);
 
 // Initialize Cloud Vision client
 const visionClient = new vision.ImageAnnotatorClient();
@@ -55,13 +54,8 @@ const LOGIC_GUIDE_PROMPT = `You are an expert knitting pattern parser. Your task
 
 Return only valid JSON, no explanations.`;
 
-exports.generatePattern = functions
-  .runWith({ secrets: [geminiApiKey] })
-  .https.onCall(async (data, context) => {
+exports.generatePattern = functions.https.onCall(async (data, context) => {
   try {
-    // Initialize Gemini with the secret
-    const genAI = new GoogleGenerativeAI(geminiApiKey.value());
-    
     // Ensure user is authenticated
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use AI generation');

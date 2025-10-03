@@ -26,6 +26,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadProgressFirestore, saveProgressFirestore } from './viewer-logic.js';
 import { getOrCreateProject, saveProjectProgress, getCurrentProject, createNewProject } from './progress-tracking.js';
+import { initializeOCRUpload, processPatternOCR, showPatternUploadModal } from './cloud-run-ocr-client.js';
 
 // Google Sign-In
 export async function signInWithGoogle() {
@@ -119,6 +120,9 @@ export function showApplication(user, userData = null, roleData = null) {
     // Initialize the application
     populateProjectSelector();
     loadUserProjects();
+    
+    // Initialize OCR upload functionality
+    initializeOCRUpload();
 }
 
 // Project management functions
@@ -1307,3 +1311,5 @@ window.loadSelectedPattern = loadSelectedPattern;
 window.updateRowNotesList = updateRowNotesList;
 window.saveAllProjectNotes = saveAllProjectNotes;
 window.showSection = showSection;
+window.showPatternUploadModal = showPatternUploadModal;
+window.processPatternOCR = processPatternOCR;

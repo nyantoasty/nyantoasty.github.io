@@ -6,6 +6,11 @@ node_modules/
 .env.local
 .env.production
 
+# Security-sensitive documentation (local only)
+*-SETUP.md
+*-CONFIG.md
+*API-KEY*
+
 # Firebase
 .firebase/
 firebase-debug.log

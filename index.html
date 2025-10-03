@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-03- Correcting imports and DOM element IDS pt 4 updated -->
+<!-- Version: v2025-10-03- Correcting imports and DOM element IDS pt 5 updated -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -921,6 +921,9 @@
         // Populate sidebar with pattern-specific content
         populateSidebarGlossary();
         
+        // Setup sidebar toggle functionality
+        setupPatternSidebar();
+        
         // Update footer metadata after content is generated
         updateFooterMetadata();
         
@@ -928,8 +931,47 @@
         const currentStepInput = document.getElementById('current-step-input');
         if (currentStepInput && window.currentProject) {
             currentStepInput.value = window.currentProject.currentStep || 1;
+            
+            // Add event listener for manual step changes
+            currentStepInput.addEventListener('change', (e) => {
+                const newStep = parseInt(e.target.value);
+                if (newStep >= 1 && newStep <= maxSteps) {
+                    currentStep = newStep;
+                    window.currentStep = newStep;
+                    if (window.currentProject) window.currentProject.currentStep = newStep;
+                    
+                    // Save to localStorage immediately
+                    localStorage.setItem(progressKey, newStep);
+                    
+                    // Save to Firestore
+                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
+                        saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
+                            currentStep: newStep
+                        }).catch(err => console.warn('Failed to save step change:', err));
+                    }
+                    
+                    // Update display
+                    if (typeof updateDisplay === 'function') {
+                        updateDisplay(newStep, true);
+                    }
+                    
+                    // Update notes label to show current row
+                    const noteLabel = document.getElementById('current-row-note-label');
+                    if (noteLabel) {
+                        noteLabel.textContent = newStep;
+                    }
+                    
+                    console.log('💾 Step manually changed to:', newStep);
+                }
+            });
         }
         setupInteractiveFeatures();
+        
+        // Update notes label to show current row initially
+        const noteLabel = document.getElementById('current-row-note-label');
+        if (noteLabel) {
+            noteLabel.textContent = window.currentProject?.currentStep || currentStep || 1;
+        }
         
         console.log('✅ Viewer setup complete for:', name);
         console.log('✅ Current step:', currentStep, 'Max steps:', maxSteps);
@@ -1179,6 +1221,12 @@
                             }).catch(err => console.warn('Background save failed:', err));
                         }
                         updateDisplay(currentStep, true);
+                        
+                        // Update notes label to show current row
+                        const noteLabel = document.getElementById('current-row-note-label');
+                        if (noteLabel) {
+                            noteLabel.textContent = currentStep;
+                        }
                     }
                 }
                 
@@ -1198,6 +1246,12 @@
                             }).catch(err => console.warn('Background save failed:', err));
                         }
                         updateDisplay(currentStep, true);
+                        
+                        // Update notes label to show current row
+                        const noteLabel = document.getElementById('current-row-note-label');
+                        if (noteLabel) {
+                            noteLabel.textContent = currentStep;
+                        }
                     }
                 }
             });

@@ -258,9 +258,26 @@ export function generateGlossary(PATTERN_DATA) {
     for (const key in PATTERN_DATA.glossary) {
         const item = PATTERN_DATA.glossary[key];
         if (item && item.name && item.description) {
+            // Get the category and color for this stitch
+            const category = getInstructionCategory(key, PATTERN_DATA);
+            const colorClass = `color-${category}`;
+            
             // Use stitchesCreated for the new format
             const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
-            glossaryHTML += `<div><h3 class="font-bold text-violet-300">${item.name} (${key})${stitchInfo}</h3><p class="text-sm text-gray-400">${item.description}</p></div>`;
+            
+            // Preserve newlines in description by replacing \n with <br>
+            const formattedDescription = item.description
+                .replace(/\\n/g, '<br>')
+                .replace(/\n/g, '<br>');
+            
+            glossaryHTML += `
+                <div class="cursor-pointer hover:bg-gray-700 p-3 rounded border-l-4 border-gray-600" data-stitch="${key}">
+                    <h3 class="font-bold ${colorClass} text-lg mb-1" style="color: var(--color-${category})">
+                        ${item.name} (${key})${stitchInfo}
+                    </h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">${formattedDescription}</p>
+                </div>
+            `;
         }
     }
     
@@ -268,6 +285,15 @@ export function generateGlossary(PATTERN_DATA) {
     const section = document.createElement('section');
     section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
     section.innerHTML = glossaryHTML;
+    
+    // Add click handlers for main glossary items to show modal
+    section.addEventListener('click', (e) => {
+        const stitchDiv = e.target.closest('[data-stitch]');
+        if (stitchDiv && window.showStitchDefinition) {
+            const stitchCode = stitchDiv.dataset.stitch;
+            window.showStitchDefinition(stitchCode);
+        }
+    });
     
     // Find the pattern content element dynamically
     const patternContentEl = document.getElementById('pattern-content');
@@ -594,7 +620,10 @@ export function generatePatternTheme(PATTERN_DATA) {
 // Function to update the sidebar color key dynamically
 export function updateSidebarColorKey(categories) {
     const sidebarColorKey = document.getElementById('sidebar-color-key');
-    if (!sidebarColorKey) return;
+    if (!sidebarColorKey) {
+        console.log('❌ Sidebar color key element not found');
+        return;
+    }
     
     // Define category descriptions
     const categoryDescriptions = {
@@ -617,19 +646,22 @@ export function updateSidebarColorKey(categories) {
     
     let colorKeyHTML = '';
     
+    // Convert Set to Array and sort for consistent display
+    const sortedCategories = Array.from(categories).sort();
+    
     // Create color key entries for each category
-    categories.forEach(category => {
+    sortedCategories.forEach(category => {
         const description = categoryDescriptions[category] || category.charAt(0).toUpperCase() + category.slice(1);
         
         colorKeyHTML += `
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 mb-1">
                 <div class="w-4 h-4 rounded" style="background-color: var(--color-${category})"></div>
-                <span class="color-${category}">${category}</span>
-                <span class="text-gray-400">- ${description}</span>
+                <span class="color-${category} font-medium" style="color: var(--color-${category})">${category}</span>
+                <span class="text-gray-400 text-sm">- ${description}</span>
             </div>
         `;
     });
     
     sidebarColorKey.innerHTML = colorKeyHTML;
-    console.log('🎨 Updated sidebar color key with', categories.size, 'categories');
+    console.log('🎨 Updated sidebar color key with', categories.size || categories.length, 'categories:', sortedCategories);
 }

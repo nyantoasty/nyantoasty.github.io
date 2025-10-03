@@ -566,7 +566,14 @@ export function showStitchDefinition(stitchCode) {
     
     const glossaryEntry = window.PATTERN_DATA.glossary[stitchCode];
     stitchModalTitle.textContent = `${glossaryEntry.name} (${stitchCode})`;
-    stitchModalDefinition.textContent = glossaryEntry.description;
+    
+    // Preserve newlines by replacing \n with actual line breaks
+    const formattedDescription = glossaryEntry.description
+        .replace(/\\n/g, '\n')
+        .replace(/\n/g, '\n');
+    stitchModalDefinition.style.whiteSpace = 'pre-wrap';
+    stitchModalDefinition.textContent = formattedDescription;
+    
     stitchModal.classList.remove('hidden');
 }
 
@@ -856,11 +863,15 @@ export function populateSidebarGlossary() {
             // Get the color for this category from CSS variables
             const colorClass = `color-${category}`;
             
+            // Preserve newlines in description by replacing \n with <br>
+            const formattedDescription = item.description ? 
+                item.description.replace(/\\n/g, '<br>').replace(/\n/g, '<br>') : '';
+            
             glossaryHTML += `
                 <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
                     <div class="${colorClass} font-bold text-lg mb-1" style="color: var(--color-${category})">${key}</div>
                     <div class="text-gray-300 font-medium mb-1">${item.name}</div>
-                    ${item.description ? `<div class="text-gray-400 text-sm leading-relaxed">${item.description}</div>` : ''}
+                    ${formattedDescription ? `<div class="text-gray-400 text-sm leading-relaxed">${formattedDescription}</div>` : ''}
                 </div>
             `;
         }
@@ -878,6 +889,11 @@ export function populateSidebarGlossary() {
             showStitchDefinition(stitchCode);
         }
     });
+    
+    // Update the sidebar color key with actual categories used
+    if (typeof window.updateSidebarColorKey === 'function') {
+        window.updateSidebarColorKey(usedCategories);
+    }
     
     console.log('✅ Sidebar glossary populated successfully');
 }

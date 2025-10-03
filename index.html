@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-03- Correcting imports and DOM element IDS -->
+<!-- Version: v2025-10-03- Correcting imports and DOM element IDS pt 3 -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Correcting imports and DOM element IDS v2025-10-03</title>
+    <title>Stitch Witch - Correcting imports and DOM element IDS pt3 v2025-10-03</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -608,7 +608,10 @@
         populateProjectSelector,
         showNewProjectModal,
         toggleArchivedProjects,
-        unarchiveProject
+        unarchiveProject,
+        loadUserProjects,
+        loadSelectedProject,
+        resetViewer
     } from "./js/app-main.js";
     // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
     
@@ -685,6 +688,7 @@
     const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');
     const deleteProjectBtn = document.getElementById('delete-project-btn');
     const showArchivedBtn = document.getElementById('show-archived-btn');
+    const projectSelector = document.getElementById('project-selector');
     
     newProjectBtn.addEventListener('click', showNewProjectModal);
     welcomeNewProjectBtn.addEventListener('click', showNewProjectModal);
@@ -692,6 +696,24 @@
     if (showArchivedBtn) {
         showArchivedBtn.addEventListener('click', toggleArchivedProjects);
     }
+    
+    // Project selector change event listener
+    projectSelector.addEventListener('change', async (e) => {
+        const projectKey = e.target.value;
+        if (projectKey) {
+            console.log('🎯 Project selected:', projectKey);
+            try {
+                const userProjects = await loadUserProjects();
+                await loadSelectedProject(projectKey, userProjects);
+            } catch (error) {
+                console.error('❌ Error loading selected project:', error);
+                alert('Error loading project: ' + error.message);
+            }
+        } else {
+            // No project selected - reset viewer
+            resetViewer();
+        }
+    });
     
     deleteProjectBtn.addEventListener('click', async () => {
         const selector = document.getElementById('project-selector');
@@ -1129,6 +1151,9 @@
         if (!window.keyboardNavSetup) {
             window.keyboardNavSetup = true;
             document.addEventListener('keydown', (e) => {
+                // Get stepInput reference each time to ensure it exists
+                const stepInput = document.getElementById('current-step-input');
+                
                 // Skip if user is typing in an input field
                 if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {
                     return;
@@ -1138,7 +1163,7 @@
                     e.preventDefault();
                     if (currentStep < maxSteps) {
                         currentStep++;
-                        stepInput.value = currentStep;
+                        if (stepInput) stepInput.value = currentStep;
                         // Save immediately to localStorage for instant response
                         localStorage.setItem(progressKey, currentStep);
                         if (window.currentProject) window.currentProject.currentStep = currentStep;
@@ -1157,7 +1182,7 @@
                     e.preventDefault();
                     if (currentStep > 1) {
                         currentStep--;
-                        stepInput.value = currentStep;
+                        if (stepInput) stepInput.value = currentStep;
                         // Save immediately to localStorage for instant response
                         localStorage.setItem(progressKey, currentStep);
                         if (window.currentProject) window.currentProject.currentStep = currentStep;

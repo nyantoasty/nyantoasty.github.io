@@ -90,27 +90,31 @@ export async function checkRedirectResult() {
 
 // Application state management
 export function showNotAuthorized(user) {
-    document.getElementById('signin-container').style.display = 'none';
-    document.getElementById('not-authorized').style.display = 'block';
-    document.getElementById('application-container').style.display = 'none';
+    // Show auth container, hide app container
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
     
-    document.getElementById('user-email-not-auth').textContent = user.email;
+    if (authContainer) authContainer.classList.remove('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+    
+    console.log('👤 User not authorized:', user?.email || 'unknown user');
 }
 
 export function showApplication(user, userData = null, roleData = null) {
-    document.getElementById('signin-container').style.display = 'none';
-    document.getElementById('not-authorized').style.display = 'none';
-    document.getElementById('application-container').style.display = 'block';
+    // Hide auth container, show app container
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
     
-    const userDisplayNameElement = document.getElementById('user-display-name');
-    const userEmailElement = document.getElementById('user-email');
+    if (authContainer) authContainer.classList.add('hidden');
+    if (appContainer) appContainer.classList.remove('hidden');
     
-    if (userDisplayNameElement) {
-        userDisplayNameElement.textContent = user.displayName || 'User';
+    // Update user display
+    const userDisplayElement = document.getElementById('user-display');
+    if (userDisplayElement) {
+        userDisplayElement.textContent = `Welcome, ${user.displayName || user.email || 'User'}!`;
     }
-    if (userEmailElement) {
-        userEmailElement.textContent = user.email;
-    }
+    
+    console.log('🎉 User authorized - showing application');
     
     // Initialize the application
     populateProjectSelector();

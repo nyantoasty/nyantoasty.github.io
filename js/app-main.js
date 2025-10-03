@@ -513,16 +513,21 @@ export async function loadSelectedProject(projectKey, userProjects) {
 
 export async function loadPatternFromFirestore(patternId) {
     try {
+        console.log('🔄 Loading pattern from Firestore:', patternId);
         const patternDoc = await getDoc(doc(db, 'patterns', patternId));
         if (patternDoc.exists()) {
             const patternData = patternDoc.data();
+            // Set pattern data globally
             window.PATTERN_DATA = patternData;
-            window.PATTERN_DATA = patternData; // Also set local variable
             
             if (patternData.metadata && patternData.metadata.name) {
-                // Pattern loaded successfully, set up the viewer
-                window.setupViewer(); // Call the global function
                 console.log('✅ Pattern loaded from Firestore:', patternData.metadata.name);
+                // Pattern loaded successfully, set up the viewer
+                if (typeof window.setupViewer === 'function') {
+                    window.setupViewer();
+                } else {
+                    console.error('❌ setupViewer function not available');
+                }
             } else {
                 console.error('❌ Pattern data missing required metadata');
             }

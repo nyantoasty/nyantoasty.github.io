@@ -698,22 +698,22 @@
     }
     
     // Project selector change event listener
-    projectSelector.addEventListener('change', async (e) => {
-        const projectKey = e.target.value;
-        if (projectKey) {
-            console.log('🎯 Project selected:', projectKey);
-            try {
-                const userProjects = await loadUserProjects();
-                await loadSelectedProject(projectKey, userProjects);
-            } catch (error) {
-                console.error('❌ Error loading selected project:', error);
-                alert('Error loading project: ' + error.message);
+        projectSelector.addEventListener('change', async (e) => {
+            const projectKey = e.target.value;
+            if (projectKey) {
+                console.log('🎯 Project selected:', projectKey);
+                try {
+                    const userProjects = await loadUserProjects();
+                    await loadSelectedProject(projectKey, userProjects);
+                } catch (error) {
+                    console.error('❌ Error loading selected project:', error);
+                    alert('Error loading project: ' + error.message);
+                }
+            } else {
+                // No project selected - reset viewer
+                resetViewer();
             }
-        } else {
-            // No project selected - reset viewer
-            resetViewer();
-        }
-    });
+        });
     
     deleteProjectBtn.addEventListener('click', async () => {
         const selector = document.getElementById('project-selector');

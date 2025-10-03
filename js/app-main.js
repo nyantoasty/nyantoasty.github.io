@@ -26,6 +26,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadProgressFirestore, saveProgressFirestore } from './viewer-logic.js';
 import { getOrCreateProject, saveProjectProgress, getCurrentProject, createNewProject } from './progress-tracking.js';
+import { initializePatternUpload, processPatternFile } from './pattern-ocr.js';
 
 // Google Sign-In
 export async function signInWithGoogle() {

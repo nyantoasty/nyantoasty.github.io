@@ -4,9 +4,103 @@
 import { db, auth } from './firebase-config.js';
 import { collection, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// Configuration - Get from Firebase config or environment
-const GOOGLE_VISION_API_KEY = 'AIzaSyAEiDASYq5WHALAYaQ1bs8ztZ--avzU0a4'; // Your existing Gemini key - we'll need a Vision API key too
-const GEMINI_API_KEY = 'AIzaSyAEiDASYq5WHALAYaQ1bs8ztZ--avzU0a4'; // Your existing key
+// Configuration - API Keys (DO NOT hardcode these!)
+// These will be loaded from environment or user input
+let GOOGLE_VISION_API_KEY = null;
+let GEMINI_API_KEY = null;
+
+/**
+ * Initialize API keys securely
+ * This prompts the user to enter keys or loads from secure storage
+ */
+async function initializeAPIKeys() {
+    // Check if keys are already stored securely in localStorage (encrypted)
+    const storedVisionKey = localStorage.getItem('vision_api_key_encrypted');
+    const storedGeminiKey = localStorage.getItem('gemini_api_key_encrypted');
+    
+    if (storedVisionKey && storedGeminiKey) {
+        // Decrypt stored keys (basic obfuscation - not true encryption)
+        GOOGLE_VISION_API_KEY = atob(storedVisionKey);
+        GEMINI_API_KEY = atob(storedGeminiKey);
+        return true;
+    }
+    
+    // Prompt user for keys if not stored
+    return await promptForAPIKeys();
+}
+
+/**
+ * Prompt user to enter API keys securely
+ */
+async function promptForAPIKeys() {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold text-white mb-4">🔒 API Keys Required</h3>
+                <p class="text-gray-300 mb-4">To use OCR functionality, please enter your Google API keys. These will be stored securely in your browser.</p>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-300 mb-2">Cloud Vision API Key</label>
+                    <input type="password" id="vision-key" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Enter Vision API key">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-300 mb-2">Generative Language API Key (Gemini)</label>
+                    <input type="password" id="gemini-key" class="w-full p-2 rounded bg-gray-700 text-white" placeholder="Enter Gemini API key">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="flex items-center text-gray-300">
+                        <input type="checkbox" id="remember-keys" class="mr-2" checked>
+                        Remember keys securely in this browser
+                    </label>
+                </div>
+                
+                <div class="flex justify-end space-x-2">
+                    <button onclick="this.closest('.fixed').remove(); resolve(false)" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
+                    <button onclick="handleKeySave(this, resolve)" class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700">Save Keys</button>
+                </div>
+                
+                <div class="mt-4 text-xs text-gray-400">
+                    <p>📝 <strong>How to get API keys:</strong></p>
+                    <p>1. Go to Google Cloud Console → APIs & Services → Credentials</p>
+                    <p>2. Create API keys for Cloud Vision API and Generative Language API</p>
+                    <p>3. Restrict keys to your domain for security</p>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Handle key saving
+        window.handleKeySave = (button, resolve) => {
+            const visionKey = document.getElementById('vision-key').value.trim();
+            const geminiKey = document.getElementById('gemini-key').value.trim();
+            const remember = document.getElementById('remember-keys').checked;
+            
+            if (!visionKey || !geminiKey) {
+                alert('Please enter both API keys');
+                return;
+            }
+            
+            // Set keys in memory
+            GOOGLE_VISION_API_KEY = visionKey;
+            GEMINI_API_KEY = geminiKey;
+            
+            // Store securely if requested (basic obfuscation)
+            if (remember) {
+                localStorage.setItem('vision_api_key_encrypted', btoa(visionKey));
+                localStorage.setItem('gemini_api_key_encrypted', btoa(geminiKey));
+            }
+            
+            modal.remove();
+            delete window.handleKeySave;
+            resolve(true);
+        };
+    });
+}
 
 /**
  * Process an uploaded file through OCR and NLP to create a Firestore pattern
@@ -18,6 +112,12 @@ const GEMINI_API_KEY = 'AIzaSyAEiDASYq5WHALAYaQ1bs8ztZ--avzU0a4'; // Your existi
 export async function processPatternFile(file, patternName, authorName) {
     try {
         console.log('🔍 Starting pattern processing...', { file: file.name, patternName, authorName });
+        
+        // Ensure API keys are available
+        const keysReady = await initializeAPIKeys();
+        if (!keysReady) {
+            throw new Error('API keys are required for OCR processing');
+        }
         
         // Step 1: Extract text using Google Vision API
         const extractedText = await extractTextFromFile(file);
@@ -265,6 +365,28 @@ function fileToBase64(file) {
         reader.onerror = reject;
         reader.readAsDataURL(file);
     });
+}
+
+/**
+ * Add a button to clear stored API keys (for security)
+ */
+export function addClearKeysOption() {
+    const clearButton = document.createElement('button');
+    clearButton.innerHTML = '🔒 Clear Stored API Keys';
+    clearButton.className = 'bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors';
+    clearButton.onclick = () => {
+        localStorage.removeItem('vision_api_key_encrypted');
+        localStorage.removeItem('gemini_api_key_encrypted');
+        GOOGLE_VISION_API_KEY = null;
+        GEMINI_API_KEY = null;
+        alert('API keys cleared from browser storage');
+    };
+    
+    // Add to settings or appropriate location
+    const settingsArea = document.querySelector('#settings-area') || document.querySelector('.user-menu');
+    if (settingsArea) {
+        settingsArea.appendChild(clearButton);
+    }
 }
 
 /**

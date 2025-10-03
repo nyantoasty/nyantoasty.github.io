@@ -2,6 +2,10 @@ const functions = require('firebase-functions');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const vision = require('@google-cloud/vision');
 const admin = require('firebase-admin');
+const cors = require('cors')({
+  origin: true, // Allow all origins for now
+  credentials: true
+});
 
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
@@ -170,89 +174,94 @@ exports.checkAiUsage = functions.https.onCall(async (data, context) => {
 });
 
 // OCR Processing Function
-exports.processOCR = functions.https.onCall(async (data, context) => {
-  try {
-    // Ensure user is authenticated
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'Must be logged in to use OCR');
-    }
-
-    const { fileData, fileName, mimeType } = data;
-
-    if (!fileData) {
-      throw new functions.https.HttpsError('invalid-argument', 'File data is required');
-    }
-
-    let extractedText = '';
-    
-    if (mimeType && mimeType.includes('image')) {
-      // Process images with Cloud Vision OCR
-      const imageBuffer = Buffer.from(fileData, 'base64');
-      
-      const [result] = await visionClient.textDetection({
-        image: { content: imageBuffer }
-      });
-      
-      const detections = result.textAnnotations;
-      if (detections && detections.length > 0) {
-        extractedText = detections[0].description;
+exports.processOCR = functions.https.onRequest((req, res) => {
+  return cors(req, res, async () => {
+    try {
+      // Only allow POST requests
+      if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
       }
-      
-    } else if (mimeType && mimeType.includes('pdf')) {
-      // Process PDFs with Cloud Vision Document AI
-      const pdfBuffer = Buffer.from(fileData, 'base64');
-      
-      const [result] = await visionClient.documentTextDetection({
-        image: { content: pdfBuffer }
-      });
-      
-      const fullTextAnnotation = result.fullTextAnnotation;
-      if (fullTextAnnotation) {
-        extractedText = fullTextAnnotation.text;
+
+      // Extract data from request body
+      const { data } = req.body;
+      if (!data) {
+        return res.status(400).json({ error: 'Missing data in request body' });
       }
-      
-    } else if (mimeType && (mimeType.includes('text') || mimeType.includes('plain'))) {
-      // Process plain text files
-      extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
-      
-    } else {
-      // For other file types, try generic OCR
-      const fileBuffer = Buffer.from(fileData, 'base64');
-      
-      const [result] = await visionClient.textDetection({
-        image: { content: fileBuffer }
-      });
-      
-      const detections = result.textAnnotations;
-      if (detections && detections.length > 0) {
-        extractedText = detections[0].description;
+
+      const { fileData, fileName, mimeType } = data;
+
+      if (!fileData) {
+        return res.status(400).json({ error: 'File data is required' });
       }
+
+      let extractedText = '';
+      
+      if (mimeType && mimeType.includes('image')) {
+        // Process images with Cloud Vision OCR
+        const imageBuffer = Buffer.from(fileData, 'base64');
+        
+        const [result] = await visionClient.textDetection({
+          image: { content: imageBuffer }
+        });
+        
+        const detections = result.textAnnotations;
+        if (detections && detections.length > 0) {
+          extractedText = detections[0].description;
+        }
+        
+      } else if (mimeType && mimeType.includes('pdf')) {
+        // Process PDFs with Cloud Vision Document AI
+        const pdfBuffer = Buffer.from(fileData, 'base64');
+        
+        const [result] = await visionClient.documentTextDetection({
+          image: { content: pdfBuffer }
+        });
+        
+        const fullTextAnnotation = result.fullTextAnnotation;
+        if (fullTextAnnotation) {
+          extractedText = fullTextAnnotation.text;
+        }
+        
+      } else if (mimeType && (mimeType.includes('text') || mimeType.includes('plain'))) {
+        // Process plain text files
+        extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
+        
+      } else {
+        // For other file types, try generic OCR
+        const fileBuffer = Buffer.from(fileData, 'base64');
+        
+        const [result] = await visionClient.textDetection({
+          image: { content: fileBuffer }
+        });
+        
+        const detections = result.textAnnotations;
+        if (detections && detections.length > 0) {
+          extractedText = detections[0].description;
+        }
+      }
+
+      // Clean up the extracted text
+      extractedText = extractedText.trim();
+      
+      if (!extractedText) {
+        return res.status(400).json({ error: 'No text could be extracted from the file' });
+      }
+
+      // Log usage for monitoring
+      console.log(`OCR processed: ${fileName} (${extractedText.length} chars)`);
+
+      return res.json({
+        success: true,
+        text: extractedText,
+        fileName: fileName,
+        charCount: extractedText.length
+      });
+
+    } catch (error) {
+      console.error('OCR processing error:', error);
+      return res.status(500).json({ 
+        error: `Failed to process ${req.body.data?.fileName || 'file'}: ${error.message}` 
+      });
     }
-
-    // Clean up the extracted text
-    extractedText = extractedText.trim();
-    
-    if (!extractedText) {
-      throw new functions.https.HttpsError('internal', 'No text could be extracted from the file');
-    }
-
-    // Log usage for monitoring
-    console.log(`OCR processed for user ${context.auth.uid}: ${fileName} (${extractedText.length} chars)`);
-
-    return {
-      success: true,
-      text: extractedText,
-      fileName: fileName,
-      charCount: extractedText.length
-    };
-
-  } catch (error) {
-    console.error('OCR processing error:', error);
-    
-    if (error instanceof functions.https.HttpsError) {
-      throw error;
-    }
-    
-    throw new functions.https.HttpsError('internal', `Failed to process ${fileName}: ${error.message}`);
-  }
+  });
 });

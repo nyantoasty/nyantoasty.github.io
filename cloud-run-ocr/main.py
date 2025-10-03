@@ -99,29 +99,50 @@ def process_ocr():
     """
     try:
         logger.info("🔍 Starting OCR processing request")
+        logger.info("🚀 VERSION CHECK: This is the latest code with comprehensive debugging - v2.1")
         
         # Validate request
+        logger.info("🔍 Step 1: Validating request format...")
         if not request.is_json:
+            logger.error("❌ Request is not JSON")
             return jsonify({'error': 'Request must be JSON'}), 400
         
+        logger.info("🔍 Getting JSON data...")
         data = request.get_json()
+        logger.info(f"🔍 Received data keys: {list(data.keys()) if data else 'None'}")
+        
         required_fields = ['imageData', 'patternName', 'authorName', 'userId']
+        logger.info(f"🔍 Checking required fields: {required_fields}")
         
         for field in required_fields:
             if field not in data:
+                logger.error(f"❌ Missing required field: {field}")
                 return jsonify({'error': f'Missing required field: {field}'}), 400
         
+        logger.info("🔍 Extracting fields from data...")
         image_data = data['imageData']
         pattern_name = data['patternName']
         author_name = data['authorName']
         user_id = data['userId']
         file_type = data.get('fileType', None)  # Optional field
         
+        logger.info(f"🔍 Successfully extracted fields:")
+        logger.info(f"  - pattern_name: {pattern_name}")
+        logger.info(f"  - author_name: {author_name}")
+        logger.info(f"  - user_id: {user_id}")
+        logger.info(f"  - file_type: {repr(file_type)}")
+        logger.info(f"  - image_data length: {len(image_data) if image_data else 'None'}")
+        
         logger.info(f"Processing pattern: {pattern_name} by {author_name}, file type: {file_type}")
         
         # Step 1: Extract text from file (PDF or image)
-        extracted_text = extract_text_from_file(image_data, file_type)
-        logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
+        try:
+            logger.info(f"🔍 About to call extract_text_from_file with file_type: {repr(file_type)}")
+            extracted_text = extract_text_from_file(image_data, file_type)
+            logger.info(f"📝 Text extraction complete: {len(extracted_text)} characters")
+        except Exception as e:
+            logger.error(f"❌ extract_text_from_file failed: {str(e)}")
+            raise e
         
         # Step 2: Process text with Gemini to create structured pattern
         pattern_data = process_text_to_pattern(extracted_text, pattern_name, author_name)
@@ -148,19 +169,33 @@ def process_ocr():
 def extract_text_from_file(image_data: str, file_type: str = None) -> str:
     """Extract text from file - handle both PDFs and images"""
     try:
+        logger.info(f"🔍 ENTERING extract_text_from_file")
+        logger.info(f"🔍 file_type parameter: {repr(file_type)}")
+        logger.info(f"🔍 image_data length: {len(image_data) if image_data else 'None'}")
+        
         # Decode base64 data
         file_bytes = base64.b64decode(image_data)
+        logger.info(f"📄 Decoded file size: {len(file_bytes)} bytes")
+        logger.info(f"🔍 First 10 bytes: {file_bytes[:10]}")
         
         # Check if it's a PDF (either by file_type or by checking magic bytes)
-        if file_type == 'application/pdf' or file_bytes.startswith(b'%PDF'):
-            logger.info("📄 Processing PDF file...")
+        is_pdf_by_type = file_type == 'application/pdf'
+        is_pdf_by_magic = file_bytes.startswith(b'%PDF')
+        
+        logger.info(f"🔍 PDF detection results:")
+        logger.info(f"  - file_type == 'application/pdf': {is_pdf_by_type}")
+        logger.info(f"  - file_bytes.startswith(b'%PDF'): {is_pdf_by_magic}")
+        logger.info(f"  - Combined result: {is_pdf_by_type or is_pdf_by_magic}")
+        
+        if is_pdf_by_type or is_pdf_by_magic:
+            logger.info("📄 ROUTING TO PDF PROCESSING")
             return extract_text_from_pdf(file_bytes)
         else:
-            logger.info("🖼️ Processing image file...")
+            logger.info("🖼️ ROUTING TO IMAGE PROCESSING")
             return extract_text_from_image(image_data)
             
     except Exception as e:
-        logger.error(f"❌ File processing error: {str(e)}")
+        logger.error(f"❌ extract_text_from_file error: {str(e)}")
         raise Exception(f"File processing error: {str(e)}")
 
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:

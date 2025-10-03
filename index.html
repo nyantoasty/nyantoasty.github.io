@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-02- Adding notes sidebar -->
+<!-- Version: v2025-10-02- Separating js -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - Adding notes sidebar v2025-10-02</title>
+    <title>Stitch Witch - Separating JS v2025-10-02</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="manifest" href="/manifest.json">
@@ -589,6 +589,16 @@
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore } from "./js/viewer-logic.js";
     import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
     import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
+    import { 
+        signInWithGoogle, 
+        signOutUser, 
+        toggleNotesSidebar,
+        loadProjectNotes,
+        saveCurrentRowNote,
+        addRowNoteIndicator,
+        loadRowNoteIndicators,
+        goToRowWithNote
+    } from "./js/app-main.js";
     // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
     
     // --- CONFIG & STATE ---
@@ -2175,22 +2185,7 @@
             return null;
         }
 
-        // Duplicate functions removed - imported from viewer-logic.js
-        
-        function highlightCurrentStep(shouldScroll){
-            document.querySelectorAll('.current-step').forEach(el=>el.classList.remove('current-step'));
-            const stepElement=findStepElement(currentStep);
-            if(stepElement){
-                stepElement.classList.add('current-step');
-                console.log(`Highlighted step ${currentStep}, scrolling:`, shouldScroll);
-                if(shouldScroll) stepElement.scrollIntoView({behavior:'smooth',block:'center'});
-            } else {
-                console.log(`No element found for step ${currentStep}`);
-            }
-            
-            // Update footer metadata when step changes
-            updateFooterMetadata();
-        }
+        // Functions imported from viewer-logic.js: highlightCurrentStep, addRowNoteIndicator, loadRowNoteIndicators
         
         // Navigation handled by setupRowNavigation() function - keyboard listeners removed to prevent double triggers
         toggleModeBtn.addEventListener('click', () => {
@@ -2422,31 +2417,7 @@
 
     // updateDisplay function is imported from viewer-logic.js - no local definition needed
 
-    // Add missing highlightCurrentStep function
-    function highlightCurrentStep(shouldScroll = false) {
-        console.log(`Highlighting step ${currentStep}, scroll: ${shouldScroll}`);
-        
-        // Remove previous highlights
-        document.querySelectorAll('.current-step').forEach(el => {
-            el.classList.remove('current-step');
-        });
-        
-        // Find and highlight current step
-        const stepElement = findStepElement(currentStep);
-        if (stepElement) {
-            stepElement.classList.add('current-step');
-            console.log(`Highlighted step ${currentStep}`);
-            
-            if (shouldScroll) {
-                stepElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
-        } else {
-            console.log(`No element found for step ${currentStep}`);
-        }
-    }
+    // highlightCurrentStep function is imported from viewer-logic.js
 
     // Add missing updateFooterMetadata function
     function updateCurrentStepDisplay() {
@@ -2851,51 +2822,11 @@
         }
     }
     
-    function addRowNoteIndicator(step) {
-        // Add visual indicator to row that has a note
-        const stepElements = document.querySelectorAll(`[data-step="${step}"], [data-step-start="${step}"]`);
-        stepElements.forEach(el => {
-            if (!el.querySelector('.note-indicator')) {
-                const indicator = document.createElement('span');
-                indicator.className = 'note-indicator inline-block w-2 h-2 bg-yellow-400 rounded-full ml-2';
-                indicator.title = 'This row has a note';
-                el.appendChild(indicator);
-            }
-        });
-    }
+    // addRowNoteIndicator function is defined in js/app-main.js
     
-    // Load notes indicators when pattern is displayed
-    function loadRowNoteIndicators() {
-        if (!window.currentProject?.notes?.stepNotes) return;
-        
-        Object.keys(window.currentProject.notes.stepNotes).forEach(step => {
-            addRowNoteIndicator(parseInt(step));
-        });
-    }
+    // loadRowNoteIndicators function is defined in js/app-main.js
     
-    function highlightCurrentStep(shouldScroll) {
-        if (!PATTERN_DATA || !currentStep) return;
-        
-        // Remove existing highlights
-        document.querySelectorAll('.current-step').forEach(el => {
-            el.classList.remove('current-step');
-        });
-        
-        // Find and highlight current step
-        const stepElement = findStepElement(currentStep);
-        if (stepElement) {
-            stepElement.classList.add('current-step');
-            if (shouldScroll) {
-                stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-        
-        // Update footer
-        updateFooterMetadata();
-        
-        // Load note indicators
-        loadRowNoteIndicators();
-    }
+    // highlightCurrentStep function is imported from viewer-logic.js
         
         // Setup Jump to Start button
         const jumpToStartBtn = document.getElementById('jump-to-start');

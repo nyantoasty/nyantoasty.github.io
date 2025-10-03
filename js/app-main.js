@@ -320,6 +320,14 @@ export function addRowNoteIndicator(stepNumber, hasNote) {
     }
 }
 
+export function loadRowNoteIndicators() {
+    if (!window.currentProject?.notes?.stepNotes) return;
+    
+    Object.keys(window.currentProject.notes.stepNotes).forEach(step => {
+        addRowNoteIndicator(parseInt(step), true);
+    });
+}
+
 export function goToRowWithNote(step) {
     // Jump to the specified row
     window.currentStep = parseInt(step);
@@ -362,3 +370,5 @@ window.showNewProjectModal = showNewProjectModal;
 window.createNewProjectUI = createNewProjectUI;
 window.toggleArchivedProjects = toggleArchivedProjects;
 window.goToRowWithNote = goToRowWithNote;
+window.addRowNoteIndicator = addRowNoteIndicator;
+window.loadRowNoteIndicators = loadRowNoteIndicators;

@@ -9,7 +9,7 @@ if (!admin.apps.length) {
 }
 
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI(functions.config().gemini.key); // Set with: firebase functions:config:set gemini.key="your-api-key"
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Modern environment variable approach
 
 // Initialize Cloud Vision client
 const visionClient = new vision.ImageAnnotatorClient();

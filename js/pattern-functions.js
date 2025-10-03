@@ -511,110 +511,90 @@ export function generatePatternTheme(PATTERN_DATA) {
         }
     });
     
-    console.log('Generated pattern theme for categories:', Array.from(categories));
+    console.log('🎨 Generating pattern theme for categories:', Array.from(categories));
     
-    // Define a palette of colors to cycle through
-    const colorPalette = [
-        'var(--color-main)',
-        'var(--color-increase)', 
-        'var(--color-decrease)',
-        'var(--color-edge)',
-        'var(--color-spine)',
-        'var(--color-bobble)',
-        'var(--color-lace)',
-        'var(--color-cable)',
-        'var(--color-texture)',
-        'var(--color-stitch)',
-        'var(--color-special)',
-        'var(--color-marker)',
-        'var(--color-repeat)',
-        'var(--color-bind)',
-        'var(--color-cast)'
+    // Define fallback color palette for unknown categories
+    const fallbackColors = [
+        '#93c5fd', // blue-300
+        '#86efac', // green-300
+        '#f87171', // red-300
+        '#d8b4fe', // purple-300
+        '#fbbf24', // amber-400
+        '#fb7185', // rose-400
+        '#60a5fa', // blue-400
+        '#fcd34d', // amber-300
+        '#a78bfa', // violet-400
+        '#34d399', // emerald-400
+        '#ff9800', // orange-500
+        '#ff6b6b', // red-400
+        '#9ca3af', // gray-400
+        '#38bdf8', // sky-400
+        '#c084fc'  // purple-400
     ];
     
-    // Define color mappings for known categories
-    const predefinedColorMap = {
-        main: 'var(--color-main)',
-        increase: 'var(--color-increase)', 
-        edge: 'var(--color-edge)',
-        decrease: 'var(--color-decrease)',
-        spine: 'var(--color-spine)',
-        bobble: 'var(--color-bobble)',
-        lace: 'var(--color-lace)',
-        cable: 'var(--color-cable)',
-        texture: 'var(--color-texture)',
-        stitch: 'var(--color-stitch)',
-        special: 'var(--color-special)',
-        marker: 'var(--color-marker)',
-        repeat: 'var(--color-repeat)',
-        bind: 'var(--color-bind)',
-        cast: 'var(--color-cast)'
-    };
+    // Standard categories that have predefined CSS variables
+    const standardCategories = new Set([
+        'main', 'increase', 'decrease', 'edge', 'spine', 'bobble', 
+        'lace', 'cable', 'texture', 'stitch', 'special', 'marker', 
+        'repeat', 'bind', 'cast'
+    ]);
     
-    // Create dynamic color map by assigning colors to categories by index
-    const colorMap = {};
-    const categoriesArray = Array.from(categories);
-    categoriesArray.forEach((cat, index) => {
-        if (predefinedColorMap[cat]) {
-            colorMap[cat] = predefinedColorMap[cat];
-        } else {
-            // Assign color by index, cycling through palette if needed
-            colorMap[cat] = colorPalette[index % colorPalette.length];
+    // Check for pattern-specific color overrides
+    const colorOverrides = PATTERN_DATA.colorTheme || {};
+    
+    // Create dynamic CSS for categories not covered by standard CSS
+    const root = document.documentElement;
+    let dynamicCSS = '';
+    let colorIndex = 0;
+    
+    categories.forEach(category => {
+        // Use pattern-specific color override if available
+        if (colorOverrides[category]) {
+            root.style.setProperty(`--color-${category}`, colorOverrides[category]);
+            console.log(`🎨 Applied pattern override for ${category}: ${colorOverrides[category]}`);
+        }
+        
+        // If category is not in standard CSS, create dynamic CSS
+        if (!standardCategories.has(category)) {
+            // Use override color or fallback color
+            const color = colorOverrides[category] || fallbackColors[colorIndex % fallbackColors.length];
+            
+            // Set CSS variable if not already set
+            if (!colorOverrides[category]) {
+                root.style.setProperty(`--color-${category}`, color);
+            }
+            
+            // Create CSS classes for this category
+            dynamicCSS += `.${category} { color: var(--color-${category}) !important; font-weight: 500; }\n`;
+            dynamicCSS += `.color-${category} { color: var(--color-${category}) !important; }\n`;
+            
+            console.log(`🎨 Created dynamic CSS for ${category}: ${color}`);
+            colorIndex++;
         }
     });
     
-    // Generate CSS rules for debugging
-    let cssRules = 'CSS Rules: ';
-    categories.forEach(cat => {
-        const color = colorMap[cat] || 'var(--color-main)';
-        cssRules += `.${cat} { color: ${color}; } `;
-    });
-    
-    console.log(cssRules);
-    console.log('Final color map:', colorMap);
-    
-    // Inject or update the dynamic theme
-    let styleEl = document.getElementById('pattern-theme');
-    if (!styleEl) {
-        styleEl = document.createElement('style');
-        styleEl.id = 'pattern-theme';
-        document.head.appendChild(styleEl);
+    // Inject dynamic CSS if any categories need it
+    if (dynamicCSS) {
+        let styleEl = document.getElementById('dynamic-pattern-colors');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'dynamic-pattern-colors';
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = dynamicCSS;
+        console.log('🎨 Injected dynamic color CSS:', dynamicCSS);
     }
-
-    const dynamicCSS = Array.from(categories).map(cat => {
-        const color = colorMap[cat] || 'var(--color-main)';
-        return `.${cat} { color: ${color}; font-weight: 500; }`;
-    }).join('\n');
     
-    styleEl.textContent = dynamicCSS;
+    console.log('✅ Pattern theme generation complete');
     
     // Update sidebar color key
-    updateSidebarColorKey(categories, colorMap);
+    updateSidebarColorKey(categories);
 }
 
 // Function to update the sidebar color key dynamically
-export function updateSidebarColorKey(categories, colorMap = null) {
+export function updateSidebarColorKey(categories) {
     const sidebarColorKey = document.getElementById('sidebar-color-key');
     if (!sidebarColorKey) return;
-    
-    // Define a palette of colors to cycle through
-    const colorPalette = [
-        'var(--color-main)',
-        'var(--color-increase)', 
-        'var(--color-decrease)',
-        'var(--color-edge)',
-        'var(--color-spine)',
-        'var(--color-bobble)',
-        'var(--color-lace)',
-        'var(--color-cable)',
-        'var(--color-texture)',
-        'var(--color-stitch)',
-        'var(--color-special)',
-        'var(--color-marker)',
-        'var(--color-repeat)',
-        'var(--color-bind)',
-        'var(--color-cast)'
-    ];
     
     // Define category descriptions
     const categoryDescriptions = {
@@ -637,31 +617,19 @@ export function updateSidebarColorKey(categories, colorMap = null) {
     
     let colorKeyHTML = '';
     
-    // Convert categories to array and assign colors by index
-    const categoriesArray = Array.from(categories);
-    categoriesArray.forEach((cat, index) => {
-        const description = categoryDescriptions[cat] || cat;
-        
-        // Get color from colorMap if provided, otherwise assign by index from palette
-        let color;
-        if (colorMap && colorMap[cat]) {
-            color = colorMap[cat];
-        } else {
-            // Cycle through palette if we have more categories than colors
-            color = colorPalette[index % colorPalette.length];
-        }
+    // Create color key entries for each category
+    categories.forEach(category => {
+        const description = categoryDescriptions[category] || category.charAt(0).toUpperCase() + category.slice(1);
         
         colorKeyHTML += `
-            <div class="flex items-center gap-2">
-                <span class="${cat} font-semibold" style="color: ${color};">${cat}:</span>
-                <span class="text-gray-400">${description}</span>
+            <div class="flex items-center space-x-2">
+                <div class="w-4 h-4 rounded" style="background-color: var(--color-${category})"></div>
+                <span class="color-${category}">${category}</span>
+                <span class="text-gray-400">- ${description}</span>
             </div>
         `;
     });
     
-    if (colorKeyHTML === '') {
-        colorKeyHTML = '<div class="text-gray-400 text-sm">No color categories found</div>';
-    }
-    
     sidebarColorKey.innerHTML = colorKeyHTML;
+    console.log('🎨 Updated sidebar color key with', categories.size, 'categories');
 }

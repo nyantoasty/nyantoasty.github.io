@@ -160,9 +160,13 @@ def extract_text_from_image(base64_image: str) -> str:
         }]
     }
     
-    # Call Vision API
+    # Call Vision API with proper referrer header
     url = f"https://vision.googleapis.com/v1/images:annotate?key={VISION_API_KEY}"
-    response = requests.post(url, json=vision_request)
+    headers = {
+        'Content-Type': 'application/json',
+        'Referer': 'https://nyantoasty.github.io'
+    }
+    response = requests.post(url, json=vision_request, headers=headers)
     
     if not response.ok:
         raise Exception(f"Vision API error: {response.status_code} - {response.text}")
@@ -223,9 +227,13 @@ Please convert this knitting pattern into the exact Firestore JSON schema descri
         }
     }
     
-    # Call Gemini API
+    # Call Gemini API with proper referrer header
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
-    response = requests.post(url, json=gemini_request)
+    headers = {
+        'Content-Type': 'application/json',
+        'Referer': 'https://nyantoasty.github.io'
+    }
+    response = requests.post(url, json=gemini_request, headers=headers)
     
     if not response.ok:
         raise Exception(f"Gemini API error: {response.status_code} - {response.text}")

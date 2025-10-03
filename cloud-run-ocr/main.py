@@ -149,6 +149,175 @@ def process_ocr():
             'error': str(e)
         }), 500
 
+@app.route('/generate-pattern', methods=['POST'])
+def generate_pattern():
+    """Generate pattern JSON from text using Gemini AI with LogicGuide prompt"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        required_fields = ['patternText', 'patternName', 'authorName']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        pattern_text = data['patternText']
+        pattern_name = data['patternName']
+        author_name = data['authorName']
+        
+        # Generate pattern using Gemini AI
+        pattern_json = generate_pattern_from_text(pattern_text, pattern_name, author_name)
+        
+        return jsonify({
+            'success': True,
+            'patternData': pattern_json,
+            'message': f'Pattern "{pattern_name}" generated successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Pattern generation failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+def generate_pattern_from_text(pattern_text: str, pattern_name: str, author_name: str) -> dict:
+    """Generate pattern JSON using Gemini AI with comprehensive LogicGuide prompt"""
+    
+    prompt = f"""You are an expert knitting pattern translator. Your task is to convert a condensed, human-readable knitting pattern into a fully enumerated, step-by-step JSON document following our precise Firestore schema.
+
+CORE PHILOSOPHY: Transform ambiguity into certainty. Eliminate all loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
+
+TARGET SCHEMA:
+{{
+  "metadata": {{
+    "name": "Pattern Name",
+    "author": "Designer Name", 
+    "craft": "knitting",
+    "maxSteps": 280
+  }},
+  "glossary": {{
+    "k": {{ "name": "Knit", "description": "A standard knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 }},
+    "kfb": {{ "name": "Knit Front and Back", "description": "A one-stitch increase.", "stitchesUsed": 1, "stitchesCreated": 2 }},
+    "k2tog": {{ "name": "Knit 2 Together", "description": "A one-stitch decrease.", "stitchesUsed": 2, "stitchesCreated": 1 }}
+  }},
+  "steps": [
+    {{
+      "step": 1,
+      "startingStitchCount": 3,
+      "endingStitchCount": 4,
+      "instruction": "k1, kfb, k1",
+      "section": "setup",
+      "side": "RS", 
+      "type": "regular"
+    }}
+  ]
+}}
+
+CRITICAL REQUIREMENTS:
+
+1. GLOSSARY CREATION: Build a complete glossary for EVERY stitch abbreviation used in the pattern. Each entry must have:
+   - name: Full name of the stitch
+   - description: Clear explanation of the technique
+   - stitchesUsed: How many stitches are consumed from left needle
+   - stitchesCreated: How many stitches are placed on right needle
+   
+   Net change = stitchesCreated - stitchesUsed
+
+2. STITCH COUNT CALCULATION: Every step MUST have accurate startingStitchCount and endingStitchCount. The endingStitchCount of one step becomes the startingStitchCount of the next.
+
+3. EXPAND ALL REPEATS: 
+   - "Repeat Rows 3 and 4 five more times" → Generate 10 individual steps with consecutive numbering
+   - "(yo, ssk) 6 times" → "yo, ssk, yo, ssk, yo, ssk, yo, ssk, yo, ssk, yo, ssk"
+   - Recalculate variables like "k to end" for each expanded row
+
+4. RESOLVE VARIABLES:
+   - "k to end" depends on current stitch count and preceding stitches in the row
+   - Example: Row with 10 stitches starting "k2, yo," then "k to end" = "k7" (10 - 2 knit - 1 yo stitch created)
+   - Always provide the fully resolved instruction
+
+5. SEQUENTIAL PROCESSING:
+   - Initialize: currentStepNumber = 1, currentStitchCount from cast on
+   - For each row: calculate starting count, resolve variables, expand repeats, calculate ending count
+   - Update state: currentStitchCount = endingStitchCount, increment step number
+   - Alternate side: RS → WS → RS
+
+PATTERN TO CONVERT:
+Name: {pattern_name}
+Author: {author_name}
+
+Pattern Text:
+{pattern_text}
+
+INSTRUCTIONS:
+1. First, identify the cast on instruction to establish initial stitch count
+2. Scan the entire pattern to build the complete glossary
+3. Process each row sequentially, expanding all repeats
+4. Calculate accurate stitch counts for every step
+5. Resolve all variable instructions to specific numbers
+6. Return ONLY the JSON object, no extra text or formatting
+
+Return the complete JSON structure now:"""
+
+    # Call Gemini API
+    headers = {
+        'Content-Type': 'application/json',
+    }
+    
+    payload = {
+        'contents': [{
+            'parts': [{ 'text': prompt }]
+        }],
+        'generationConfig': {
+            'temperature': 0.1,
+            'maxOutputTokens': 8192,
+            'candidateCount': 1
+        }
+    }
+    
+    try:
+        response = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}',
+            headers=headers,
+            json=payload,
+            timeout=60
+        )
+        
+        if not response.ok:
+            raise Exception(f'Gemini API error: {response.status_code} - {response.text}')
+        
+        result = response.json()
+        response_text = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+        
+        if not response_text:
+            raise Exception('No response from Gemini API')
+        
+        # Clean and parse JSON response
+        clean_json = response_text.replace('```json', '').replace('```', '').strip()
+        
+        try:
+            pattern_json = json.loads(clean_json)
+            
+            # Validate structure
+            if not all(key in pattern_json for key in ['metadata', 'glossary', 'steps']):
+                raise Exception('Invalid pattern structure: missing required sections')
+            
+            # Set maxSteps in metadata
+            pattern_json['metadata']['maxSteps'] = len(pattern_json['steps'])
+            
+            return pattern_json
+            
+        except json.JSONDecodeError as e:
+            logger.error(f'JSON Parse Error: {e}')
+            logger.error(f'Raw Response: {response_text}')
+            raise Exception(f'Failed to parse generated pattern: {e}')
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f'Request to Gemini API failed: {e}')
+        raise Exception(f'Failed to connect to Gemini API: {e}')
+
 @app.route('/extract-text', methods=['POST'])
 def extract_text_only():
     """Extract text without saving pattern"""

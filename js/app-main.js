@@ -1,7 +1,29 @@
 // app-main.js - Main application logic and initialization
 // Version: v2025-01-27-organized
 
-import { auth, db, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, getDoc, doc, query, collection, where, getDocs, setDoc, updateDoc, serverTimestamp } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
+import { 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    onAuthStateChanged, 
+    signOut, 
+    getRedirectResult,
+    signInWithRedirect 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { 
+    getDoc, 
+    doc, 
+    query, 
+    collection, 
+    where, 
+    getDocs, 
+    setDoc, 
+    updateDoc, 
+    serverTimestamp, 
+    deleteDoc,
+    addDoc,
+    limit
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadProgressFirestore, saveProgressFirestore } from './viewer-logic.js';
 import { getOrCreateProject, saveProjectProgress, getCurrentProject, createNewProject } from './progress-tracking.js';
 

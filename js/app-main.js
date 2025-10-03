@@ -529,9 +529,54 @@ export function resetViewer() {
 }
 
 export async function showNewProjectModal() {
-    // Implementation moved from index.html
-    console.log('Showing new project modal...');
-    // ... rest of function implementation
+    const firestorePatterns = await loadFirestorePatterns();
+    
+    if (firestorePatterns.length === 0) {
+        alert('No patterns available. Please add patterns to Firestore first.');
+        return;
+    }
+    
+    let patternOptions = firestorePatterns.map(pattern => 
+        `<option value="${pattern.id}">${pattern.metadata?.name || pattern.id} by ${pattern.metadata?.author || 'Unknown'}</option>`
+    ).join('');
+    
+    const modalHtml = `
+        <div id="new-project-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold text-white mb-4">Create New Project</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Select Pattern:</label>
+                        <select id="new-project-pattern" class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2">
+                            <option value="">-- Choose a pattern --</option>
+                            ${patternOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Project Name (optional):</label>
+                        <input type="text" id="new-project-name" placeholder="e.g., 'Birthday Gift', 'Winter Scarf'" 
+                               class="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2">
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button id="create-project-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded transition-colors">
+                            Create Project
+                        </button>
+                        <button id="cancel-project-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Event handlers
+    document.getElementById('create-project-btn').addEventListener('click', createNewProjectUI);
+    document.getElementById('cancel-project-btn').addEventListener('click', () => {
+        document.getElementById('new-project-modal').remove();
+    });
 }
 
 export async function createNewProjectUI() {
@@ -652,9 +697,137 @@ export async function unarchiveProject(projectKey) {
 }
 
 export async function checkAuthState() {
-    // Implementation moved from index.html
-    console.log('Checking auth state...');
-    // ... rest of function implementation
+    console.log('=== STEP 1: Starting checkAuthState ===');
+    
+    // Set up auth state listener FIRST to catch any immediate auth changes
+    console.log('=== STEP 1.5: Setting up auth state listener ===');
+    onAuthStateChanged(auth, async (user) => {
+        console.log('🔥 AUTH STATE CHANGED EVENT FIRED!');
+        console.log('Raw user object:', user);
+        console.log('User from auth state change:', user ? user.email : 'null');
+        console.log('User is null?', user === null);
+        console.log('User is undefined?', user === undefined);
+        
+        if (user) {
+            console.log('✅ USER FOUND VIA AUTH STATE CHANGE!');
+            console.log('User email:', user.email);
+            console.log('User UID:', user.uid);
+            console.log('User emailVerified:', user.emailVerified);
+            console.log('User providerData:', user.providerData);
+            
+            try {
+                // Check if user exists in the users collection
+                console.log('🔍 Checking user in Firebase users collection...');
+                console.log('Looking for document path: users/' + user.uid);
+                
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                console.log('User document exists:', userDocSnap.exists());
+                
+                if (userDocSnap.exists()) {
+                    // User exists, get their role and permissions
+                    const userData = userDocSnap.data();
+                    console.log('✅ User found in database:', userData);
+                    
+                    // Get role details
+                    const roleDocRef = doc(db, "roles", userData.role);
+                    const roleDocSnap = await getDoc(roleDocRef);
+                    
+                    if (roleDocSnap.exists()) {
+                        const roleData = roleDocSnap.data();
+                        console.log('✅ User role data:', roleData);
+                        
+                        // Check if user has permission to view patterns
+                        if (roleData.permissions && roleData.permissions.includes('view_patterns')) {
+                            console.log('🎉 User authorized - showing application');
+                            
+                            // Update last login
+                            await updateDoc(userDocRef, {
+                                lastLogin: new Date().toISOString()
+                            });
+                            
+                            showApplication(user, userData, roleData);
+                        } else {
+                            console.log('❌ User role does not have view_patterns permission');
+                            showNotAuthorized(user);
+                        }
+                    } else {
+                        console.log('❌ User role not found in roles collection');
+                        showNotAuthorized(user);
+                    }
+                } else {
+                    // User doesn't exist, create them with default 'viewer' role
+                    console.log('👤 New user detected - creating user document');
+                    
+                    try {
+                        const newUserData = {
+                            email: user.email,
+                            displayName: user.displayName || user.email.split('@')[0],
+                            role: 'viewer',
+                            createdAt: new Date().toISOString(),
+                            lastLogin: new Date().toISOString()
+                        };
+                        
+                        console.log('Creating user document with data:', newUserData);
+                        await setDoc(userDocRef, newUserData);
+                        console.log('✅ Successfully created new user document');
+                        
+                        // Get the viewer role permissions
+                        const roleDocRef = doc(db, "roles", "viewer");
+                        const roleDocSnap = await getDoc(roleDocRef);
+                        const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'], name: 'Viewer' };
+                        
+                        console.log('New user role data:', roleData);
+                        showApplication(user, newUserData, roleData);
+                        
+                    } catch (createError) {
+                        console.error('🚨 Error creating user document:', createError);
+                        if (createError.code === 'permission-denied') {
+                            alert('Permission denied when creating user account. Please check Firebase security rules.');
+                        } else {
+                            alert(`Error creating user account: ${createError.message}`);
+                        }
+                        showNotAuthorized(user);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('🚨 Error checking user authorization:', error);
+                if (error.code === 'permission-denied') {
+                    alert('Permission denied. Please check your Firebase security rules.');
+                } else {
+                    alert(`Authentication error: ${error.message}`);
+                }
+                showNotAuthorized(user);
+            }
+            
+        } else {
+            console.log('Auth state change: no user - showing login screen');
+            const authContainer = document.getElementById('signin-container');
+            const appContainer = document.getElementById('application-container');
+            if (authContainer) authContainer.classList.remove('hidden');
+            if (appContainer) appContainer.classList.add('hidden');
+        }
+    });
+    
+    console.log('=== STEP 2: Checking current auth state (popup method) ===');
+    
+    console.log('=== STEP 3: Checking current user ===');
+    const currentUser = auth.currentUser;
+    console.log('auth.currentUser:', currentUser);
+    
+    if (currentUser) {
+        console.log('✅ Current user found:', currentUser.email);
+        // Trigger the auth state change manually if needed
+        console.log('Current user exists, but auth state change should handle this');
+    }
+    
+    console.log('=== STEP 4: No user found, showing login screen ===');
+    const authContainer = document.getElementById('signin-container');
+    const appContainer = document.getElementById('application-container');
+    if (authContainer) authContainer.classList.remove('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
 }
 
 export function initThemeToggle() {
@@ -861,3 +1034,245 @@ window.toggleArchivedProjects = toggleArchivedProjects;
 window.goToRowWithNote = goToRowWithNote;
 window.addRowNoteIndicator = addRowNoteIndicator;
 window.loadRowNoteIndicators = loadRowNoteIndicators;
+
+export async function loadSelectedPattern(patternId) {
+    const patternNameEl = document.getElementById('pattern-name');
+    const patternAuthorEl = document.getElementById('pattern-author');
+    const patternContentEl = document.getElementById('pattern-content');
+    
+    try {
+        patternNameEl.textContent = 'Loading...';
+        
+        // Find the selected pattern data from our loaded list
+        const selectedPattern = window.availablePatterns.find(p => p.filename === patternId);
+        
+        if (selectedPattern && selectedPattern.source === 'firestore') {
+            // Load from Firestore
+            console.log('📖 Loading pattern from Firestore:', patternId);
+            const docRef = doc(window.db, 'patterns', patternId);
+            const docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                throw new Error('Pattern not found in Firestore');
+            }
+            
+            const firestoreData = docSnap.data();
+            console.log('🔍 Raw Firestore data:', firestoreData);
+            
+            // Extract pattern data from Firestore document
+            window.PATTERN_DATA = {
+                metadata: firestoreData.metadata,
+                glossary: firestoreData.glossary,
+                steps: firestoreData.steps
+            };
+            
+            console.log('🔍 Extracted pattern data:', window.PATTERN_DATA);
+            
+        } else {
+            // Fallback to JSON file loading (for compatibility)
+            console.log('📖 Loading pattern from JSON file:', patternId);
+            const cacheBust = new Date().getTime();
+            const response = await fetch(`/patterns/${patternId}?v=${cacheBust}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            window.PATTERN_DATA = await response.json();
+        }
+        
+        // Generate dynamic CSS for this pattern's categories
+        if (window.generatePatternTheme) {
+            window.generatePatternTheme(window.PATTERN_DATA);
+        }
+        
+        // Update UI with pattern info
+        const name = window.PATTERN_DATA.name || window.PATTERN_DATA.metadata?.name;
+        const author = window.PATTERN_DATA.author || window.PATTERN_DATA.metadata?.author;
+        const max = window.PATTERN_DATA.metadata?.maxSteps;
+        
+        patternNameEl.textContent = name;
+        patternAuthorEl.textContent = `by ${author}`;
+        window.maxSteps = max;
+        document.getElementById('current-step-input').max = max;
+        
+        // Store current pattern ID for progress tracking
+        window.currentPatternId = patternId;
+        
+        // Use project-specific progress key for proper project isolation
+        if (window.currentProject && window.currentProject.projectId) {
+            window.progressKey = `project-progress-${window.currentProject.projectId}`;
+            console.log('📁 Using project-specific progress key:', window.progressKey);
+        } else {
+            // Fallback to pattern-only for compatibility
+            window.progressKey = `pattern-progress-${patternId}`;
+            console.log('📄 Using pattern-only progress key (no project selected):', window.progressKey);
+        }
+        
+        // Clear and regenerate content
+        patternContentEl.innerHTML = '';
+        if (window.generateGlossary) {
+            window.generateGlossary(window.PATTERN_DATA);
+        }
+        if (window.generateInstructions) {
+            window.generateInstructions(window.PATTERN_DATA);
+        }
+        
+        // Set up interactive features AFTER pattern content is generated
+        if (window.setupInteractiveFeatures) {
+            window.setupInteractiveFeatures();
+        }
+        
+        // Load saved progress for this specific project
+        if (window.currentProject && window.currentProject.currentStep) {
+            window.currentStep = window.currentProject.currentStep;
+            console.log('📍 Loaded currentStep from project:', window.currentStep);
+        } else {
+            // Fallback to localStorage for compatibility
+            if (window.loadProgressSimple) {
+                window.currentStep = await window.loadProgressSimple(window.progressKey);
+                console.log('📍 Loaded currentStep from localStorage:', window.currentStep);
+            }
+        }
+        
+        // Ensure currentStep is valid
+        if (window.currentStep < 1) window.currentStep = 1;
+        if (window.currentStep > max) window.currentStep = max;
+        
+        // Set up the current step display
+        const stepInput = document.getElementById('current-step-input');
+        if (stepInput) {
+            stepInput.value = window.currentStep;
+            stepInput.max = max;
+        }
+        
+        // Update footer metadata immediately after pattern loads
+        if (window.updateFooterMetadata) {
+            window.updateFooterMetadata();
+        }
+        
+        // Update display and scroll to current row (with timeout to ensure DOM is ready)
+        setTimeout(() => {
+            if (window.updateDisplay) {
+                window.updateDisplay(window.currentStep, true);
+                console.log('🎯 Pattern loaded and display updated for step:', window.currentStep);
+            }
+        }, 100);
+        
+        const footerControls = document.getElementById('footer-controls');
+        if (footerControls) {
+            footerControls.classList.remove('hidden');
+        }
+        
+    } catch (error) {
+        console.error('Error loading pattern:', error);
+        patternNameEl.textContent = 'Error Loading Pattern';
+        patternAuthorEl.textContent = '';
+        patternContentEl.innerHTML = `<p class="text-center text-red-400">Failed to load pattern: ${error.message}</p>`;
+    }
+}
+
+export function updateRowNotesList() {
+    const rowNotesList = document.getElementById('row-notes-list');
+    if (!rowNotesList || !window.currentProject?.notes?.stepNotes) return;
+    
+    rowNotesList.innerHTML = '';
+    
+    Object.entries(window.currentProject.notes.stepNotes).forEach(([step, note]) => {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'p-2 bg-gray-800 rounded text-sm';
+        noteDiv.innerHTML = `
+            <div class="flex justify-between items-start">
+                <span class="font-medium text-violet-300">Row ${step}:</span>
+                <button onclick="goToRowWithNote(${step})" class="text-xs text-blue-400 hover:text-blue-300">Go to</button>
+            </div>
+            <div class="text-gray-300 mt-1">${note}</div>
+        `;
+        rowNotesList.appendChild(noteDiv);
+    });
+}
+
+export async function saveAllProjectNotes() {
+    if (!window.currentProject || !window.auth.currentUser) return;
+    
+    const generalNotes = document.getElementById('general-notes')?.value?.trim();
+    const yarnInfo = document.getElementById('yarn-info')?.value?.trim();
+    const toolInfo = document.getElementById('tool-info')?.value?.trim();
+    const modifications = document.getElementById('modifications')?.value?.trim();
+    
+    try {
+        const updateData = {};
+        
+        if (generalNotes) {
+            updateData['notes.general'] = generalNotes;
+        }
+        
+        if (yarnInfo) {
+            updateData['projectDetails.yarns'] = [{
+                brand: yarnInfo.split(' ')[0] || '',
+                colorway: yarnInfo.split(' ').slice(1).join(' ') || '',
+                weight: 'DK', // Default
+                yardage: null,
+                dyelot: null
+            }];
+        }
+        
+        if (toolInfo) {
+            updateData['projectDetails.tools.needleSize'] = toolInfo;
+        }
+        
+        if (modifications) {
+            updateData['projectDetails.modifications'] = modifications.split('\n').filter(m => m.trim());
+        }
+        
+        // Import saveProjectProgress dynamically to avoid circular imports
+        const { saveProjectProgress } = await import('./progress-tracking.js');
+        await saveProjectProgress(window.db, window.auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, updateData);
+        
+        alert('All notes saved!');
+    } catch (error) {
+        console.error('Error saving project notes:', error);
+        alert('Error saving notes. Please try again.');
+    }
+}
+
+export function showSection(sectionName) {
+    console.log('📍 Switching to section:', sectionName);
+    
+    // Hide all main sections
+    const viewerSection = document.getElementById('viewer-section');
+    const generatorSection = document.getElementById('generator-section');
+    const standaloneGenerator = document.getElementById('standalone-generator');
+    const appContainer = document.getElementById('app-container');
+    
+    // Reset visibility
+    if (viewerSection) viewerSection.classList.remove('hidden');
+    if (generatorSection) generatorSection.classList.add('hidden');
+    if (standaloneGenerator) standaloneGenerator.classList.add('hidden');
+    
+    switch(sectionName) {
+        case 'viewer':
+            // Default state - viewer section visible, others hidden
+            if (appContainer) appContainer.classList.remove('hidden');
+            break;
+            
+        case 'generator':
+            // Show standalone generator, hide app container
+            if (appContainer) appContainer.classList.add('hidden');
+            if (standaloneGenerator) standaloneGenerator.classList.remove('hidden');
+            break;
+            
+        default:
+            console.warn('Unknown section:', sectionName);
+            break;
+    }
+    
+    // Log analytics
+    if (window.auth && window.auth.currentUser && window.db) {
+        import('./stitch-witch.js').then(({ logStitchWitchQuery }) => {
+            logStitchWitchQuery('navigation', 'section_switch', sectionName);
+        });
+    }
+}
+
+// Expose to global scope
+window.loadSelectedPattern = loadSelectedPattern;
+window.updateRowNotesList = updateRowNotesList;
+window.saveAllProjectNotes = saveAllProjectNotes;
+window.showSection = showSection;

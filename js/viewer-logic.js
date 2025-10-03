@@ -467,6 +467,261 @@ export function setupRowNavigation() {
     updateFooterMetadata();
 }
 
+export function setupInteractiveFeatures() {
+    console.log('🔧 Setting up interactive features...');
+    
+    // Set up click handlers for color-coded stitches
+    const stitchElements = document.querySelectorAll('.stitch-clickable');
+    console.log('Found', stitchElements.length, 'clickable stitches');
+    stitchElements.forEach(element => {
+        element.addEventListener('click', (e) => {
+            e.preventDefault();
+            const stitchCode = element.dataset.stitch || element.textContent.trim();
+            if (window.showStitchDefinition) {
+                window.showStitchDefinition(stitchCode);
+            }
+        });
+    });
+    
+    // Set up stitch finder functionality
+    setupStitchFinder();
+    
+    // Set up row navigation with auto-scroll
+    setupRowNavigation();
+    
+    // Set up pattern tools sidebar
+    if (window.setupPatternSidebar) {
+        window.setupPatternSidebar();
+    }
+    
+    // Populate sidebar glossary
+    if (window.populateSidebarGlossary) {
+        window.populateSidebarGlossary();
+    }
+    
+    console.log('✅ Interactive features setup complete');
+}
+
+export function scrollToCurrentRow() {
+    if (typeof window.currentStep === 'undefined' || !window.currentStep) {
+        console.log('Current step is undefined, cannot scroll to row');
+        return;
+    }
+    
+    const currentRowElement = document.querySelector(`[data-step="${window.currentStep}"]`);
+    if (currentRowElement) {
+        // Remove previous highlights
+        document.querySelectorAll('.current-step').forEach(el => {
+            el.classList.remove('current-step');
+        });
+        
+        // Add current step highlight
+        currentRowElement.classList.add('current-step');
+        
+        // Scroll to the row
+        currentRowElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+    } else {
+        console.log(`No element found for step ${window.currentStep}`);
+    }
+}
+
+export function updateCurrentStepDisplay() {
+    const stepInput = document.getElementById('current-step-input');
+    if (stepInput) {
+        stepInput.value = window.currentStep;
+    }
+    
+    // Highlight current step
+    highlightCurrentStep(true);
+    
+    console.log('🔧 Current step display updated to:', window.currentStep);
+}
+
+export function showStitchDefinition(stitchCode) {
+    if (!window.PATTERN_DATA || !window.PATTERN_DATA.glossary || !window.PATTERN_DATA.glossary[stitchCode]) {
+        console.warn('No definition found for stitch:', stitchCode);
+        return;
+    }
+    
+    // Analytics: Track stitch definition views
+    if (window.auth && window.auth.currentUser) {
+        import('./stitch-witch.js').then(({ logStitchWitchQuery }) => {
+            logStitchWitchQuery({
+                type: 'stitch_finder',
+                action: 'view_definition',
+                stitchCode: stitchCode,
+                rowNumber: window.currentStep,
+                patternId: window.PATTERN_DATA?.id || 'unknown'
+            }, window.db, window.auth);
+        });
+    }
+    
+    const stitchModal = document.getElementById('stitch-modal');
+    const stitchModalTitle = document.getElementById('stitch-modal-title');
+    const stitchModalDefinition = document.getElementById('stitch-modal-definition');
+    
+    const glossaryEntry = window.PATTERN_DATA.glossary[stitchCode];
+    stitchModalTitle.textContent = `${glossaryEntry.name} (${stitchCode})`;
+    stitchModalDefinition.textContent = glossaryEntry.description;
+    stitchModal.classList.remove('hidden');
+}
+
+export function hideStitchDefinition() {
+    const stitchModal = document.getElementById('stitch-modal');
+    stitchModal.classList.add('hidden');
+}
+
+// Expose functions globally for HTML event handlers
+window.updateCurrentStepDisplay = updateCurrentStepDisplay;
+window.showStitchDefinition = showStitchDefinition;
+window.hideStitchDefinition = hideStitchDefinition;
+
+export function setupPatternSidebar() {
+    console.log('🔧 Setting up pattern sidebar...');
+    
+    const sidebar = document.getElementById('pattern-sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const returnToRowBtn = document.getElementById('return-to-row');
+    
+    console.log('Sidebar elements found:', {
+        sidebar: !!sidebar,
+        sidebarToggle: !!sidebarToggle,
+        sidebarClose: !!sidebarClose,
+        sidebarOverlay: !!sidebarOverlay,
+        returnToRowBtn: !!returnToRowBtn
+    });
+    
+    function toggleSidebar(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('🔄 Toggling sidebar');
+        if (sidebar && sidebarOverlay) {
+            const isCurrentlyOpen = sidebar.classList.contains('open');
+            console.log('Sidebar currently open:', isCurrentlyOpen);
+            
+            if (isCurrentlyOpen) {
+                // Close the sidebar
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.add('hidden');
+                console.log('✅ Sidebar closed');
+            } else {
+                // Open the sidebar
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.remove('hidden');
+                console.log('✅ Sidebar opened');
+            }
+        }
+    }
+    
+    function closeSidebar() {
+        console.log('❌ Closing sidebar');
+        if (sidebar && sidebarOverlay) {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+    }
+    
+    if (sidebarToggle) {
+        console.log('✅ Adding click handler to sidebar toggle');
+        sidebarToggle.addEventListener('click', toggleSidebar);
+    } else {
+        console.error('❌ Sidebar toggle button not found!');
+    }
+    
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeSidebar);
+    }
+    
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    }
+    
+    if (returnToRowBtn) {
+        returnToRowBtn.addEventListener('click', () => {
+            scrollToCurrentRow();
+            closeSidebar();
+        });
+    }
+    
+    // Handle section navigation
+    const sidebarLinks = document.querySelector('.sidebar-links');
+    if (sidebarLinks) {
+        sidebarLinks.addEventListener('click', (e) => {
+            if (e.target.dataset.section) {
+                e.preventDefault();
+                const sectionElement = document.getElementById(e.target.dataset.section);
+                if (sectionElement) {
+                    sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    closeSidebar();
+                }
+            }
+        });
+    }
+    
+    console.log('✅ Pattern sidebar setup complete');
+}
+
+export function populateSidebarGlossary() {
+    const sidebarGlossary = document.getElementById('sidebar-glossary');
+    if (!sidebarGlossary || !window.PATTERN_DATA || !window.PATTERN_DATA.glossary) {
+        return;
+    }
+    
+    // Clear any existing event listeners
+    const newSidebarGlossary = sidebarGlossary.cloneNode(false);
+    sidebarGlossary.parentNode.replaceChild(newSidebarGlossary, sidebarGlossary);
+    
+    let glossaryHTML = '';
+    const usedCategories = new Set();
+    
+    for (const [key, item] of Object.entries(window.PATTERN_DATA.glossary)) {
+        if (item && item.name) {
+            // Import getInstructionCategory dynamically to avoid circular imports
+            import('./utils.js').then(({ getInstructionCategory }) => {
+                const category = getInstructionCategory(key, window.PATTERN_DATA);
+                usedCategories.add(category);
+                
+                // Get the color for this category from CSS variables
+                const colorClass = `color-${category}`;
+                
+                glossaryHTML += `
+                    <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
+                        <div class="${colorClass} font-bold text-lg mb-1" style="color: var(--color-${category})">${key}</div>
+                        <div class="text-gray-300 font-medium mb-1">${item.name}</div>
+                        ${item.description ? `<div class="text-gray-400 text-sm leading-relaxed">${item.description}</div>` : ''}
+                    </div>
+                `;
+            });
+        }
+    }
+    
+    newSidebarGlossary.innerHTML = glossaryHTML;
+    
+    // Add click handlers for sidebar glossary items
+    newSidebarGlossary.addEventListener('click', (e) => {
+        const stitchDiv = e.target.closest('[data-stitch]');
+        if (stitchDiv) {
+            const stitchCode = stitchDiv.dataset.stitch;
+            showStitchDefinition(stitchCode);
+        }
+    });
+    
+    // Update the sidebar color key to reflect the actual categories used
+    import('./pattern-functions.js').then(({ updateSidebarColorKey }) => {
+        updateSidebarColorKey(usedCategories);
+    });
+}
+
 // Expose functions globally for HTML access
 window.setupStitchFinder = setupStitchFinder;
 window.setupRowNavigation = setupRowNavigation;
+window.setupInteractiveFeatures = setupInteractiveFeatures;
+window.scrollToCurrentRow = scrollToCurrentRow;
+window.setupPatternSidebar = setupPatternSidebar;
+window.populateSidebarGlossary = populateSidebarGlossary;

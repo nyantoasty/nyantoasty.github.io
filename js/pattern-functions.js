@@ -594,55 +594,54 @@ export function generatePatternTheme(PATTERN_DATA) {
         console.log('🧹 Removed old dynamic CSS');
     }
     
-    // Update sidebar color key
-    updateSidebarColorKey(categories);
+    // Update sidebar color key with semantic tokens
+    updateSidebarColorKey(Array.from(semanticTokens));
 }
 
 // Function to update the sidebar color key dynamically
-export function updateSidebarColorKey(categories) {
+export function updateSidebarColorKey(semanticTokens) {
     const sidebarColorKey = document.getElementById('sidebar-color-key');
     if (!sidebarColorKey) {
         console.log('❌ Sidebar color key element not found');
         return;
     }
     
-    // Define category descriptions
-    const categoryDescriptions = {
-        main: 'Basic stitches',
-        increase: 'Increase stitches',
-        decrease: 'Decrease stitches',
-        edge: 'Edge/border stitches',
-        spine: 'Spine stitches',
-        bobble: 'Bobble stitches',
-        lace: 'Lace stitches',
-        cable: 'Cable stitches',
-        texture: 'Texture stitches',
-        stitch: 'Special stitches',
-        special: 'Special techniques',
-        marker: 'Stitch markers',
-        repeat: 'Repeat sections',
-        bind: 'Bind off',
-        cast: 'Cast on'
+    // Define semantic token descriptions
+    const tokenDescriptions = {
+        'token-stitch-01': 'Primary stitches',
+        'token-stitch-02': 'Secondary stitches', 
+        'token-stitch-03': 'Basic stitches',
+        'token-stitch-04': 'Texture stitches',
+        'token-special-01': 'Increase techniques',
+        'token-special-02': 'Decrease techniques',
+        'token-special-03': 'Special techniques',
+        'token-generic-01': 'Instructions',
+        'token-generic-02': 'Markers & Notes',
+        'token-generic-03': 'Repeats'
     };
     
     let colorKeyHTML = '';
     
-    // Convert Set to Array and sort for consistent display
-    const sortedCategories = Array.from(categories).sort();
+    // Convert to Array and sort for consistent display
+    const sortedTokens = Array.from(semanticTokens).sort();
     
-    // Create color key entries for each category
-    sortedCategories.forEach(category => {
-        const description = categoryDescriptions[category] || category.charAt(0).toUpperCase() + category.slice(1);
+    // Create color key entries for each semantic token
+    sortedTokens.forEach(token => {
+        const description = tokenDescriptions[token] || token.replace('token-', '').replace('-', ' ');
         
         colorKeyHTML += `
             <div class="flex items-center space-x-2 mb-1">
-                <div class="w-4 h-4 rounded ${category}"></div>
-                <span class="${category} font-medium">${category}</span>
-                <span class="text-gray-400 text-sm">- ${description}</span>
+                <div class="w-4 h-4 rounded ${token}"></div>
+                <span class="${token} font-medium">${description}</span>
             </div>
         `;
     });
     
-    sidebarColorKey.innerHTML = colorKeyHTML;
-    console.log('🎨 Updated sidebar color key with', categories.size || categories.length, 'categories:', sortedCategories);
+    if (colorKeyHTML) {
+        sidebarColorKey.innerHTML = colorKeyHTML;
+        console.log('✅ Sidebar color key updated with semantic tokens:', sortedTokens);
+    } else {
+        sidebarColorKey.innerHTML = '<div class="text-gray-500 text-sm">No color coding in this pattern</div>';
+        console.log('ℹ️ No semantic tokens found for color key');
+    }
 }

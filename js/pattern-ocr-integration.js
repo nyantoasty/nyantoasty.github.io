@@ -237,6 +237,221 @@ function appendToPatternText(text, patternTextArea) {
 }
 
 /**
+ * Initialize JSON file upload functionality for authenticated admin users
+ */
+export function initializeJSONFileUpload(currentUser) {
+    if (!currentUser) return;
+    
+    // Show the JSON file upload section for authenticated users
+    const jsonFileUploadSection = document.getElementById('json-file-upload-section');
+    if (jsonFileUploadSection) {
+        jsonFileUploadSection.classList.remove('hidden');
+    }
+    
+    // Set up file input handler
+    const jsonFileInput = document.getElementById('json-file-input');
+    if (jsonFileInput) {
+        jsonFileInput.addEventListener('change', handleJSONFileUpload);
+    }
+    
+    // Set up Google Drive handler
+    const loadGDriveBtn = document.getElementById('load-gdrive-json');
+    if (loadGDriveBtn) {
+        loadGDriveBtn.addEventListener('click', handleGoogleDriveLoad);
+    }
+}
+
+/**
+ * Handle JSON file upload from local device
+ */
+async function handleJSONFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    try {
+        showJSONFileStatus('loading', `Reading ${file.name}...`);
+        
+        // Validate file type
+        if (!file.name.toLowerCase().endsWith('.json') && !file.name.toLowerCase().endsWith('.txt')) {
+            throw new Error('Please select a JSON or text file');
+        }
+        
+        // Read file content
+        const text = await readFileAsText(file);
+        
+        // Try to parse as JSON to validate
+        let jsonData;
+        try {
+            jsonData = JSON.parse(text);
+        } catch (parseError) {
+            throw new Error('File does not contain valid JSON');
+        }
+        
+        // Insert into textarea
+        const patternJsonTextarea = document.getElementById('pattern-json');
+        if (patternJsonTextarea) {
+            patternJsonTextarea.value = JSON.stringify(jsonData, null, 2);
+            // Trigger any validation
+            patternJsonTextarea.dispatchEvent(new Event('input'));
+        }
+        
+        showJSONFileStatus('success', `✅ Loaded ${file.name} successfully`);
+        
+    } catch (error) {
+        console.error('JSON file upload error:', error);
+        showJSONFileStatus('error', `❌ Error: ${error.message}`);
+    }
+}
+
+/**
+ * Handle Google Drive file loading
+ */
+async function handleGoogleDriveLoad() {
+    const urlInput = document.getElementById('gdrive-url-input');
+    if (!urlInput || !urlInput.value.trim()) {
+        showJSONFileStatus('error', '❌ Please enter a Google Drive URL');
+        return;
+    }
+    
+    try {
+        showJSONFileStatus('loading', 'Loading from Google Drive...');
+        
+        const driveUrl = urlInput.value.trim();
+        
+        // Convert Google Drive share URL to direct download URL
+        const downloadUrl = convertGoogleDriveUrl(driveUrl);
+        
+        // Fetch the file content
+        const response = await fetch(downloadUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+        }
+        
+        const text = await response.text();
+        
+        // Try to parse as JSON to validate
+        let jsonData;
+        try {
+            jsonData = JSON.parse(text);
+        } catch (parseError) {
+            throw new Error('Google Drive file does not contain valid JSON');
+        }
+        
+        // Insert into textarea
+        const patternJsonTextarea = document.getElementById('pattern-json');
+        if (patternJsonTextarea) {
+            patternJsonTextarea.value = JSON.stringify(jsonData, null, 2);
+            // Trigger any validation
+            patternJsonTextarea.dispatchEvent(new Event('input'));
+        }
+        
+        showJSONFileStatus('success', '✅ Loaded from Google Drive successfully');
+        
+        // Clear the URL input
+        urlInput.value = '';
+        
+    } catch (error) {
+        console.error('Google Drive load error:', error);
+        showJSONFileStatus('error', `❌ Error: ${error.message}`);
+    }
+}
+
+/**
+ * Convert Google Drive share URL to direct download URL
+ */
+function convertGoogleDriveUrl(url) {
+    // Handle different Google Drive URL formats
+    let fileId = null;
+    
+    // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    let match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) {
+        fileId = match[1];
+    }
+    
+    // Format 2: https://drive.google.com/open?id=FILE_ID
+    if (!fileId) {
+        match = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+        if (match) {
+            fileId = match[1];
+        }
+    }
+    
+    if (!fileId) {
+        throw new Error('Invalid Google Drive URL format');
+    }
+    
+    // Return direct download URL
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
+/**
+ * Read file as text
+ */
+function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+    });
+}
+
+/**
+ * Show JSON file upload status
+ */
+function showJSONFileStatus(type, message) {
+    const statusDiv = document.getElementById('json-file-status');
+    if (!statusDiv) return;
+    
+    statusDiv.classList.remove('hidden');
+    
+    let bgColor, borderColor, textColor, icon;
+    
+    switch (type) {
+        case 'loading':
+            bgColor = 'bg-blue-900';
+            borderColor = 'border-blue-500';
+            textColor = 'text-blue-200';
+            icon = '🔄';
+            break;
+        case 'success':
+            bgColor = 'bg-green-900';
+            borderColor = 'border-green-500';
+            textColor = 'text-green-200';
+            icon = '✅';
+            break;
+        case 'error':
+            bgColor = 'bg-red-900';
+            borderColor = 'border-red-500';
+            textColor = 'text-red-200';
+            icon = '❌';
+            break;
+        default:
+            bgColor = 'bg-gray-900';
+            borderColor = 'border-gray-500';
+            textColor = 'text-gray-200';
+            icon = 'ℹ️';
+    }
+    
+    statusDiv.innerHTML = `
+        <div class="${bgColor} ${borderColor} rounded-lg p-3 border">
+            <div class="flex items-center">
+                <span class="text-lg mr-2">${icon}</span>
+                <span class="${textColor}">${message}</span>
+            </div>
+        </div>
+    `;
+    
+    // Auto-hide success/error messages after 5 seconds
+    if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+            statusDiv.classList.add('hidden');
+        }, 5000);
+    }
+}
+
+/**
  * Show OCR success message
  */
 function showOCRSuccess(message) {

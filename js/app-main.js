@@ -891,8 +891,8 @@ export async function checkAuthState() {
             
         } else {
             console.log('Auth state change: no user - showing login screen');
-            const authContainer = document.getElementById('signin-container');
-            const appContainer = document.getElementById('application-container');
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
             if (authContainer) authContainer.classList.remove('hidden');
             if (appContainer) appContainer.classList.add('hidden');
         }
@@ -911,8 +911,8 @@ export async function checkAuthState() {
     }
     
     console.log('=== STEP 4: No user found, showing login screen ===');
-    const authContainer = document.getElementById('signin-container');
-    const appContainer = document.getElementById('application-container');
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
     if (authContainer) authContainer.classList.remove('hidden');
     if (appContainer) appContainer.classList.add('hidden');
 }

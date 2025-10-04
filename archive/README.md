@@ -36,6 +36,7 @@ This directory contains files that were part of the development process but are 
 
 - `Generator.html` - Standalone AI pattern generator tool (not integrated with main app)
 - `pattern-processor.html` - Experimental pattern processing interface
+- `firebase-functions-legacy/` - Legacy Node.js Firebase Functions (replaced by Cloud Run Python service for security)
 
 ## Restoration
 

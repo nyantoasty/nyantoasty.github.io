@@ -162,10 +162,21 @@ export function forceShowApplication() {
     }
     
     if (stitchModal) {
+        // Use multiple methods to ensure it's hidden
         stitchModal.style.display = 'none';
+        stitchModal.style.visibility = 'hidden';
+        stitchModal.style.zIndex = '-1';
         stitchModal.classList.add('hidden');
+        stitchModal.classList.remove('flex');
         console.log('✅ Force closed stitch modal');
     }
+    
+    // Also try to close any other potential modals
+    const allModals = document.querySelectorAll('[class*="modal"], [id*="modal"]');
+    allModals.forEach(modal => {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    });
     
     // Initialize application if not already done
     if (typeof populateProjectSelector === 'function') {

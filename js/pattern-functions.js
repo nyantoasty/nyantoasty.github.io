@@ -512,13 +512,15 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         
         // Get tooltip from glossary if available
         let tooltip = '';
+        let clickableClass = '';
         if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[text]) {
             tooltip = ` title="${PATTERN_DATA.glossary[text].description}"`;
+            clickableClass = ' stitch-clickable'; // Only make it clickable if it has a glossary entry
         }
         
         // Use global replace to handle multiple occurrences of the same text
         const regex = new RegExp(`\\b${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
-        result = result.replace(regex, `<span class="${token} stitch-clickable"${tooltip}>${text}</span>`);
+        result = result.replace(regex, `<span class="${token}${clickableClass}"${tooltip}>${text}</span>`);
     });
     
     return result;

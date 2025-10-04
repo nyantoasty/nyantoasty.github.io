@@ -1,0 +1,112 @@
+/* 
+ * Semantic Token Definitions (Tier 1)
+ * These are abstract identifiers that describe structural purpose
+ * without any visual information. They remain consistent across all themes.
+ */
+
+:root {
+  /* Header Tokens - for section titles and pattern divisions */
+  --token-header-01: var(--theme-header-primary);
+  --token-header-02: var(--theme-header-secondary);
+  --token-header-03: var(--theme-header-tertiary);
+  --token-header-04: var(--theme-header-quaternary);
+  --token-header-05: var(--theme-header-quinary);
+
+  /* Special Tokens - for primary feature stitches (bobbles, cables, complex lace, shells) */
+  --token-special-01: var(--theme-color-special-primary);
+  --token-special-02: var(--theme-color-special-secondary);
+  --token-special-03: var(--theme-color-special-tertiary);
+  --token-special-04: var(--theme-color-special-quaternary);
+  --token-special-05: var(--theme-color-special-quinary);
+
+  /* Stitch Tokens - for functional stitches that create fabric structure */
+  --token-stitch-01: var(--theme-color-increase); /* ALWAYS increases (kfb, M1L, yo) */
+  --token-stitch-02: var(--theme-color-decrease); /* ALWAYS decreases (k2tog, ssk, BO1) */
+  --token-stitch-03: var(--theme-color-neutral);  /* Basic stitches (k, p) */
+  --token-stitch-04: var(--theme-color-edge);     /* Edge/border stitches */
+  --token-stitch-05: var(--theme-color-marker);   /* Stitch markers and placement */
+
+  /* Designer Note Tokens - for parenthetical notes and asides */
+  --token-designerNote-01: var(--theme-color-note-primary);
+  --token-designerNote-02: var(--theme-color-note-secondary);
+  --token-designerNote-03: var(--theme-color-note-tertiary);
+  --token-designerNote-04: var(--theme-color-note-quaternary);
+  --token-designerNote-05: var(--theme-color-note-quinary);
+
+  /* Generic Tokens - overflow buffer for complex patterns */
+  --token-generic-01: var(--theme-color-generic-01);
+  --token-generic-02: var(--theme-color-generic-02);
+  --token-generic-03: var(--theme-color-generic-03);
+  --token-generic-04: var(--theme-color-generic-04);
+  --token-generic-05: var(--theme-color-generic-05);
+}
+
+/* 
+ * Semantic Token CSS Classes
+ * These classes apply the semantic tokens to actual elements
+ */
+
+/* Header Token Classes */
+.token-header-01 { color: var(--token-header-01) !important; font-weight: 700; }
+.token-header-02 { color: var(--token-header-02) !important; font-weight: 600; }
+.token-header-03 { color: var(--token-header-03) !important; font-weight: 600; }
+.token-header-04 { color: var(--token-header-04) !important; font-weight: 500; }
+.token-header-05 { color: var(--token-header-05) !important; font-weight: 500; }
+
+/* Special Token Classes */
+.token-special-01 { color: var(--token-special-01) !important; font-weight: 600; }
+.token-special-02 { color: var(--token-special-02) !important; font-weight: 600; }
+.token-special-03 { color: var(--token-special-03) !important; font-weight: 600; }
+.token-special-04 { color: var(--token-special-04) !important; font-weight: 600; }
+.token-special-05 { color: var(--token-special-05) !important; font-weight: 600; }
+
+/* Stitch Token Classes */
+.token-stitch-01 { color: var(--token-stitch-01) !important; font-weight: 500; } /* Increases */
+.token-stitch-02 { color: var(--token-stitch-02) !important; font-weight: 500; } /* Decreases */
+.token-stitch-03 { color: var(--token-stitch-03) !important; font-weight: 400; } /* Basic stitches */
+.token-stitch-04 { color: var(--token-stitch-04) !important; font-weight: 500; } /* Edge stitches */
+.token-stitch-05 { color: var(--token-stitch-05) !important; font-weight: 500; } /* Markers */
+
+/* Designer Note Token Classes */
+.token-designerNote-01 { color: var(--token-designerNote-01) !important; font-style: italic; }
+.token-designerNote-02 { color: var(--token-designerNote-02) !important; font-style: italic; }
+.token-designerNote-03 { color: var(--token-designerNote-03) !important; font-style: italic; }
+.token-designerNote-04 { color: var(--token-designerNote-04) !important; font-style: italic; }
+.token-designerNote-05 { color: var(--token-designerNote-05) !important; font-style: italic; }
+
+/* Generic Token Classes */
+.token-generic-01 { color: var(--token-generic-01) !important; font-weight: 500; }
+.token-generic-02 { color: var(--token-generic-02) !important; font-weight: 500; }
+.token-generic-03 { color: var(--token-generic-03) !important; font-weight: 500; }
+.token-generic-04 { color: var(--token-generic-04) !important; font-weight: 500; }
+.token-generic-05 { color: var(--token-generic-05) !important; font-weight: 500; }
+
+/* Interactive States for Clickable Tokens */
+.token-special-01.stitch-clickable,
+.token-special-02.stitch-clickable,
+.token-special-03.stitch-clickable,
+.token-special-04.stitch-clickable,
+.token-special-05.stitch-clickable,
+.token-stitch-01.stitch-clickable,
+.token-stitch-02.stitch-clickable,
+.token-stitch-03.stitch-clickable,
+.token-stitch-04.stitch-clickable,
+.token-stitch-05.stitch-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  transition: opacity 0.2s;
+}
+
+.token-special-01.stitch-clickable:hover,
+.token-special-02.stitch-clickable:hover,
+.token-special-03.stitch-clickable:hover,
+.token-special-04.stitch-clickable:hover,
+.token-special-05.stitch-clickable:hover,
+.token-stitch-01.stitch-clickable:hover,
+.token-stitch-02.stitch-clickable:hover,
+.token-stitch-03.stitch-clickable:hover,
+.token-stitch-04.stitch-clickable:hover,
+.token-stitch-05.stitch-clickable:hover {
+  opacity: 0.8;
+}

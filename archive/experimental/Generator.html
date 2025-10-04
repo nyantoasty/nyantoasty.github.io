@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pattern-to-Firestore Generator</title>
+    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <!-- Chosen Palette: Warm Neutral -->
+    <!-- Application Structure Plan: Interactive prompt builder for generating Firestore write operations instead of JSON files. Creates direct database integration patterns with sharing capabilities built-in. -->
+    <!-- Visualization & Content Choices: Report Info: Pattern conversion -> Goal: Generate Firestore operations -> Presentation: Form builder with copy-to-clipboard for database operations -> Interaction: Text input, operation type selection, permission settings -> Justification: Eliminates JSON file management, enables real-time testing, supports pattern sharing from day one. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Main Application Stylesheet - Three-Tier Token System -->
+    <link rel="stylesheet" href="/css/main.css">
+    
+    <style>
+        /* Page-specific light theme overrides */
+        body {
+            background-color: #fdfaf6;
+            color: #4a4a4a;
+        }
+        .mono {
+            background-color: #f0e9e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .code-block {
+            background-color: #f7f2ec !important;
+            border: 1px solid #e4dace !important;
+            color: #5c5c5c !important;
+        }
+        
+        /* Page-specific Generator styles */
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #9a3412;
+            border-color: #e4dace;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .tab-button:not(.active):hover {
+            background-color: #f7f2ec;
+        }
+        
+        /* JSON syntax highlighting */
+        .json-key { color: #c2410c; }
+        .json-string { color: #1e6043; }
+        .json-number { color: #1d4ed8; }
+        .json-boolean { color: #7c2d12; }
+        
+        /* Generator-specific tooltip theme */
+        .tooltip {
+            background-color: #2a2a2a !important;
+            color: #f0e9e1 !important;
+        }
+        .tooltip::after {
+            border-color: #2a2a2a transparent transparent transparent !important;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">AI Pattern-to-Firestore Generator</h1>
+            <p class="text-lg text-gray-600">Transform ambiguity into certainty: Generate fully enumerated patterns with precise stitch counting for Firestore.</p>
+        </header>
+
+        <main class="space-y-16">
+            
+            <section id="prompt-builder" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Prompt Builder</h2>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 1: Choose Your Pattern Format</h3>
+                        <div id="pattern-type-selector" class="flex items-center space-x-2 bg-stone-100 p-1 rounded-lg max-w-xs">
+                            <button data-type="text" class="w-1/2 tab-button active">Text</button>
+                            <button data-type="image" class="w-1/2 tab-button">Image</button>
+                        </div>
+                        <div id="image-instructions" class="hidden mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                            <h4 class="font-semibold mb-2">Image-Based Pattern Workflow</h4>
+                            <p class="text-sm">This is a two-step process:</p>
+                            <ol class="list-decimal list-inside mt-2 space-y-1 text-sm">
+                                <li><strong>Transcribe Image:</strong> Use an AI with vision capabilities. Give it your image and use the prompt: <span class="mono text-xs">"Please transcribe the text from this image of a pattern."</span></li>
+                                <li><strong>Generate JSON:</strong> Copy the transcribed text from the AI and paste it into the text area in Step 2 below.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 2: Pattern Settings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Pattern Visibility</label>
+                                <select id="pattern-visibility" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                    <option value="private">Private (only you)</option>
+                                    <option value="shared">Shared (specific users)</option>
+                                    <option value="public">Public (everyone can view)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Craft Type</label>
+                                <select id="craft-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                    <option value="knitting">Knitting</option>
+                                    <option value="crochet">Crochet</option>
+                                    <option value="tunisian">Tunisian Crochet</option>
+                                    <option value="weaving">Weaving</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 3: Paste Your Pattern Text</h3>
+                        <p class="text-sm text-gray-500 mb-3">Paste the full, raw text of your pattern here. The AI will transform all ambiguity into certainty by expanding repeats, resolving variables like "k to end", and creating fully enumerated steps.</p>
+                        <textarea id="pattern-input" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition" placeholder="Paste pattern text here..."></textarea>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Step 4: Generate Full Enumeration Prompt</h3>
+                        <p class="text-sm text-gray-500 mb-3">This generates a prompt for AI to create a fully enumerated pattern with NO loops, repeats, or variables. Every step will be calculated and explicit, with precise stitch counts throughout.</p>
+                        <div class="relative">
+                            <button id="copy-prompt-button" class="absolute top-3 right-3 bg-white hover:bg-stone-100 text-gray-600 font-medium py-1 px-3 border border-gray-300 rounded-md text-sm transition-colors">
+                                <span id="copy-default">Copy</span>
+                                <span id="copy-success" class="hidden">Copied!</span>
+                            </button>
+                            <div id="prompt-output" class="code-block text-sm">Select a pattern type and paste text to generate the prompt.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="reference" class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Technical Reference</h2>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">JSON Structure Overview</h3>
+                        <div class="code-block">
+<pre>{
+  <span class="json-key">"metadata"</span>: { ... }, <span class="text-gray-400">// Pattern info with maxSteps</span>
+  <span class="json-key">"glossary"</span>: { ... }, <span class="text-gray-400">// Complete stitch definitions with usage counts</span>
+  <span class="json-key">"steps"</span>: [ ... ] <span class="text-gray-400">// Fully enumerated step objects</span>
+}</pre>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">The `step` Object Schema</h3>
+                        <p class="text-sm text-gray-500 mb-3">Each object in the `steps` array follows this schema, with all variables resolved and stitch counts calculated. Hover over properties for details.</p>
+                        <div class="code-block">
+<pre>{
+  <span class="relative tooltip-trigger"><span class="json-key">"step"</span><span class="tooltip">Sequential step number (no gaps or repeats).</span></span>: <span class="json-number">63</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"startingStitchCount"</span><span class="tooltip">Exact stitch count before this step begins.</span></span>: <span class="json-number">137</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"endingStitchCount"</span><span class="tooltip">Exact stitch count after this step is completed.</span></span>: <span class="json-number">139</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"instruction"</span><span class="tooltip">Fully resolved instruction with all variables calculated (no 'k to end').</span></span>: <span class="json-string">"k3, kfb, yo, ssk, k7, k2tog, yo, k1"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"section"</span><span class="tooltip">Pattern section: setup, body, decrease, etc.</span></span>: <span class="json-string">"body"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"side"</span><span class="tooltip">RS (right side) or WS (wrong side).</span></span>: <span class="json-string">"RS"</span>,
+  <span class="relative tooltip-trigger"><span class="json-key">"type"</span><span class="tooltip">regular, specialInstruction, or note.</span></span>: <span class="json-string">"regular"</span>
+}</pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Examples</h3>
+                        <div class="flex items-center space-x-2 mb-4 p-1 bg-stone-100 rounded-lg max-w-md">
+                            <button id="tab-ex1" class="tab-button w-1/2 active">Single Step</button>
+                            <button id="tab-ex2" class="tab-button w-1/2">Repeated Steps</button>
+                        </div>
+
+                        <div id="content-ex1" class="tab-content active space-y-3">
+                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Row 63 (RS): k3, kfb, (yo, ssk, k5, k2tog, yo, k1) 6 times, k3, m1L, k1, m1R, k3</p>
+                            <p class="text-sm text-gray-500">This becomes a single step object with the repeat fully expanded and variables resolved.</p>
+                            <div class="code-block">
+<pre>{
+  <span class="json-key">"step"</span>: <span class="json-number">63</span>,
+  <span class="json-key">"startingStitchCount"</span>: <span class="json-number">137</span>,
+  <span class="json-key">"endingStitchCount"</span>: <span class="json-number">139</span>,
+  <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, yo, ssk, k5, k2tog, yo, k1, k3, m1L, k1, m1R, k3"</span>,
+  <span class="json-key">"section"</span>: <span class="json-string">"body"</span>,
+  <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>,
+  <span class="json-key">"type"</span>: <span class="json-string">"regular"</span>
+}</pre>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Note: The (yo, ssk, k5, k2tog, yo, k1) repeat is fully expanded 6 times, and all increases are calculated into the final stitch count.</p>
+                        </div>
+
+                        <div id="content-ex2" class="tab-content space-y-3">
+                            <p class="text-sm text-gray-600"><strong>Pattern says:</strong> Rows 3-4: k3, kfb, k to end. Repeat rows 3-4 twice more.</p>
+                            <p class="text-sm text-gray-500">This becomes 6 separate step objects (3,4,5,6,7,8) with all "k to end" resolved to exact stitch counts.</p>
+                            <div class="code-block">
+<pre>[
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">3</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">15</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">16</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k11"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>
+  },
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">4</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">16</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">17</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k12"</span>, <span class="json-key">"side"</span>: <span class="json-string">"WS"</span>
+  },
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">5</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">17</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">18</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k13"</span>, <span class="json-key">"side"</span>: <span class="json-string">"RS"</span>
+  },
+  {
+    <span class="json-key">"step"</span>: <span class="json-number">6</span>, <span class="json-key">"startingStitchCount"</span>: <span class="json-number">18</span>, <span class="json-key">"endingStitchCount"</span>: <span class="json-number">19</span>,
+    <span class="json-key">"instruction"</span>: <span class="json-string">"k3, kfb, k14"</span>, <span class="json-key">"side"</span>: <span class="json-string">"WS"</span>
+  }
+  <span class="text-gray-400">// ... steps 7 and 8 continue the pattern</span>
+]</pre>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Note: Each "k to end" is calculated based on that step's starting stitch count. No loops or variables remain.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const patternTypeSelector = document.getElementById('pattern-type-selector');
+    const imageInstructions = document.getElementById('image-instructions');
+    const patternInput = document.getElementById('pattern-input');
+    const promptOutput = document.getElementById('prompt-output');
+    const copyButton = document.getElementById('copy-prompt-button');
+
+    const basePrompt = `# AI Prompt: Transform Pattern Ambiguity into Firestore Certainty
+
+## 1. Philosophy: Transform Ambiguity into Certainty
+
+You are an expert at converting condensed knitting patterns into fully enumerated, step-by-step Firestore documents. Your mission is to eliminate ALL loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
+
+**Core Principle**: Every "k to end", "repeat 5 times", or "(yo, k2tog) 3 times" must be calculated and expanded into the exact, final sequence of stitches.
+
+## 2. Critical Requirements
+
+### A. Complete Glossary Foundation
+The glossary is the foundation of automation. For EVERY stitch abbreviation used:
+- **stitchesUsed**: How many stitches consumed from left needle
+- **stitchesCreated**: How many stitches placed on right needle
+- Examples: k(1→1), kfb(1→2), k2tog(2→1), yo(0→1), pm(0→0)
+
+### B. Full Step Enumeration (NO Repeats)
+- Convert "Rows 3-10: k all" into 8 separate step objects numbered 3,4,5,6,7,8,9,10
+- Convert "(yo, k2tog) 5 times" into "yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog, yo, k2tog"
+- Calculate "k to end" based on current stitch count: if 15 stitches and "k3, yo, k to end" = "k3, yo, k11"
+
+### C. Precise Stitch Count Tracking
+- Every step MUST have startingStitchCount and endingStitchCount
+- endingStitchCount of step N = startingStitchCount of step N+1
+- Calculate by parsing every stitch in the resolved instruction using glossary values
+
+## 2. Pattern Settings
+Craft Type: {{CRAFT_TYPE}}
+Visibility: {{VISIBILITY}}
+User ID: {{USER_ID}} (the person creating this pattern)
+
+## 3. Input Pattern Text
+\`\`\`
+{{PATTERN_TEXT}}
+\`\`\`
+
+## 4. Required Output: Firestore Write Operations
+
+Generate the JavaScript code to write this pattern to Firestore using our schema:
+
+\`\`\`javascript
+// Pattern creation with sharing support
+async function createPatternInFirestore() {
+  const patternId = generateUniqueId();
+  const userId = '{{USER_ID}}';
+  
+  // Main pattern document
+  const patternData = {
+    // Metadata
+    id: patternId,
+    name: "Pattern Name Here",
+    author: "Author Name",
+    craft: "{{CRAFT_TYPE}}",
+    difficulty: "intermediate", // beginner, intermediate, advanced
+    
+    // Ownership and sharing
+    createdBy: userId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    visibility: "{{VISIBILITY}}",
+    
+    // Pattern structure
+    metadata: {
+      maxSteps: 117,
+      estimatedTime: "20 hours",
+      materials: ["materials list here"]
+    },
+    
+    glossary: {
+      "k": { "name": "Knit", "description": "Knit stitch.", "stitchesUsed": 1, "stitchesCreated": 1 },
+      "kfb": { "name": "Knit Front and Back", "description": "Increase.", "stitchesUsed": 1, "stitchesCreated": 2 },
+      "k2tog": { "name": "Knit 2 Together", "description": "Decrease.", "stitchesUsed": 2, "stitchesCreated": 1 },
+      "yo": { "name": "Yarn Over", "description": "Increase.", "stitchesUsed": 0, "stitchesCreated": 1 }
+      // ... COMPLETE glossary for ALL stitches used in pattern
+    },
+    
+    steps: [
+      {
+        "step": 1,
+        "startingStitchCount": 3,
+        "endingStitchCount": 4,
+        "instruction": "k1, kfb, k1", // Fully resolved, no variables
+        "section": "setup",
+        "side": "RS",
+        "type": "regular"
+      },
+      {
+        "step": 2,
+        "startingStitchCount": 4,
+        "endingStitchCount": 5,
+        "instruction": "k2, kfb, k1", // "k to end" resolved to "k1"
+        "section": "setup",
+        "side": "WS",
+        "type": "regular"
+      }
+      // ... Every single step enumerated, NO repeats or loops
+    ],
+    
+    // Analytics and sharing
+    shareCount: 0,
+    viewCount: 0,
+    forkCount: 0,
+    tags: ["tag1", "tag2"],
+    exportCount: 0
+  };
+  
+  // Write to Firestore
+  await db.collection('patterns').doc(patternId).set(patternData);
+  
+  // Create access record for creator
+  await db.collection('pattern_access').doc(patternId + '_' + userId).set({
+    patternId: patternId,
+    userId: userId,
+    grantedBy: userId,
+    permission: 'admin',
+    grantedAt: new Date(),
+    status: 'active',
+    shareReason: 'pattern_creator'
+  });
+  
+  console.log('Pattern created with ID:', patternId);
+  return patternId;
+}
+\`\`\`
+
+## 3. Implementation Steps
+
+### Step 1: Build Complete Glossary
+- Scan entire pattern for ALL stitch abbreviations
+- Define stitchesUsed and stitchesCreated for each
+- This enables automatic stitch count calculation
+
+### Step 2: Initialize State
+- currentStepNumber = 1
+- currentStitchCount = (from cast on)
+- currentSection = "setup"
+- currentSide = "RS"
+
+### Step 3: Process Each Line
+- **Resolve Variables**: Convert "k to end" to exact stitch count
+- **Expand Repeats**: Convert "(yo, k2tog) 3 times" to "yo, k2tog, yo, k2tog, yo, k2tog"
+- **Calculate Stitch Counts**: Parse resolved instruction using glossary
+- **Handle Loops**: "Repeat rows 3-5 twice" becomes 6 separate step objects
+
+### Step 4: Generate Firestore Operations
+- One step object per row/round with sequential numbering
+- Precise startingStitchCount and endingStitchCount for each
+- Fully resolved instructions with no ambiguity
+- Complete sharing metadata
+
+**Output**: Generate the complete Firestore write operations that create a fully enumerated pattern with NO loops, repeats, or variables.`;
+
+    function updatePrompt() {
+        const patternText = patternInput.value.trim();
+        const visibility = document.getElementById('pattern-visibility').value;
+        const craftType = document.getElementById('craft-type').value;
+        
+        if (patternText) {
+            const fullPrompt = basePrompt
+                .replace(/{{PATTERN_TEXT}}/g, patternText)
+                .replace(/{{VISIBILITY}}/g, visibility)
+                .replace(/{{CRAFT_TYPE}}/g, craftType)
+                .replace(/{{USER_ID}}/g, 'current_user_id'); // This would be filled by the app
+            promptOutput.textContent = fullPrompt;
+        } else {
+            promptOutput.textContent = 'Configure settings and paste pattern text to generate the prompt.';
+        }
+    }
+
+    patternTypeSelector.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const type = e.target.dataset.type;
+            patternTypeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            if (type === 'image') {
+                imageInstructions.classList.remove('hidden');
+            } else {
+                imageInstructions.classList.add('hidden');
+            }
+        }
+    });
+
+    patternInput.addEventListener('input', updatePrompt);
+    document.getElementById('pattern-visibility').addEventListener('change', updatePrompt);
+    document.getElementById('craft-type').addEventListener('change', updatePrompt);
+
+    copyButton.addEventListener('click', () => {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(promptOutput.textContent).then(() => {
+                const defaultSpan = document.getElementById('copy-default');
+                const successSpan = document.getElementById('copy-success');
+                defaultSpan.classList.add('hidden');
+                successSpan.classList.remove('hidden');
+                setTimeout(() => {
+                    defaultSpan.classList.remove('hidden');
+                    successSpan.classList.add('hidden');
+                }, 2000);
+            });
+        } else {
+            const textArea = document.createElement('textarea');
+            textArea.value = promptOutput.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Prompt copied to clipboard!');
+        }
+    });
+    
+    const tabButtons = document.querySelectorAll('.tab-button[id^="tab-"]');
+    const tabContents = document.querySelectorAll('.tab-content[id^="content-"]');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.id.replace('tab-', '');
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            tabContents.forEach(content => {
+                if (content.id === `content-${tabId}`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>
+

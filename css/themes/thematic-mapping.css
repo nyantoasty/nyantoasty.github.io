@@ -1,0 +1,108 @@
+/* 
+ * Thematic Mapping Layer (Tier 2)
+ * This layer maps semantic tokens to thematic concepts while remaining theme-agnostic.
+ * Themes (dark/light) will override these values with actual colors.
+ */
+
+:root {
+  /* Header Theme Variables */
+  --theme-header-primary: var(--palette-primary-500);
+  --theme-header-secondary: var(--palette-primary-400);
+  --theme-header-tertiary: var(--palette-primary-300);
+  --theme-header-quaternary: var(--palette-neutral-400);
+  --theme-header-quinary: var(--palette-neutral-300);
+
+  /* Special Stitch Colors - for pattern-specific features */
+  --theme-color-special-primary: var(--palette-accent-500);
+  --theme-color-special-secondary: var(--palette-accent-400);
+  --theme-color-special-tertiary: var(--palette-accent-300);
+  --theme-color-special-quaternary: var(--palette-accent-200);
+  --theme-color-special-quinary: var(--palette-accent-100);
+
+  /* Functional Stitch Colors - consistent meanings across all patterns */
+  --theme-color-increase: var(--palette-success-500);  /* Always green family for increases */
+  --theme-color-decrease: var(--palette-danger-500);   /* Always red family for decreases */
+  --theme-color-neutral: var(--palette-neutral-400);   /* Basic stitches */
+  --theme-color-edge: var(--palette-secondary-500);    /* Edge/border stitches */
+  --theme-color-marker: var(--palette-warning-500);    /* Stitch markers */
+
+  /* Designer Note Colors */
+  --theme-color-note-primary: var(--palette-info-500);
+  --theme-color-note-secondary: var(--palette-info-400);
+  --theme-color-note-tertiary: var(--palette-info-300);
+  --theme-color-note-quaternary: var(--palette-info-200);
+  --theme-color-note-quinary: var(--palette-info-100);
+
+  /* Generic Overflow Colors */
+  --theme-color-generic-01: var(--palette-tertiary-500);
+  --theme-color-generic-02: var(--palette-tertiary-400);
+  --theme-color-generic-03: var(--palette-tertiary-300);
+  --theme-color-generic-04: var(--palette-tertiary-200);
+  --theme-color-generic-05: var(--palette-tertiary-100);
+
+  /* Interactive States */
+  --theme-color-hover: var(--palette-primary-600);
+  --theme-color-active: var(--palette-primary-700);
+  --theme-color-focus: var(--palette-primary-500);
+
+  /* Background and Surface Colors */
+  --theme-bg-primary: var(--palette-neutral-900);
+  --theme-bg-secondary: var(--palette-neutral-800);
+  --theme-bg-tertiary: var(--palette-neutral-700);
+  --theme-surface: var(--palette-neutral-750);
+
+  /* Text Colors */
+  --theme-text-primary: var(--palette-neutral-100);
+  --theme-text-secondary: var(--palette-neutral-300);
+  --theme-text-tertiary: var(--palette-neutral-400);
+  --theme-text-disabled: var(--palette-neutral-500);
+
+  /* Border Colors */
+  --theme-border-primary: var(--palette-neutral-600);
+  --theme-border-secondary: var(--palette-neutral-700);
+  --theme-border-focus: var(--palette-primary-500);
+
+  /* Component-Specific Theme Colors */
+  --theme-current-step-bg: var(--palette-primary-500-alpha-30);
+  --theme-current-step-border: var(--palette-primary-500-alpha-50);
+  --theme-previous-step-border: var(--palette-primary-500-alpha-30);
+  --theme-highlight-bg: var(--palette-primary-100);
+  --theme-highlight-text: var(--palette-neutral-900);
+}
+
+/* 
+ * Component Theme Classes
+ * These use the thematic variables for consistent component styling
+ */
+
+/* Current step highlighting */
+.current-step {
+  background-color: var(--theme-current-step-bg) !important;
+  border: 2px solid var(--theme-current-step-border) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem !important;
+  margin: 0.25rem 0 !important;
+}
+
+.previous-step {
+  border: 1px solid var(--theme-previous-step-border) !important;
+  border-radius: 0.25rem !important;
+  padding: 0.25rem !important;
+  margin: 0.125rem 0 !important;
+}
+
+/* Text highlighting */
+.highlight {
+  background-color: var(--theme-highlight-bg);
+  color: var(--theme-highlight-text);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+/* Pattern text styling */
+.pattern-text p {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
+  transition: background-color 0.3s;
+}

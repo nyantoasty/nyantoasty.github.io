@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Start Migration - Enhanced Schema</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .feature-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .feature-list h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .feature-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .feature-list li {
+            margin: 5px 0;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .log-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .schema-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .schema-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .schema-box h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .schema-box code {
+            background: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 600px) {
+            .schema-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Fresh Start Migration</h1>
+        <p>Clean slate implementation of Enhanced LogicGuide Schema v2.0</p>
+    </div>
+
+    <div class="warning">
+        <strong>⚠️ Important:</strong> This tool will completely replace your existing patterns and user_pattern_progress collections with new enhanced schema data. All existing data will be backed up before deletion.
+    </div>
+
+    <div class="feature-list">
+        <h3>🌟 Enhanced Schema Features</h3>
+        <ul>
+            <li><strong>Human-readable document IDs:</strong> <code>iris-schreier_neon-sky-shawl</code> instead of auto-generated Firebase IDs</li>
+            <li><strong>Multi-size pattern support:</strong> Full size range handling with variable substitution</li>
+            <li><strong>Enhanced colorwork:</strong> Palette management, color transitions, yarn tracking</li>
+            <li><strong>Rich materials data:</strong> Yarn specifications, needle requirements, notions tracking</li>
+            <li><strong>Comprehensive gauge tracking:</strong> Before/after blocking, detailed measurements</li>
+            <li><strong>Visual resources:</strong> Image and chart integration</li>
+            <li><strong>Enhanced progress tracking:</strong> Section progress, analytics, time tracking</li>
+            <li><strong>Designer tools:</strong> Copyright management, pattern versioning, sharing controls</li>
+        </ul>
+    </div>
+
+    <div class="schema-comparison">
+        <div class="schema-box">
+            <h4>📜 Old Schema IDs</h4>
+            <p>Auto-generated Firebase IDs:</p>
+            <code>abc123xyz789...</code><br>
+            <code>def456uvw012...</code><br>
+            <small>Hard to debug, no human meaning</small>
+        </div>
+        <div class="schema-box">
+            <h4>🎯 New Schema IDs</h4>
+            <p>Human-readable structure:</p>
+            <code>iris-schreier_neon-sky-shawl</code><br>
+            <code>sample-user_neon-sky-shawl_first-attempt</code><br>
+            <small>Easy to debug, meaningful names</small>
+        </div>
+    </div>
+
+    <!-- Authentication Status -->
+    <div id="authStatus" class="hidden">
+        <div class="success">
+            ✅ <strong>Authenticated as:</strong> <span id="userEmail"></span>
+        </div>
+    </div>
+
+    <div id="notAuthenticated" class="error">
+        ❌ <strong>Not authenticated.</strong> Please sign in to continue.
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+        <button id="signInBtn" class="btn-primary">🔐 Sign In with Google</button>
+        <button id="dryRunBtn" class="btn-secondary" disabled>🔍 Dry Run (Preview Changes)</button>
+        <button id="freshStartBtn" class="btn-danger" disabled>🚀 Execute Fresh Start</button>
+        <button id="clearLogsBtn" class="btn-secondary">🧹 Clear Logs</button>
+    </div>
+
+    <!-- Progress and Logs -->
+    <div id="progressSection" class="hidden">
+        <h3>📊 Migration Progress</h3>
+        <div id="progressInfo"></div>
+        <div id="logOutput" class="log-output"></div>
+    </div>
+
+    <!-- Sample Data Preview -->
+    <div class="feature-list">
+        <h3>📋 Sample Data Preview</h3>
+        <p>The fresh start will create sample data demonstrating the new schema:</p>
+        <ul>
+            <li><strong>Sample Pattern:</strong> "Neon Sky Shawl" by Iris Schreier</li>
+            <li><strong>Enhanced metadata:</strong> Complete materials, gauge, and sizing information</li>
+            <li><strong>Sample Project:</strong> User progress tracking with new analytics</li>
+            <li><strong>Human-readable IDs:</strong> Easy to find and debug in Firebase Console</li>
+        </ul>
+    </div>
+
+    <!-- Firebase and Script Loading -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+        import { freshStart, generateHumanReadableId } from './scripts/fresh-start-migration.js';
+
+        // Firebase configuration (same as your existing app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5tJWZhJMBVXyNAO7IZIbr0H4fgTB5FV8",
+            authDomain: "nyantoasty-firebase.firebaseapp.com",
+            databaseURL: "https://nyantoasty-firebase-default-rtdb.firebaseio.com",
+            projectId: "nyantoasty-firebase",
+            storageBucket: "nyantoasty-firebase.appspot.com",
+            messagingSenderId: "610993854058",
+            appId: "1:610993854058:web:1ea65528de47ac8f031c7b"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // DOM elements
+        const signInBtn = document.getElementById('signInBtn');
+        const dryRunBtn = document.getElementById('dryRunBtn');
+        const freshStartBtn = document.getElementById('freshStartBtn');
+        const clearLogsBtn = document.getElementById('clearLogsBtn');
+        const authStatus = document.getElementById('authStatus');
+        const notAuthenticated = document.getElementById('notAuthenticated');
+        const userEmail = document.getElementById('userEmail');
+        const progressSection = document.getElementById('progressSection');
+        const progressInfo = document.getElementById('progressInfo');
+        const logOutput = document.getElementById('logOutput');
+
+        let currentUser = null;
+
+        // Authentication state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                userEmail.textContent = user.email;
+                authStatus.classList.remove('hidden');
+                notAuthenticated.classList.add('hidden');
+                signInBtn.textContent = '🔓 Sign Out';
+                dryRunBtn.disabled = false;
+                freshStartBtn.disabled = false;
+            } else {
+                currentUser = null;
+                authStatus.classList.add('hidden');
+                notAuthenticated.classList.remove('hidden');
+                signInBtn.textContent = '🔐 Sign In with Google';
+                dryRunBtn.disabled = true;
+                freshStartBtn.disabled = true;
+            }
+        });
+
+        // Custom logger for UI
+        function createUILogger() {
+            return {
+                log: (message) => {
+                    const timestamp = new Date().toLocaleTimeString();
+                    const logMessage = `[${timestamp}] ${message}\n`;
+                    logOutput.textContent += logMessage;
+                    logOutput.scrollTop = logOutput.scrollHeight;
+                    
+                    // Also log to console
+                    console.log(message);
+                }
+            };
+        }
+
+        // Update progress display
+        function updateProgress(results) {
+            const { backup, clear, samples, dryRun } = results;
+            
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">';
+            
+            if (!dryRun && backup) {
+                html += `
+                    <div class="schema-box">
+                        <h4>📦 Backup</h4>
+                        <p>Backed up: <strong>${backup.backed_up}</strong> items</p>
+                        ${backup.errors.length > 0 ? `<p style="color: #dc3545;">Errors: ${backup.errors.length}</p>` : ''}
+                    </div>
+                `;
+            }
+            
+            if (clear) {
+                html += `
+                    <div class="schema-box">
+                        <h4>🗑️ Cleanup</h4>
+                        <p>Deleted: <strong>${clear.deleted}</strong> items</p>
+                        ${clear.errors.length > 0 ? `<p style="color: #dc3545;">Errors: ${clear.errors.length}</p>` : ''}
+                    </div>
+                `;
+            }
+            
+            if (samples) {
+                html += `
+                    <div class="schema-box">
+                        <h4>🌟 New Data</h4>
+                        <p>Created: <strong>${samples.created}</strong> items</p>
+                        ${samples.errors.length > 0 ? `<p style="color: #dc3545;">Errors: ${samples.errors.length}</p>` : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            progressInfo.innerHTML = html;
+        }
+
+        // Event handlers
+        signInBtn.addEventListener('click', async () => {
+            if (currentUser) {
+                await auth.signOut();
+            } else {
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (error) {
+                    alert('Sign-in failed: ' + error.message);
+                }
+            }
+        });
+
+        dryRunBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            dryRunBtn.disabled = true;
+            progressSection.classList.remove('hidden');
+            logOutput.textContent = '';
+            
+            const logger = createUILogger();
+            
+            try {
+                logger.log('🔍 Starting dry run preview...');
+                
+                const results = await freshStart(db, {
+                    dryRun: true,
+                    createBackup: false, // No backup needed for dry run
+                    createSamples: true,
+                    log: logger.log
+                });
+                
+                updateProgress(results);
+                logger.log('✅ Dry run completed successfully!');
+                logger.log('📋 Review the preview above, then run "Execute Fresh Start" if ready.');
+                
+            } catch (error) {
+                logger.log(`❌ Dry run failed: ${error.message}`);
+            } finally {
+                dryRunBtn.disabled = false;
+            }
+        });
+
+        freshStartBtn.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
+            const confirmed = confirm(
+                '⚠️ This will permanently replace your patterns and user_pattern_progress collections!\n\n' +
+                '✅ Your data will be backed up first\n' +
+                '🗑️ Old collections will be deleted\n' +
+                '🌟 New enhanced schema will be created\n\n' +
+                'Are you absolutely sure you want to proceed?'
+            );
+            
+            if (!confirmed) return;
+            
+            freshStartBtn.disabled = true;
+            dryRunBtn.disabled = true;
+            progressSection.classList.remove('hidden');
+            logOutput.textContent = '';
+            
+            const logger = createUILogger();
+            
+            try {
+                logger.log('🚀 Starting fresh start migration...');
+                logger.log('⚠️ This is a REAL migration - changes will be permanent!');
+                
+                const results = await freshStart(db, {
+                    dryRun: false,
+                    createBackup: true,
+                    createSamples: true,
+                    log: logger.log
+                });
+                
+                updateProgress(results);
+                logger.log('🎉 Fresh start migration completed successfully!');
+                logger.log('📱 Check your Firebase Console to see the new human-readable document IDs');
+                logger.log('🧪 Sample data created - ready for testing!');
+                
+                // Show success message
+                progressInfo.innerHTML = `
+                    <div class="success">
+                        <h4>🎉 Migration Successful!</h4>
+                        <p>Your database has been successfully migrated to the enhanced schema v2.0.</p>
+                        <ul>
+                            <li>✅ Old data backed up to collections with "_backup_before_fresh_start" suffix</li>
+                            <li>🗑️ Original collections cleared</li>
+                            <li>🌟 New enhanced schema structure created</li>
+                            <li>📋 Sample data ready for testing</li>
+                        </ul>
+                        <p><strong>Next steps:</strong> Test the enhanced features and human-readable IDs in your Firebase Console!</p>
+                    </div>
+                ` + progressInfo.innerHTML;
+                
+            } catch (error) {
+                logger.log(`❌ Fresh start migration failed: ${error.message}`);
+                progressInfo.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Migration Failed</h4>
+                        <p>The migration encountered an error: ${error.message}</p>
+                        <p>Your original data should be safe. Check the logs above for details.</p>
+                    </div>
+                `;
+            } finally {
+                freshStartBtn.disabled = false;
+                dryRunBtn.disabled = false;
+            }
+        });
+
+        clearLogsBtn.addEventListener('click', () => {
+            logOutput.textContent = '';
+            progressInfo.innerHTML = '';
+            progressSection.classList.add('hidden');
+        });
+
+        // Show sample ID generation
+        window.addEventListener('load', () => {
+            const logger = createUILogger();
+            logger.log('🎯 Fresh Start Migration Tool Loaded');
+            logger.log('📋 Sample human-readable IDs:');
+            logger.log(`  Pattern: ${generateHumanReadableId('pattern', 'Iris Schreier', 'Neon Sky Shawl')}`);
+            logger.log(`  Project: ${generateHumanReadableId('project', 'sample-user', 'Neon Sky Shawl', 'first attempt')}`);
+            logger.log('');
+            logger.log('🔐 Please sign in to begin...');
+            
+            // Clear initial logs after 3 seconds
+            setTimeout(() => {
+                progressSection.classList.add('hidden');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

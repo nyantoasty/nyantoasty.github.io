@@ -8,10 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1f2937">
+    
+    <!-- Main Application Stylesheet - Three-Tier Token System -->
+    <link rel="stylesheet" href="/css/main.css">
+    
     <style>
-        .tab-button { padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
-        .tab-button.active { background-color: #8b5cf6; color: white; }
-        .tab-button:not(.active):hover { background-color: #4a5568; }
+        /* Page-specific styles - keeping minimal inline styles for page-specific behavior */
         .tab-content.hidden {
             display: none;
         }
@@ -150,13 +152,34 @@
                     <textarea 
                         id="pattern-json" 
                         class="w-full h-96 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
-                        placeholder='Paste your pattern JSON here. Example:
+                        placeholder='Paste your pattern JSON here. Example structure:
 {
   "metadata": {
-    "name": "My Pattern",
-    "author": "Your Name",
+    "name": "Pattern Name",
+    "author": "Designer Name", 
     "craft": "knitting",
-    "maxSteps": 10
+    "maxSteps": 10,
+    "description": "Pattern description",
+    "difficultyLevel": "beginner|intermediate|advanced"
+  },
+  "materials": {
+    "yarn": {
+      "primary": {
+        "brand": "Brand Name",
+        "weight": "worsted",
+        "yardageNeeded": 200
+      }
+    },
+    "needles": {
+      "primary": {
+        "size": "US 8",
+        "type": "straight"
+      }
+    }
+  },
+  "gauge": {
+    "stitchesIn4Inches": 16,
+    "rowsIn4Inches": 22
   },
   "glossary": {
     "k": {
@@ -825,24 +848,84 @@ The AI will convert this into structured JSON following our pattern format."></t
             }
         });
 
-        // Example pattern for testing
+        // Example pattern showing comprehensive metadata structure
         const examplePattern = {
             metadata: {
-                name: "Simple Dishcloth",
-                author: "Example Author",
+                name: "Cozy Winter Scarf",
+                author: "Pattern Designer",
+                publisher: "Craft Studio",
                 craft: "knitting",
-                maxSteps: 6
+                category: "scarf",
+                difficultyLevel: "beginner",
+                maxSteps: 24,
+                description: "A simple stockinette scarf perfect for beginners learning knitting basics.",
+                tags: ["scarf", "stockinette", "beginner", "warm"],
+                dateCreated: "2024-10-01",
+                version: "1.0",
+                language: "en"
+            },
+            materials: {
+                yarn: {
+                    primary: {
+                        brand: "Lion Brand",
+                        name: "Wool-Ease",
+                        weight: "worsted",
+                        weightCode: "4",
+                        fiber: "80% Acrylic, 20% Wool",
+                        yardage: 197,
+                        grams: 85,
+                        colorway: "Fisherman",
+                        yardageNeeded: 150,
+                        ballsNeeded: 1
+                    }
+                },
+                needles: {
+                    primary: {
+                        type: "straight",
+                        size: "US 8",
+                        sizeMetric: "5.0mm",
+                        length: "14 inches"
+                    }
+                },
+                notions: [
+                    {
+                        item: "tapestry needle",
+                        quantity: 1,
+                        description: "for weaving in ends",
+                        essential: true
+                    }
+                ]
+            },
+            gauge: {
+                stitchesPerInch: 4,
+                rowsPerInch: 5.5,
+                stitchesIn4Inches: 16,
+                rowsIn4Inches: 22,
+                needleSize: "US 8 (5.0mm)",
+                stitch: "stockinette stitch"
+            },
+            sizing: {
+                type: "one-size",
+                dimensions: {
+                    width: "6 inches",
+                    length: "60 inches"
+                }
+            },
+            techniques: ["knit", "purl", "cast on", "bind off"],
+            notes: {
+                general: "This is a great beginner project to practice basic knit and purl stitches.",
+                modifications: "For a wider scarf, cast on more stitches in multiples of 2."
             },
             glossary: {
                 k: {
                     name: "Knit",
-                    description: "Knit stitch.",
+                    description: "Insert needle through front of stitch, wrap yarn, pull through.",
                     stitchesUsed: 1,
                     stitchesCreated: 1
                 },
                 p: {
                     name: "Purl", 
-                    description: "Purl stitch.",
+                    description: "Insert needle through front of stitch from back, wrap yarn, pull through.",
                     stitchesUsed: 1,
                     stitchesCreated: 1
                 }
@@ -850,25 +933,26 @@ The AI will convert this into structured JSON following our pattern format."></t
             steps: [
                 {
                     step: 0,
-                    description: "Cast on 20 stitches.",
+                    description: "Cast on 24 stitches using long-tail cast on.",
                     section: "setup",
                     type: "specialInstruction"
                 },
                 {
                     step: 1,
-                    startingStitchCount: 20,
-                    endingStitchCount: 20,
-                    instruction: "k20",
+                    startingStitchCount: 24,
+                    endingStitchCount: 24,
+                    instruction: "k24",
                     section: "body",
                     side: "RS",
-                    type: "regular"
+                    type: "regular",
+                    notes: "First row establishes knit side"
                 },
                 {
                     step: 2,
-                    startingStitchCount: 20,
-                    endingStitchCount: 20,
-                    instruction: "p20",
-                    section: "body",
+                    startingStitchCount: 24,
+                    endingStitchCount: 24,
+                    instruction: "p24",
+                    section: "body", 
                     side: "WS",
                     type: "regular"
                 }

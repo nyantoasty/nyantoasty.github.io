@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "name": "Fairy Kiss",
+    "author": "Alina Appasova",
+    "craft": "knitting",
+    "maxSteps": 456
+  },
+  "glossary": {
+    "k": {
+      "name": "Knit",
+      "description": "Knit stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "p": {
+      "name": "Purl",
+      "description": "Purl stitch.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "sl": {
+      "name": "Slip",
+      "description": "Slip stitch purlwise.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "sl knitwise": {
+      "name": "Slip Knitwise",
+      "description": "Slip stitch as if to knit.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1
+    },
+    "kfb": {
+      "name": "Knit Front and Back",
+      "description": "Knit into front and back of the stitch (1 st increase).",
+      "stitchesUsed": 1,
+      "stitchesCreated": 2
+    },
+    "k2tog tbl": {
+      "name": "Knit 2 Together Through Back Loop",
+      "description": "Decrease.",
+      "stitchesUsed": 2,
+      "stitchesCreated": 1
+    },
+    "k3tog": {
+      "name": "Knit 3 Together",
+      "description": "Knit 3 stitches together (2 st decrease).",
+      "stitchesUsed": 3,
+      "stitchesCreated": 1
+    },
+    "yo": {
+      "name": "Yarn Over",
+      "description": "Increase (1 st increase).",
+      "stitchesUsed": 0,
+      "stitchesCreated": 1
+    },
+    "wyib": {
+      "name": "With Yarn in Back",
+      "description": "Carry the yarn at the back of the work.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "wyif": {
+      "name": "With Yarn in Front",
+      "description": "Carry the yarn at the front of the work.",
+      "stitchesUsed": 0,
+      "stitchesCreated": 0
+    },
+    "BO": {
+      "name": "Bind Off",
+      "description": "Bind off stitches.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 0
+    }
+  },
+  "steps": [
+    {
+      "step": 0,
+      "description": "With MC, cast on 100 sts.",
+      "section": "Setup",
+      "type": "specialInstruction"
+    },
+    {
+      "step": 1,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "knit to last 2 sts, sl2 wyif.",
+      "section": "Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 2,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "k2tog tbl, k to last 2 sts, kfb, p1.",
+      "section": "Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 3,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "sl1 knitwise wyib, k to last 2 sts, sl 2 wyif.",
+      "section": "Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 4,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "k2tog tbl, k3, [yo, k3tog, yo, k1] to last 3 sts, yo, k2, p1.",
+      "section": "Setup",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 5,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "sl1 knitwise wyib, k2, p to last 4 sts, k2, sl 2 wyif.",
+      "section": "Setup",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 6,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "CC Row 1(RS): k2tog tbl, [k3, sl 1 wyib] to last 2 sts, kfb, p1.",
+      "section": "Main Body - Repeat 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 7,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "Row 2 (WS): sl1 knitwise wyib, k2, sl 1 wyif, [p3, sl 1 wyif] to last 4 sts, k2, sl 2 wyif.",
+      "section": "Main Body - Repeat 1",
+      "side": "WS",
+      "type": "regular"
+    },
+    {
+      "step": 8,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "MC Row 3: k2tog tbl, k3, [yo, k3tog, yo, k1] to last 3 sts, yo, k2, p1.",
+      "section": "Main Body - Repeat 1",
+      "side": "RS",
+      "type": "regular"
+    },
+    {
+      "step": 9,
+      "startingStitchCount": 100,
+      "endingStitchCount": 100,
+      "instruction": "Row 4: sl1 knitwise wyib, k2, p to last 4 sts, k2, sl 2 wyif.",
+      "section": "Main Body - Repeat 1",
+      "side": "WS",
+      "type": "regular"
+    }
+  ]
+}

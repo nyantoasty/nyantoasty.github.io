@@ -260,7 +260,6 @@ export function generateGlossary(PATTERN_DATA) {
         if (item && item.name && item.description) {
             // Get the category and color for this stitch
             const category = getInstructionCategory(key, PATTERN_DATA);
-            const colorClass = `color-${category}`;
             
             // Use stitchesCreated for the new format
             const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
@@ -272,7 +271,7 @@ export function generateGlossary(PATTERN_DATA) {
             
             glossaryHTML += `
                 <div class="cursor-pointer hover:bg-gray-700 p-3 rounded border-l-4 border-gray-600" data-stitch="${key}">
-                    <h3 class="font-bold ${colorClass} text-lg mb-1" style="color: var(--color-${category})">
+                    <h3 class="font-bold ${category} text-lg mb-1">
                         ${item.name} (${key})${stitchInfo}
                     </h3>
                     <p class="text-sm text-gray-400 leading-relaxed">${formattedDescription}</p>
@@ -515,21 +514,21 @@ export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {
 export function generatePatternTheme(PATTERN_DATA) {
     if (!PATTERN_DATA) return;
     
-    // Collect all categories used in this pattern
-    const categories = new Set(['main']); // Always include main
+    // Collect all semantic tokens used in this pattern
+    const semanticTokens = new Set(['token-stitch-03']); // Always include basic stitches
     
     PATTERN_DATA.steps.forEach(step => {
         if (step.chunks && Array.isArray(step.chunks)) {
             step.chunks.forEach(chunk => {
                 if (chunk && chunk.instruction) {
-                    const category = getInstructionCategory(chunk.instruction, PATTERN_DATA);
-                    categories.add(category);
+                    const tokenClass = getInstructionCategory(chunk.instruction, PATTERN_DATA);
+                    semanticTokens.add(tokenClass);
                 }
                 if (chunk && chunk.repeat && chunk.repeat.instructions && Array.isArray(chunk.repeat.instructions)) {
                     chunk.repeat.instructions.forEach(repeatInstr => {
                         if (repeatInstr && repeatInstr.instruction) {
-                            const category = getInstructionCategory(repeatInstr.instruction, PATTERN_DATA);
-                            categories.add(category);
+                            const tokenClass = getInstructionCategory(repeatInstr.instruction, PATTERN_DATA);
+                            semanticTokens.add(tokenClass);
                         }
                     });
                 }
@@ -537,81 +536,19 @@ export function generatePatternTheme(PATTERN_DATA) {
         }
     });
     
-    console.log('🎨 Generating pattern theme for categories:', Array.from(categories));
+    console.log('� Semantic tokens detected in pattern:', Array.from(semanticTokens));
     
-    // Define fallback color palette for unknown categories
-    const fallbackColors = [
-        '#93c5fd', // blue-300
-        '#86efac', // green-300
-        '#f87171', // red-300
-        '#d8b4fe', // purple-300
-        '#fbbf24', // amber-400
-        '#fb7185', // rose-400
-        '#60a5fa', // blue-400
-        '#fcd34d', // amber-300
-        '#a78bfa', // violet-400
-        '#34d399', // emerald-400
-        '#ff9800', // orange-500
-        '#ff6b6b', // red-400
-        '#9ca3af', // gray-400
-        '#38bdf8', // sky-400
-        '#c084fc'  // purple-400
-    ];
+    // The three-tier token system handles all styling automatically
+    // No dynamic CSS generation needed!
     
-    // Standard categories that have predefined CSS variables
-    const standardCategories = new Set([
-        'main', 'increase', 'decrease', 'edge', 'spine', 'bobble', 
-        'lace', 'cable', 'texture', 'stitch', 'special', 'marker', 
-        'repeat', 'bind', 'cast'
-    ]);
+    console.log('✅ Pattern uses semantic token system - all styling handled by CSS');
     
-    // Check for pattern-specific color overrides
-    const colorOverrides = PATTERN_DATA.colorTheme || {};
-    
-    // Create dynamic CSS for categories not covered by standard CSS
-    const root = document.documentElement;
-    let dynamicCSS = '';
-    let colorIndex = 0;
-    
-    categories.forEach(category => {
-        // Use pattern-specific color override if available
-        if (colorOverrides[category]) {
-            root.style.setProperty(`--color-${category}`, colorOverrides[category]);
-            console.log(`🎨 Applied pattern override for ${category}: ${colorOverrides[category]}`);
-        }
-        
-        // If category is not in standard CSS, create dynamic CSS
-        if (!standardCategories.has(category)) {
-            // Use override color or fallback color
-            const color = colorOverrides[category] || fallbackColors[colorIndex % fallbackColors.length];
-            
-            // Set CSS variable if not already set
-            if (!colorOverrides[category]) {
-                root.style.setProperty(`--color-${category}`, color);
-            }
-            
-            // Create CSS classes for this category
-            dynamicCSS += `.${category} { color: var(--color-${category}) !important; font-weight: 500; }\n`;
-            dynamicCSS += `.color-${category} { color: var(--color-${category}) !important; }\n`;
-            
-            console.log(`🎨 Created dynamic CSS for ${category}: ${color}`);
-            colorIndex++;
-        }
-    });
-    
-    // Inject dynamic CSS if any categories need it
-    if (dynamicCSS) {
-        let styleEl = document.getElementById('dynamic-pattern-colors');
-        if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.id = 'dynamic-pattern-colors';
-            document.head.appendChild(styleEl);
-        }
-        styleEl.textContent = dynamicCSS;
-        console.log('🎨 Injected dynamic color CSS:', dynamicCSS);
+    // Remove any old dynamic CSS that might exist
+    const oldStyleEl = document.getElementById('dynamic-pattern-colors');
+    if (oldStyleEl) {
+        oldStyleEl.remove();
+        console.log('🧹 Removed old dynamic CSS');
     }
-    
-    console.log('✅ Pattern theme generation complete');
     
     // Update sidebar color key
     updateSidebarColorKey(categories);
@@ -655,8 +592,8 @@ export function updateSidebarColorKey(categories) {
         
         colorKeyHTML += `
             <div class="flex items-center space-x-2 mb-1">
-                <div class="w-4 h-4 rounded" style="background-color: var(--color-${category})"></div>
-                <span class="color-${category} font-medium" style="color: var(--color-${category})">${category}</span>
+                <div class="w-4 h-4 rounded ${category}"></div>
+                <span class="${category} font-medium">${category}</span>
                 <span class="text-gray-400 text-sm">- ${description}</span>
             </div>
         `;

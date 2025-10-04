@@ -1,0 +1,107 @@
+/* 
+ * Typography and Base Styles
+ * Font definitions, base element styling, and text utilities
+ */
+
+/* Font Imports - moved from HTML head for centralized management */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* Base Typography */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--palette-background);
+  color: var(--palette-text);
+  transition: all 0.3s ease;
+  line-height: 1.6;
+}
+
+/* Monospace Typography */
+.mono,
+code,
+pre {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* Text Size Utilities */
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+/* Font Weight Utilities */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Text Color Utilities using theme variables */
+.text-primary { color: var(--theme-text-primary); }
+.text-secondary { color: var(--theme-text-secondary); }
+.text-tertiary { color: var(--theme-text-tertiary); }
+.text-disabled { color: var(--theme-text-disabled); }
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+  color: var(--theme-text-primary);
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+/* Links */
+a {
+  color: var(--palette-primary-500);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--palette-primary-400);
+  text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+li {
+  margin-bottom: 0.25rem;
+}
+
+/* Code blocks */
+.code-block {
+  background-color: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--theme-text-primary);
+  margin: 1rem 0;
+}
+
+/* Result chunks */
+.result-chunk {
+  background-color: var(--theme-bg-tertiary);
+  padding: 1em;
+  border-radius: 5px;
+  color: var(--theme-text-primary);
+  overflow-x: auto;
+  white-space: pre;
+  font-family: 'Roboto Mono', monospace;
+  margin: 1rem 0;
+}

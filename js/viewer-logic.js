@@ -860,16 +860,13 @@ export function populateSidebarGlossary() {
             const category = getInstructionCategory(key, window.PATTERN_DATA);
             usedCategories.add(category);
             
-            // Get the color for this category from CSS variables
-            const colorClass = `color-${category}`;
-            
             // Preserve newlines in description by replacing \n with <br>
             const formattedDescription = item.description ? 
                 item.description.replace(/\\n/g, '<br>').replace(/\n/g, '<br>') : '';
             
             glossaryHTML += `
                 <div class="cursor-pointer hover:bg-gray-700 p-3 rounded mb-2 border-l-4 border-gray-600" data-stitch="${key}">
-                    <div class="${colorClass} font-bold text-lg mb-1" style="color: var(--color-${category})">${key}</div>
+                    <div class="${category} font-bold text-lg mb-1">${key}</div>
                     <div class="text-gray-300 font-medium mb-1">${item.name}</div>
                     ${formattedDescription ? `<div class="text-gray-400 text-sm leading-relaxed">${formattedDescription}</div>` : ''}
                 </div>

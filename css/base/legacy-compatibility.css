@@ -1,0 +1,241 @@
+/* 
+ * Legacy Compatibility Layer
+ * Maintains backward compatibility with existing hardcoded class names
+ * while transitioning to the new semantic token system.
+ * 
+ * These classes map old pattern-specific names to semantic tokens.
+ * Eventually, these should be replaced with semantic token classes in the HTML.
+ */
+
+/* === LEGACY PATTERN-SPECIFIC CLASSES === */
+/* These maintain compatibility with existing HTML */
+
+/* Map old hardcoded classes to semantic tokens */
+.main { 
+  color: var(--token-stitch-03) !important; 
+  font-weight: 400; 
+}
+
+.increase { 
+  color: var(--token-stitch-01) !important; 
+  font-weight: 500; 
+}
+
+.decrease { 
+  color: var(--token-stitch-02) !important; 
+  font-weight: 500; 
+}
+
+.edge { 
+  color: var(--token-stitch-04) !important; 
+  font-weight: 500; 
+}
+
+.spine { 
+  color: var(--token-special-01) !important; 
+  font-weight: 600; 
+}
+
+.bobble { 
+  color: var(--token-special-02) !important; 
+  font-weight: 600; 
+}
+
+.lace { 
+  color: var(--token-special-03) !important; 
+  font-weight: 500; 
+}
+
+.cable { 
+  color: var(--token-special-04) !important; 
+  font-weight: 600; 
+}
+
+.texture { 
+  color: var(--token-special-05) !important; 
+  font-weight: 500; 
+}
+
+.stitch { 
+  color: var(--token-stitch-03) !important; 
+  font-weight: 400; 
+}
+
+.special { 
+  color: var(--token-generic-01) !important; 
+  font-weight: 600; 
+}
+
+.marker { 
+  color: var(--token-stitch-05) !important; 
+  font-weight: 500; 
+}
+
+.repeat { 
+  color: var(--token-generic-02) !important; 
+  font-weight: 500; 
+}
+
+.bind { 
+  color: var(--token-generic-03) !important; 
+  font-weight: 500; 
+}
+
+.cast { 
+  color: var(--token-generic-04) !important; 
+  font-weight: 500; 
+}
+
+/* === LEGACY COLOR UTILITY CLASSES === */
+/* For sidebar and other UI elements that reference colors directly */
+
+.color-main { color: var(--token-stitch-03) !important; }
+.color-increase { color: var(--token-stitch-01) !important; }
+.color-decrease { color: var(--token-stitch-02) !important; }
+.color-edge { color: var(--token-stitch-04) !important; }
+.color-spine { color: var(--token-special-01) !important; }
+.color-bobble { color: var(--token-special-02) !important; }
+.color-lace { color: var(--token-special-03) !important; }
+.color-cable { color: var(--token-special-04) !important; }
+.color-texture { color: var(--token-special-05) !important; }
+.color-stitch { color: var(--token-stitch-03) !important; }
+.color-special { color: var(--token-generic-01) !important; }
+.color-marker { color: var(--token-stitch-05) !important; }
+.color-repeat { color: var(--token-generic-02) !important; }
+.color-bind { color: var(--token-generic-03) !important; }
+.color-cast { color: var(--token-generic-04) !important; }
+
+/* === LEGACY TAILWIND COLOR OVERRIDES === */
+/* Map legacy Tailwind class overrides to theme variables */
+
+[data-theme="light"] .text-white { 
+  color: var(--theme-text-primary) !important; 
+}
+
+[data-theme="light"] .text-gray-300 { 
+  color: var(--theme-text-secondary) !important; 
+}
+
+[data-theme="light"] .text-gray-400 { 
+  color: var(--theme-text-tertiary) !important; 
+}
+
+[data-theme="light"] .text-gray-500 { 
+  color: var(--theme-text-disabled) !important; 
+}
+
+[data-theme="light"] .text-violet-300 { 
+  color: var(--palette-primary-500) !important; 
+}
+
+/* Legacy background color overrides */
+[data-theme="light"] .bg-gray-900 { 
+  background-color: var(--palette-background) !important; 
+}
+
+[data-theme="light"] .bg-gray-800 { 
+  background-color: var(--theme-bg-secondary) !important; 
+}
+
+[data-theme="light"] .bg-gray-700 { 
+  background-color: var(--theme-bg-tertiary) !important; 
+}
+
+[data-theme="light"] .bg-gray-600 { 
+  background-color: var(--palette-neutral-600) !important; 
+}
+
+/* Legacy border color overrides */
+[data-theme="light"] .border-gray-700 { 
+  border-color: var(--theme-border-primary) !important; 
+}
+
+[data-theme="light"] .border-gray-600 { 
+  border-color: var(--theme-border-secondary) !important; 
+}
+
+/* Legacy button color overrides */
+[data-theme="light"] .bg-violet-600 { 
+  background-color: var(--palette-primary-500) !important; 
+}
+
+[data-theme="light"] .bg-blue-600 { 
+  background-color: var(--palette-accent-500) !important; 
+}
+
+[data-theme="light"] .bg-green-600 { 
+  background-color: var(--palette-success-500) !important; 
+}
+
+[data-theme="light"] .bg-red-600 { 
+  background-color: var(--palette-danger-500) !important; 
+}
+
+/* Legacy hover state overrides */
+[data-theme="light"] .hover\\:bg-gray-700:hover { 
+  background-color: var(--theme-bg-tertiary) !important; 
+}
+
+[data-theme="light"] .hover\\:bg-violet-700:hover { 
+  background-color: var(--palette-primary-600) !important; 
+}
+
+[data-theme="light"] .hover\\:bg-blue-700:hover { 
+  background-color: var(--palette-accent-600) !important; 
+}
+
+[data-theme="light"] .hover\\:bg-green-700:hover { 
+  background-color: var(--palette-success-600) !important; 
+}
+
+[data-theme="light"] .hover\\:bg-red-700:hover { 
+  background-color: var(--palette-danger-600) !important; 
+}
+
+/* Legacy form element overrides */
+[data-theme="light"] input, 
+[data-theme="light"] select, 
+[data-theme="light"] textarea {
+  background-color: var(--palette-surface) !important;
+  color: var(--theme-text-primary) !important;
+  border-color: var(--theme-border-primary) !important;
+}
+
+/* Legacy utility class compatibility */
+.text-blue-300 { color: var(--palette-accent-500) !important; }
+.text-yellow-300 { color: var(--palette-warning-500) !important; }
+.text-green-300 { color: var(--palette-success-500) !important; }
+
+[data-theme="light"] .text-blue-300 { 
+  color: var(--palette-accent-500) !important; 
+  font-weight: 600 !important; 
+}
+
+[data-theme="light"] .text-yellow-300 { 
+  color: var(--palette-warning-500) !important; 
+  font-weight: 600 !important; 
+}
+
+[data-theme="light"] .text-green-300 { 
+  color: var(--palette-success-500) !important; 
+  font-weight: 600 !important; 
+}
+
+/* === MIGRATION NOTES === */
+/*
+TODO: Gradually replace these legacy classes with semantic token classes:
+
+OLD APPROACH:
+<span class="increase">yo</span>
+<span class="bobble">MB3</span>
+
+NEW APPROACH:
+<span class="token-stitch-01">yo</span>
+<span class="token-special-01">MB3</span>
+
+This provides:
+1. Theme-agnostic semantic meaning
+2. Consistent behavior across patterns
+3. Better maintainability
+4. Cleaner separation of concerns
+*/

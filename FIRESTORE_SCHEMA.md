@@ -8,6 +8,7 @@ This schema supports:
 - Permission-based access control
 - Analytics and usage tracking
 - Export capabilities
+- **Three-tier semantic token system** for interactive highlighting (see LogicGuide-Enhanced.md)
 
 ## Collection Structure
 
@@ -17,6 +18,7 @@ firestore
 ├── patterns/                        # All patterns (shared storage)
 ├── pattern_access/                  # Permission management
 ├── pattern_shares/                  # Sharing requests and history
+├── user_pattern_progress/           # User progress on patterns (projects)
 ├── stitch_finder_queries/          # Analytics (existing)
 ├── navigation_events/              # Analytics (existing)
 └── generator_events/               # Analytics (existing)
@@ -45,47 +47,262 @@ firestore
 ```
 
 ### 2. patterns/{patternId}
-**Core pattern storage - this is where the actual pattern data lives**
+**Core pattern storage - enhanced to support rich LogicGuide features**
 ```javascript
 {
-  // Metadata
+  // Basic metadata (enhanced)
   id: "pattern_uuid",
   name: "Neon Sky Shawl",
   author: "Iris Schreier",
   craft: "knitting",
-  difficulty: "intermediate",         // beginner, intermediate, advanced
+  category: "shawl",                    // NEW: shawl, sweater, hat, etc.
+  difficulty: "intermediate",           // beginner, intermediate, advanced
   
-  // Ownership and sharing
+  // Ownership and sharing (unchanged)
   createdBy: "userId_who_created",
   createdAt: timestamp,
   updatedAt: timestamp,
   visibility: "private",              // private, shared, public
   
-  // Pattern structure (our existing format)
+  // Enhanced pattern structure (NEW - from LogicGuide)
   metadata: {
     maxSteps: 117,
     estimatedTime: "20 hours",
-    materials: ["worsted weight yarn", "size 8 needles"]
+    description: "A delicate triangular shawl...",
+    tags: ["shawl", "lace", "triangular"],
+    language: "en",
+    version: "1.0",
+    copyright: "© 2024 Designer. All rights reserved.",
+    patternSource: "https://example.com/pattern",
+    pdfUrl: "https://example.com/pattern.pdf"
   },
+  
+  // Materials specification (NEW)
+  materials: {
+    yarn: {
+      primary: {
+        brand: "Malabrigo",
+        name: "Sock Yarn", 
+        weight: "fingering",
+        weightCode: "1",
+        fiber: "100% Superwash Merino Wool",
+        yardageNeeded: 350,
+        substitutionNotes: "Any fingering weight yarn with good drape"
+      },
+      contrast: null
+    },
+    needles: {
+      primary: {
+        size: "US 6",
+        sizeMetric: "4.0mm",
+        type: "circular",
+        length: "32 inches"
+      }
+    },
+    notions: [
+      {
+        item: "stitch markers",
+        quantity: 8,
+        essential: true
+      }
+    ]
+  },
+  
+  // Gauge specification (NEW)
+  gauge: {
+    stitchesPerInch: 5.5,
+    rowsPerInch: 7.5,
+    stitchesIn4Inches: 22,
+    rowsIn4Inches: 30,
+    needleSize: "US 6 (4.0mm)",
+    stitch: "stockinette stitch",
+    afterBlocking: true,
+    notes: "Gauge is measured after blocking"
+  },
+  
+  // Multi-size support (NEW)
+  sizing: {
+    type: "multiple-sizes",            // single-size, multiple-sizes
+    sizes: ["XS", "S", "M", "L", "XL"],
+    sizeVariables: {
+      castOnStitches: [88, 96, 104, 112, 120],
+      edgeStitches: [5, 6, 7, 8, 9]
+    },
+    dimensions: {
+      chest: ["32", "36", "40", "44", "48"],
+      length: ["24", "25", "26", "27", "28"]
+    }
+  },
+  
+  // Colorwork specification (NEW)
+  colorwork: {
+    type: "single-color",              // single-color, stranded, held-together
+    numberOfColors: 1,
+    palettes: [
+      {
+        id: "p1",
+        name: "Main Color Only",
+        yarns: [
+          {"colorId": "MC", "strands": 1, "dominant": true}
+        ]
+      }
+    ],
+    colorMap: {
+      "MC": {
+        "name": "Main Color",
+        "colorCode": null,
+        "yarnDetails": {
+          "brand": "Malabrigo",
+          "colorway": "Pearl Ten"
+        }
+      }
+    }
+  },
+  
+  // Visual resources (NEW)
+  images: [
+    {
+      type: "finished",
+      caption: "Completed shawl worn",
+      url: "https://example.com/image.jpg",
+      base64: null                      // Embedded for small images
+    }
+  ],
+  
+  charts: [
+    {
+      name: "Chart A - Setup",
+      description: "Initial increase section", 
+      rowRange: [1, 20],
+      image: "data:image/png;base64,...",
+      legend: {
+        "k": "knit",
+        "yo": "yarn over"
+      }
+    }
+  ],
+  
+  // Enhanced glossary (expanded)
   glossary: {
     "k": {
       "name": "Knit",
-      "description": "Knit stitch.",
-      "stitchIndex": 1
+      "description": "Insert right needle through front of stitch...",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1,
+      "videoUrl": "https://example.com/videos/knit"
+    },
+    "kfb": {
+      "name": "Knit Front and Back",
+      "description": "Knit into front then back of same stitch",
+      "stitchesUsed": 1,
+      "stitchesCreated": 2,
+      "videoUrl": "https://example.com/videos/kfb"
     }
-    // ... rest of glossary
   },
+  
+  // Enhanced steps (with multi-size and colorwork support)
   steps: [
-    // Our existing step format with chunks
+    {
+      step: 1,
+      instruction: "Cast on {castOnStitches} stitches",
+      startingStitchCount: [88, 96, 104, 112, 120],  // Multi-size arrays
+      endingStitchCount: [88, 96, 104, 112, 120],
+      section: "setup",
+      type: "specialInstruction",
+      
+      // Multi-size support
+      sizeVariables: {
+        "castOnStitches": [88, 96, 104, 112, 120]
+      },
+      resolvedInstructions: {
+        "XS": "Cast on 88 stitches",
+        "S": "Cast on 96 stitches",
+        "M": "Cast on 104 stitches",
+        "L": "Cast on 112 stitches",
+        "XL": "Cast on 120 stitches"
+      },
+      
+      // Enhanced properties
+      side: "RS",                        // RS, WS, or null
+      paletteId: "p1",                  // Reference to colorwork palette
+      chartReference: "Chart A, Row 1",  // Reference to chart
+      notes: "Place markers carefully",
+      
+      // Semantic token highlighting (NEW - supports three-tier token system)
+      highlightTokens: [
+        {
+          "text": "Cast on",
+          "token": "token.special.01",
+          "position": [0, 7]
+        }
+      ],
+      
+      // Colorwork tracking
+      colorChanges: {
+        beforeStitch: 1,
+        description: "Switch to contrast color"
+      }
+    },
+    {
+      step: 2,
+      instruction: "k2, yo, k2tog, MB3, k1, yo, ssk, k to end",
+      startingStitchCount: [88, 96, 104, 112, 120],
+      endingStitchCount: [89, 97, 105, 113, 121],
+      section: "increase",
+      type: "pattern",
+      side: "RS",
+      
+      // Comprehensive highlighting example showing all token types
+      highlightTokens: [
+        {
+          "text": "yo",
+          "token": "token.stitch.01",
+          "position": [4, 6]
+        },
+        {
+          "text": "k2tog", 
+          "token": "token.stitch.02",
+          "position": [8, 13]
+        },
+        {
+          "text": "MB3",
+          "token": "token.special.01", 
+          "position": [15, 18]
+        },
+        {
+          "text": "yo",
+          "token": "token.stitch.01",
+          "position": [23, 25]
+        },
+        {
+          "text": "ssk",
+          "token": "token.stitch.02",
+          "position": [27, 30]
+        }
+      ]
+    }
   ],
   
-  // Sharing and analytics
+  // Additional resources (NEW)
+  resources: {
+    video: "https://youtube.com/watch?v=tutorial",
+    errata: "https://example.com/errata",
+    support: "mailto:support@designer.com"
+  },
+  
+  // Designer notes (NEW)
+  notes: {
+    general: "This pattern includes charts",
+    designNotes: "Inspired by traditional lace",
+    modifications: "Can add beads to yarn overs"
+  },
+  
+  // Sharing and analytics (unchanged)
   shareCount: 0,
   viewCount: 0,
-  forkCount: 0,                       // How many times pattern was copied/modified
-  tags: ["shawl", "lace", "triangular"],
+  forkCount: 0,
   
-  // Export tracking
+  // Export tracking (unchanged)
   lastExportedAt: timestamp,
   exportCount: 3
 }
@@ -158,6 +375,144 @@ async function getPattern(patternId, userId)
 
 // Update pattern (with permission check)
 async function updatePattern(patternId, updates, userId)
+```
+
+### Enhanced Progress Management
+```javascript
+// Initialize new project with size selection for multi-size patterns
+async function initializeProject(userId, patternId, projectName, selectedSize = null) {
+  const pattern = await getPattern(patternId, userId);
+  const projectId = generateProjectId();
+  
+  // Handle multi-size patterns
+  let sizeSelection = null;
+  if (pattern.sizing?.type === "multiple-sizes") {
+    if (!selectedSize) {
+      throw new Error("Size selection required for multi-size pattern");
+    }
+    const sizeIndex = pattern.sizing.sizes.indexOf(selectedSize);
+    if (sizeIndex === -1) {
+      throw new Error(`Invalid size: ${selectedSize}`);
+    }
+    
+    sizeSelection = {
+      selectedSize,
+      sizeIndex,
+      sizeLockedAt: serverTimestamp(),
+      allowSizeChange: true,
+      sizeNotes: `Selected ${selectedSize} size`
+    };
+  }
+  
+  const initialProgress = {
+    userId,
+    patternId,
+    projectId,
+    currentStep: 1,
+    totalSteps: pattern.metadata?.maxSteps || pattern.steps.length,
+    completedSteps: [],
+    createdAt: serverTimestamp(),
+    lastUpdated: serverTimestamp(),
+    
+    sizeSelection,
+    
+    projectDetails: {
+      projectName,
+      purpose: "personal",
+      yarns: [], // User will add their actual yarns
+      tools: {
+        needleSize: pattern.materials?.needles?.primary?.size || null,
+        originalNeedleSize: pattern.materials?.needles?.primary?.size || null
+      }
+    },
+    
+    status: "not_started"
+  };
+  
+  await db.collection('user_pattern_progress')
+    .doc(`${userId}_${patternId}_${projectId}`)
+    .set(initialProgress);
+  
+  return { projectId, initialProgress };
+}
+
+// Save progress with enhanced validation
+async function saveUserProgress(userId, patternId, projectId, progressData) {
+  const progressId = `${userId}_${patternId}_${projectId}`;
+  const [pattern, currentProgress] = await Promise.all([
+    getPattern(patternId, userId),
+    loadUserProgress(userId, patternId, projectId)
+  ]);
+  
+  // Enhanced step validation for multi-size patterns
+  if (progressData.currentStep && pattern.sizing?.type === "multiple-sizes" && currentProgress.sizeSelection) {
+    const sizeIndex = currentProgress.sizeSelection.sizeIndex;
+    const targetStep = pattern.steps[progressData.currentStep - 1];
+    
+    // Update current step details with resolved instruction
+    if (targetStep) {
+      progressData.currentStepDetails = {
+        stepNumber: progressData.currentStep,
+        instruction: targetStep.instruction,
+        resolvedInstruction: targetStep.resolvedInstructions?.[currentProgress.sizeSelection.selectedSize] || targetStep.instruction,
+        section: targetStep.section,
+        side: targetStep.side,
+        type: targetStep.type,
+        expectedStitchCount: {
+          starting: targetStep.startingStitchCount?.[sizeIndex] || 0,
+          ending: targetStep.endingStitchCount?.[sizeIndex] || 0
+        }
+      };
+    }
+  }
+  
+  await db.collection('user_pattern_progress').doc(progressId).set({
+    ...progressData,
+    lastUpdated: serverTimestamp()
+  }, { merge: true });
+}
+
+// Load user progress for specific project
+async function loadUserProgress(userId, patternId, projectId) {
+  const progressId = `${userId}_${patternId}_${projectId}`;
+  const doc = await db.collection('user_pattern_progress').doc(progressId).get();
+  return doc.exists ? doc.data() : null;
+}
+
+// Get all user projects (across all patterns)
+async function getUserProjects(userId) {
+  const snapshot = await db.collection('user_pattern_progress')
+    .where('userId', '==', userId)
+    .orderBy('lastUpdated', 'desc')
+    .get();
+  
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+// Add actual materials used by user
+async function addProjectYarn(userId, patternId, projectId, yarnData) {
+  const progressId = `${userId}_${patternId}_${projectId}`;
+  const currentProgress = await loadUserProgress(userId, patternId, projectId);
+  
+  const updatedYarns = [...(currentProgress.projectDetails.yarns || []), {
+    ...yarnData,
+    addedAt: serverTimestamp()
+  }];
+  
+  await saveUserProgress(userId, patternId, projectId, {
+    'projectDetails.yarns': updatedYarns
+  });
+}
+
+// Record gauge measurement
+async function recordActualGauge(userId, patternId, projectId, gaugeData) {
+  await saveUserProgress(userId, patternId, projectId, {
+    'projectDetails.actualGauge': {
+      ...gaugeData,
+      measuredOn: serverTimestamp()
+    }
+  });
+}
 ```
 
 ### Sharing Operations

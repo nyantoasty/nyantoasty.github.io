@@ -12,6 +12,7 @@ import requests
 from google.cloud import firestore
 import logging
 import PyPDF2
+from iterative_processor import create_pattern_processor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -395,6 +396,99 @@ def extract_text_only():
         return jsonify({
             'success': False,
             'error': str(e)
+        }), 500
+
+# Iterative Processing Endpoints
+
+import asyncio
+
+@app.route('/process-iterative', methods=['POST'])
+def process_pattern_iterative():
+    """Main endpoint for iterative pattern processing"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        required_fields = ['patternText', 'patternName', 'authorName']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        pattern_text = data['patternText']
+        pattern_name = data['patternName']
+        author_name = data['authorName']
+        
+        # Create processor instance
+        processor = create_pattern_processor(GEMINI_API_KEY)
+        
+        # Process pattern iteratively (sync wrapper for async function)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            result = loop.run_until_complete(
+                processor.process_pattern_iteratively(pattern_text, pattern_name, author_name)
+            )
+        finally:
+            loop.close()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Iterative pattern processing failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'step': 'initialization'
+        }), 500
+
+@app.route('/process-step', methods=['POST'])
+def process_single_step():
+    """Process a single step in the iterative pipeline"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        required_fields = ['step', 'context']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        step = data['step']
+        context_data = data['context']
+        user_context = data.get('userContext', '')
+        
+        # Create processor instance
+        processor = create_pattern_processor(GEMINI_API_KEY)
+        
+        # Process specific step (sync wrapper for async functions)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            if step == 'structure':
+                result = loop.run_until_complete(processor.pass_1_structure_analysis(context_data))
+            elif step == 'glossary':
+                result = loop.run_until_complete(processor.pass_2_glossary_building(context_data))
+            elif step == 'processing':
+                result = loop.run_until_complete(processor.pass_3_section_processing(context_data))
+            elif step == 'validation':
+                result = loop.run_until_complete(processor.pass_4_validation_assembly(context_data))
+            else:
+                return jsonify({'error': f'Unknown step: {step}'}), 400
+        finally:
+            loop.close()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Single step processing failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'step': step
         }), 500
 
 if __name__ == '__main__':

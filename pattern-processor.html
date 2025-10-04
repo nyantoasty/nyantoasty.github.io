@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iterative Pattern Processor - Stitch Witch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f2937">
+    <style>
+        .tab-button { 
+            padding: 0.5rem 1rem; 
+            border-radius: 6px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            border: 1px solid transparent; 
+        }
+        .tab-button.active { 
+            background-color: #8b5cf6; 
+            color: white; 
+        }
+        .tab-button:not(.active):hover { 
+            background-color: #4a5568; 
+        }
+        .processing {
+            animation: pulse 2s infinite;
+        }
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-indicator.active {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        .step-indicator.completed {
+            background-color: #10b981;
+            color: white;
+        }
+        .step-indicator.failed {
+            background-color: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-gray-700 pb-4">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-3xl font-bold text-white">Iterative Pattern Processor</h1>
+                <p class="text-sm text-gray-400">Advanced AI Pattern Generation</p>
+                <p class="text-xs text-gray-500">Dev Branch - Experimental Features</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <nav class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
+                    <a href="/" class="tab-button">Viewer</a>
+                    <a href="pattern-upload.html" class="tab-button">Generator</a>
+                    <span class="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg text-sm">Processor</span>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Processing Steps Indicator -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Processing Pipeline</h2>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div id="step-1" class="step-indicator w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">1</div>
+                    <span class="text-sm">Structure Analysis</span>
+                </div>
+                <div class="w-8 h-1 bg-gray-600" id="progress-1"></div>
+                
+                <div class="flex items-center space-x-2">
+                    <div id="step-2" class="step-indicator w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">2</div>
+                    <span class="text-sm">Glossary Building</span>
+                </div>
+                <div class="w-8 h-1 bg-gray-600" id="progress-2"></div>
+                
+                <div class="flex items-center space-x-2">
+                    <div id="step-3" class="step-indicator w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">3</div>
+                    <span class="text-sm">Section Processing</span>
+                </div>
+                <div class="w-8 h-1 bg-gray-600" id="progress-3"></div>
+                
+                <div class="flex items-center space-x-2">
+                    <div id="step-4" class="step-indicator w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">4</div>
+                    <span class="text-sm">Validation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pattern Input -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4">Pattern Input</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="pattern-name" class="block text-sm font-medium text-gray-400 mb-1">Pattern Name</label>
+                    <input 
+                        type="text" 
+                        id="pattern-name" 
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        placeholder="My Beautiful Shawl">
+                </div>
+                <div>
+                    <label for="pattern-author" class="block text-sm font-medium text-gray-400 mb-1">Designer Name</label>
+                    <input 
+                        type="text" 
+                        id="pattern-author" 
+                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        placeholder="Jane Designer">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="pattern-text" class="block text-sm font-medium text-gray-300 mb-2">
+                    Pattern Text
+                </label>
+                <textarea 
+                    id="pattern-text" 
+                    class="w-full h-64 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
+                    placeholder="Paste your knitting pattern here. For example:
+
+Cast on 42 sts.
+Row 1 (WS): K to end.
+Row 2 (RS): K2, *yo, k to 1 st before m, yo, k1, slm, k1; repeat from * three times, yo, k to last 2 sts, yo, k2.
+Row 3 (WS): K2, p to last 2 sts, k2.
+Repeat rows 2-3 until...
+
+The AI will process this iteratively through multiple specialized passes."></textarea>
+            </div>
+
+            <div class="flex space-x-4">
+                <button id="start-processing" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-play mr-2"></i>Start Processing
+                </button>
+                <button id="clear-input" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-trash mr-2"></i>Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Processing Results -->
+        <div id="processing-results" class="space-y-6">
+            <!-- Results will be populated here by JavaScript -->
+        </div>
+
+        <!-- Authentication Status -->
+        <div id="auth-status" class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-2">Authentication Status</h3>
+            <div id="auth-info" class="text-gray-400">Checking authentication...</div>
+            <button id="sign-in-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mt-2 hidden">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Firebase and App Scripts -->
+    <script type="module">
+        import { auth, db, app } from './js/firebase-config.js';
+        import { 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Global variables
+        let currentUser = null;
+        let processingContext = {};
+
+        // DOM elements
+        const patternNameInput = document.getElementById('pattern-name');
+        const patternAuthorInput = document.getElementById('pattern-author');
+        const patternTextInput = document.getElementById('pattern-text');
+        const startProcessingBtn = document.getElementById('start-processing');
+        const clearInputBtn = document.getElementById('clear-input');
+        const processingResults = document.getElementById('processing-results');
+        const authInfo = document.getElementById('auth-info');
+        const signInBtn = document.getElementById('sign-in-btn');
+
+        // Processing state
+        let currentStep = 0;
+        const steps = ['structure', 'glossary', 'processing', 'validation'];
+
+        // Update step indicator
+        function updateStepIndicator(stepIndex, status) {
+            const stepEl = document.getElementById(`step-${stepIndex + 1}`);
+            const progressEl = document.getElementById(`progress-${stepIndex + 1}`);
+            
+            stepEl.className = stepEl.className.replace(/\b(active|completed|failed)\b/g, '');
+            stepEl.classList.add(status);
+            
+            if (progressEl && status === 'completed') {
+                progressEl.classList.remove('bg-gray-600');
+                progressEl.classList.add('bg-green-500');
+            }
+        }
+
+        // Clear all inputs
+        clearInputBtn.addEventListener('click', () => {
+            patternNameInput.value = '';
+            patternAuthorInput.value = '';
+            patternTextInput.value = '';
+            processingResults.innerHTML = '';
+            processingContext = {};
+            currentStep = 0;
+            
+            // Reset step indicators
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                const progressEl = document.getElementById(`progress-${i}`);
+                
+                stepEl.className = stepEl.className.replace(/\b(active|completed|failed)\b/g, '');
+                if (progressEl) {
+                    progressEl.classList.remove('bg-green-500', 'bg-red-500');
+                    progressEl.classList.add('bg-gray-600');
+                }
+            }
+        });
+
+        // Start processing pipeline
+        startProcessingBtn.addEventListener('click', async () => {
+            const patternText = patternTextInput.value.trim();
+            const patternName = patternNameInput.value.trim() || 'Untitled Pattern';
+            const patternAuthor = patternAuthorInput.value.trim() || 'Unknown Author';
+
+            if (!patternText) {
+                showError('Please enter pattern text first');
+                return;
+            }
+
+            if (!currentUser) {
+                showError('Please sign in first to use the pattern processor');
+                return;
+            }
+
+            // Initialize processing context
+            processingContext = {
+                originalText: patternText,
+                metadata: {
+                    name: patternName,
+                    author: patternAuthor,
+                    craft: 'knitting'
+                }
+            };
+
+            currentStep = 0;
+            processingResults.innerHTML = '';
+
+            // Start with structure analysis
+            await processStep1_StructureAnalysis();
+        });
+
+        // Step 1: Structure Analysis
+        async function processStep1_StructureAnalysis() {
+            updateStepIndicator(0, 'active');
+            showStepResult(1, 'Structure Analysis', 'Processing pattern structure...', 'processing');
+
+            try {
+                const prompt = createStructureAnalysisPrompt(processingContext.originalText);
+                const result = await callGeminiAPI(prompt);
+                
+                if (result.success) {
+                    processingContext.structure = result.data;
+                    updateStepIndicator(0, 'completed');
+                    showStepResult(1, 'Structure Analysis', 'Structure analysis completed', 'completed', result.data);
+                    
+                    // Allow user to review and proceed
+                    showUserReviewInterface(1, result.data, processStep2_GlossaryBuilding);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                updateStepIndicator(0, 'failed');
+                showStepResult(1, 'Structure Analysis', `Failed: ${error.message}`, 'failed');
+            }
+        }
+
+        // Step 2: Glossary Building
+        async function processStep2_GlossaryBuilding() {
+            updateStepIndicator(1, 'active');
+            showStepResult(2, 'Glossary Building', 'Building pattern glossary...', 'processing');
+
+            try {
+                const prompt = createGlossaryBuildingPrompt(processingContext);
+                const result = await callGeminiAPI(prompt);
+                
+                if (result.success) {
+                    processingContext.glossary = result.data;
+                    updateStepIndicator(1, 'completed');
+                    showStepResult(2, 'Glossary Building', 'Glossary building completed', 'completed', result.data);
+                    
+                    // Allow user to review and proceed
+                    showUserReviewInterface(2, result.data, processStep3_SectionProcessing);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                updateStepIndicator(1, 'failed');
+                showStepResult(2, 'Glossary Building', `Failed: ${error.message}`, 'failed');
+            }
+        }
+
+        // Step 3: Section Processing
+        async function processStep3_SectionProcessing() {
+            updateStepIndicator(2, 'active');
+            showStepResult(3, 'Section Processing', 'Processing pattern sections...', 'processing');
+
+            try {
+                const prompt = createSectionProcessingPrompt(processingContext);
+                const result = await callGeminiAPI(prompt);
+                
+                if (result.success) {
+                    processingContext.steps = result.data;
+                    updateStepIndicator(2, 'completed');
+                    showStepResult(3, 'Section Processing', 'Section processing completed', 'completed', result.data);
+                    
+                    // Allow user to review and proceed
+                    showUserReviewInterface(3, result.data, processStep4_Validation);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                updateStepIndicator(2, 'failed');
+                showStepResult(3, 'Section Processing', `Failed: ${error.message}`, 'failed');
+            }
+        }
+
+        // Step 4: Validation and Assembly
+        async function processStep4_Validation() {
+            updateStepIndicator(3, 'active');
+            showStepResult(4, 'Validation & Assembly', 'Validating and assembling final pattern...', 'processing');
+
+            try {
+                // Assemble final pattern
+                const finalPattern = {
+                    metadata: {
+                        ...processingContext.metadata,
+                        maxSteps: processingContext.steps ? processingContext.steps.length : 0
+                    },
+                    glossary: processingContext.glossary || {},
+                    steps: processingContext.steps || []
+                };
+
+                updateStepIndicator(3, 'completed');
+                showStepResult(4, 'Validation & Assembly', 'Pattern assembly completed', 'completed', finalPattern);
+                
+                // Show final result with upload option
+                showFinalResult(finalPattern);
+            } catch (error) {
+                updateStepIndicator(3, 'failed');
+                showStepResult(4, 'Validation & Assembly', `Failed: ${error.message}`, 'failed');
+            }
+        }
+
+        // Create step result display
+        function showStepResult(stepNumber, title, message, status, data = null) {
+            const existingResult = document.getElementById(`step-result-${stepNumber}`);
+            if (existingResult) {
+                existingResult.remove();
+            }
+
+            const statusColors = {
+                processing: 'bg-blue-900 border-blue-500 text-blue-300',
+                completed: 'bg-green-900 border-green-500 text-green-300',
+                failed: 'bg-red-900 border-red-500 text-red-300'
+            };
+
+            const resultHtml = `
+                <div id="step-result-${stepNumber}" class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-2">Step ${stepNumber}: ${title}</h3>
+                    <div class="${statusColors[status]} border rounded p-4 mb-4">
+                        <p>${message}</p>
+                    </div>
+                    ${data ? `
+                        <details class="mb-4">
+                            <summary class="cursor-pointer font-medium text-gray-300 hover:text-white">
+                                View Result Data
+                            </summary>
+                            <pre class="mt-2 p-4 bg-gray-700 rounded text-xs overflow-auto">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    ` : ''}
+                </div>
+            `;
+
+            processingResults.insertAdjacentHTML('beforeend', resultHtml);
+        }
+
+        // Show user review interface
+        function showUserReviewInterface(stepNumber, data, nextStepFunction) {
+            const reviewHtml = `
+                <div class="bg-yellow-900 border border-yellow-500 rounded p-4 mt-4">
+                    <h4 class="font-semibold text-yellow-200 mb-2">Review Step ${stepNumber} Results</h4>
+                    <p class="text-yellow-300 text-sm mb-4">
+                        Review the results above. You can add context or request changes before proceeding.
+                    </p>
+                    <div class="flex space-x-4">
+                        <button onclick="proceedToNextStep(${stepNumber})" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm font-medium">
+                            <i class="fas fa-arrow-right mr-1"></i>Proceed to Next Step
+                        </button>
+                        <button onclick="retryCurrentStep(${stepNumber})" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded text-sm font-medium">
+                            <i class="fas fa-redo mr-1"></i>Retry This Step
+                        </button>
+                        <button onclick="addUserContext(${stepNumber})" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium">
+                            <i class="fas fa-comment mr-1"></i>Add Context
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const stepResult = document.getElementById(`step-result-${stepNumber}`);
+            stepResult.insertAdjacentHTML('beforeend', reviewHtml);
+
+            // Store next step function
+            window[`nextStepFunction_${stepNumber}`] = nextStepFunction;
+        }
+
+        // Global functions for user interaction
+        window.proceedToNextStep = function(stepNumber) {
+            const nextStepFunction = window[`nextStepFunction_${stepNumber}`];
+            if (nextStepFunction) {
+                nextStepFunction();
+            }
+        };
+
+        window.retryCurrentStep = function(stepNumber) {
+            // Logic to retry current step
+            console.log(`Retrying step ${stepNumber}`);
+        };
+
+        window.addUserContext = function(stepNumber) {
+            // Logic to add user context
+            console.log(`Adding context for step ${stepNumber}`);
+        };
+
+        // Show final result
+        function showFinalResult(pattern) {
+            const finalResultHtml = `
+                <div class="bg-gray-800 rounded-lg p-6 border-2 border-green-500">
+                    <h2 class="text-2xl font-semibold mb-4 text-green-400">Pattern Processing Complete!</h2>
+                    <p class="text-gray-300 mb-4">Your pattern has been successfully processed and is ready for upload.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-gray-700 rounded p-4">
+                            <h4 class="font-semibold text-purple-300">Pattern Info</h4>
+                            <p class="text-sm text-gray-400">Name: ${pattern.metadata.name}</p>
+                            <p class="text-sm text-gray-400">Author: ${pattern.metadata.author}</p>
+                            <p class="text-sm text-gray-400">Steps: ${pattern.metadata.maxSteps}</p>
+                        </div>
+                        <div class="bg-gray-700 rounded p-4">
+                            <h4 class="font-semibold text-purple-300">Glossary</h4>
+                            <p class="text-sm text-gray-400">${Object.keys(pattern.glossary).length} stitch definitions</p>
+                        </div>
+                        <div class="bg-gray-700 rounded p-4">
+                            <h4 class="font-semibold text-purple-300">Validation</h4>
+                            <p class="text-sm text-green-400">All checks passed</p>
+                        </div>
+                    </div>
+
+                    <details class="mb-6">
+                        <summary class="cursor-pointer font-medium text-gray-300 hover:text-white">
+                            View Complete Pattern JSON
+                        </summary>
+                        <pre class="mt-2 p-4 bg-gray-700 rounded text-xs overflow-auto max-h-96">${JSON.stringify(pattern, null, 2)}</pre>
+                    </details>
+
+                    <div class="flex space-x-4">
+                        <button id="upload-pattern" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold">
+                            <i class="fas fa-upload mr-2"></i>Upload to Firestore
+                        </button>
+                        <button id="download-pattern" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold">
+                            <i class="fas fa-download mr-2"></i>Download JSON
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            processingResults.insertAdjacentHTML('beforeend', finalResultHtml);
+        }
+
+        // Utility functions
+        function showError(message) {
+            const errorHtml = `
+                <div class="bg-red-900 border border-red-500 rounded p-4 mb-4">
+                    <p class="text-red-300">${message}</p>
+                </div>
+            `;
+            processingResults.insertAdjacentHTML('beforeend', errorHtml);
+        }
+
+        // Placeholder prompt creation functions (to be implemented)
+        function createStructureAnalysisPrompt(patternText) {
+            return `Analyze the structure of this knitting pattern and identify sections, repeats, and organization. Pattern: ${patternText}`;
+        }
+
+        function createGlossaryBuildingPrompt(context) {
+            return `Build a complete glossary for this pattern based on the structure analysis. Context: ${JSON.stringify(context)}`;
+        }
+
+        function createSectionProcessingPrompt(context) {
+            return `Process the pattern sections using the established glossary. Context: ${JSON.stringify(context)}`;
+        }
+
+        // Placeholder Gemini API call (to be implemented)
+        async function callGeminiAPI(prompt) {
+            // Simulate API call for now
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return {
+                success: true,
+                data: { message: 'Simulated response', prompt: prompt.substring(0, 100) + '...' }
+            };
+        }
+
+        // Authentication
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                authInfo.textContent = `Signed in as ${user.displayName || user.email}`;
+                signInBtn.classList.add('hidden');
+            } else {
+                authInfo.textContent = 'Please sign in to use the pattern processor';
+                signInBtn.classList.remove('hidden');
+            }
+        });
+
+        signInBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showError('Failed to sign in: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

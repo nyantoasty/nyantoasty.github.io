@@ -156,6 +156,35 @@
   opacity: 0.8;
 }
 
+/* Theme-aware semantic classes for UI components */
+.bg-primary { background-color: var(--theme-bg-primary) !important; }
+.bg-secondary { background-color: var(--theme-bg-secondary) !important; }
+.bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
+.bg-surface { background-color: var(--theme-surface) !important; }
+
+.text-primary { color: var(--theme-text-primary) !important; }
+.text-secondary { color: var(--theme-text-secondary) !important; }
+.text-tertiary { color: var(--theme-text-tertiary) !important; }
+
+.border-primary { border-color: var(--theme-border-primary) !important; }
+.border-secondary { border-color: var(--theme-border-secondary) !important; }
+
+.btn-primary { 
+  background-color: var(--theme-header-primary) !important; 
+  color: var(--theme-text-primary) !important; 
+}
+.btn-primary:hover { 
+  background-color: var(--theme-color-hover) !important; 
+}
+
+.btn-secondary { 
+  background-color: var(--theme-bg-tertiary) !important; 
+  color: var(--theme-text-primary) !important; 
+}
+
+.pattern-accent { color: var(--theme-header-secondary) !important; }
+.special-accent { color: var(--theme-color-special-primary) !important; }
+
 /* Critical UI state overrides */
 #auth-container.hidden,
 #app-container.hidden,
@@ -178,6 +207,150 @@
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+/* Semantic Button Classes */
+.btn-primary {
+  background-color: var(--theme-bg-accent);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-border-accent);
+}
+
+.btn-primary:hover {
+  background-color: var(--theme-bg-accent-hover);
+  color: var(--theme-text-on-accent);
+}
+
+.btn-secondary {
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--theme-bg-tertiary);
+  color: var(--theme-text-primary);
+}
+
+.btn-accent {
+  background-color: var(--theme-bg-accent);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-border-accent);
+}
+
+.btn-accent:hover {
+  background-color: var(--theme-bg-accent-hover);
+  color: var(--theme-text-on-accent);
+}
+
+.btn-special {
+  background: var(--theme-gradient-primary);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-border-accent);
+}
+
+.btn-special:hover {
+  background: var(--theme-gradient-secondary);
+  color: var(--theme-text-on-accent);
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--theme-text-tertiary);
+}
+
+.btn-icon:hover {
+  color: var(--theme-text-primary);
+}
+
+.btn-success {
+  background-color: var(--theme-color-increase);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-color-increase);
+}
+
+.btn-success:hover {
+  background-color: var(--palette-success-600);
+  color: var(--theme-text-on-accent);
+}
+
+.btn-warning {
+  background-color: var(--theme-color-marker);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-color-marker);
+}
+
+.btn-warning:hover {
+  background-color: var(--palette-warning-600);
+  color: var(--theme-text-on-accent);
+}
+
+.btn-danger {
+  background-color: var(--theme-color-decrease);
+  color: var(--theme-text-on-accent);
+  border: 1px solid var(--theme-color-decrease);
+}
+
+.btn-danger:hover {
+  background-color: var(--palette-danger-600);
+  color: var(--theme-text-on-accent);
+}
+
+/* Semantic Link Classes */
+.link-primary {
+  color: var(--theme-text-accent);
+  text-decoration: none;
+}
+
+.link-primary:hover {
+  color: var(--theme-text-accent-hover);
+}
+
+/* Additional Semantic Utility Classes */
+.text-accent {
+  color: var(--theme-text-accent);
+}
+
+.text-accent-hover:hover {
+  color: var(--theme-text-accent-hover);
+}
+
+.text-muted {
+  color: var(--theme-text-muted);
+}
+
+.bg-accent {
+  background-color: var(--theme-bg-accent);
+}
+
+/* Focus ring utilities */
+.focus\:ring-accent:focus {
+  --tw-ring-color: var(--theme-bg-accent);
+  --tw-ring-opacity: 0.5;
+}
+
+.focus\:border-accent:focus {
+  border-color: var(--theme-bg-accent);
+}
+
+/* Hover utilities */
+.hover\:bg-accent-hover:hover {
+  background-color: var(--theme-bg-accent-hover);
+}
+
+/* Warning color utilities */
+.bg-warning-muted {
+  background-color: var(--theme-bg-tertiary);
+  border: 1px solid var(--theme-color-marker);
+}
+
+.border-warning {
+  border-color: var(--theme-color-marker);
+}
+
+.text-warning {
+  color: var(--theme-color-marker);
 }
 
 /* Responsive utilities */

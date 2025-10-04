@@ -12,6 +12,7 @@ import requests
 from google.cloud import firestore
 import logging
 import PyPDF2
+from iterative_processor import create_pattern_processor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -186,6 +187,14 @@ def generate_pattern():
 def generate_pattern_from_text(pattern_text: str, pattern_name: str, author_name: str) -> dict:
     """Generate pattern JSON using Gemini AI with comprehensive LogicGuide prompt"""
     
+    # Validate input length to prevent API timeouts
+    if len(pattern_text) > 10000:
+        logger.warning(f"Pattern text is very long ({len(pattern_text)} chars), truncating to prevent API timeout")
+        pattern_text = pattern_text[:10000] + "... [truncated for processing]"
+    
+    if len(pattern_text) < 50:
+        raise Exception("Pattern text is too short. Please provide more detailed pattern instructions.")
+    
     prompt = f"""You are an expert knitting pattern translator. Your task is to convert a condensed, human-readable knitting pattern into a fully enumerated, step-by-step JSON document following our precise Firestore schema.
 
 CORE PHILOSOPHY: Transform ambiguity into certainty. Eliminate all loops, repeats, and variables, producing a complete, explicit list of actions from cast on to bind off.
@@ -193,8 +202,8 @@ CORE PHILOSOPHY: Transform ambiguity into certainty. Eliminate all loops, repeat
 TARGET SCHEMA:
 {{
   "metadata": {{
-    "name": "Pattern Name",
-    "author": "Designer Name", 
+    "name": "{pattern_name}",
+    "author": "{author_name}", 
     "craft": "knitting",
     "maxSteps": 280
   }},
@@ -278,45 +287,82 @@ Return the complete JSON structure now:"""
     }
     
     try:
+        logger.info(f"Calling Gemini API for pattern: {pattern_name}")
+        logger.info(f"Pattern text length: {len(pattern_text)} characters")
+        
         response = requests.post(
             f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}',
             headers=headers,
             json=payload,
-            timeout=60
+            timeout=120  # Increased timeout for complex patterns
         )
         
+        logger.info(f"Gemini API response status: {response.status_code}")
+        
         if not response.ok:
-            raise Exception(f'Gemini API error: {response.status_code} - {response.text}')
+            error_detail = response.text
+            logger.error(f'Gemini API error {response.status_code}: {error_detail}')
+            raise Exception(f'Gemini API error: {response.status_code} - {error_detail}')
         
         result = response.json()
         response_text = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
         
         if not response_text:
+            logger.error('Empty response from Gemini API')
             raise Exception('No response from Gemini API')
+        
+        logger.info(f"Received response from Gemini, length: {len(response_text)} characters")
         
         # Clean and parse JSON response
         clean_json = response_text.replace('```json', '').replace('```', '').strip()
+        
+        # Remove any leading/trailing non-JSON text
+        start_brace = clean_json.find('{')
+        end_brace = clean_json.rfind('}')
+        
+        if start_brace == -1 or end_brace == -1:
+            logger.error(f'No JSON braces found in response: {clean_json[:200]}...')
+            raise Exception('Invalid JSON response format')
+        
+        clean_json = clean_json[start_brace:end_brace+1]
         
         try:
             pattern_json = json.loads(clean_json)
             
             # Validate structure
-            if not all(key in pattern_json for key in ['metadata', 'glossary', 'steps']):
-                raise Exception('Invalid pattern structure: missing required sections')
+            required_keys = ['metadata', 'glossary', 'steps']
+            missing_keys = [key for key in required_keys if key not in pattern_json]
+            if missing_keys:
+                raise Exception(f'Invalid pattern structure: missing {missing_keys}')
+            
+            # Validate metadata has required fields
+            required_metadata = ['name', 'author', 'craft']
+            missing_metadata = [key for key in required_metadata if key not in pattern_json['metadata']]
+            if missing_metadata:
+                raise Exception(f'Invalid metadata: missing {missing_metadata}')
             
             # Set maxSteps in metadata
-            pattern_json['metadata']['maxSteps'] = len(pattern_json['steps'])
+            steps_count = len(pattern_json['steps']) if isinstance(pattern_json['steps'], list) else 0
+            pattern_json['metadata']['maxSteps'] = steps_count
             
+            logger.info(f"Successfully generated pattern with {steps_count} steps")
             return pattern_json
             
         except json.JSONDecodeError as e:
             logger.error(f'JSON Parse Error: {e}')
-            logger.error(f'Raw Response: {response_text}')
+            logger.error(f'Clean JSON attempt: {clean_json[:500]}...')
+            logger.error(f'Raw Response: {response_text[:500]}...')
             raise Exception(f'Failed to parse generated pattern: {e}')
             
+    except requests.exceptions.Timeout:
+        logger.error('Gemini API request timed out')
+        raise Exception('Pattern generation timed out - pattern may be too complex')
     except requests.exceptions.RequestException as e:
         logger.error(f'Request to Gemini API failed: {e}')
         raise Exception(f'Failed to connect to Gemini API: {e}')
+    except Exception as e:
+        logger.error(f'Unexpected error in pattern generation: {e}')
+        raise
 
 @app.route('/extract-text', methods=['POST'])
 def extract_text_only():
@@ -350,6 +396,99 @@ def extract_text_only():
         return jsonify({
             'success': False,
             'error': str(e)
+        }), 500
+
+# Iterative Processing Endpoints
+
+import asyncio
+
+@app.route('/process-iterative', methods=['POST'])
+def process_pattern_iterative():
+    """Main endpoint for iterative pattern processing"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        required_fields = ['patternText', 'patternName', 'authorName']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        pattern_text = data['patternText']
+        pattern_name = data['patternName']
+        author_name = data['authorName']
+        
+        # Create processor instance
+        processor = create_pattern_processor(GEMINI_API_KEY)
+        
+        # Process pattern iteratively (sync wrapper for async function)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            result = loop.run_until_complete(
+                processor.process_pattern_iteratively(pattern_text, pattern_name, author_name)
+            )
+        finally:
+            loop.close()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Iterative pattern processing failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'step': 'initialization'
+        }), 500
+
+@app.route('/process-step', methods=['POST'])
+def process_single_step():
+    """Process a single step in the iterative pipeline"""
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request must be JSON'}), 400
+        
+        data = request.get_json()
+        
+        required_fields = ['step', 'context']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        step = data['step']
+        context_data = data['context']
+        user_context = data.get('userContext', '')
+        
+        # Create processor instance
+        processor = create_pattern_processor(GEMINI_API_KEY)
+        
+        # Process specific step (sync wrapper for async functions)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            if step == 'structure':
+                result = loop.run_until_complete(processor.pass_1_structure_analysis(context_data))
+            elif step == 'glossary':
+                result = loop.run_until_complete(processor.pass_2_glossary_building(context_data))
+            elif step == 'processing':
+                result = loop.run_until_complete(processor.pass_3_section_processing(context_data))
+            elif step == 'validation':
+                result = loop.run_until_complete(processor.pass_4_validation_assembly(context_data))
+            else:
+                return jsonify({'error': f'Unknown step: {step}'}), 400
+        finally:
+            loop.close()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Single step processing failed: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'step': step
         }), 500
 
 if __name__ == '__main__':

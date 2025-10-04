@@ -118,6 +118,13 @@ export function showApplication(user, userData = null, roleData = null) {
         console.log('✅ App container shown');
     }
     
+    // Force close any open modals
+    const stitchModal = document.getElementById('stitch-modal');
+    if (stitchModal) {
+        stitchModal.classList.add('hidden');
+        console.log('✅ Stitch modal closed');
+    }
+    
     // Force a reflow to ensure the changes take effect
     if (authContainer) authContainer.offsetHeight;
     if (appContainer) appContainer.offsetHeight;
@@ -140,6 +147,7 @@ export function forceShowApplication() {
     console.log('🚨 FORCE SHOWING APPLICATION');
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
+    const stitchModal = document.getElementById('stitch-modal');
     
     if (authContainer) {
         authContainer.style.display = 'none';
@@ -151,6 +159,12 @@ export function forceShowApplication() {
         appContainer.style.display = 'block';
         appContainer.classList.remove('hidden');
         console.log('✅ Force shown app container');
+    }
+    
+    if (stitchModal) {
+        stitchModal.style.display = 'none';
+        stitchModal.classList.add('hidden');
+        console.log('✅ Force closed stitch modal');
     }
     
     // Initialize application if not already done

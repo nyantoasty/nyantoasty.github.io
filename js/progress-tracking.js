@@ -17,6 +17,69 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 /**
+ * Create a human-readable slug from text
+ * @param {string} text - Text to convert to slug
+ * @returns {string} URL-friendly slug
+ */
+function createSlug(text) {
+    if (!text) return 'unknown';
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single
+        .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+        .substring(0, 30); // Limit length
+}
+
+/**
+ * Generate a human-readable document ID
+ * @param {string} userDisplayName - User's display name or email
+ * @param {string} patternName - Pattern name
+ * @param {string} projectName - Project name
+ * @returns {string} Human-readable document ID
+ */
+function generateReadableDocId(userDisplayName, patternName, projectName) {
+    const userSlug = createSlug(userDisplayName?.split('@')[0] || 'user'); // Use part before @ for emails
+    const patternSlug = createSlug(patternName);
+    const projectSlug = createSlug(projectName);
+    const dateStamp = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+    
+    return `${userSlug}_${patternSlug}_${projectSlug}_${dateStamp}`;
+}
+
+/**
+ * Ensure document ID uniqueness by appending counter if needed
+ * @param {Object} db - Firestore database instance
+ * @param {string} baseId - Base document ID
+ * @returns {string} Unique document ID
+ */
+async function ensureUniqueDocId(db, baseId) {
+    let counter = 1;
+    let testId = baseId;
+    
+    while (true) {
+        const docRef = doc(db, 'user_pattern_progress', testId);
+        const docSnapshot = await getDoc(docRef);
+        
+        if (!docSnapshot.exists()) {
+            return testId;
+        }
+        
+        // If document exists, try with counter
+        testId = `${baseId}_${counter}`;
+        counter++;
+        
+        // Safety limit to prevent infinite loops
+        if (counter > 99) {
+            // Fallback to timestamp-based ID
+            const timestamp = Date.now();
+            return `${baseId}_${timestamp}`;
+        }
+    }
+}
+
+/**
  * Generate unique project ID
  * @returns {string} Unique project identifier
  */
@@ -34,12 +97,46 @@ export function generateProjectId() {
  * @param {string|null} projectName - Optional project name
  * @param {string} purpose - Project purpose (gift, personal, commission, sample, teaching)
  * @param {string|null} recipient - Optional recipient name
+ * @param {Object} user - User object with displayName/email
+ * @param {Object} patternData - Pattern data with metadata
  * @returns {Object} Project data with projectId and progressId
  */
-export async function createNewProject(db, userId, patternId, projectName = null, purpose = 'personal', recipient = null) {
+export async function createNewProject(db, userId, patternId, projectName = null, purpose = 'personal', recipient = null, user = null, patternData = null) {
     try {
         const projectId = generateProjectId();
-        const progressId = `${userId}_${patternId}_${projectId}`;
+        
+        // Generate human-readable document ID
+        const userDisplayName = user?.displayName || user?.email || 'user';
+        const patternName = patternData?.metadata?.name || patternData?.name || patternId;
+        const finalProjectName = projectName || `${patternName} Project`;
+        
+        // Create base human-readable ID
+        const baseDocId = generateReadableDocId(userDisplayName, patternName, finalProjectName);
+        
+        // Ensure uniqueness
+        const progressId = await ensureUniqueDocId(db, baseDocId);
+        
+        console.log('📝 Creating project with readable ID:', {
+            userId,
+            patternId,
+            projectId,
+            readableDocId: progressId,
+            userDisplayName,
+            patternName,
+            projectName: finalProjectName
+        });
+        
+        // Create human-readable user identifier
+        const createUserSlug = (user) => {
+            const displayName = user?.displayName || user?.email?.split('@')[0] || 'user';
+            return displayName
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 20);
+        };
+        
+        const userFriendlyId = createUserSlug(user);
         
         const initialData = {
             userId,
@@ -51,6 +148,11 @@ export async function createNewProject(db, userId, patternId, projectName = null
             createdAt: serverTimestamp(),
             lastUpdated: serverTimestamp(),
             status: 'not_started',
+            
+            // Debugging: Add human-readable user identifiers
+            createdByUser: userFriendlyId,
+            createdByEmail: user?.email,
+            createdByName: user?.displayName || user?.email,
             
             projectDetails: {
                 projectName: projectName || `New Project ${new Date().toLocaleDateString()}`,
@@ -203,6 +305,42 @@ export async function getCurrentProject(db, userId, patternId) {
 }
 
 /**
+ * Find a project document by userId, patternId, and projectId
+ * @param {Object} db - Firestore database instance
+ * @param {string} userId - User ID
+ * @param {string} patternId - Pattern ID
+ * @param {string} projectId - Project ID
+ * @returns {Object|null} Document reference and data, or null if not found
+ */
+async function findProjectDocument(db, userId, patternId, projectId) {
+    try {
+        const q = query(
+            collection(db, 'user_pattern_progress'),
+            where('userId', '==', userId),
+            where('patternId', '==', patternId),
+            where('projectId', '==', projectId)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            return null;
+        }
+        
+        // Return the first (should be only) match
+        const doc = querySnapshot.docs[0];
+        return {
+            docRef: doc.ref,
+            docId: doc.id,
+            data: doc.data()
+        };
+    } catch (error) {
+        console.error('Error finding project document:', error);
+        return null;
+    }
+}
+
+/**
  * Get all projects for a user on a specific pattern
  * @param {Object} db - Firestore database instance
  * @param {string} userId - User ID
@@ -244,7 +382,14 @@ export async function getUserProjectsForPattern(db, userId, patternId) {
  */
 export async function saveProjectProgress(db, userId, patternId, projectId, progressData) {
     try {
-        const progressId = `${userId}_${patternId}_${projectId}`;
+        // Find the project document
+        const projectDoc = await findProjectDocument(db, userId, patternId, projectId);
+        
+        if (!projectDoc) {
+            console.error('❌ Project document not found:', { userId, patternId, projectId });
+            return false;
+        }
+        
         const updateData = {
             ...progressData,
             lastUpdated: serverTimestamp()
@@ -252,20 +397,17 @@ export async function saveProjectProgress(db, userId, patternId, projectId, prog
         
         // If this is a step update, also update completedSteps array
         if (progressData.currentStep) {
-            const currentProject = await getDoc(doc(db, 'user_pattern_progress', progressId));
-            if (currentProject.exists()) {
-                const data = currentProject.data();
-                const completedSteps = data.completedSteps || [];
-                const newStep = progressData.currentStep;
+            const data = projectDoc.data;
+            const completedSteps = data.completedSteps || [];
+            const newStep = progressData.currentStep;
                 
-                // Add current step to completed steps if not already there
-                if (!completedSteps.includes(newStep)) {
-                    updateData.completedSteps = arrayUnion(newStep);
-                }
+            // Add current step to completed steps if not already there
+            if (!completedSteps.includes(newStep)) {
+                updateData.completedSteps = arrayUnion(newStep);
             }
         }
         
-        await updateDoc(doc(db, 'user_pattern_progress', progressId), updateData);
+        await updateDoc(projectDoc.docRef, updateData);
         
         // Also save to localStorage as backup for offline use
         const localKey = `pattern-progress-${patternId}`;
@@ -273,7 +415,7 @@ export async function saveProjectProgress(db, userId, patternId, projectId, prog
             localStorage.setItem(localKey, progressData.currentStep.toString());
         }
         
-        console.log(`✅ Progress saved for project ${projectId}`);
+        console.log(`✅ Progress saved for project ${projectId} (doc: ${projectDoc.docId})`);
         return true;
         
     } catch (error) {

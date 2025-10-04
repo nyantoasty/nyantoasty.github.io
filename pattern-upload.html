@@ -353,6 +353,7 @@ The AI will convert this into structured JSON following our pattern format."></t
             addDoc,
             setDoc, 
             deleteDoc, 
+            getDoc,
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -756,6 +757,49 @@ The AI will convert this into structured JSON following our pattern format."></t
         // Initialize OCR integration
         initializeOCRIntegration();
 
+        // Helper function to create human-readable pattern IDs
+        function createReadablePatternId(patternName, authorName) {
+            const createSlug = (text) => {
+                if (!text) return 'unknown';
+                return text
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+                    .replace(/\s+/g, '-') // Replace spaces with hyphens
+                    .replace(/-+/g, '-') // Replace multiple hyphens with single
+                    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+                    .substring(0, 25); // Limit length
+            };
+            
+            const patternSlug = createSlug(patternName);
+            const authorSlug = createSlug(authorName?.split(' ')[0] || 'unknown'); // First name only
+            const dateStamp = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+            
+            return `${patternSlug}_by_${authorSlug}_${dateStamp}`;
+        }
+
+        // Ensure pattern ID uniqueness by checking Firestore
+        async function ensureUniquePatternId(baseId) {
+            let counter = 1;
+            let testId = baseId;
+            
+            while (counter <= 10) { // Limit attempts to prevent infinite loops
+                const docRef = doc(db, 'patterns', testId);
+                const docSnapshot = await getDoc(docRef);
+                
+                if (!docSnapshot.exists()) {
+                    return testId;
+                }
+                
+                // If document exists, try with counter
+                testId = `${baseId}_v${counter}`;
+                counter++;
+            }
+            
+            // Fallback to timestamp if all attempts failed
+            const timestamp = Date.now();
+            return `${baseId}_${timestamp}`;
+        }
+
         // Authentication
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
@@ -1068,14 +1112,45 @@ The AI will convert this into structured JSON following our pattern format."></t
                 uploadSection.classList.remove('hidden');
                 uploadStatus.innerHTML = '<div class="text-blue-300"><i class="fas fa-spinner fa-spin"></i> Uploading pattern to Firestore...</div>';
                 
-                // Create pattern document
-                const patternRef = doc(collection(db, 'patterns'));
-                uploadedPatternId = patternRef.id;
+                // Create human-readable pattern ID
+                const patternName = validatedPattern.metadata.name;
+                const authorName = validatedPattern.metadata.author;
+                const basePatternId = createReadablePatternId(patternName, authorName);
+                
+                // Ensure uniqueness
+                uploadedPatternId = await ensureUniquePatternId(basePatternId);
+                
+                console.log('📝 Creating pattern with readable ID:', {
+                    patternName,
+                    authorName,
+                    baseId: basePatternId,
+                    finalId: uploadedPatternId
+                });
+                
+                // Create pattern document with custom ID
+                const patternRef = doc(db, 'patterns', uploadedPatternId);
+                
+                // Create human-readable user identifier
+                const createUserSlug = (user) => {
+                    const displayName = user.displayName || user.email?.split('@')[0] || 'user';
+                    return displayName
+                        .toLowerCase()
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .substring(0, 20);
+                };
+                
+                const userFriendlyId = createUserSlug(currentUser);
                 
                 const patternData = {
                     id: uploadedPatternId,
                     ...validatedPattern,
+                    // Security: Keep UID for queries and permissions
                     createdBy: currentUser.uid,
+                    // Debugging: Add human-readable identifiers
+                    createdByUser: userFriendlyId,
+                    createdByEmail: currentUser.email,
+                    createdByName: currentUser.displayName || currentUser.email,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                     visibility: 'private',

@@ -757,18 +757,29 @@
         
         try {
             const userId = auth.currentUser.uid;
-            const [patternId, projectId] = selector.value.split('_');
             
-            // Construct the document ID directly
-            const progressId = `${userId}_${patternId}_${projectId}`;
+            // Get the current project details from our cached userProjects
+            const userProjects = await loadUserProjects();
+            const selectedProject = userProjects.find(p => `${p.patternId}_${p.projectId}` === selector.value);
+            
+            if (!selectedProject) {
+                console.error('❌ Selected project not found in user projects list');
+                alert('Error: Selected project not found. Please refresh the page and try again.');
+                return;
+            }
+            
+            // Use the actual document ID from the project data
+            const progressId = selectedProject.docId || `${userId}_${selectedProject.patternId}_${selectedProject.projectId}`;
             
             console.log('🔮 Managing project:', { 
                 userId, 
-                patternId, 
-                projectId, 
+                patternId: selectedProject.patternId, 
+                projectId: selectedProject.projectId, 
                 progressId,
+                docId: selectedProject.docId,
                 action: action ? 'archive' : 'delete',
-                selectorValue: selector.value 
+                selectorValue: selector.value,
+                selectedProject: selectedProject
             });
             
             // Check if document exists before trying to modify
@@ -777,6 +788,11 @@
             
             if (!docSnapshot.exists()) {
                 console.warn('⚠️ Document not found:', progressId);
+                console.log('🔍 Available projects:', userProjects.map(p => ({ 
+                    docId: p.docId, 
+                    patternId: p.patternId, 
+                    projectId: p.projectId 
+                })));
                 alert('Project not found. It may have already been deleted.');
                 await populateProjectSelector(); // Refresh to show current state
                 return;

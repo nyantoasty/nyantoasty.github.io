@@ -146,7 +146,11 @@ export async function createSampleUserPatternProgress() {
         db,
         userId,
         patternId,
-        'Sample Project'
+        'Sample Project',
+        'personal',
+        null,
+        auth.currentUser,
+        window.PATTERN_DATA
     );
     
     const projectId = projectResult.projectId;
@@ -648,13 +652,21 @@ export async function createNewProjectUI() {
         console.log('📝 Final project name:', finalProjectName);
         
         // Create project with proper pattern information
-        const newProject = await createNewProject(db, userId, patternId, finalProjectName);
+        const newProject = await createNewProject(
+            db, 
+            userId, 
+            patternId, 
+            finalProjectName,
+            'personal',
+            null,
+            auth.currentUser,
+            patternData
+        );
         
         console.log('✅ Project created:', newProject);
         
         // Update the project with pattern metadata that wasn't included in createNewProject
-        const progressId = `${userId}_${patternId}_${newProject.projectId}`;
-        await updateDoc(doc(db, 'user_pattern_progress', progressId), {
+        await updateDoc(doc(db, 'user_pattern_progress', newProject.progressId), {
             patternName: patternName,
             patternAuthor: patternAuthor,
             'patternMetadata.name': patternName,

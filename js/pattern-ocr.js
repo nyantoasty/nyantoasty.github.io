@@ -279,14 +279,46 @@ async function savePatternToFirestore(patternData, patternName, authorName) {
         throw new Error('User must be signed in to save patterns');
     }
     
-    // Generate pattern ID
-    const patternId = `ocr-pattern-${Date.now()}`;
+    // Generate human-readable pattern ID
+    const createPatternSlug = (patternName, authorName, user) => {
+        const userPart = user?.displayName || user?.email?.split('@')[0] || 'user';
+        const namePart = patternName || 'untitled';
+        const authorPart = authorName || userPart;
+        
+        return [userPart, namePart, authorPart]
+            .map(part => part
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 15)
+            )
+            .join('_') + `_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}`;
+    };
+    
+    const patternId = createPatternSlug(patternName, authorName, user);
+    
+    // Create human-readable user identifier
+    const createUserSlug = (user) => {
+        const displayName = user?.displayName || user?.email?.split('@')[0] || 'user';
+        return displayName
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 20);
+    };
+    
+    const userFriendlyId = createUserSlug(user);
     
     // Enhance pattern data with metadata
     const enhancedPattern = {
         ...patternData,
         id: patternId,
+        // Security: Keep UID for queries and permissions
         createdBy: user.uid,
+        // Debugging: Add human-readable identifiers
+        createdByUser: userFriendlyId,
+        createdByEmail: user.email,
+        createdByName: user.displayName || user.email,
         createdAt: serverTimestamp(),
         lastUpdated: serverTimestamp(),
         source: 'ocr_upload',

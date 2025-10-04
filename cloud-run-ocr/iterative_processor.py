@@ -8,6 +8,7 @@ passes that can be executed sequentially with user review at each step.
 
 import json
 import logging
+import requests
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 
@@ -364,12 +365,75 @@ Return ONLY the JSON array, no other text."""
     
     async def _call_gemini_api(self, prompt: str) -> Dict[str, Any]:
         """Call Gemini API with the given prompt"""
-        # This would be implemented with actual Gemini API call
-        # For now, return a placeholder response
-        return {
-            "success": True,
-            "text": '{"placeholder": "This would contain the actual Gemini API response"}'
+        if not self.api_key:
+            raise Exception("Gemini API key not provided")
+        
+        headers = {
+            'Content-Type': 'application/json',
         }
+        
+        payload = {
+            'contents': [{
+                'parts': [{'text': prompt}]
+            }],
+            'generationConfig': {
+                'temperature': 0.1,
+                'topK': 40,
+                'topP': 0.95,
+                'maxOutputTokens': 8192,
+                'candidateCount': 1
+            }
+        }
+        
+        try:
+            logger.info(f"Calling Gemini API with prompt length: {len(prompt)} characters")
+            
+            response = requests.post(
+                f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={self.api_key}',
+                headers=headers,
+                json=payload,
+                timeout=120
+            )
+            
+            logger.info(f"Gemini API response status: {response.status_code}")
+            
+            if not response.ok:
+                error_detail = response.text
+                logger.error(f'Gemini API error {response.status_code}: {error_detail}')
+                return {
+                    "success": False,
+                    "error": f'Gemini API error: {response.status_code} - {error_detail}'
+                }
+            
+            result = response.json()
+            response_text = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+            
+            if not response_text:
+                logger.error('Empty response from Gemini API')
+                return {
+                    "success": False,
+                    "error": "No response from Gemini API"
+                }
+            
+            logger.info(f"Received response from Gemini, length: {len(response_text)} characters")
+            
+            return {
+                "success": True,
+                "text": response_text
+            }
+            
+        except requests.exceptions.Timeout:
+            logger.error('Gemini API request timed out')
+            return {
+                "success": False,
+                "error": "Request timed out"
+            }
+        except requests.exceptions.RequestException as e:
+            logger.error(f'Request to Gemini API failed: {e}')
+            return {
+                "success": False,
+                "error": f'Failed to connect to Gemini API: {e}'
+            }
     
     def _parse_structure_response(self, response_text: str) -> Dict[str, Any]:
         """Parse and validate structure analysis response"""

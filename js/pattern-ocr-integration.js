@@ -314,9 +314,19 @@ async function handleGoogleDriveLoad() {
     }
     
     try {
-        showJSONFileStatus('loading', 'Loading from Google Drive...');
-        
         const driveUrl = urlInput.value.trim();
+        
+        // Determine document type for user feedback
+        let docType = 'file';
+        if (driveUrl.includes('docs.google.com/document')) {
+            docType = 'Google Doc';
+        } else if (driveUrl.includes('docs.google.com/spreadsheets')) {
+            docType = 'Google Sheet';
+        } else if (driveUrl.includes('drive.google.com')) {
+            docType = 'Google Drive file';
+        }
+        
+        showJSONFileStatus('loading', `Loading ${docType} from Google...`);
         
         // Convert Google Drive share URL to direct download URL
         const downloadUrl = convertGoogleDriveUrl(driveUrl);
@@ -334,7 +344,7 @@ async function handleGoogleDriveLoad() {
         try {
             jsonData = JSON.parse(text);
         } catch (parseError) {
-            throw new Error('Google Drive file does not contain valid JSON');
+            throw new Error(`${docType} does not contain valid JSON. Make sure the document contains properly formatted JSON text.`);
         }
         
         // Insert into textarea
@@ -345,7 +355,7 @@ async function handleGoogleDriveLoad() {
             patternJsonTextarea.dispatchEvent(new Event('input'));
         }
         
-        showJSONFileStatus('success', '✅ Loaded from Google Drive successfully');
+        showJSONFileStatus('success', `✅ Loaded ${docType} successfully`);
         
         // Clear the URL input
         urlInput.value = '';
@@ -363,25 +373,45 @@ function convertGoogleDriveUrl(url) {
     // Handle different Google Drive URL formats
     let fileId = null;
     
-    // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-    let match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    // Format 1: Google Docs - https://docs.google.com/document/d/FILE_ID/edit?usp=sharing
+    let match = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9-_]+)/);
     if (match) {
         fileId = match[1];
+        // Return Google Docs export URL for plain text
+        return `https://docs.google.com/document/d/${fileId}/export?format=txt`;
     }
     
-    // Format 2: https://drive.google.com/open?id=FILE_ID
+    // Format 2: Google Sheets - https://docs.google.com/spreadsheets/d/FILE_ID/edit?usp=sharing
+    match = url.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) {
+        fileId = match[1];
+        // Return Google Sheets export URL for CSV
+        return `https://docs.google.com/spreadsheets/d/${fileId}/export?format=csv`;
+    }
+    
+    // Format 3: Google Drive files - https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) {
+        fileId = match[1];
+        // Return direct download URL for Drive files
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+    
+    // Format 4: Google Drive open format - https://drive.google.com/open?id=FILE_ID
     if (!fileId) {
         match = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
         if (match) {
             fileId = match[1];
+            // Return direct download URL for Drive files
+            return `https://drive.google.com/uc?export=download&id=${fileId}`;
         }
     }
     
     if (!fileId) {
-        throw new Error('Invalid Google Drive URL format');
+        throw new Error('Invalid Google Drive/Docs URL format. Supported formats:\n• Google Docs: docs.google.com/document/d/...\n• Google Sheets: docs.google.com/spreadsheets/d/...\n• Google Drive files: drive.google.com/file/d/...');
     }
     
-    // Return direct download URL
+    // Fallback to direct download URL
     return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 

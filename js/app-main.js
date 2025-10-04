@@ -105,8 +105,22 @@ export function showApplication(user, userData = null, roleData = null) {
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
     
-    if (authContainer) authContainer.classList.add('hidden');
-    if (appContainer) appContainer.classList.remove('hidden');
+    console.log('🔄 showApplication called - updating UI state');
+    console.log('Auth container found:', !!authContainer);
+    console.log('App container found:', !!appContainer);
+    
+    if (authContainer) {
+        authContainer.classList.add('hidden');
+        console.log('✅ Auth container hidden');
+    }
+    if (appContainer) {
+        appContainer.classList.remove('hidden');
+        console.log('✅ App container shown');
+    }
+    
+    // Force a reflow to ensure the changes take effect
+    if (authContainer) authContainer.offsetHeight;
+    if (appContainer) appContainer.offsetHeight;
     
     // Update user display
     const userDisplayElement = document.getElementById('user-display');
@@ -120,6 +134,36 @@ export function showApplication(user, userData = null, roleData = null) {
     populateProjectSelector();
     loadUserProjects();
 }
+
+// Emergency function to fix UI state if modal gets stuck
+export function forceShowApplication() {
+    console.log('🚨 FORCE SHOWING APPLICATION');
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
+    
+    if (authContainer) {
+        authContainer.style.display = 'none';
+        authContainer.classList.add('hidden');
+        console.log('✅ Force hidden auth container');
+    }
+    
+    if (appContainer) {
+        appContainer.style.display = 'block';
+        appContainer.classList.remove('hidden');
+        console.log('✅ Force shown app container');
+    }
+    
+    // Initialize application if not already done
+    if (typeof populateProjectSelector === 'function') {
+        populateProjectSelector();
+    }
+    if (typeof loadUserProjects === 'function') {
+        loadUserProjects();
+    }
+}
+
+// Make forceShowApplication available globally for debugging
+window.forceShowApplication = forceShowApplication;
 
 // Project management functions
 export async function createSampleUserPatternProgress() {

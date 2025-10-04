@@ -149,32 +149,43 @@ export function forceShowApplication() {
     const appContainer = document.getElementById('app-container');
     const stitchModal = document.getElementById('stitch-modal');
     
+    // Nuclear option - completely remove problem elements from DOM
     if (authContainer) {
         authContainer.style.display = 'none';
+        authContainer.style.visibility = 'hidden';
+        authContainer.style.opacity = '0';
+        authContainer.style.zIndex = '-999';
         authContainer.classList.add('hidden');
         console.log('✅ Force hidden auth container');
     }
     
     if (appContainer) {
         appContainer.style.display = 'block';
+        appContainer.style.visibility = 'visible';
+        appContainer.style.opacity = '1';
         appContainer.classList.remove('hidden');
         console.log('✅ Force shown app container');
     }
     
     if (stitchModal) {
-        // Use multiple methods to ensure it's hidden
+        // Multiple methods to ensure it's completely gone
         stitchModal.style.display = 'none';
         stitchModal.style.visibility = 'hidden';
-        stitchModal.style.zIndex = '-1';
+        stitchModal.style.opacity = '0';
+        stitchModal.style.zIndex = '-999';
+        stitchModal.style.pointerEvents = 'none';
         stitchModal.classList.add('hidden');
         stitchModal.classList.remove('flex');
-        console.log('✅ Force closed stitch modal');
+        // Last resort - remove from DOM entirely
+        stitchModal.remove();
+        console.log('✅ Force closed and removed stitch modal');
     }
     
     // Also try to close any other potential modals
-    const allModals = document.querySelectorAll('[class*="modal"], [id*="modal"]');
+    const allModals = document.querySelectorAll('[class*="modal"], [id*="modal"], .fixed.inset-0');
     allModals.forEach(modal => {
         modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
         modal.classList.add('hidden');
     });
     
@@ -185,6 +196,8 @@ export function forceShowApplication() {
     if (typeof loadUserProjects === 'function') {
         loadUserProjects();
     }
+    
+    console.log('🎯 Emergency fix complete - try refreshing if issues persist');
 }
 
 // Make forceShowApplication available globally for debugging

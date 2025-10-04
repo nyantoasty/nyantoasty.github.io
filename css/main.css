@@ -54,8 +54,13 @@
   opacity: 0.8;
 }
 
-/* Layout utilities */
-.hidden { display: none !important; }
+/* Layout utilities - MUST be highest priority */
+.hidden { 
+  display: none !important; 
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 .block { display: block !important; }
 .flex { display: flex !important; }
 .inline-flex { display: inline-flex !important; }
@@ -110,6 +115,8 @@
 .z-30 { z-index: 30 !important; }
 .z-40 { z-index: 40 !important; }
 .z-50 { z-index: 50 !important; }
+.z-60 { z-index: 60 !important; }
+.z-70 { z-index: 70 !important; }
 
 /* Overflow utilities */
 .overflow-hidden { overflow: hidden !important; }
@@ -180,3 +187,28 @@
 .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
 .hover\:text-white:hover { color: white !important; }
 .whitespace-pre-line { white-space: pre-line !important; }
+
+/* Critical UI state overrides */
+#auth-container.hidden,
+#app-container.hidden,
+#stitch-modal.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+/* Ensure visible containers are properly shown */
+#auth-container:not(.hidden),
+#app-container:not(.hidden) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#stitch-modal:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

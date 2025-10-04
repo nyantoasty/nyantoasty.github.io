@@ -92,20 +92,20 @@
   --palette-tertiary-800: #fbcfe8;
   --palette-tertiary-900: #fce7f3;
 
-  /* Neutral Palette - Inverted for light mode */
-  --palette-neutral-50: #020617;
-  --palette-neutral-100: #0f172a;
-  --palette-neutral-200: #1e293b;
-  --palette-neutral-300: #334155;
-  --palette-neutral-400: #475569;
-  --palette-neutral-500: #64748b;
-  --palette-neutral-600: #94a3b8;
-  --palette-neutral-700: #cbd5e1;
-  --palette-neutral-750: #d1d5db;
-  --palette-neutral-800: #e2e8f0;
-  --palette-neutral-850: #f1f5f9;
-  --palette-neutral-900: #f8fafc;
-  --palette-neutral-950: #ffffff;
+  /* Neutral Palette - Proper light mode colors */
+  --palette-neutral-50: #ffffff;
+  --palette-neutral-100: #f8fafc;
+  --palette-neutral-200: #f1f5f9;
+  --palette-neutral-300: #e2e8f0;
+  --palette-neutral-400: #cbd5e1;
+  --palette-neutral-500: #94a3b8;
+  --palette-neutral-600: #64748b;
+  --palette-neutral-700: #475569;
+  --palette-neutral-750: #334155;
+  --palette-neutral-800: #1e293b;
+  --palette-neutral-850: #0f172a;
+  --palette-neutral-900: #020617;
+  --palette-neutral-950: #000000;
 
   /* Alpha variants for light mode */
   --palette-primary-500-alpha-10: rgba(124, 58, 237, 0.1);
@@ -115,7 +115,7 @@
   --palette-primary-500-alpha-50: rgba(124, 58, 237, 0.5);
 
   /* Light theme specific colors */
-  --palette-background: var(--palette-neutral-950);
-  --palette-surface: var(--palette-neutral-900);
-  --palette-text: var(--palette-neutral-100);
+  --palette-background: var(--palette-neutral-50);
+  --palette-surface: var(--palette-neutral-100);
+  --palette-text: var(--palette-neutral-900);
 }

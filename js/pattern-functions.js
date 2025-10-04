@@ -427,7 +427,13 @@ export function generateDisplayText(step, PATTERN_DATA) {
     
     // Handle NEW simple instruction format (Firestore schema)
     if (step.instruction) {
-        text += formatInstructionForDisplay(step.instruction, PATTERN_DATA);
+        // Use highlightTokens if available (enhanced schema)
+        if (step.highlightTokens && Array.isArray(step.highlightTokens)) {
+            text += formatInstructionWithTokens(step.instruction, step.highlightTokens, PATTERN_DATA);
+        } else {
+            // Fallback to basic parsing for legacy patterns
+            text += formatInstructionForDisplay(step.instruction, PATTERN_DATA);
+        }
     }
     // Handle LEGACY chunk-based format (for backwards compatibility)
     else if (step.chunks) {
@@ -480,6 +486,42 @@ export function formatInstructionForDisplay(instruction, PATTERN_DATA) {
         // Default formatting for unrecognized terms
         return `<span class="main">${trimmedPart}</span>`;
     }).join(' ');
+}
+
+// NEW function to format instructions using highlightTokens array from enhanced schema
+export function formatInstructionWithTokens(instruction, highlightTokens, PATTERN_DATA) {
+    if (!instruction || !highlightTokens || !Array.isArray(highlightTokens)) {
+        return formatInstructionForDisplay(instruction, PATTERN_DATA);
+    }
+    
+    let result = instruction;
+    
+    // Sort tokens by position in text (if they have positions) or by length (longest first)
+    const sortedTokens = highlightTokens.sort((a, b) => {
+        if (a.start !== undefined && b.start !== undefined) {
+            return a.start - b.start;
+        }
+        // Sort by length descending to handle longer matches first
+        return b.text.length - a.text.length;
+    });
+    
+    // Apply highlighting tokens
+    sortedTokens.forEach(tokenData => {
+        const { text, token } = tokenData;
+        if (!text || !token) return;
+        
+        // Get tooltip from glossary if available
+        let tooltip = '';
+        if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[text]) {
+            tooltip = ` title="${PATTERN_DATA.glossary[text].description}"`;
+        }
+        
+        // Use global replace to handle multiple occurrences of the same text
+        const regex = new RegExp(`\\b${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
+        result = result.replace(regex, `<span class="${token} stitch-clickable"${tooltip}>${text}</span>`);
+    });
+    
+    return result;
 }
 
 export function formatChunksForDisplay(chunks, stepContext, PATTERN_DATA) {

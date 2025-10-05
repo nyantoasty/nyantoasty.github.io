@@ -303,6 +303,96 @@ export function generateGlossary(PATTERN_DATA) {
     }
 }
 
+// New function to populate sidebar materials from pattern data
+export function populateSidebarMaterials(PATTERN_DATA) {
+    const materialsEl = document.getElementById('sidebar-materials');
+    if (!materialsEl || !PATTERN_DATA || !PATTERN_DATA.metadata) {
+        return;
+    }
+    
+    let materialsHTML = '';
+    
+    // Add yarn information if available
+    if (PATTERN_DATA.metadata.yarn) {
+        materialsHTML += `<div>Yarn: ${PATTERN_DATA.metadata.yarn}</div>`;
+    }
+    
+    // Add needle/hook information if available
+    if (PATTERN_DATA.metadata.needles) {
+        materialsHTML += `<div>Needles: ${PATTERN_DATA.metadata.needles}</div>`;
+    } else if (PATTERN_DATA.metadata.hook) {
+        materialsHTML += `<div>Hook: ${PATTERN_DATA.metadata.hook}</div>`;
+    }
+    
+    // Add gauge information if available
+    if (PATTERN_DATA.metadata.gauge) {
+        materialsHTML += `<div>Gauge: ${PATTERN_DATA.metadata.gauge}</div>`;
+    }
+    
+    // Add finished size if available
+    if (PATTERN_DATA.metadata.size) {
+        materialsHTML += `<div>Size: ${PATTERN_DATA.metadata.size}</div>`;
+    }
+    
+    // Add difficulty level if available
+    if (PATTERN_DATA.metadata.difficulty) {
+        materialsHTML += `<div>Difficulty: ${PATTERN_DATA.metadata.difficulty}</div>`;
+    }
+    
+    // If no materials found, show default message
+    if (!materialsHTML) {
+        materialsHTML = '<div>Materials info not available</div>';
+    }
+    
+    materialsEl.innerHTML = materialsHTML;
+}
+
+// New function to populate the main glossary section with multi-column layout
+export function generateMainGlossary(PATTERN_DATA) {
+    const mainGlossaryEl = document.getElementById('main-glossary-content');
+    if (!mainGlossaryEl || !PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
+        return;
+    }
+    
+    let glossaryHTML = '';
+    
+    for (const key in PATTERN_DATA.glossary) {
+        const item = PATTERN_DATA.glossary[key];
+        if (item && item.name && item.description) {
+            // Get the category and color for this stitch
+            const category = getInstructionCategory(key, PATTERN_DATA);
+            
+            // Use stitchesCreated for the new format
+            const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
+            
+            // Preserve newlines in description by replacing \n with <br>
+            const formattedDescription = item.description
+                .replace(/\\n/g, '<br>')
+                .replace(/\n/g, '<br>');
+            
+            glossaryHTML += `
+                <div class="cursor-pointer hover:bg-tertiary p-3 rounded border border-primary transition-colors" data-stitch="${key}">
+                    <h4 class="font-bold ${category} text-base mb-1">
+                        ${item.name} (${key})${stitchInfo}
+                    </h4>
+                    <p class="text-xs text-tertiary leading-relaxed">${formattedDescription}</p>
+                </div>
+            `;
+        }
+    }
+    
+    mainGlossaryEl.innerHTML = glossaryHTML;
+    
+    // Add click handlers for main glossary items to show modal
+    mainGlossaryEl.addEventListener('click', (e) => {
+        const stitchDiv = e.target.closest('[data-stitch]');
+        if (stitchDiv && window.showStitchDefinition) {
+            const stitchCode = stitchDiv.dataset.stitch;
+            window.showStitchDefinition(stitchCode);
+        }
+    });
+}
+
 export function generateInstructions(PATTERN_DATA) {
     const patternContentEl = document.getElementById('pattern-content');
     const section = document.createElement('section');

@@ -353,6 +353,11 @@
   color: var(--theme-color-marker);
 }
 
+/* Pattern content height calculation */
+[data-height="calc-with-glossary"] {
+  height: calc(100vh - 400px);
+}
+
 /* Responsive utilities */
 @media (min-width: 640px) {
   .sm\:p-6 { padding: 1.5rem !important; }

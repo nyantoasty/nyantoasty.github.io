@@ -369,7 +369,7 @@
     
     // Import our modular functions
     import { getInstructionCategory } from "./js/utils.js";
-    import { generateGlossary, generateInstructions, generatePatternTheme, updateSidebarColorKey, populateSidebarMaterials, generateMainGlossary } from "./js/pattern-functions.js";
+    import { generateInstructions, generatePatternTheme, updateSidebarColorKey, populateSidebarMaterials, generateMainGlossary } from "./js/pattern-functions.js";
     import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
     import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore, setupInteractiveFeatures, scrollToCurrentRow, updateCurrentStepDisplay, showStitchDefinition, hideStitchDefinition, setupPatternSidebar, populateSidebarGlossary } from "./js/viewer-logic.js";
     import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
@@ -723,7 +723,6 @@
         populateSidebarMaterials(window.PATTERN_DATA);
         
         // Generate glossary for both sidebar and main section
-        generateGlossary(window.PATTERN_DATA);
         generateMainGlossary(window.PATTERN_DATA);
         generateInstructions(window.PATTERN_DATA);
         

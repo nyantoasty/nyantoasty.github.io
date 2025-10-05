@@ -96,6 +96,7 @@
 .w-8 { width: 2rem !important; }
 .w-16 { width: 4rem !important; }
 .w-80 { width: 20rem !important; }
+.w-96 { width: 24rem !important; }
 .w-full { width: 100% !important; }
 .h-4 { height: 1rem !important; }
 .h-6 { height: 1.5rem !important; }
@@ -140,6 +141,7 @@
 
 /* Transform (for debugging) */
 .translate-x-0 { transform: translateX(0) !important; }
+.translate-x-full { transform: translateX(100%) !important; }
 .translate-y-0 { transform: translateY(0) !important; }
 
 /* Overflow */
@@ -150,6 +152,9 @@
 
 /* Transitions */
 .transition-colors { transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important; }
+.transition-transform { transition: transform 0.3s ease-in-out !important; }
+.duration-300 { transition-duration: 300ms !important; }
+.ease-in-out { transition-timing-function: ease-in-out !important; }
 
 /* Space between children */
 .space-x-2 > * + * { margin-left: 0.5rem !important; }

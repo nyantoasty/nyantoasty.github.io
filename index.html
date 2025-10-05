@@ -730,9 +730,18 @@
     });
     // Setup notes sidebar event listeners
     document.addEventListener('DOMContentLoaded', () => {
+        const toggleNotesBtn = document.getElementById('toggle-notes-sidebar');
         const closeNotesBtn = document.getElementById('close-notes-sidebar');
         const saveRowNoteBtn = document.getElementById('save-row-note');
         const saveAllNotesBtn = document.getElementById('save-all-notes');
+        
+        if (toggleNotesBtn) {
+            toggleNotesBtn.addEventListener('click', () => {
+                if (typeof toggleNotesSidebar === 'function') {
+                    toggleNotesSidebar();
+                }
+            });
+        }
         
         if (closeNotesBtn) {
             closeNotesBtn.addEventListener('click', () => {

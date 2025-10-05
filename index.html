@@ -205,7 +205,7 @@
             <!-- PATTERN GLOSSARY SECTION -->
             <section id="pattern-glossary" class="mb-6 bg-secondary p-4 rounded-lg border border-primary">
                 <h2 class="text-xl font-bold text-primary mb-4">Stitch Glossary</h2>
-                <div id="main-glossary-content" class="grid gap-3 text-sm grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div id="main-glossary-content" class="grid gap-3 text-sm grid-cols-2 md:grid-cols-3 lg:grid-cols-4" style="display: grid !important;">
                     <!-- Will be populated dynamically from pattern data -->
                 </div>
             </section>
@@ -276,82 +276,39 @@
 
     </div>
 
-    <footer class="fixed bottom-0 left-0 right-0 backdrop-blur-sm border-t p-4 z-50 bg-secondary border-primary">
-        <div id="footer-controls" class="max-w-4xl mx-auto block">
-            <!-- Pattern Metadata -->
-            <div id="pattern-metadata" class="text-center mb-2">
-                <div class="text-sm text-tertiary">
-                    <span id="current-pattern-name" class="font-medium text-accent">No pattern selected</span>
-                    <span class="mx-2">•</span>
-                    <span id="pattern-progress-info">Row <span id="footer-current-step">1</span> of <span id="footer-max-steps">1</span></span>
+    <!-- BOTTOM CONTROLS OVERLAY -->
+    <div id="bottom-controls-overlay" class="fixed bottom-0 left-0 right-0 bg-secondary border-t border-primary p-3 z-50" style="display: block !important;">
+        <div class="flex items-center justify-between max-w-6xl mx-auto">
+            <!-- Left: Theme Toggle -->
+            <button id="theme-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
+                <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+            
+            <!-- Center: Row Navigation -->
+            <div class="flex items-center space-x-4">
+                <button id="prev-step" class="w-12 h-12 bg-accent text-white font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">-</button>
+                
+                <div class="text-center">
+                    <div class="text-xs text-tertiary">ROW</div>
+                    <input type="number" id="current-step-input" min="1" title="Current step number" class="text-2xl font-bold text-primary bg-transparent text-center w-20 focus:outline-none focus:ring-2 focus:ring-accent rounded border border-primary px-2 py-1">
                 </div>
+                
+                <button id="next-step" class="w-12 h-12 bg-accent text-white font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">+</button>
             </div>
             
-            <div class="relative h-20">
-                <div id="step-counter-ui" class="absolute inset-0 flex items-center justify-between transition-opacity duration-300">
-                    <!-- Left Side Controls -->
-                    <div class="flex items-center space-x-2">
-                        <!-- Theme Toggle Button -->
-                        <button id="theme-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
-                            <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                            </svg>
-                            <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="hidden lg:inline text-xs ml-1">Theme</span>
-                        </button>
-                        
-                        <!-- Jump to Start Button -->
-                        <button id="jump-to-start" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Jump to row 1">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="hidden lg:inline text-xs ml-1">Start</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Row Counter Section -->
-                    <div class="flex items-center space-x-6">
-                        <button id="prev-step" class="w-14 h-14 bg-accent text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-75 transition-transform transform active:scale-95">-</button>
-                        <div class="text-center">
-                            <div id="step-type" class="text-sm text-tertiary">ROW</div>
-                            <input type="number" id="current-step-input" min="1" title="Current step number" aria-label="Current step number" class="text-4xl font-bold text-primary bg-transparent text-center w-28 focus:outline-none focus:ring-2 focus:ring-accent rounded-lg">
-                        </div>
-                        <button id="next-step" class="w-14 h-14 bg-accent text-white font-bold rounded-full text-3xl flex items-center justify-center shadow-lg hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-75 transition-transform transform active:scale-95">+</button>
-                    </div>
-                    
-                    <!-- Right Side Controls -->
-                    <div class="flex items-center space-x-2">
-                        <!-- Add Note Button -->
-                        <button id="add-note" class="btn-warning font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Add note for current row">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-                            </svg>
-                            <span class="hidden lg:inline text-xs ml-1">Note</span>
-                        </button>
-                        
-                        <!-- Notes Toggle Button -->
-                        <button id="toggle-notes-sidebar" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="View/Edit Project Notes">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="hidden lg:inline text-xs ml-1">Notes</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="stitch-locator-ui" class="absolute inset-0 flex items-center justify-center space-x-4 transition-opacity duration-300 opacity-0 pointer-events-none">
-                    <label for="stitch-input" class="text-lg text-primary">Stitch #:</label>
-                    <input type="number" id="stitch-input" min="1" class="bg-tertiary text-primary border border-accent rounded-md p-2 w-24 text-center">
-                    <button id="find-stitch-btn" class="btn-accent font-bold rounded-md py-2 px-4">Find</button>
-                </div>
-            </div>
-            <div class="text-center mt-2">
-                <button id="toggle-mode" class="text-accent hover:text-primary text-sm link-primary">Switch to Stitch Locator</button>
+            <!-- Right: Notes and Jump -->
+            <div class="flex items-center space-x-2">
+                <button id="jump-to-start" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Jump to row 1">⏮️</button>
+                <button id="add-note" class="btn-warning font-bold py-2 px-3 rounded-lg transition-colors" title="Add note">📝</button>
+                <button id="toggle-notes-sidebar" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Notes">📋</button>
             </div>
         </div>
-    </footer>
+    </div>
 
     <!-- Stitch Definition Modal -->
     <div id="stitch-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-start justify-center p-4 pt-16 z-50 hidden">

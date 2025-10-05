@@ -1397,6 +1397,37 @@ export function showSection(sectionName) {
     }
 }
 
+// Force overlay controls to be visible always
+function initializeOverlayControls() {
+    const overlay = document.getElementById('bottom-controls-overlay');
+    const glossary = document.getElementById('main-glossary-content');
+    
+    if (overlay) {
+        overlay.style.display = 'block';
+        overlay.classList.remove('hidden');
+        console.log('✅ Bottom overlay controls forced visible');
+    }
+    
+    if (glossary) {
+        glossary.style.display = 'grid';
+        glossary.classList.add('grid');
+        console.log('✅ Glossary grid forced visible');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing overlay controls...');
+    initializeOverlayControls();
+});
+
+// Also call immediately in case DOM is already loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeOverlayControls);
+} else {
+    initializeOverlayControls();
+}
+
 // Expose to global scope
 window.loadSelectedPattern = loadSelectedPattern;
 window.updateRowNotesList = updateRowNotesList;

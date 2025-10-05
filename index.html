@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-03- Correcting CORS errors + Vision status -->
+<!-- Version: v2025-10-04-  -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - v2025-10-03</title>
+    <title>Stitch Witch - v2025-10-04</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
@@ -139,7 +139,7 @@
             <div class="text-center sm:text-left mb-4 sm:mb-0">
                 <h1 class="text-3xl font-bold text-primary">Pattern Hub</h1>
                 <p id="user-display" class="text-sm text-tertiary">Welcome!</p>
-                <p class="text-xs text-muted">v2025-10-03 Correcting CORS errors + Vision status</p>
+                <p class="text-xs text-muted">v2025-10-04 CSS Migration</p>
             </div>
             <div class="flex items-center space-x-4">
                  <nav id="app-nav" class="flex items-center space-x-2 bg-secondary p-1 rounded-lg">
@@ -211,7 +211,7 @@
                     </div>
                 </div>
             </header>
-            <main id="pattern-content" class="space-y-8 pb-60"></main>
+            <main id="pattern-content" class="space-y-8 overflow-y-auto" style="height: calc(100vh - 200px); padding-bottom: 2rem;"></main>
             <div id="stitch-popup" class="hidden fixed bg-tertiary p-6 rounded-lg shadow-2xl z-50 border border-accent w-11/12 max-w-md">
                 <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-tertiary hover:text-primary btn-icon">&times;</button>
                 <div id="popup-content"></div>

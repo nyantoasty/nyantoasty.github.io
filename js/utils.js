@@ -21,15 +21,23 @@ export function getInstructionCategory(instruction, PATTERN_DATA) {
         return PATTERN_DATA.categories[instruction] || PATTERN_DATA.categories[cleanInstruction];
     }
     
-    // Check glossary for token information - this is where AI-assigned tokens live
+    // Check glossary for category information - assign semantic tokens based on category
     if (PATTERN_DATA?.glossary) {
         const glossaryEntry = PATTERN_DATA.glossary[instruction] || PATTERN_DATA.glossary[cleanInstruction];
-        if (glossaryEntry?.token) {
-            return glossaryEntry.token;
-        }
-        // Fallback to category if token not set
         if (glossaryEntry?.category) {
-            return glossaryEntry.category;
+            // Map category to semantic token
+            switch (glossaryEntry.category) {
+                case 'increase':
+                    return 'token-stitch-01';
+                case 'decrease':
+                    return 'token-stitch-02';
+                case 'special':
+                    return 'token-special-01';
+                case 'basic':
+                    return 'token-stitch-03';
+                default:
+                    return 'token-generic-01';
+            }
         }
     }
     

@@ -252,10 +252,46 @@ Our goal is to populate a Firestore document with this comprehensive structure:
     "modifications": "Advanced knitters can easily modify by changing repeat counts or adding beads to the yarn overs."
   },
   "glossary": {
-    "k": { "name": "Knit", "description": "Insert right needle through front of stitch, wrap yarn, pull through.", "stitchesUsed": 1, "stitchesCreated": 1, "videoUrl": "https://example.com/videos/knit" },
-    "kfb": { "name": "Knit Front and Back", "description": "Knit into front then back of same stitch.", "stitchesUsed": 1, "stitchesCreated": 2, "videoUrl": "https://example.com/videos/kfb" },
-    "k2tog": { "name": "Knit 2 Together", "description": "Insert needle through 2 stitches, knit them together.", "stitchesUsed": 2, "stitchesCreated": 1, "videoUrl": "https://example.com/videos/k2tog" },
-    "yo": { "name": "Yarn Over", "description": "Wrap yarn over right needle to create an increase and hole.", "stitchesUsed": 0, "stitchesCreated": 1, "videoUrl": "https://example.com/videos/yo" }
+    "k": { 
+      "name": "Knit", 
+      "description": "Insert right needle through front of stitch, wrap yarn, pull through.", 
+      "stitchesUsed": 1, 
+      "stitchesCreated": 1, 
+      "category": "basic",
+      "videoUrl": "https://example.com/videos/knit" 
+    },
+    "kfb": { 
+      "name": "Knit Front and Back", 
+      "description": "Knit into front then back of same stitch.", 
+      "stitchesUsed": 1, 
+      "stitchesCreated": 2, 
+      "category": "increase",
+      "videoUrl": "https://example.com/videos/kfb" 
+    },
+    "k2tog": { 
+      "name": "Knit 2 Together", 
+      "description": "Insert needle through 2 stitches, knit them together.", 
+      "stitchesUsed": 2, 
+      "stitchesCreated": 1, 
+      "category": "decrease",
+      "videoUrl": "https://example.com/videos/k2tog" 
+    },
+    "yo": { 
+      "name": "Yarn Over", 
+      "description": "Wrap yarn over right needle to create an increase and hole.", 
+      "stitchesUsed": 0, 
+      "stitchesCreated": 1, 
+      "category": "increase",
+      "videoUrl": "https://example.com/videos/yo" 
+    },
+    "MB5": {
+      "name": "Make Bobble 5",
+      "description": "Make a 5-stitch bobble using [k1, yo, k1, yo, k1] in one stitch, turn and work back.",
+      "stitchesUsed": 1,
+      "stitchesCreated": 1,
+      "category": "special",
+      "videoUrl": "https://example.com/videos/bobble"
+    }
   },
   "steps": [
     {
@@ -730,94 +766,6 @@ This systematic approach ensures every size is calculated correctly and eliminat
    * Embed available images when within Firestore's 1MB document limit; use URL references for larger files
    * Never block processing due to missing visual content (graceful degradation principle)
 
-### Step 4.5: Semantic Token Assignment for Interactive Highlighting
-
-The pattern display system uses a **three-tier token system** to provide semantic, theme-able, and flexible highlighting that separates content from presentation. This allows for consistent color coding across different patterns while maintaining the ability to theme the interface.
-
-#### The Three-Tier Token System
-
-**Tier 1: Semantic Tokens (The Data Layer)**
-These are abstract identifiers stored in each step's `highlightTokens` array. They describe the *structural purpose* of a stitch or instruction without any visual information.
-
-**Token Categories & AI Assignment Rules:**
-
-* **`token.header.[01-05]`**:
-  - **Purpose**: Style section titles and major headings
-  - **AI Logic**: Assign sequentially to section titles and pattern divisions
-
-* **`token.special.[01-05]`**:
-  - **Purpose**: Highlight the primary feature stitches of a pattern (bobbles, cables, complex lace, shells, etc.)
-  - **AI Logic**: Identify each unique "special" stitch type in a pattern and assign it a number from 01 to 05. For example, all `MB3` stitches get `token.special.01`, while all `C4F` stitches get `token.special.02`
-
-* **`token.stitch.[01-05]`**:
-  - **Purpose**: Highlight functional stitches that create the fabric's structure
-  - **AI Logic**: Reserved for specific, consistent meanings:
-    - `token.stitch.01`: **Always** assigned to **increases** (`kfb`, `M1L`, `yo`)
-    - `token.stitch.02`: **Always** assigned to **decreases** (`k2tog`, `ssk`, `BO1`)
-
-* **`token.designerNote.[01-05]`**:
-  - **Purpose**: For parenthetical notes and asides
-  - **AI Logic**: Applied to text within `()` in an instruction
-
-* **`token.generic.[01-05]` (Overflow Buffer)**:
-  - **Purpose**: Flexible overflow, primarily for `SpecialStitch`. Doubles the number of unique colors available for complex rows
-  - **AI Logic**: When parsing a **single instruction line**, the AI first uses `token.special.01` through `05`. If it encounters a **sixth** unique special stitch on that same line, it begins assigning `token.generic.01`, then `02`, and so on
-
-#### Implementation in Step Objects
-
-Each step in the `steps` array should include a `highlightTokens` array that maps text segments to their semantic tokens:
-
-```javascript
-{
-  "step": 15,
-  "instruction": "k2, yo, k2tog, MB3, k1, yo, ssk, k2",
-  "highlightTokens": [
-    {"text": "yo", "token": "token.stitch.01", "position": [4, 6]},
-    {"text": "k2tog", "token": "token.stitch.02", "position": [8, 13]},
-    {"text": "MB3", "token": "token.special.01", "position": [15, 18]},
-    {"text": "yo", "token": "token.stitch.01", "position": [23, 25]},
-    {"text": "ssk", "token": "token.stitch.02", "position": [27, 30]}
-  ],
-  // ... other step properties
-}
-```
-
-**Token Assignment Priority:**
-1. **Consistency First**: `token.stitch.01` is ALWAYS increases, `token.stitch.02` is ALWAYS decreases
-2. **Pattern-Specific**: Special stitches get assigned sequentially as they appear in the pattern
-3. **Overflow Handling**: Use `token.generic.*` when more than 5 special stitches appear in a single instruction
-
-#### Front-End Integration
-
-The front-end will read these semantic tokens and apply CSS classes based on the current theme:
-
-```javascript
-// Example: Processing highlightTokens for display
-function renderInstructionWithTokens(step) {
-  let instruction = step.instruction;
-  
-  // Sort tokens by position (reverse order to avoid position shifts)
-  const sortedTokens = step.highlightTokens.sort((a, b) => b.position[0] - a.position[0]);
-  
-  sortedTokens.forEach(token => {
-    const [start, end] = token.position;
-    const tokenClass = token.token.replace(/\./g, '-'); // token.stitch.01 → token-stitch-01
-    const before = instruction.substring(0, start);
-    const highlighted = `<span class="${tokenClass}">${token.text}</span>`;
-    const after = instruction.substring(end);
-    instruction = before + highlighted + after;
-  });
-  
-  return instruction;
-}
-```
-
-This system ensures that:
-- Pattern data remains pure and theme-agnostic
-- Visual decisions are handled entirely by CSS
-- Theme changes only require updating CSS variables
-- AI processing focuses on semantic meaning, not visual appearance
-
 ### Step 5: Enhanced Step Generation
 
 1. **Step Enhancement Process**:
@@ -849,13 +797,33 @@ This system ensures that:
            beforeStitch: detectChangePosition(instruction),
            description: generateChangeDescription(instruction, state)
          }
-       })
+       }),
+
+       // Glossary-based highlighting - reference stitches by their glossary keys
+       highlightTokens: extractGlossaryReferences(instruction, state.glossary)
      };
      
      // Calculate ending stitch count
      step.endingStitchCount = calculateStitchCount(step, state.glossary);
      
      return step;
+   }
+
+   // Extract stitch references for highlighting
+   function extractGlossaryReferences(instruction, glossary) {
+     const tokens = [];
+     const stitchPattern = new RegExp(Object.keys(glossary).join('|'), 'gi');
+     let match;
+     
+     while ((match = stitchPattern.exec(instruction)) !== null) {
+       tokens.push({
+         text: match[0],
+         glossaryKey: match[0].toLowerCase(),
+         position: [match.index, match.index + match[0].length]
+       });
+     }
+     
+     return tokens;
    }
    ```
 

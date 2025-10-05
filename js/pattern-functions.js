@@ -636,22 +636,65 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         return b.text.length - a.text.length;
     });
     
+    // Track token counters for each category to assign unique semantic tokens
+    const tokenCounters = {
+        increase: 1,
+        decrease: 1,
+        special: 1,
+        basic: 1,
+        generic: 1
+    };
+    
     // Apply highlighting tokens
     sortedTokens.forEach(tokenData => {
-        const { text, token } = tokenData;
-        if (!text || !token) return;
+        const { text, glossaryKey } = tokenData;
+        if (!text || !glossaryKey) return;
         
-        // Get tooltip from glossary if available
+        // Get stitch information from glossary
+        const stitchInfo = PATTERN_DATA.glossary && PATTERN_DATA.glossary[glossaryKey];
+        if (!stitchInfo) return;
+        
+        // Determine semantic token based on category
+        let semanticToken = 'token-basic-01'; // fallback
+        if (stitchInfo.category) {
+            const category = stitchInfo.category;
+            const counter = tokenCounters[category] || 1;
+            const counterStr = String(counter).padStart(2, '0');
+            
+            switch (category) {
+                case 'increase':
+                    semanticToken = `token-stitch-${counterStr}`;
+                    tokenCounters.increase++;
+                    break;
+                case 'decrease':
+                    semanticToken = `token-stitch-${counterStr}`;
+                    tokenCounters.decrease++;
+                    break;
+                case 'special':
+                    semanticToken = `token-special-${counterStr}`;
+                    tokenCounters.special++;
+                    break;
+                case 'basic':
+                    semanticToken = `token-stitch-${counterStr}`;
+                    tokenCounters.basic++;
+                    break;
+                default:
+                    semanticToken = `token-generic-${counterStr}`;
+                    tokenCounters.generic++;
+            }
+        }
+        
+        // Get tooltip from glossary
         let tooltip = '';
         let clickableClass = '';
-        if (PATTERN_DATA.glossary && PATTERN_DATA.glossary[text]) {
-            tooltip = ` title="${PATTERN_DATA.glossary[text].description}"`;
-            clickableClass = ' stitch-clickable'; // Only make it clickable if it has a glossary entry
+        if (stitchInfo.description) {
+            tooltip = ` title="${stitchInfo.description}"`;
+            clickableClass = ' stitch-clickable'; // Make it clickable if it has a glossary entry
         }
         
         // Use global replace to handle multiple occurrences of the same text
         const regex = new RegExp(`\\b${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
-        result = result.replace(regex, `<span class="${token}${clickableClass}"${tooltip}>${text}</span>`);
+        result = result.replace(regex, `<span class="${semanticToken}${clickableClass}"${tooltip}>${text}</span>`);
     });
     
     return result;

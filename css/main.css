@@ -353,9 +353,10 @@
   color: var(--theme-color-marker);
 }
 
-/* Pattern content height calculation */
+/* Pattern content height calculation - account for footer overlay */
 [data-height="calc-with-glossary"] {
   height: calc(100vh - 400px);
+  padding-bottom: 8rem; /* Space for footer overlay */
 }
 
 /* Responsive utilities */

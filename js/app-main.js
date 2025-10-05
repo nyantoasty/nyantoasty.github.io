@@ -628,8 +628,12 @@ export async function loadPatternFromFirestore(patternId) {
 export function resetViewer() {
     const projectInfo = document.getElementById('project-info');
     const noProjectState = document.getElementById('no-project-state');
+    const patternGlossary = document.getElementById('pattern-glossary');
     
     projectInfo.classList.add('hidden');
+    if (patternGlossary) {
+        patternGlossary.classList.add('hidden');
+    }
     document.getElementById('pattern-content').innerHTML = '';
     const footerControls = document.getElementById('footer-controls');
     if (footerControls) {

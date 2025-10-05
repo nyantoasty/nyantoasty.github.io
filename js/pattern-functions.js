@@ -306,37 +306,78 @@ export function generateGlossary(PATTERN_DATA) {
 // New function to populate sidebar materials from pattern data
 export function populateSidebarMaterials(PATTERN_DATA) {
     const materialsEl = document.getElementById('sidebar-materials');
-    if (!materialsEl || !PATTERN_DATA || !PATTERN_DATA.metadata) {
+    if (!materialsEl || !PATTERN_DATA) {
         return;
     }
     
     let materialsHTML = '';
     
-    // Add yarn information if available
-    if (PATTERN_DATA.metadata.yarn) {
-        materialsHTML += `<div>Yarn: ${PATTERN_DATA.metadata.yarn}</div>`;
-    }
-    
-    // Add needle/hook information if available
-    if (PATTERN_DATA.metadata.needles) {
-        materialsHTML += `<div>Needles: ${PATTERN_DATA.metadata.needles}</div>`;
-    } else if (PATTERN_DATA.metadata.hook) {
-        materialsHTML += `<div>Hook: ${PATTERN_DATA.metadata.hook}</div>`;
+    // Handle rich materials structure from enhanced schema
+    if (PATTERN_DATA.materials) {
+        // Add yarn information if available
+        if (PATTERN_DATA.materials.yarn && Array.isArray(PATTERN_DATA.materials.yarn)) {
+            PATTERN_DATA.materials.yarn.forEach((yarn, index) => {
+                const yarnLabel = PATTERN_DATA.materials.yarn.length > 1 ? `Yarn ${index + 1}:` : 'Yarn:';
+                let yarnInfo = `${yarn.brand || ''} ${yarn.name || ''}`.trim();
+                if (yarn.weight) yarnInfo += ` (${yarn.weight})`;
+                if (yarn.color) yarnInfo += ` - ${yarn.color}`;
+                if (yarn.quantity) yarnInfo += ` - ${yarn.quantity}`;
+                materialsHTML += `<div>${yarnLabel} ${yarnInfo}</div>`;
+            });
+        }
+        
+        // Add needle/hook information if available
+        if (PATTERN_DATA.materials.needles && Array.isArray(PATTERN_DATA.materials.needles)) {
+            PATTERN_DATA.materials.needles.forEach((needle, index) => {
+                const needleLabel = PATTERN_DATA.materials.needles.length > 1 ? `Needles ${index + 1}:` : 'Needles:';
+                let needleInfo = needle.size || '';
+                if (needle.type) needleInfo += ` ${needle.type}`;
+                if (needle.length) needleInfo += ` (${needle.length})`;
+                materialsHTML += `<div>${needleLabel} ${needleInfo}</div>`;
+            });
+        }
+        
+        // Add notions if available
+        if (PATTERN_DATA.materials.notions && Array.isArray(PATTERN_DATA.materials.notions)) {
+            const notionsText = PATTERN_DATA.materials.notions.join(', ');
+            materialsHTML += `<div>Notions: ${notionsText}</div>`;
+        }
     }
     
     // Add gauge information if available
-    if (PATTERN_DATA.metadata.gauge) {
-        materialsHTML += `<div>Gauge: ${PATTERN_DATA.metadata.gauge}</div>`;
+    if (PATTERN_DATA.gauge) {
+        let gaugeInfo = '';
+        if (PATTERN_DATA.gauge.stitches && PATTERN_DATA.gauge.rows && PATTERN_DATA.gauge.measurement) {
+            gaugeInfo = `${PATTERN_DATA.gauge.stitches} sts × ${PATTERN_DATA.gauge.rows} rows = ${PATTERN_DATA.gauge.measurement}`;
+            if (PATTERN_DATA.gauge.needleSize) gaugeInfo += ` on ${PATTERN_DATA.gauge.needleSize}`;
+        }
+        if (gaugeInfo) materialsHTML += `<div>Gauge: ${gaugeInfo}</div>`;
     }
     
-    // Add finished size if available
-    if (PATTERN_DATA.metadata.size) {
-        materialsHTML += `<div>Size: ${PATTERN_DATA.metadata.size}</div>`;
+    // Add sizing information if available
+    if (PATTERN_DATA.sizing && PATTERN_DATA.sizing.dimensions) {
+        let sizeInfo = '';
+        const dims = PATTERN_DATA.sizing.dimensions;
+        if (dims.circumference) sizeInfo += `${dims.circumference} circumference`;
+        if (dims.height) {
+            if (sizeInfo) sizeInfo += ' × ';
+            sizeInfo += `${dims.height} height`;
+        }
+        if (dims.width) {
+            if (sizeInfo) sizeInfo += ' × ';
+            sizeInfo += `${dims.width} width`;
+        }
+        if (sizeInfo) materialsHTML += `<div>Size: ${sizeInfo}</div>`;
     }
     
-    // Add difficulty level if available
-    if (PATTERN_DATA.metadata.difficulty) {
+    // Add difficulty level if available (from metadata)
+    if (PATTERN_DATA.metadata && PATTERN_DATA.metadata.difficulty) {
         materialsHTML += `<div>Difficulty: ${PATTERN_DATA.metadata.difficulty}</div>`;
+    }
+    
+    // Add estimated time if available (from metadata)
+    if (PATTERN_DATA.metadata && PATTERN_DATA.metadata.estimatedTime) {
+        materialsHTML += `<div>Time: ${PATTERN_DATA.metadata.estimatedTime}</div>`;
     }
     
     // If no materials found, show default message

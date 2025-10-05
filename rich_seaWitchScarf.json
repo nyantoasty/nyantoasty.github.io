@@ -175,32 +175,32 @@
       "category": "decrease"
     },
     "MB3": {
-      "name": "Make Bobble 3",
-      "description": "Make a 3-stitch bobble. This stitch uses 1 stitch and creates 1 stitch.",
-      "stitchesUsed": 1,
-      "stitchesCreated": 1,
-      "category": "special"
+        "name": "Make Bobble 3",
+        "description": "Knit into the stitch, but do not pull it off the left needle.\nYarn over, then knit into the same stitch 1 time (3 sts total in bobble).\nDrop the worked stitch from the left needle.\nTurn work, purl 3.\nTurn work, knit 3.\nTurn work, purl 3.\nTurn work, k2tog, k1, k2tog.\nPass the first stitch on the right-hand needle over the second. Repeat until 1 stitch remains.",
+        "stitchesUsed": 1,
+        "stitchesCreated": 1,
+        "category": "special"
     },
     "MB5": {
-      "name": "Make Bobble 5",
-      "description": "Make a 5-stitch bobble. This stitch uses 1 stitch and creates 1 stitch.",
-      "stitchesUsed": 1,
-      "stitchesCreated": 1,
-      "category": "special"
+        "name": "Make Bobble 5",
+        "description": "Knit into the stitch, but do not pull it off the left needle.\nYarn over, then knit into the same stitch 2 times (5 sts total in bobble).\nDrop the worked stitch from the left needle.\nTurn work, purl 5.\nTurn work, knit 5.\nTurn work, purl 5.\nTurn work, k2tog, k3, k2tog.\nPass the first stitch on the right-hand needle over the second. Repeat until 1 stitch remains.",
+        "stitchesUsed": 1,
+        "stitchesCreated": 1,
+        "category": "special"
     },
     "MB7": {
-      "name": "Make Bobble 7",
-      "description": "Make a 7-stitch bobble. This stitch uses 1 stitch and creates 1 stitch.",
-      "stitchesUsed": 1,
-      "stitchesCreated": 1,
-      "category": "special"
+        "name": "Make Bobble 7",
+        "description": "Knit into the stitch, but do not pull it off the left needle.\nYarn over, then knit into the same stitch 3 times (7 sts total in bobble).\nDrop the worked stitch from the left needle.\nTurn work, purl 7.\nTurn work, knit 7.\nTurn work, purl 7.\nTurn work, k2tog, k5, k2tog.\nPass the first stitch on the right-hand needle over the second. Repeat until 1 stitch remains.",
+        "stitchesUsed": 1,
+        "stitchesCreated": 1,
+        "category": "special"
     },
     "MB9": {
-      "name": "Make Bobble 9",
-      "description": "Make a 9-stitch bobble. This stitch uses 1 stitch and creates 1 stitch.",
-      "stitchesUsed": 1,
-      "stitchesCreated": 1,
-      "category": "special"
+        "name": "Make Bobble 9",
+        "description": "Knit into the stitch, but do not pull it off the left needle.\nYarn over, then knit into the same stitch 4 times (9 sts total in bobble).\nDrop the worked stitch from the left needle.\nTurn work, purl 9.\nTurn work, knit 9.\nTurn work, purl 9.\nTurn work, k2tog, k7, k2tog.\nPass the first stitch on the right-hand needle over the second. Repeat until 1 stitch remains.",
+        "stitchesUsed": 1,
+        "stitchesCreated": 1,
+        "category": "special"
     }
   }
   ,

@@ -315,32 +315,83 @@ export function populateSidebarMaterials(PATTERN_DATA) {
     // Handle rich materials structure from enhanced schema
     if (PATTERN_DATA.materials) {
         // Add yarn information if available
-        if (PATTERN_DATA.materials.yarn && Array.isArray(PATTERN_DATA.materials.yarn)) {
-            PATTERN_DATA.materials.yarn.forEach((yarn, index) => {
-                const yarnLabel = PATTERN_DATA.materials.yarn.length > 1 ? `Yarn ${index + 1}:` : 'Yarn:';
-                let yarnInfo = `${yarn.brand || ''} ${yarn.name || ''}`.trim();
-                if (yarn.weight) yarnInfo += ` (${yarn.weight})`;
-                if (yarn.color) yarnInfo += ` - ${yarn.color}`;
-                if (yarn.quantity) yarnInfo += ` - ${yarn.quantity}`;
-                materialsHTML += `<div>${yarnLabel} ${yarnInfo}</div>`;
-            });
+        if (PATTERN_DATA.materials.yarn) {
+            if (Array.isArray(PATTERN_DATA.materials.yarn)) {
+                // Handle array format
+                PATTERN_DATA.materials.yarn.forEach((yarn, index) => {
+                    const yarnLabel = PATTERN_DATA.materials.yarn.length > 1 ? `Yarn ${index + 1}:` : 'Yarn:';
+                    let yarnInfo = `${yarn.brand || ''} ${yarn.name || ''}`.trim();
+                    if (yarn.weight) yarnInfo += ` (${yarn.weight})`;
+                    if (yarn.color) yarnInfo += ` - ${yarn.color}`;
+                    if (yarn.quantity) yarnInfo += ` - ${yarn.quantity}`;
+                    materialsHTML += `<div>${yarnLabel} ${yarnInfo}</div>`;
+                });
+            } else {
+                // Handle object format (primary/contrast)
+                if (PATTERN_DATA.materials.yarn.primary) {
+                    const yarn = PATTERN_DATA.materials.yarn.primary;
+                    let yarnInfo = `${yarn.brand || ''} ${yarn.name || ''}`.trim();
+                    if (yarn.weight) yarnInfo += ` (${yarn.weight})`;
+                    if (yarn.colorway) yarnInfo += ` - ${yarn.colorway}`;
+                    if (yarn.yardageNeeded) yarnInfo += ` - ${yarn.yardageNeeded} yds`;
+                    if (yarn.ballsNeeded) yarnInfo += ` (${yarn.ballsNeeded} ball${yarn.ballsNeeded > 1 ? 's' : ''})`;
+                    materialsHTML += `<div>Yarn: ${yarnInfo}</div>`;
+                }
+                if (PATTERN_DATA.materials.yarn.contrast) {
+                    const yarn = PATTERN_DATA.materials.yarn.contrast;
+                    let yarnInfo = `${yarn.brand || ''} ${yarn.name || ''}`.trim();
+                    if (yarn.weight) yarnInfo += ` (${yarn.weight})`;
+                    if (yarn.colorway) yarnInfo += ` - ${yarn.colorway}`;
+                    if (yarn.yardageNeeded) yarnInfo += ` - ${yarn.yardageNeeded} yds`;
+                    materialsHTML += `<div>Contrast: ${yarnInfo}</div>`;
+                }
+            }
         }
         
         // Add needle/hook information if available
-        if (PATTERN_DATA.materials.needles && Array.isArray(PATTERN_DATA.materials.needles)) {
-            PATTERN_DATA.materials.needles.forEach((needle, index) => {
-                const needleLabel = PATTERN_DATA.materials.needles.length > 1 ? `Needles ${index + 1}:` : 'Needles:';
-                let needleInfo = needle.size || '';
-                if (needle.type) needleInfo += ` ${needle.type}`;
-                if (needle.length) needleInfo += ` (${needle.length})`;
-                materialsHTML += `<div>${needleLabel} ${needleInfo}</div>`;
-            });
+        if (PATTERN_DATA.materials.needles) {
+            if (Array.isArray(PATTERN_DATA.materials.needles)) {
+                // Handle array format
+                PATTERN_DATA.materials.needles.forEach((needle, index) => {
+                    const needleLabel = PATTERN_DATA.materials.needles.length > 1 ? `Needles ${index + 1}:` : 'Needles:';
+                    let needleInfo = needle.size || '';
+                    if (needle.type) needleInfo += ` ${needle.type}`;
+                    if (needle.length) needleInfo += ` (${needle.length})`;
+                    materialsHTML += `<div>${needleLabel} ${needleInfo}</div>`;
+                });
+            } else {
+                // Handle object format (primary/secondary)
+                if (PATTERN_DATA.materials.needles.primary) {
+                    const needle = PATTERN_DATA.materials.needles.primary;
+                    let needleInfo = needle.size || '';
+                    if (needle.sizeMetric) needleInfo += ` (${needle.sizeMetric})`;
+                    if (needle.type) needleInfo += ` ${needle.type}`;
+                    if (needle.length) needleInfo += ` - ${needle.length}`;
+                    materialsHTML += `<div>Needles: ${needleInfo}</div>`;
+                }
+                if (PATTERN_DATA.materials.needles.secondary) {
+                    const needle = PATTERN_DATA.materials.needles.secondary;
+                    let needleInfo = needle.size || '';
+                    if (needle.sizeMetric) needleInfo += ` (${needle.sizeMetric})`;
+                    if (needle.type) needleInfo += ` ${needle.type}`;
+                    materialsHTML += `<div>Secondary: ${needleInfo}</div>`;
+                }
+            }
         }
         
         // Add notions if available
         if (PATTERN_DATA.materials.notions && Array.isArray(PATTERN_DATA.materials.notions)) {
-            const notionsText = PATTERN_DATA.materials.notions.join(', ');
-            materialsHTML += `<div>Notions: ${notionsText}</div>`;
+            const notionsText = PATTERN_DATA.materials.notions.map(notion => {
+                if (typeof notion === 'string') {
+                    return notion;
+                } else if (notion.item) {
+                    let notionInfo = notion.item;
+                    if (notion.quantity) notionInfo += ` (${notion.quantity})`;
+                    return notionInfo;
+                }
+                return '';
+            }).filter(text => text).join(', ');
+            if (notionsText) materialsHTML += `<div>Notions: ${notionsText}</div>`;
         }
     }
     
@@ -397,11 +448,51 @@ export function generateMainGlossary(PATTERN_DATA) {
     
     let glossaryHTML = '';
     
+    // Track assigned tokens per stitch to maintain consistency with instructions
+    const stitchTokenMap = {};
+    const tokenCounters = {
+        increase: 1,
+        decrease: 1,
+        special: 1,
+        basic: 1,
+        generic: 1
+    };
+    
     for (const key in PATTERN_DATA.glossary) {
         const item = PATTERN_DATA.glossary[key];
         if (item && item.name && item.description) {
-            // Get the category and color for this stitch
-            const category = getInstructionCategory(key, PATTERN_DATA);
+            // Assign semantic token based on category (same logic as formatInstructionWithTokens)
+            let semanticToken = 'token-basic-01'; // fallback
+            if (item.category) {
+                const category = item.category;
+                const counter = tokenCounters[category] || 1;
+                const counterStr = String(counter).padStart(2, '0');
+                
+                switch (category) {
+                    case 'increase':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.increase++;
+                        break;
+                    case 'decrease':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.decrease++;
+                        break;
+                    case 'special':
+                        semanticToken = `token-special-${counterStr}`;
+                        tokenCounters.special++;
+                        break;
+                    case 'basic':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.basic++;
+                        break;
+                    default:
+                        semanticToken = `token-generic-${counterStr}`;
+                        tokenCounters.generic++;
+                }
+            }
+            
+            // Store the assigned token for this stitch
+            stitchTokenMap[key] = semanticToken;
             
             // Use stitchesCreated for the new format
             const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
@@ -413,7 +504,7 @@ export function generateMainGlossary(PATTERN_DATA) {
             
             glossaryHTML += `
                 <div class="cursor-pointer hover:bg-tertiary p-3 rounded border border-primary transition-colors" data-stitch="${key}">
-                    <h4 class="font-bold ${category} text-base mb-1">
+                    <h4 class="font-bold ${semanticToken} text-base mb-1">
                         ${item.name} (${key})${stitchInfo}
                     </h4>
                     <p class="text-xs text-tertiary leading-relaxed">${formattedDescription}</p>
@@ -645,6 +736,9 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         generic: 1
     };
     
+    // Track assigned tokens per stitch to maintain consistency
+    const stitchTokenMap = {};
+    
     // Apply highlighting tokens
     sortedTokens.forEach(tokenData => {
         const { text, glossaryKey } = tokenData;
@@ -654,34 +748,43 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         const stitchInfo = PATTERN_DATA.glossary && PATTERN_DATA.glossary[glossaryKey];
         if (!stitchInfo) return;
         
-        // Determine semantic token based on category
-        let semanticToken = 'token-basic-01'; // fallback
-        if (stitchInfo.category) {
-            const category = stitchInfo.category;
-            const counter = tokenCounters[category] || 1;
-            const counterStr = String(counter).padStart(2, '0');
-            
-            switch (category) {
-                case 'increase':
-                    semanticToken = `token-stitch-${counterStr}`;
-                    tokenCounters.increase++;
-                    break;
-                case 'decrease':
-                    semanticToken = `token-stitch-${counterStr}`;
-                    tokenCounters.decrease++;
-                    break;
-                case 'special':
-                    semanticToken = `token-special-${counterStr}`;
-                    tokenCounters.special++;
-                    break;
-                case 'basic':
-                    semanticToken = `token-stitch-${counterStr}`;
-                    tokenCounters.basic++;
-                    break;
-                default:
-                    semanticToken = `token-generic-${counterStr}`;
-                    tokenCounters.generic++;
+        // Check if we already assigned a token for this specific stitch
+        let semanticToken;
+        if (stitchTokenMap[glossaryKey]) {
+            semanticToken = stitchTokenMap[glossaryKey];
+        } else {
+            // Determine semantic token based on category
+            semanticToken = 'token-basic-01'; // fallback
+            if (stitchInfo.category) {
+                const category = stitchInfo.category;
+                const counter = tokenCounters[category] || 1;
+                const counterStr = String(counter).padStart(2, '0');
+                
+                switch (category) {
+                    case 'increase':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.increase++;
+                        break;
+                    case 'decrease':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.decrease++;
+                        break;
+                    case 'special':
+                        semanticToken = `token-special-${counterStr}`;
+                        tokenCounters.special++;
+                        break;
+                    case 'basic':
+                        semanticToken = `token-stitch-${counterStr}`;
+                        tokenCounters.basic++;
+                        break;
+                    default:
+                        semanticToken = `token-generic-${counterStr}`;
+                        tokenCounters.generic++;
+                }
             }
+            
+            // Store the assigned token for this stitch
+            stitchTokenMap[glossaryKey] = semanticToken;
         }
         
         // Get tooltip from glossary

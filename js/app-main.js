@@ -1236,9 +1236,12 @@ export async function loadSelectedPattern(patternId) {
         
         // Clear and regenerate content
         patternContentEl.innerHTML = '';
-        if (window.generateGlossary) {
-            window.generateGlossary(window.PATTERN_DATA);
+        
+        // Populate the main glossary section (outside scrollable area)
+        if (window.generateMainGlossary) {
+            window.generateMainGlossary(window.PATTERN_DATA);
         }
+        
         if (window.generateInstructions) {
             window.generateInstructions(window.PATTERN_DATA);
         }

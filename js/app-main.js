@@ -1406,26 +1406,50 @@ function initializeOverlayControls() {
         overlay.style.display = 'block';
         overlay.classList.remove('hidden');
         console.log('✅ Bottom overlay controls forced visible');
+    } else {
+        console.warn('⚠️ Bottom overlay controls not found in DOM');
     }
     
     if (glossary) {
         glossary.style.display = 'grid';
         glossary.classList.add('grid');
         console.log('✅ Glossary grid forced visible');
+    } else {
+        console.warn('⚠️ Glossary grid not found in DOM');
+    }
+}
+
+// Force all essential UI elements to be visible
+function forceUIVisibility() {
+    // Make sure overlay is always there
+    initializeOverlayControls();
+    
+    // Make sure glossary section is visible  
+    const glossarySection = document.getElementById('pattern-glossary');
+    if (glossarySection) {
+        glossarySection.classList.remove('hidden');
+        glossarySection.style.display = 'block';
+    }
+    
+    // Make sure pattern content area is visible
+    const patternContent = document.getElementById('pattern-content');
+    if (patternContent) {
+        patternContent.classList.remove('hidden');
+        patternContent.style.display = 'block';
     }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initializing overlay controls...');
-    initializeOverlayControls();
+    forceUIVisibility();
 });
 
 // Also call immediately in case DOM is already loaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeOverlayControls);
+    document.addEventListener('DOMContentLoaded', forceUIVisibility);
 } else {
-    initializeOverlayControls();
+    forceUIVisibility();
 }
 
 // Expose to global scope

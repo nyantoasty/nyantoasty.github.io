@@ -396,7 +396,7 @@
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
     const viewerSection = document.getElementById('viewer-section');
-    const footerControls = document.getElementById('footer-controls');
+    // footerControls removed - now using bottom-controls-overlay
     const patternSelector = document.getElementById('pattern-selector');
     
     let availablePatterns = [];
@@ -617,8 +617,12 @@
         
         console.log('🔧 Setting up viewer with pattern:', window.PATTERN_DATA.metadata?.name);
         
-        const footerControls = document.getElementById('footer-controls');
-        footerControls.classList.remove('hidden');
+        // No need to show footer controls - overlay is always visible
+        const overlayControls = document.getElementById('bottom-controls-overlay');
+        if (overlayControls) {
+            overlayControls.style.display = 'block';
+        }
+        
         const { name, author, maxSteps: max } = window.PATTERN_DATA.metadata;
         
         // Update pattern display elements (now visible in project view)
@@ -830,7 +834,7 @@
             
             if (view === 'viewer') {
                 viewerSection.classList.remove('hidden');
-                footerControls.classList.remove('hidden');
+                // Footer controls are now always visible via overlay
             }
         }
     });

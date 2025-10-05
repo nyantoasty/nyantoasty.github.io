@@ -631,14 +631,8 @@ export function resetViewer() {
     const patternGlossary = document.getElementById('pattern-glossary');
     
     projectInfo.classList.add('hidden');
-    if (patternGlossary) {
-        patternGlossary.classList.add('hidden');
-    }
+    // Keep glossary and footer always visible
     document.getElementById('pattern-content').innerHTML = '';
-    const footerControls = document.getElementById('footer-controls');
-    if (footerControls) {
-        footerControls.classList.add('hidden');
-    }
     window.PATTERN_DATA = null;
     window.currentProject = null;
     

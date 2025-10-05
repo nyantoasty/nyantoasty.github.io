@@ -418,7 +418,7 @@ Focus processing efforts on the 80% of patterns that follow common structures. H
 
 Do not attempt to parse and resolve the entire pattern in a single pass. A staged approach is more efficient and reliable:
 
-**Pass 1: Structure & Triage** - Perform a quick scan to identify the major sections (metadata, materials, instructions, charts) and assess complexity (e.g., simple vs. multi-size). This is the "read-through before you start" step.
+**Pass 1: Structure & Triage** - Perform a quick scan to identify the major sections (metadata, materials, instructions, pattern sections, charts) and assess complexity (e.g., simple vs. multi-size). This is the "read-through before you start" step.
 
 **Pass 2: Extract & Populate** - Process each section independently to populate the schema, starting with the easiest wins (metadata, materials) before tackling the complex step enumeration.
 

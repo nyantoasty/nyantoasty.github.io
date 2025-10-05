@@ -100,7 +100,7 @@ export function showNotAuthorized(user) {
     console.log('👤 User not authorized:', user?.email || 'unknown user');
 }
 
-export function showApplication(user, userData = null, roleData = null) {
+export async function showApplication(user, userData = null, roleData = null) {
     // Hide auth container, show app container
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
@@ -137,9 +137,15 @@ export function showApplication(user, userData = null, roleData = null) {
     
     console.log('🎉 User authorized - showing application');
     
-    // Initialize the application
-    populateProjectSelector();
-    loadUserProjects();
+    // Ensure showArchivedProjects is properly initialized
+    if (typeof window.showArchivedProjects === 'undefined') {
+        console.log('⚠️ window.showArchivedProjects was undefined, initializing to false');
+        window.showArchivedProjects = false;
+    }
+    console.log('📊 window.showArchivedProjects initialized as:', window.showArchivedProjects);
+    
+    // Initialize the application - ensure projects are loaded properly
+    await populateProjectSelector();
 }
 
 // Emergency function to fix UI state if modal gets stuck
@@ -413,7 +419,14 @@ export async function discoverPatterns() {
 }
 
 export async function loadUserProjects() {
-    if (!auth.currentUser) return [];
+    console.log('🔍 loadUserProjects called');
+    console.log('🔍 auth.currentUser:', auth.currentUser?.email);
+    console.log('🔍 showArchivedProjects:', window.showArchivedProjects);
+    
+    if (!auth.currentUser) {
+        console.log('❌ No current user, returning empty array');
+        return [];
+    }
     
     try {
         const userId = auth.currentUser.uid;
@@ -449,7 +462,12 @@ export async function loadUserProjects() {
             }
         });
         
-        return Array.from(projects.values());
+        const result = Array.from(projects.values());
+        console.log(`🔍 Found ${querySnapshot.size} total documents`);
+        console.log(`🔍 Filtered to ${result.length} projects for current view`);
+        console.log('🔍 Projects:', result.map(p => ({ patternId: p.patternId, projectId: p.projectId, archived: p.status })));
+        
+        return result;
     } catch (error) {
         console.error('Error loading user projects:', error);
         return [];
@@ -479,13 +497,18 @@ export async function loadFirestorePatterns() {
 }
 
 export async function populateProjectSelector() {
+    console.log('🔄 populateProjectSelector called');
+    console.log('📊 window.showArchivedProjects:', window.showArchivedProjects);
+    
     const selector = document.getElementById('project-selector');
     const projectInfo = document.getElementById('project-info');
     const noProjectState = document.getElementById('no-project-state');
     
     selector.innerHTML = '<option value="">Loading your projects...</option>';
     
+    console.log('📥 Calling loadUserProjects...');
     const userProjects = await loadUserProjects();
+    console.log('📦 loadUserProjects returned:', userProjects.length, 'projects');
     
     if (userProjects.length === 0) {
         const emptyMessage = window.showArchivedProjects ? 'No archived projects' : 'No active projects yet';
@@ -781,7 +804,7 @@ export async function createNewProjectUI() {
 export async function toggleArchivedProjects() {
     window.showArchivedProjects = !window.showArchivedProjects;
     
-    const button = document.getElementById('toggle-archived-btn');
+    const button = document.getElementById('show-archived-btn');
     if (button) {
         button.textContent = window.showArchivedProjects ? 'Show Active Projects' : 'Show Archived Projects';
     }
@@ -870,7 +893,7 @@ export async function checkAuthState() {
                                 lastLogin: new Date().toISOString()
                             });
                             
-                            showApplication(user, userData, roleData);
+                            await showApplication(user, userData, roleData);
                         } else {
                             console.log('❌ User role does not have view_patterns permission');
                             showNotAuthorized(user);
@@ -902,7 +925,7 @@ export async function checkAuthState() {
                         const roleData = roleDocSnap.exists() ? roleDocSnap.data() : { permissions: ['view_patterns'], name: 'Viewer' };
                         
                         console.log('New user role data:', roleData);
-                        showApplication(user, newUserData, roleData);
+                        await showApplication(user, newUserData, roleData);
                         
                     } catch (createError) {
                         console.error('🚨 Error creating user document:', createError);

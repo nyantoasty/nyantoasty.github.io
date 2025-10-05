@@ -116,9 +116,6 @@
                     <button data-view="viewer" class="tab-button active">Viewer</button>
                     <a href="pattern-upload.html" class="btn-accent font-medium py-2 px-4 rounded-lg transition-colors text-sm">Generator</a>
                 </nav>
-                <!-- DEVELOPMENT BUTTONS - HIDDEN IN PRODUCTION -->
-                <!-- <button id="create-sample-progress-btn" class="bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors text-sm">Create Sample Progress</button> -->
-                <!-- <button id="recreate-progress-collection-btn" class="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm">Recreate Progress Collection</button> -->
                 <button id="logout-btn" class="btn-danger font-medium py-2 px-4 rounded-lg transition-colors text-sm">Sign Out</button>
             </div>
         </header>
@@ -333,8 +330,7 @@
         loadSelectedProject,
         resetViewer
     } from "./js/app-main.js";
-    // Note: createSeaWitchPattern and setupProgressTracking are one-time setup scripts - no longer needed
-    
+
     // --- CONFIG & STATE ---
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
@@ -361,20 +357,17 @@
     let isStitchLocatorMode = false;
     let stitchCountsCache = {};
     let showArchivedProjects = false; // Track whether we're showing archived projects
+    window.showArchivedProjects = showArchivedProjects; // Make it globally accessible
 
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
-    // const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
-    // const recreateProgressCollectionBtn = document.getElementById('recreate-progress-collection-btn');
-    const backToMainBtn = document.getElementById('back-to-main');
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
     const viewerSection = document.getElementById('viewer-section');
     const bottomControlsOverlay = document.getElementById('bottom-controls-overlay');
-    // footerControls removed - now using bottom-controls-overlay
     const patternSelector = document.getElementById('pattern-selector');
     
     let availablePatterns = [];
@@ -387,15 +380,9 @@
         prompt: 'select_account'
     });
 
-    // signInWithGoogle function moved to js/app-main.js
-    
-    // checkRedirectResult function moved to js/app-main.js
     
     loginBtn.addEventListener('click', signInWithGoogle);
     
-    backToMainBtn.addEventListener('click', () => {
-        showSection('viewer');
-    });
     
     // PROJECT MANAGEMENT EVENT HANDLERS
     const newProjectBtn = document.getElementById('new-project-btn');
@@ -533,57 +520,6 @@
     logoutBtn.addEventListener('click', () => {
         signOut(auth).catch(error => console.error("Sign out error", error));
     });
-
-    // DEVELOPMENT BUTTON EVENT HANDLERS - COMMENTED OUT FOR PRODUCTION
-    /*
-    createSampleProgressBtn.addEventListener('click', async () => {
-        try {
-            createSampleProgressBtn.disabled = true;
-            createSampleProgressBtn.textContent = 'Creating...';
-            
-            await createSampleUserPatternProgress();
-            
-            createSampleProgressBtn.textContent = 'Created!';
-            createSampleProgressBtn.style.backgroundColor = '#059669'; // green
-            
-            setTimeout(() => {
-                createSampleProgressBtn.disabled = false;
-                createSampleProgressBtn.textContent = 'Create Sample Progress';
-                createSampleProgressBtn.style.backgroundColor = '#d97706'; // yellow
-            }, 2000);
-            
-        } catch (error) {
-            console.error('Error creating sample progress:', error);
-            alert('Error creating sample progress: ' + error.message);
-            createSampleProgressBtn.disabled = false;
-            createSampleProgressBtn.textContent = 'Create Sample Progress';
-        }
-    });
-
-    recreateProgressCollectionBtn.addEventListener('click', async () => {
-        try {
-            recreateProgressCollectionBtn.disabled = true;
-            recreateProgressCollectionBtn.textContent = 'Recreating...';
-            
-            await recreateUserPatternProgressCollection();
-            
-            recreateProgressCollectionBtn.textContent = 'Recreated!';
-            recreateProgressCollectionBtn.style.backgroundColor = '#059669'; // green
-            
-            setTimeout(() => {
-                recreateProgressCollectionBtn.disabled = false;
-                recreateProgressCollectionBtn.textContent = 'Recreate Progress Collection';
-                recreateProgressCollectionBtn.style.backgroundColor = '#7c3aed'; // purple
-            }, 2000);
-            
-        } catch (error) {
-            console.error('Error recreating progress collection:', error);
-            alert('Error recreating progress collection: ' + error.message);
-            recreateProgressCollectionBtn.disabled = false;
-            recreateProgressCollectionBtn.textContent = 'Recreate Progress Collection';
-        }
-    });
-    */
 
     // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
     window.setupViewer = function() {
@@ -723,29 +659,6 @@
         console.log('✅ Current step:', currentStep, 'Max steps:', maxSteps);
     }
 
-    // PROJECT MANAGEMENT FUNCTIONS
-    // loadUserProjects function moved to js/app-main.js
-    
-    // loadFirestorePatterns function moved to js/app-main.js
-    
-    // populateProjectSelector function moved to js/app-main.js
-    
-    // loadSelectedProject function moved to js/app-main.js
-    
-    // loadPatternFromFirestore function moved to js/app-main.js
-    
-    // resetViewer function moved to js/app-main.js
-    
-    // NEW PROJECT CREATION FUNCTIONS
-    // showNewProjectModal function moved to js/app-main.js
-    
-    // createNewProjectUI function moved to js/app-main.js
-    
-    // ARCHIVED PROJECTS FUNCTIONALITY
-    // toggleArchivedProjects function moved to js/app-main.js
-    
-    // unarchiveProject function moved to js/app-main.js
-
     // --- INITIALIZATION ---
     console.log('Script loaded, initializing app...');
     console.log('Current URL:', window.location.href);
@@ -815,43 +728,6 @@
             }
         }
     });
-
-    // --- VIEWER LOGIC ---
-    // initializeViewer function removed - functionality now distributed across modular js files
-    
-    // loadSelectedPattern function moved to js/app-main.js
-
-    // --- INTERACTIVE FEATURES SETUP ---
-    // setupInteractiveFeatures function moved to js/viewer-logic.js
-
-    // scrollToCurrentRow function moved to js/viewer-logic.js
-
-    // updateDisplay function is imported from viewer-logic.js - no local definition needed
-
-    // highlightCurrentStep function is imported from viewer-logic.js
-
-
-    // updateCurrentStepDisplay function moved to js/viewer-logic.js
-    
-    // updateFooterMetadata is defined globally as window.updateFooterMetadata below
-
-    // saveProgress is imported from viewer-logic.js - no local definition needed
-
-    // setupStitchFinder function moved to js/app-main.js
-    
-    // setupRowNavigation function moved to js/app-main.js
-    
-    // UPDATE FOOTER METADATA FUNCTION (defined globally as window.updateFooterMetadata below)
-    
-    // NOTES SIDEBAR FUNCTIONALITY
-    // toggleNotesSidebar function moved to js/app-main.js
-    
-    // loadProjectNotes function moved to js/app-main.js
-    
-    // updateRowNotesList function moved to js/app-main.js
-    
-    // goToRowWithNote function is defined in js/app-main.js
-    
     // Setup notes sidebar event listeners
     document.addEventListener('DOMContentLoaded', () => {
         const closeNotesBtn = document.getElementById('close-notes-sidebar');
@@ -877,17 +753,6 @@
             });
         }
     });
-    
-    // saveCurrentRowNote function moved to js/app-main.js
-    
-    // saveAllProjectNotes function moved to js/app-main.js
-    
-    // addRowNoteIndicator function is defined in js/app-main.js
-    
-    // loadRowNoteIndicators function is defined in js/app-main.js
-    
-    // highlightCurrentStep function is imported from viewer-logic.js
-        
         // Setup Jump to Start button
         const jumpToStartBtn = document.getElementById('jump-to-start');
         if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
@@ -997,19 +862,12 @@
                 }
             });
         }
-    
-
-    // Footer update function is handled by viewer-logic.js
 
     // --- STITCH MODAL FUNCTIONALITY ---
     const stitchModal = document.getElementById('stitch-modal');
     const stitchModalTitle = document.getElementById('stitch-modal-title');
     const stitchModalDefinition = document.getElementById('stitch-modal-definition');
     const closeStitchModal = document.getElementById('close-stitch-modal');
-    
-    // showStitchDefinition function moved to js/viewer-logic.js
-    
-    // hideStitchDefinition function moved to js/viewer-logic.js
     
     // Event listeners for stitch interactions
     document.addEventListener('click', (e) => {
@@ -1020,11 +878,6 @@
         }
     });
     
-    // --- PATTERN TOOLS SIDEBAR FUNCTIONALITY ---
-    // setupPatternSidebar function migrated to js/viewer-logic.js
-    
-    // populateSidebarGlossary function migrated to js/viewer-logic.js
-    
     closeStitchModal.addEventListener('click', hideStitchDefinition);
     stitchModal.addEventListener('click', (e) => {
         if (e.target === stitchModal) {
@@ -1032,19 +885,13 @@
         }
     });
     
-    // --- SECTION MANAGEMENT ---
-    // showSection function moved to js/app-main.js
-    
+
     // Close modal with Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !stitchModal.classList.contains('hidden')) {
             hideStitchDefinition();
         }
     });
-
-    // --- PWA Service Worker ---
-    // Temporarily disabled to fix caching issues during development
-    // if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>console.log('SW registered.')).catch(err=>console.log('SW registration failed: ',err));});}
 
     // Script initialization complete
 </script>

@@ -246,63 +246,6 @@ export function getStitchAtPosition(step, position, PATTERN_DATA) {
     return null; // Position not found
 }
 
-export function generateGlossary(PATTERN_DATA) {
-    // Defensive check: ensure PATTERN_DATA is loaded
-    if (!PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
-        console.log('No glossary data available or PATTERN_DATA not loaded');
-        return;
-    }
-    
-    let glossaryHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Stitch Glossary</h2><div class="grid grid-cols-2 md:grid-cols-3 gap-4">';
-    
-    for (const key in PATTERN_DATA.glossary) {
-        const item = PATTERN_DATA.glossary[key];
-        if (item && item.name && item.description) {
-            // Get the category and color for this stitch
-            const category = getInstructionCategory(key, PATTERN_DATA);
-            
-            // Use stitchesCreated for the new format
-            const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
-            
-            // Preserve newlines in description by replacing \n with <br>
-            const formattedDescription = item.description
-                .replace(/\\n/g, '<br>')
-                .replace(/\n/g, '<br>');
-            
-            glossaryHTML += `
-                <div class="cursor-pointer hover:bg-gray-700 p-3 rounded border-l-4 border-gray-600" data-stitch="${key}">
-                    <h3 class="font-bold ${category} text-lg mb-1">
-                        ${item.name} (${key})${stitchInfo}
-                    </h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">${formattedDescription}</p>
-                </div>
-            `;
-        }
-    }
-    
-    glossaryHTML += '</div>';
-    const section = document.createElement('section');
-    section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg';
-    section.innerHTML = glossaryHTML;
-    
-    // Add click handlers for main glossary items to show modal
-    section.addEventListener('click', (e) => {
-        const stitchDiv = e.target.closest('[data-stitch]');
-        if (stitchDiv && window.showStitchDefinition) {
-            const stitchCode = stitchDiv.dataset.stitch;
-            window.showStitchDefinition(stitchCode);
-        }
-    });
-    
-    // Find the pattern content element dynamically
-    const patternContentEl = document.getElementById('pattern-content');
-    if (patternContentEl) {
-        patternContentEl.appendChild(section);
-    } else {
-        console.error('patternContentEl not found when trying to append glossary');
-    }
-}
-
 // New function to populate sidebar materials from pattern data
 export function populateSidebarMaterials(PATTERN_DATA) {
     const materialsEl = document.getElementById('sidebar-materials');

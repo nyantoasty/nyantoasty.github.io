@@ -72,26 +72,6 @@
         </div>
     </aside>
 
-    <!-- Standalone Generator: Always accessible -->
-    <div id="standalone-generator" class="hidden max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="flex justify-between items-center mb-8 border-b border-primary pb-4">
-            <h1 class="text-3xl font-bold text-primary">Pattern Tools</h1>
-            <div class="flex space-x-2">
-                <button id="back-to-main" class="btn-primary font-medium py-2 px-4 rounded-lg transition-colors">Back to Hub</button>
-            </div>
-        </header>
-        
-        <div class="grid gap-6 md:grid-cols-1 max-w-2xl mx-auto">
-            <div class="bg-secondary p-6 rounded-xl shadow-lg">
-                <h2 class="text-xl font-bold text-primary mb-4">AI Generator</h2>
-                <p class="text-tertiary mb-4">Generate patterns from text descriptions using AI.</p>
-                <a href="pattern-upload.html" class="w-full btn-special font-bold py-3 px-6 rounded-lg transition-colors inline-block text-center">
-                    <i class="fas fa-magic mr-2"></i>Open AI Pattern Generator
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- Auth Container: Shown when logged out -->
     <div id="auth-container" class="hidden min-h-screen flex items-center justify-center">
         <div class="text-center p-8 bg-secondary rounded-xl shadow-2xl border border-primary max-w-md mx-auto">
@@ -272,8 +252,6 @@
                 <button id="save-all-notes" class="w-full btn-success py-2 rounded">Save All Notes</button>
             </div>
         </div>
-
-
     </div>
 
     <!-- BOTTOM CONTROLS OVERLAY -->
@@ -387,7 +365,6 @@
     // --- UI ELEMENTS ---
     const authContainer = document.getElementById('auth-container');
     const appContainer = document.getElementById('app-container');
-    const standaloneGenerator = document.getElementById('standalone-generator');
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     // const createSampleProgressBtn = document.getElementById('create-sample-progress-btn');
@@ -396,6 +373,7 @@
     const userDisplay = document.getElementById('user-display');
     const appNav = document.getElementById('app-nav');
     const viewerSection = document.getElementById('viewer-section');
+    const bottomControlsOverlay = document.getElementById('bottom-controls-overlay');
     // footerControls removed - now using bottom-controls-overlay
     const patternSelector = document.getElementById('pattern-selector');
     
@@ -617,10 +595,9 @@
         
         console.log('🔧 Setting up viewer with pattern:', window.PATTERN_DATA.metadata?.name);
         
-        // No need to show footer controls - overlay is always visible
-        const overlayControls = document.getElementById('bottom-controls-overlay');
-        if (overlayControls) {
-            overlayControls.style.display = 'block';
+
+        if (bottomControlsOverlay) {
+            bottomControlsOverlay.style.display = 'block';
         }
         
         const { name, author, maxSteps: max } = window.PATTERN_DATA.metadata;

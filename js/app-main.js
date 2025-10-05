@@ -259,7 +259,7 @@ export async function createSampleUserPatternProgress() {
                 yardage: 400,
                 dyelot: 'ABC123'
             }],
-            'projectDetails.tools.needleSize': 'US 6 (4.0mm)',
+            'projectDetails.tools.toolSize': 'US 6 (4.0mm)',
             'projectDetails.recipient': 'Sample Recipient',
             'projectDetails.projectName': 'My Beautiful Sample Project',
             'notes.general': 'This is a sample project created for testing purposes.',
@@ -310,7 +310,7 @@ export async function recreateUserPatternProgressCollection() {
             startDate: new Date(),
             targetCompletionDate: null,
             yarns: [],
-            tools: { needleSize: null },
+            tools: { toolSize: null },
             modifications: []
         },
         
@@ -1363,7 +1363,7 @@ export async function saveAllProjectNotes() {
         }
         
         if (toolInfo) {
-            updateData['projectDetails.tools.needleSize'] = toolInfo;
+            updateData['projectDetails.tools.toolSize'] = toolInfo;
         }
         
         if (modifications) {

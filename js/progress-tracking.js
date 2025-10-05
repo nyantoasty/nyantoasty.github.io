@@ -161,8 +161,8 @@ export async function createNewProject(db, userId, patternId, projectName = null
                 deadline: null,
                 yarns: [],
                 tools: {
-                    needleSize: null,
-                    originalNeedleSize: null,
+                    toolSize: null,
+                    originalToolSize: null,
                     hookSize: null,
                     otherTools: []
                 },

@@ -50,7 +50,7 @@ async function initializeFirestoreCollections() {
       metadata: {
         maxSteps: 10,
         estimatedTime: '2 hours',
-        materials: ['yarn', 'needles']
+        materials: ['yarn', 'tools']
       },
       
       glossary: {

@@ -31,9 +31,9 @@
         "substitutionNotes": "Any sport weight yarn held double, or a DK/worsted weight yarn that achieves gauge."
       }
     },
-    "needles": {
+    "tools": {
       "primary": {
-        "type": "circular",
+        "type": "circularNeedles",
         "size": "US 8",
         "sizeMetric": "5.0mm",
         "length": "40 inches or longer"

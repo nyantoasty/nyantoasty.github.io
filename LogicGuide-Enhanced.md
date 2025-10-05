@@ -48,9 +48,9 @@ Our goal is to populate a Firestore document with this comprehensive structure:
       },
       "contrast": null
     },
-    "needles": {
+    "tools": {
       "primary": {
-        "type": "circular",
+        "type": "circularNeedles",
         "size": "US 6",
         "sizeMetric": "4.0mm",
         "length": "32 inches",
@@ -58,7 +58,7 @@ Our goal is to populate a Firestore document with this comprehensive structure:
         "material": "bamboo"
       },
       "alternative": {
-        "type": "straight",
+        "type": "straightNeedles",
         "size": "US 6",
         "sizeMetric": "4.0mm",
         "length": "14 inches"
@@ -97,7 +97,7 @@ Our goal is to populate a Firestore document with this comprehensive structure:
     "measurementUnit": "4 inches",
     "stitchesIn4Inches": 22,
     "rowsIn4Inches": 30,
-    "needleSize": "US 6 (4.0mm)",
+    "toolSize": "US 6 (4.0mm)",
     "stitch": "stockinette stitch",
     "afterBlocking": true,
     "notes": "Gauge is measured after blocking. Lace patterns will open up significantly."
@@ -325,6 +325,8 @@ Our goal is to populate a Firestore document with this comprehensive structure:
         "XL": "k9, pm, k102, pm, k9"
       },
       "section": "body",
+      "construction": "workedFlat",
+      "unit": "row",
       "side": "RS",
       "type": "regular",
       "paletteId": "p1",
@@ -348,6 +350,8 @@ Our goal is to populate a Firestore document with this comprehensive structure:
         "XL": "k9, yo, k102, yo, k9"
       },
       "section": "body",
+      "construction": "workedFlat",
+      "unit": "row",
       "side": "WS", 
       "type": "regular",
       "paletteId": "p2",
@@ -398,6 +402,166 @@ Patterns come in many forms, and our system must handle this diversity gracefull
 * **Visual Resources:** When available, charts and images are embedded for offline access. When missing, patterns are still processed successfully with helpful notes about what would enhance them.
 * **Color Specification:** Some patterns specify exact colors, others leave color choice to the maker. We capture this accurately, using color codes when specified and `null` when flexible, including special handling for ombre, variegated, and self-striping yarns.
 * **Materials Detail:** From minimal "any worsted yarn" patterns to comprehensive specifications with exact brands and colorways, we extract and preserve the level of detail the designer provides.
+
+## Adapting for Crochet
+
+The core philosophy of the Logic Guide—transforming ambiguity into certainty through enumeration and a mathematical glossary—is perfectly suited for crochet and other fiber crafts. The primary task is to teach the system the unique "grammar" of each craft. This involves minor schema adjustments and craft-specific implementation of the glossary.
+
+### Schema Adjustments for Craft Flexibility
+
+To accommodate crochet patterns and prepare for future craft expansions, the following schema fields have been adapted:
+
+#### 1. **Tools (formerly needles):** 
+The `materials.needles` object has been generalized to `materials.tools`. This parent object can contain craft-specific tool objects:
+
+```json
+"materials": {
+  "yarn": { /* ... */ },
+  "tools": {
+    "primary": {
+      "type": "crochetHook",        // or "circularNeedles", "rigidHeddleLoom", etc.
+      "size": "US E",
+      "sizeMetric": "3.5mm",
+      "brand": "Clover Amour",
+      "material": "aluminum"
+    },
+    "alternative": {
+      "type": "crochetHook",
+      "size": "US F",
+      "sizeMetric": "3.75mm"
+    }
+  },
+  "notions": [ /* ... */ ]
+}
+```
+
+#### 2. **Construction and Unit Fields:**
+In the `steps` object, new fields clarify how the fabric is created:
+
+```json
+{
+  "step": 3,
+  "startingStitchCount": 12,
+  "endingStitchCount": 36,
+  "instruction": "Sl st into next ch sp. Ch 3 (counts as first dc). 2 dc in same ch sp. *Ch 1, 3 dc in next ch sp. Repeat from * around. Ch 1. Join with a sl st in 3rd ch of ch 3.",
+  "resolvedInstructions": {
+    "default": "sl st, ch 3, dc 2, [ch 1, dc 3] x 11, ch 1, sl st"
+  },
+  "section": "body",
+  "construction": "inTheRound",    // New field
+  "unit": "round",                 // New field
+  "side": "RS",                    // Still useful for flat projects
+  "notes": "The starting ch-3 counts as the first dc of the round."
+}
+```
+
+**Construction values:**
+- `"inTheRound"` - Circular construction (crochet rounds, knitting in the round)
+- `"workedFlat"` - Back-and-forth rows
+- `"modular"` - Separate pieces assembled together (granny squares, knitted blocks)
+- `"seamedPieces"` - Individual pieces worked flat then sewn together
+
+**Unit values:**
+- `"row"` - For flat, back-and-forth construction
+- `"round"` - For circular construction
+- `"motif"` - For modular construction
+- `"section"` - For complex multi-part constructions
+
+### The Crochet Glossary: Specialized Stitch Logic
+
+The `glossary` is the engine for accurately calculating stitch counts. For crochet, special attention must be paid to the following concepts:
+
+#### 1. **Turning Chains and Counting Chains**
+Crochet rounds and rows often begin with chains that substitute for the first stitch. The parser must identify and count these appropriately.
+
+**Example:** `Rnd 1: Ch 3 (counts as first dc), 2 dc in ring`
+
+**Glossary Logic:**
+```json
+"ch3-dc": {
+  "name": "Chain 3 (counts as dc)",
+  "description": "Chain 3 that functions as the first double crochet of a round or row",
+  "stitchesUsed": 0,
+  "stitchesCreated": 1,
+  "category": "substitution",
+  "notes": "Functions as first dc but creates foundation for working into"
+}
+```
+
+#### 2. **Positional Stitches**
+Slip stitches are often used for joining or repositioning without adding height.
+
+**Example:** `Join with a sl st in 3rd ch of ch 3`
+
+**Glossary Logic:**
+```json
+"sl st": {
+  "name": "Slip Stitch",
+  "description": "Insert hook, yarn over, pull through stitch and loop on hook",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1,
+  "category": "joining",
+  "notes": "Often used for joining rounds or moving position without height"
+}
+```
+
+#### 3. **Chain Spaces vs. Stitches**
+Unlike knitting, crochet stitches are often worked into spaces between stitches from the previous round.
+
+**Example:** `3 dc in next ch sp`
+
+**Processing Logic:** The system must recognize `ch sp` (chain space) as a valid target that doesn't consume a traditional "stitch" but rather uses the space created by chain stitches.
+
+#### 4. **Complex Stitches (Clusters, Shells, Bobbles)**
+Many crochet stitches involve working multiple elements that resolve to a single stitch.
+
+**Example:** `Work a 3-dc cluster in the next stitch`
+
+**Glossary Logic:**
+```json
+"3dc-cluster": {
+  "name": "3-DC Cluster",
+  "description": "Work 3 double crochets leaving final loop of each on hook, yarn over and pull through all 4 loops",
+  "stitchesUsed": 1,
+  "stitchesCreated": 1,
+  "category": "cluster",
+  "notes": "Creates texture while maintaining stitch count"
+}
+```
+
+### Crochet-Specific Processing Guidelines
+
+#### 1. **Round vs. Row Recognition**
+- Look for keywords: "rnd", "round", "join", "in the round"
+- Flat work indicators: "turn", "ch and turn", "working back"
+- Construction field should reflect the dominant working method
+
+#### 2. **Starting Chain Calculations**
+- Foundation chains often don't count toward pattern repeat calculations
+- Turning chains may or may not count as stitches depending on pattern convention
+- Always check pattern notes for clarification
+
+#### 3. **Repeat Expansion for Crochet**
+- Crochet repeats often use asterisks: `*3 dc, ch 1; repeat from * around`
+- Calculate total repeats based on stitch count and space available
+- Account for joining stitches that don't add to the pattern repeat
+
+#### 4. **Multi-Craft Compatibility**
+When processing patterns that combine techniques:
+- Use separate glossaries for each craft section
+- Maintain construction consistency within sections
+- Note craft transitions in step annotations
+
+### Future MCP System Considerations
+
+The proposed schema changes align well with future Model Context Protocol (MCP) migrations:
+
+- **Tool abstraction** allows for easy extension to new crafts
+- **Construction/unit fields** provide semantic richness for AI understanding
+- **Glossary flexibility** supports craft-specific terminology expansion
+- **JSON structure** remains compatible with MCP message formats
+
+These changes position the system to handle weaving, embroidery, jewelry making, and other fiber arts with minimal schema modifications.
 
 ## Guiding Principles for Implementation
 
@@ -468,7 +632,7 @@ The ultimate goal is a usable, step-by-step guide for the crafter. This requires
 **Processing Order:**
 
 1. **Essential:** `glossary`, `steps`, `metadata.name`
-2. **Important:** `materials.yarn.weight`, `materials.needles.size`
+2. **Important:** `materials.yarn.weight`, `materials.tools.size`
 3. **Helpful:** `colorwork`, `images`, `charts`
 4. **Optional:** `resources`, `specialInstructions`
 
@@ -538,7 +702,7 @@ Design processing to be efficient for the most frequent use cases while maintain
    ```javascript
    // Priority order for field extraction:
    // 1. REQUIRED: name, author, craft, category
-   // 2. RECOMMENDED: description, difficulty, materials.yarn.weight
+   // 2. RECOMMENDED: description, difficulty, materials.yarn.weight, materials.tools.size
    // 3. OPTIONAL: publisher, specific yarn brands, techniques beyond basics
    
    const metadata = {
@@ -566,10 +730,10 @@ Design processing to be efficient for the most frequent use cases while maintain
          substitutionNotes: generateSubNote(text) // Always provide fallback
        }
      },
-     needles: {
+     tools: {
        primary: {
-         size: extractNeedleSize(text),           // Usually stated
-         type: extractNeedleType(text) || null   // Optional
+         size: extractToolSize(text),             // Usually stated
+         type: extractToolType(text) || null     // Optional
        }
      },
      notions: extractNotions(text) || []         // Empty array if none
@@ -848,4 +1012,40 @@ This systematic approach ensures every size is calculated correctly and eliminat
 
 **"Repeat rows S1 and S2 four more times"** → The AI generates 8 more explicit steps, recalculating "k to end" based on each step's current stitch count.
 
-By following this meticulous process, you can successfully translate the artful shorthand of a knitting pattern into a flawless, machine-readable format that integrates seamlessly with our enhanced progress tracking system.
+By following this meticulous process, you can successfully translate the artful shorthand of any fiber craft pattern into a flawless, machine-readable format that integrates seamlessly with our enhanced progress tracking system.
+
+## Future-Proofing for MCP Integration
+
+The schema improvements outlined in this guide are designed with future Model Context Protocol (MCP) migration in mind:
+
+### MCP-Ready Data Structures
+
+1. **Semantic Richness:** The `construction` and `unit` fields provide machine-readable context that MCP servers can use to understand pattern structure without parsing natural language.
+
+2. **Tool Abstraction:** The `materials.tools` structure allows MCP servers to reason about equipment requirements across crafts without craft-specific hardcoding.
+
+3. **Extensible Glossaries:** Craft-specific glossary entries can be dynamically loaded by MCP servers based on the pattern's `craft` field.
+
+### MCP Message Compatibility
+
+The JSON schema remains fully compatible with MCP message formats:
+
+```json
+{
+  "method": "pattern/process",
+  "params": {
+    "craft": "crochet",
+    "pattern": { /* full pattern document */ },
+    "targetFormat": "enumerated-steps"
+  }
+}
+```
+
+### Server Specialization
+
+Future MCP servers can specialize by craft:
+- `mcp-knitting-server`: Handles knitting-specific glossary and techniques
+- `mcp-crochet-server`: Processes crochet patterns with appropriate stitch logic
+- `mcp-pattern-core`: Manages universal pattern elements (metadata, materials, images)
+
+This architecture ensures that as the system grows to support new crafts, the core schema remains stable while allowing for specialized processing capabilities.

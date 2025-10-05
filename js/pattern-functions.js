@@ -3,6 +3,20 @@
 
 import { getInstructionCategory, addTooltips } from './utils.js';
 
+// Helper function to get display name for tool types
+function getToolDisplayName(toolType) {
+    const toolDisplayNames = {
+        'circularNeedles': 'circular needles',
+        'straightNeedles': 'straight needles',
+        'doublePointedNeedles': 'double-pointed needles',
+        'crochetHook': 'crochet hook',
+        'rigidHeddleLoom': 'rigid heddle loom',
+        'tapestryNeedle': 'tapestry needle',
+        'cableNeedle': 'cable needle'
+    };
+    return toolDisplayNames[toolType] || toolType;
+}
+
 // Get step data for any step number, resolving stepRanges
 export function getStepData(stepNumber, PATTERN_DATA) {
     if (!PATTERN_DATA) return null;
@@ -291,33 +305,42 @@ export function populateSidebarMaterials(PATTERN_DATA) {
             }
         }
         
-        // Add needle/hook information if available
-        if (PATTERN_DATA.materials.needles) {
-            if (Array.isArray(PATTERN_DATA.materials.needles)) {
+        // Add tool information if available (needles, hooks, etc.)
+        if (PATTERN_DATA.materials.tools) {
+            if (Array.isArray(PATTERN_DATA.materials.tools)) {
                 // Handle array format
-                PATTERN_DATA.materials.needles.forEach((needle, index) => {
-                    const needleLabel = PATTERN_DATA.materials.needles.length > 1 ? `Needles ${index + 1}:` : 'Needles:';
-                    let needleInfo = needle.size || '';
-                    if (needle.type) needleInfo += ` ${needle.type}`;
-                    if (needle.length) needleInfo += ` (${needle.length})`;
-                    materialsHTML += `<div>${needleLabel} ${needleInfo}</div>`;
+                PATTERN_DATA.materials.tools.forEach((tool, index) => {
+                    const toolLabel = PATTERN_DATA.materials.tools.length > 1 ? `Tools ${index + 1}:` : 'Tools:';
+                    let toolInfo = tool.size || '';
+                    if (tool.type) {
+                        const toolTypeName = getToolDisplayName(tool.type);
+                        toolInfo += ` ${toolTypeName}`;
+                    }
+                    if (tool.length) toolInfo += ` (${tool.length})`;
+                    materialsHTML += `<div>${toolLabel} ${toolInfo}</div>`;
                 });
             } else {
                 // Handle object format (primary/secondary)
-                if (PATTERN_DATA.materials.needles.primary) {
-                    const needle = PATTERN_DATA.materials.needles.primary;
-                    let needleInfo = needle.size || '';
-                    if (needle.sizeMetric) needleInfo += ` (${needle.sizeMetric})`;
-                    if (needle.type) needleInfo += ` ${needle.type}`;
-                    if (needle.length) needleInfo += ` - ${needle.length}`;
-                    materialsHTML += `<div>Needles: ${needleInfo}</div>`;
+                if (PATTERN_DATA.materials.tools.primary) {
+                    const tool = PATTERN_DATA.materials.tools.primary;
+                    let toolInfo = tool.size || '';
+                    if (tool.sizeMetric) toolInfo += ` (${tool.sizeMetric})`;
+                    if (tool.type) {
+                        const toolTypeName = getToolDisplayName(tool.type);
+                        toolInfo += ` ${toolTypeName}`;
+                    }
+                    if (tool.length) toolInfo += ` - ${tool.length}`;
+                    materialsHTML += `<div>Tools: ${toolInfo}</div>`;
                 }
-                if (PATTERN_DATA.materials.needles.secondary) {
-                    const needle = PATTERN_DATA.materials.needles.secondary;
-                    let needleInfo = needle.size || '';
-                    if (needle.sizeMetric) needleInfo += ` (${needle.sizeMetric})`;
-                    if (needle.type) needleInfo += ` ${needle.type}`;
-                    materialsHTML += `<div>Secondary: ${needleInfo}</div>`;
+                if (PATTERN_DATA.materials.tools.secondary) {
+                    const tool = PATTERN_DATA.materials.tools.secondary;
+                    let toolInfo = tool.size || '';
+                    if (tool.sizeMetric) toolInfo += ` (${tool.sizeMetric})`;
+                    if (tool.type) {
+                        const toolTypeName = getToolDisplayName(tool.type);
+                        toolInfo += ` ${toolTypeName}`;
+                    }
+                    materialsHTML += `<div>Secondary: ${toolInfo}</div>`;
                 }
             }
         }
@@ -343,7 +366,7 @@ export function populateSidebarMaterials(PATTERN_DATA) {
         let gaugeInfo = '';
         if (PATTERN_DATA.gauge.stitches && PATTERN_DATA.gauge.rows && PATTERN_DATA.gauge.measurement) {
             gaugeInfo = `${PATTERN_DATA.gauge.stitches} sts × ${PATTERN_DATA.gauge.rows} rows = ${PATTERN_DATA.gauge.measurement}`;
-            if (PATTERN_DATA.gauge.needleSize) gaugeInfo += ` on ${PATTERN_DATA.gauge.needleSize}`;
+            if (PATTERN_DATA.gauge.toolSize) gaugeInfo += ` on ${PATTERN_DATA.gauge.toolSize}`;
         }
         if (gaugeInfo) materialsHTML += `<div>Gauge: ${gaugeInfo}</div>`;
     }

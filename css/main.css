@@ -36,6 +36,12 @@
 .fixed { position: fixed !important; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0 !important; }
 
+/* Position utilities */
+.top-0 { top: 0 !important; }
+.right-0 { right: 0 !important; }
+.bottom-0 { bottom: 0 !important; }
+.left-0 { left: 0 !important; }
+
 /* Spacing */
 .p-1 { padding: 0.25rem !important; }
 .p-2 { padding: 0.5rem !important; }
@@ -132,6 +138,10 @@
 .z-60 { z-index: 60 !important; }
 .z-70 { z-index: 70 !important; }
 
+/* Transform (for debugging) */
+.translate-x-0 { transform: translateX(0) !important; }
+.translate-y-0 { transform: translateY(0) !important; }
+
 /* Overflow */
 .overflow-y-auto { overflow-y: auto !important; }
 
@@ -211,6 +221,15 @@
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+/* Bottom controls overlay fix */
+#bottom-controls-overlay {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 50 !important;
 }
 
 /* Semantic Button Classes */

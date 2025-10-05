@@ -91,11 +91,11 @@ firestore
       },
       contrast: null
     },
-    needles: {
+    tools: {
       primary: {
         size: "US 6",
         sizeMetric: "4.0mm",
-        type: "circular",
+        type: "circularNeedles",
         length: "32 inches"
       }
     },
@@ -114,7 +114,7 @@ firestore
     rowsPerInch: 7.5,
     stitchesIn4Inches: 22,
     rowsIn4Inches: 30,
-    needleSize: "US 6 (4.0mm)",
+    toolSize: "US 6 (4.0mm)",
     stitch: "stockinette stitch",
     afterBlocking: true,
     notes: "Gauge is measured after blocking"
@@ -223,9 +223,11 @@ firestore
       },
       
       // Enhanced properties
-      side: "RS",                        // RS, WS, or null
-      paletteId: "p1",                  // Reference to colorwork palette
-      chartReference: "Chart A, Row 1",  // Reference to chart
+      construction: "workedFlat",           // workedFlat, inTheRound, modular, seamedPieces
+      unit: "row",                         // row, round, motif, section
+      side: "RS",                          // RS, WS, or null
+      paletteId: "p1",                    // Reference to colorwork palette
+      chartReference: "Chart A, Row 1",    // Reference to chart
       notes: "Place markers carefully",
       
       // Semantic token highlighting (NEW - supports three-tier token system)
@@ -250,6 +252,8 @@ firestore
       endingStitchCount: [89, 97, 105, 113, 121],
       section: "increase",
       type: "pattern",
+      construction: "workedFlat",
+      unit: "row",
       side: "RS",
       
       // Comprehensive highlighting example showing all token types
@@ -421,8 +425,8 @@ async function initializeProject(userId, patternId, projectName, selectedSize = 
       purpose: "personal",
       yarns: [], // User will add their actual yarns
       tools: {
-        needleSize: pattern.materials?.needles?.primary?.size || null,
-        originalNeedleSize: pattern.materials?.needles?.primary?.size || null
+        toolSize: pattern.materials?.tools?.primary?.size || null,
+        originalToolSize: pattern.materials?.tools?.primary?.size || null
       }
     },
     

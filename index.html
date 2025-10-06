@@ -532,8 +532,17 @@
     }
     
     function populateProjectInfo(project) {
+        // Populate project name in header
+        const projectName = project.projectDetails?.projectName || 
+                           project.patternMetadata?.name || 
+                           project.patternName || 
+                           'Unnamed Project';
+        document.getElementById('current-project-name').textContent = projectName;
+        
         // Populate project overview
-        document.getElementById('project-pattern-id').textContent = project.patternId || 'Unknown';
+        const patternDisplay = project.patternMetadata?.name || project.patternName || project.patternId || 'Unknown';
+        const authorDisplay = project.patternMetadata?.author || project.patternAuthor || 'Unknown Author';
+        document.getElementById('project-pattern-id').textContent = `${patternDisplay} by ${authorDisplay}`;
         
         const status = project.status || 'not_started';
         const statusElement = document.getElementById('project-status');
@@ -582,12 +591,15 @@
         document.getElementById('project-completed-steps').textContent = 
             project.completedSteps ? project.completedSteps.length : 0;
             
-        const experience = project.experience || {};
+        const timeSpent = project.timeSpent || {};
+        const totalMinutes = timeSpent.totalMinutes || 0;
+        const sessionsCount = timeSpent.sessionsCount || 0;
         document.getElementById('project-time-spent').textContent = 
-            experience.timeSpent && experience.timeSpent.totalMinutes 
-                ? `${Math.round(experience.timeSpent.totalMinutes / 60)} hours`
+            totalMinutes > 0 
+                ? `${Math.round(totalMinutes / 60)} hours (${sessionsCount} sessions)`
                 : 'Not tracked';
                 
+        const experience = project.experience || {};
         document.getElementById('project-difficulty').textContent = 
             experience.skillLevel || experience.estimatedDifficulty || 'Not specified';
     }

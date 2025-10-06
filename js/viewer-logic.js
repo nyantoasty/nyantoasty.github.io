@@ -582,10 +582,61 @@ export function hideStitchDefinition() {
     stitchModal.classList.add('hidden');
 }
 
+export function showAddToGlossaryModal(stitchCode, patternData) {
+    console.log('🎯 Opening add to glossary modal for:', stitchCode);
+    
+    if (!patternData || !patternData.glossary || !patternData.glossary[stitchCode]) {
+        console.warn('No pattern data found for stitch:', stitchCode);
+        return;
+    }
+    
+    const modal = document.getElementById('add-to-glossary-modal');
+    const form = document.getElementById('add-to-global-form');
+    
+    // Get stitch data from pattern
+    const stitchData = patternData.glossary[stitchCode];
+    
+    // Pre-fill form with pattern data
+    document.getElementById('global-stitch-name').value = stitchData.name || '';
+    document.getElementById('global-stitch-shorthand').value = stitchCode || '';
+    document.getElementById('global-stitch-description').value = stitchData.description || '';
+    document.getElementById('global-stitch-notes').value = stitchData.notes || '';
+    document.getElementById('global-stitch-video').value = stitchData.videoUrl || stitchData.videoLink || '';
+    document.getElementById('global-stitch-picture').value = stitchData.pictureUrl || stitchData.pictureLink || '';
+    
+    // Try to guess craft type from pattern metadata or stitch characteristics
+    const craftSelect = document.getElementById('global-stitch-craft');
+    let craftType = '';
+    if (patternData.metadata?.craft) {
+        if (patternData.metadata.craft.toLowerCase().includes('knit')) {
+            craftType = 'Knitting';
+        } else if (patternData.metadata.craft.toLowerCase().includes('crochet')) {
+            craftType = 'Crochet';
+        }
+    }
+    craftSelect.value = craftType;
+    
+    // Show the modal
+    modal.classList.remove('hidden');
+    
+    // Focus the first input
+    document.getElementById('global-stitch-name').focus();
+}
+
+export function hideAddToGlossaryModal() {
+    const modal = document.getElementById('add-to-glossary-modal');
+    modal.classList.add('hidden');
+    
+    // Reset form
+    document.getElementById('add-to-global-form').reset();
+}
+
 // Expose functions globally for HTML event handlers
 window.updateCurrentStepDisplay = updateCurrentStepDisplay;
 window.showStitchDefinition = showStitchDefinition;
 window.hideStitchDefinition = hideStitchDefinition;
+window.showAddToGlossaryModal = showAddToGlossaryModal;
+window.hideAddToGlossaryModal = hideAddToGlossaryModal;
 
 export function setupPatternSidebar() {
     console.log('🔧 Setting up pattern sidebar...');

@@ -291,6 +291,81 @@
         </div>
     </div>
 
+    <!-- Add to Global Glossary Modal -->
+    <div id="add-to-glossary-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-start justify-center p-4 pt-8 z-50 hidden">
+        <div class="bg-secondary text-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl relative modal-content mx-4 max-h-screen overflow-y-auto">
+            <button id="close-add-modal" class="absolute top-2 right-3 text-tertiary hover:text-primary text-2xl font-bold btn-icon">&times;</button>
+            
+            <h3 class="text-2xl font-bold mb-4 text-primary">Add to Global Glossary</h3>
+            <p class="text-secondary mb-6">This will add the stitch definition to your global <code>stitchWitch_Glossary</code> for reuse across all patterns.</p>
+            
+            <form id="add-to-global-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="global-stitch-name" class="block text-sm font-medium text-secondary mb-1">Stitch Name</label>
+                        <input type="text" id="global-stitch-name" required 
+                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
+                    </div>
+                    <div>
+                        <label for="global-stitch-shorthand" class="block text-sm font-medium text-secondary mb-1">Shorthand/Abbreviation</label>
+                        <input type="text" id="global-stitch-shorthand" required 
+                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="global-stitch-craft" class="block text-sm font-medium text-secondary mb-1">Craft Type</label>
+                    <select id="global-stitch-craft" required 
+                            class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
+                        <option value="">Select craft type...</option>
+                        <option value="Knitting">Knitting</option>
+                        <option value="Crochet">Crochet</option>
+                        <option value="Finishing">Finishing</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="global-stitch-description" class="block text-sm font-medium text-secondary mb-1">Description/Instructions</label>
+                    <textarea id="global-stitch-description" required rows="4"
+                              class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent resize-vertical"
+                              placeholder="Step-by-step instructions for this stitch..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="global-stitch-notes" class="block text-sm font-medium text-secondary mb-1">Notes (Optional)</label>
+                    <textarea id="global-stitch-notes" rows="2"
+                              class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent resize-vertical"
+                              placeholder="Additional tips, variations, or notes..."></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="global-stitch-video" class="block text-sm font-medium text-secondary mb-1">Video URL (Optional)</label>
+                        <input type="url" id="global-stitch-video" 
+                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent"
+                               placeholder="https://...">
+                    </div>
+                    <div>
+                        <label for="global-stitch-picture" class="block text-sm font-medium text-secondary mb-1">Picture URL (Optional)</label>
+                        <input type="url" id="global-stitch-picture" 
+                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent"
+                               placeholder="https://...">
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-3 justify-end pt-4 border-t border-primary">
+                    <button type="button" id="cancel-global-add-btn" class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">
+                        Add to Global Glossary
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 <script type="module">
     // Load unified header first
     fetch('/components/unified-header.html')
@@ -902,6 +977,91 @@
         }
     });
     
+    // --- ADD TO GLOSSARY MODAL FUNCTIONALITY ---
+    const addToGlossaryModal = document.getElementById('add-to-glossary-modal');
+    const closeAddModal = document.getElementById('close-add-modal');
+    const cancelGlobalAddBtn = document.getElementById('cancel-global-add-btn');
+    const addToGlobalForm = document.getElementById('add-to-global-form');
+    
+    closeAddModal.addEventListener('click', hideAddToGlossaryModal);
+    cancelGlobalAddBtn.addEventListener('click', hideAddToGlossaryModal);
+    addToGlossaryModal.addEventListener('click', (e) => {
+        if (e.target === addToGlossaryModal) {
+            hideAddToGlossaryModal();
+        }
+    });
+    
+    // Handle form submission
+    addToGlobalForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            name: document.getElementById('global-stitch-name').value.trim(),
+            shorthand: document.getElementById('global-stitch-shorthand').value.trim(),
+            hobby: document.getElementById('global-stitch-craft').value,
+            description: document.getElementById('global-stitch-description').value.trim(),
+            notes: document.getElementById('global-stitch-notes').value.trim(),
+            videoLink: document.getElementById('global-stitch-video').value.trim(),
+            pictureLink: document.getElementById('global-stitch-picture').value.trim()
+        };
+        
+        if (!formData.name || !formData.shorthand || !formData.hobby || !formData.description) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        try {
+            // Import the globalGlossary functions
+            const { globalGlossary } = await import('./js/global-glossary.js');
+            
+            // Add the stitch to the global glossary
+            const stitchKey = await globalGlossary.addStitch(
+                formData.name,
+                {
+                    description: formData.description,
+                    category: mapHobbyToCategory(formData.hobby),
+                    cssToken: globalGlossary.getInstructionCategory(formData.name),
+                    videoLink: formData.videoLink,
+                    pictureLink: formData.pictureLink,
+                    notes: formData.notes,
+                    shorthand: formData.shorthand,
+                    craft: getCraftPrefix(formData.hobby)
+                }
+            );
+            
+            // Sync to Firestore
+            await globalGlossary.syncToFirestore();
+            
+            // Show success message
+            alert(`Successfully added "${formData.name}" to the global glossary with ID: ${stitchKey}`);
+            
+            // Close modal
+            hideAddToGlossaryModal();
+            
+        } catch (error) {
+            console.error('Error adding stitch to global glossary:', error);
+            alert('There was an error adding the stitch to the global glossary. Please try again.');
+        }
+    });
+    
+    // Helper functions for form processing
+    function mapHobbyToCategory(hobby) {
+        const mapping = {
+            'Knitting': 'basic',
+            'Crochet': 'crochet', 
+            'Finishing': 'special'
+        };
+        return mapping[hobby] || 'basic';
+    }
+    
+    function getCraftPrefix(hobby) {
+        const mapping = {
+            'Knitting': 'K',
+            'Crochet': 'C',
+            'Finishing': 'F'
+        };
+        return mapping[hobby] || 'K';
+    }
 
     // Close modal with Escape key
     document.addEventListener('keydown', (e) => {

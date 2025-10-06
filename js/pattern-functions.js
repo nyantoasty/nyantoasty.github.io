@@ -466,12 +466,12 @@ export function generateMainGlossary(PATTERN_DATA) {
     
     mainGlossaryEl.innerHTML = glossaryHTML;    mainGlossaryEl.innerHTML = glossaryHTML;
     
-    // Add click handlers for main glossary items to show modal
+    // Add click handlers for main glossary items to show add-to-global-glossary modal
     mainGlossaryEl.addEventListener('click', (e) => {
         const stitchDiv = e.target.closest('[data-stitch]');
-        if (stitchDiv && window.showStitchDefinition) {
+        if (stitchDiv && window.showAddToGlossaryModal) {
             const stitchCode = stitchDiv.dataset.stitch;
-            window.showStitchDefinition(stitchCode);
+            window.showAddToGlossaryModal(stitchCode, PATTERN_DATA);
         }
     });
 }

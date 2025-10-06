@@ -20,7 +20,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen has-unified-header">
+<body class="bg-primary text-primary min-h-screen has-unified-header">
     <!-- Unified Header Component -->
     <div id="header-placeholder"></div>
     
@@ -30,25 +30,25 @@
             <h2 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
                 <i class="fas fa-magic"></i> AI Pattern Generator
             </h2>
-            <p class="text-gray-300">Upload files or enter text to convert patterns using AI</p>
+            <p class="text-secondary">Upload files or enter text to convert patterns using AI</p>
         </div>
 
         <!-- Upload Steps -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+        <div class="bg-secondary rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-4">
                     <div id="step1" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">1</div>
+                        <div class="w-8 h-8 rounded-full bg-accent text-primary flex items-center justify-center text-sm font-bold">1</div>
                         <span>Paste JSON</span>
                     </div>
-                    <div class="w-8 h-1 bg-gray-600" id="progress1"></div>
-                    <div id="step2" class="flex items-center space-x-2 text-gray-500">
-                        <div class="w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">2</div>
+                    <div class="w-8 h-1 bg-secondary" id="progress1"></div>
+                    <div id="step2" class="flex items-center space-x-2 text-secondary">
+                        <div class="w-8 h-8 rounded-full bg-secondary text-primary flex items-center justify-center text-sm font-bold">2</div>
                         <span>Preview</span>
                     </div>
-                    <div class="w-8 h-1 bg-gray-600" id="progress2"></div>
-                    <div id="step3" class="flex items-center space-x-2 text-gray-500">
-                        <div class="w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center text-sm font-bold">3</div>
+                    <div class="w-8 h-1 bg-secondary" id="progress2"></div>
+                    <div id="step3" class="flex items-center space-x-2 text-secondary">
+                        <div class="w-8 h-8 rounded-full bg-secondary text-primary flex items-center justify-center text-sm font-bold">3</div>
                         <span>Upload</span>
                     </div>
                 </div>
@@ -56,15 +56,15 @@
         </div>
 
         <!-- Step 1: Pattern Input -->
-        <div id="pattern-input-section" class="bg-gray-800 rounded-lg p-6 mb-6">
+        <div id="pattern-input-section" class="bg-secondary rounded-lg p-6 mb-6">
             <h2 class="text-2xl font-semibold mb-4"><i class="fas fa-code"></i> Step 1: Pattern Input</h2>
             
             <!-- Input Method Tabs -->
-            <div class="flex mb-6 border-b border-gray-600">
-                <button id="manual-tab" class="tab-button active px-6 py-3 font-semibold border-b-2 border-purple-500 text-purple-400">
+            <div class="flex mb-6 border-b border-primary">
+                <button id="manual-tab" class="tab-button active px-6 py-3 font-semibold border-b-2 border-accent text-accent">
                     <i class="fas fa-code mr-2"></i>Manual JSON
                 </button>
-                <button id="ai-tab" class="tab-button px-6 py-3 font-semibold border-b-2 border-transparent text-gray-400 hover:text-gray-300">
+                <button id="ai-tab" class="tab-button px-6 py-3 font-semibold border-b-2 border-transparent text-secondary hover:text-primary">
                     <i class="fas fa-magic mr-2"></i>AI Convert Pattern
                 </button>
             </div>
@@ -72,18 +72,18 @@
             <!-- Manual JSON Input -->
             <div id="manual-input" class="tab-content">
                 <!-- File Upload for JSON (Admin Only) -->
-                <div id="json-file-upload-section" class="mb-6 p-4 bg-gray-700 rounded-lg border border-gray-600 hidden">
-                    <h4 class="text-lg font-semibold mb-3 text-blue-300">
+                <div id="json-file-upload-section" class="mb-6 p-4 bg-tertiary rounded-lg border border-primary hidden">
+                    <h4 class="text-lg font-semibold mb-3 text-accent">
                         <i class="fas fa-file-upload mr-2"></i>Upload JSON File or Share from Google Drive
                     </h4>
-                    <p class="text-gray-400 text-sm mb-4">For large patterns that exceed clipboard limits on mobile devices</p>
+                    <p class="text-secondary text-sm mb-4">For large patterns that exceed clipboard limits on mobile devices</p>
                     
                     <!-- Local File Upload -->
                     <div class="mb-4">
-                        <div class="border-2 border-dashed border-gray-500 rounded-lg p-4 hover:border-blue-500 transition-colors">
+                        <div class="border-2 border-dashed border-secondary rounded-lg p-4 hover:border-accent transition-colors">
                             <div class="text-center">
-                                <i class="fas fa-upload text-2xl text-gray-400 mb-2"></i>
-                                <p class="text-gray-300 mb-2">Upload JSON file from device</p>
+                                <i class="fas fa-upload text-2xl text-secondary mb-2"></i>
+                                <p class="text-secondary mb-2">Upload JSON file from device</p>
                                 <input 
                                     type="file" 
                                     id="json-file-input" 
@@ -95,7 +95,7 @@
                                 <button 
                                     type="button"
                                     onclick="document.getElementById('json-file-input').click()"
-                                    class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                                    class="btn-primary px-4 py-2 rounded-lg font-medium transition-colors">
                                     <i class="fas fa-file mr-2"></i>Choose JSON File
                                 </button>
                             </div>
@@ -104,20 +104,20 @@
                     
                     <!-- Google Drive Share -->
                     <div class="mb-4">
-                        <h5 class="text-sm font-medium text-gray-300 mb-2">Or share from Google Drive/Docs:</h5>
+                        <h5 class="text-sm font-medium text-secondary mb-2">Or share from Google Drive/Docs:</h5>
                         <div class="flex space-x-2">
                             <input 
                                 type="url" 
                                 id="gdrive-url-input" 
-                                class="flex-1 p-3 bg-gray-600 border border-gray-500 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                class="flex-1 p-3 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent"
                                 placeholder="Paste Google Docs/Drive link here...">
                             <button 
                                 id="load-gdrive-json"
-                                class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap">
+                                class="btn-success px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap">
                                 <i class="fab fa-google-drive mr-2"></i>Load from Google
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">
+                        <p class="text-xs text-muted mt-1">
                             Supports Google Docs, Google Sheets, and Google Drive files. Make sure the document is shared with "Anyone with the link can view"
                         </p>
                     </div>
@@ -130,14 +130,14 @@
                 
                 <div class="mb-4">
                     <div class="flex items-center justify-between mb-2">
-                        <label for="pattern-json" class="block text-sm font-medium text-gray-300">
+                        <label for="pattern-json" class="block text-sm font-medium text-secondary">
                             Pattern JSON
                         </label>
-                        <span class="text-xs text-gray-500">Manual entry</span>
+                        <span class="text-xs text-muted">Manual entry</span>
                     </div>
                     <textarea 
                         id="pattern-json" 
-                        class="w-full h-96 p-4 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono text-sm resize-vertical focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
+                        class="w-full h-96 p-4 bg-tertiary border border-primary rounded-lg text-primary font-mono text-sm resize-vertical focus:ring-2 focus:ring-accent focus:border-accent" 
                         placeholder='Paste your pattern JSON here. Example structure:
 {
   "metadata": {
@@ -182,10 +182,10 @@
                 <div id="validation-results" class="mb-4"></div>
 
                 <div class="flex space-x-4">
-                    <button id="validate-json" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <button id="validate-json" class="btn-primary px-6 py-2 rounded-lg font-semibold transition-colors">
                         <i class="fas fa-check-circle"></i> Validate JSON
                     </button>
-                    <button id="load-example" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                    <button id="load-example" class="btn-secondary px-6 py-2 rounded-lg font-semibold transition-colors">
                         <i class="fas fa-file-code"></i> Load Example
                     </button>
                 </div>
@@ -195,14 +195,14 @@
             <div id="ai-input" class="tab-content hidden">
                 <!-- File Upload Section -->
                 <div class="mb-6">
-                    <h4 class="text-lg font-semibold mb-3 text-gray-300">
+                    <h4 class="text-lg font-semibold mb-3 text-secondary">
                         <i class="fas fa-upload mr-2"></i>Upload Pattern Files
                     </h4>
-                    <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-purple-500 transition-colors">
+                    <div class="border-2 border-dashed border-secondary rounded-lg p-6 hover:border-accent transition-colors">
                         <div class="text-center">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-300 mb-2">Drop files here or click to upload</p>
-                            <p class="text-gray-500 text-sm mb-4">Supports: PDF, Images (JPG, PNG), Text files</p>
+                            <i class="fas fa-cloud-upload-alt text-4xl text-secondary mb-4"></i>
+                            <p class="text-secondary mb-2">Drop files here or click to upload</p>
+                            <p class="text-muted text-sm mb-4">Supports: PDF, Images (JPG, PNG), Text files</p>
                             <input 
                                 type="file" 
                                 id="pattern-file-input" 
@@ -212,7 +212,7 @@
                             <button 
                                 type="button"
                                 onclick="document.getElementById('pattern-file-input').click()"
-                                class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors">
+                                class="btn-primary px-6 py-2 rounded-lg font-semibold transition-colors">
                                 <i class="fas fa-folder-open mr-2"></i>Choose Files
                             </button>
                         </div>

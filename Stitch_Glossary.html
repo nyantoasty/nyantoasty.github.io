@@ -114,7 +114,7 @@
                     <div><label for="stitch-tags" class="block text-sm font-medium text-stone-700">Tags (comma-separated)</label><input type="text" id="stitch-tags" placeholder="e.g., decreases, shaping, beginner-friendly" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label for="stitch-count" class="block text-sm font-medium text-stone-700">Stitches Created</label><input type="number" id="stitch-count" min="0" max="10" value="1" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
-                        <div><label for="css-token-display" class="block text-sm font-medium text-stone-700">CSS Token (auto-assigned)</label><input type="text" id="css-token-display" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-stone-300 rounded-md shadow-sm" placeholder="Will be assigned automatically"></div>
+                        <div><label for="css-token-display" class="block text-sm font-medium text-secondary">CSS Token (auto-assigned)</label><input type="text" id="css-token-display" readonly class="mt-1 block w-full px-3 py-2 bg-tertiary border border-primary rounded-md shadow-sm" placeholder="Will be assigned automatically"></div>
                     </div>
                     <div class="text-right"><button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">Add to Global Glossary</button></div>
                 </form>
@@ -391,7 +391,7 @@
                 
                 // Create CSS token display
                 const tokenDisplay = stitch.cssToken ? 
-                    `<span class="inline-block px-2 py-1 text-xs font-mono bg-gray-100 rounded ${stitch.cssToken}" title="CSS Token: ${stitch.cssToken}">${stitch.cssToken}</span>` : '';
+                    `<span class="inline-block px-2 py-1 text-xs font-mono bg-tertiary rounded ${stitch.cssToken}" title="CSS Token: ${stitch.cssToken}">${stitch.cssToken}</span>` : '';
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start">

@@ -59,15 +59,15 @@
     <div class="max-w-6xl mx-auto px-6 py-8">
         <!-- Page Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white mb-4">📋 Pattern Manager</h1>
-            <p class="text-white text-opacity-75">Manage your knitting and crochet patterns</p>
+            <h1 class="text-4xl font-bold text-primary mb-4">📋 Pattern Manager</h1>
+            <p class="text-secondary">Manage your knitting and crochet patterns</p>
         </div>
 
         <!-- Pattern Library -->
-        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20 mb-8">
+        <div class="bg-secondary backdrop-blur-md rounded-xl p-6 border border-primary mb-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-semibold text-white">Available Patterns</h2>
-                <button id="add-pattern-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                <h2 class="text-xl font-semibold text-primary">Available Patterns</h2>
+                <button id="add-pattern-btn" class="btn-primary font-medium py-2 px-4 rounded-lg transition-colors">
                     ➕ Add New Pattern
                 </button>
             </div>
@@ -83,10 +83,10 @@
                 
                 <!-- Left Panel: JSON Input -->
                 <div class="space-y-6">
-                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20">
+                    <div class="bg-secondary backdrop-blur-md rounded-xl p-6 border border-primary">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold text-white" id="editor-title">Edit Pattern JSON</h2>
-                            <button id="back-to-library-btn" class="text-white hover:text-purple-300 transition-colors">
+                            <h2 class="text-xl font-semibold text-primary" id="editor-title">Edit Pattern JSON</h2>
+                            <button id="back-to-library-btn" class="text-primary hover:text-accent transition-colors">
                                 ← Back to Library
                             </button>
                         </div>
@@ -118,18 +118,18 @@
                     </div>
 
                         <div class="flex space-x-3">
-                            <button id="validate-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                            <button id="validate-btn" class="flex-1 btn-primary font-medium py-2 px-4 rounded-lg transition-colors">
                                 Validate JSON
                             </button>
-                            <button id="clear-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                            <button id="clear-btn" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors">
                                 Clear
                             </button>
                         </div>
                 </div>
 
                 <!-- Validation Status -->
-                <div id="validation-status" class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-4 border border-white border-opacity-20 hidden">
-                    <h3 class="text-lg font-medium text-white mb-2">Validation Results</h3>
+                <div id="validation-status" class="bg-secondary backdrop-blur-md rounded-xl p-4 border border-primary hidden">
+                    <h3 class="text-lg font-medium text-primary mb-2">Validation Results</h3>
                     <div id="validation-messages" class="space-y-2"></div>
                 </div>
             </div>
@@ -137,10 +137,10 @@
             <!-- Right Panel: Preview -->
             <div class="space-y-6">
                 <div class="preview-section rounded-xl p-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Pattern Preview</h2>
+                    <h2 class="text-xl font-semibold text-primary mb-4">Pattern Preview</h2>
                     
                     <div id="pattern-preview" class="space-y-4">
-                        <div class="text-center text-gray-500 py-8">
+                        <div class="text-center text-secondary py-8">
                             <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
@@ -150,12 +150,12 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div id="action-buttons" class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20 hidden">
+                <div id="action-buttons" class="bg-secondary backdrop-blur-md rounded-xl p-6 border border-primary hidden">
                     <div class="flex space-x-4">
-                        <button id="upload-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button id="upload-btn" class="flex-1 btn-success font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                             Upload to Firestore
                         </button>
-                        <button id="cancel-upload-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors hidden">
+                        <button id="cancel-upload-btn" class="flex-1 btn-danger font-semibold py-3 px-6 rounded-lg transition-colors hidden">
                             Cancel & Delete
                         </button>
                     </div>
@@ -267,10 +267,10 @@
                     <span>🧶 ${patternData.metadata?.craft || 'Unknown'}</span>
                 </div>
                 <div class="flex space-x-2">
-                    <button class="view-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded transition-colors">
+                    <button class="view-btn flex-1 btn-primary text-sm py-2 px-3 rounded transition-colors">
                         👁️ View
                     </button>
-                    <button class="edit-btn flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 px-3 rounded transition-colors">
+                    <button class="edit-btn flex-1 btn-accent text-sm py-2 px-3 rounded transition-colors">
                         ✏️ Edit
                     </button>
                 </div>
@@ -489,9 +489,9 @@
             preview.innerHTML = `
                 <div class="space-y-4">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">${pattern.metadata.name}</h3>
-                        <p class="text-gray-600">by ${pattern.metadata.author}</p>
-                        <div class="flex items-center space-x-4 text-sm text-gray-500 mt-2">
+                        <h3 class="text-lg font-semibold text-primary">${pattern.metadata.name}</h3>
+                        <p class="text-secondary">by ${pattern.metadata.author}</p>
+                        <div class="flex items-center space-x-4 text-sm text-secondary mt-2">
                             <span>📄 ${pattern.steps.length} steps</span>
                             <span>🧶 ${pattern.metadata.craft}</span>
                             <span>📖 ${Object.keys(pattern.glossary).length} stitches</span>
@@ -499,16 +499,16 @@
                     </div>
                     
                     <div class="border-t pt-4">
-                        <h4 class="font-medium text-gray-700 mb-2">Glossary Preview</h4>
+                        <h4 class="font-medium text-primary mb-2">Glossary Preview</h4>
                         <div class="grid grid-cols-2 gap-2 text-sm">
                             ${Object.entries(pattern.glossary).slice(0, 6).map(([key, stitch]) => `
-                                <div class="bg-gray-50 p-2 rounded">
+                                <div class="bg-tertiary p-2 rounded">
                                     <span class="font-mono font-semibold">${key}</span>
-                                    <div class="text-gray-600">${stitch.name}</div>
+                                    <div class="text-secondary">${stitch.name}</div>
                                 </div>
                             `).join('')}
                             ${Object.keys(pattern.glossary).length > 6 ? `
-                                <div class="bg-gray-50 p-2 rounded text-gray-500 text-center">
+                                <div class="bg-tertiary p-2 rounded text-secondary text-center">
                                     +${Object.keys(pattern.glossary).length - 6} more...
                                 </div>
                             ` : ''}
@@ -516,16 +516,16 @@
                     </div>
                     
                     <div class="border-t pt-4">
-                        <h4 class="font-medium text-gray-700 mb-2">First Few Steps</h4>
+                        <h4 class="font-medium text-primary mb-2">First Few Steps</h4>
                         <div class="space-y-2 text-sm">
                             ${pattern.steps.slice(0, 3).map(step => `
-                                <div class="bg-gray-50 p-2 rounded">
+                                <div class="bg-tertiary p-2 rounded">
                                     <span class="font-semibold">Step ${step.step}:</span>
                                     ${step.instruction || step.description || 'Special instruction'}
                                 </div>
                             `).join('')}
                             ${pattern.steps.length > 3 ? `
-                                <div class="bg-gray-50 p-2 rounded text-gray-500 text-center">
+                                <div class="bg-tertiary p-2 rounded text-secondary text-center">
                                     ... and ${pattern.steps.length - 3} more steps
                                 </div>
                             ` : ''}
@@ -613,7 +613,7 @@
                 validatedPattern = null;
                 validationStatus.classList.add('hidden');
                 patternPreview.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
+                    <div class="text-center text-secondary py-8">
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -628,10 +628,10 @@
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500',
-                info: 'bg-blue-500'
+                success: 'btn-success',
+                error: 'btn-danger',
+                warning: 'btn-warning',
+                info: 'btn-primary'
             };
             
             toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;

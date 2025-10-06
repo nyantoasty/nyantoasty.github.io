@@ -7,7 +7,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 // Firebase configuration - consistent across all pages
 const firebaseConfig = {
     apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
-    authDomain: "nyantoasty.github.io",
+    authDomain: "arachne-edda2.firebaseapp.com",
     projectId: "arachne-edda2",
     storageBucket: "arachne-edda2.firebasestorage.app",
     messagingSenderId: "285468127259",
@@ -20,8 +20,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // Configuration
-const LOGIN_PAGE = '/login.html';
-const DEFAULT_REDIRECT = '/index.html';
+const LOGIN_PAGE = 'https://nyantoasty.github.io/login.html';
+const DEFAULT_REDIRECT = 'https://nyantoasty.github.io/index.html';
 
 /**
  * Authentication Guard - Protects pages from unauthenticated access

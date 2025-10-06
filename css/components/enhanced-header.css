@@ -1,0 +1,168 @@
+/* Enhanced Unified Header Styles */
+/* Integrates with existing CSS theme system and ensures consistent appearance */
+
+/* Header base styles */
+#unified-header {
+    /* Use existing CSS theme variables for consistency */
+    background: var(--background);
+    border-color: var(--border);
+    color: var(--foreground);
+    
+    /* Ensure proper stacking and smooth appearance */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    
+    /* Smooth transitions */
+    transition: all 0.2s ease-in-out;
+    
+    /* Ensure header stays above other content */
+    z-index: 1000;
+}
+
+/* Navigation link styles */
+.nav-link, .mobile-nav-link {
+    transition: all 0.15s ease-in-out;
+    position: relative;
+}
+
+.nav-link:hover, .mobile-nav-link:hover {
+    transform: translateY(-1px);
+}
+
+/* Active page indicator */
+.nav-link.bg-accent, .mobile-nav-link.bg-accent {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile navigation transitions */
+#mobile-nav {
+    transition: all 0.3s ease-in-out;
+    transform-origin: top;
+}
+
+#mobile-nav.hidden {
+    opacity: 0;
+    transform: scaleY(0);
+}
+
+#mobile-nav:not(.hidden) {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+/* Theme toggle button */
+#theme-toggle-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+#theme-toggle-btn:hover {
+    transform: rotate(15deg) scale(1.05);
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* Hamburger menu button */
+#hamburger-menu-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+#hamburger-menu-btn svg {
+    transition: all 0.3s ease-in-out;
+}
+
+#hamburger-menu-btn:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* Logo hover effect */
+#unified-header a[href="/"] {
+    transition: all 0.2s ease-in-out;
+}
+
+#unified-header a[href="/"]:hover {
+    transform: translateY(-1px);
+    color: var(--accent);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    #unified-header .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    #unified-header h1 {
+        font-size: 1.125rem;
+    }
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] #unified-header {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode specific adjustments */
+[data-theme="light"] #unified-header {
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Focus styles for accessibility */
+#unified-header button:focus,
+#unified-header a:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Animation for theme icon transitions */
+#theme-toggle-btn svg {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Smooth page transitions when navigating */
+.nav-link[data-loading="true"] {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Mobile menu backdrop for better UX */
+@media (max-width: 768px) {
+    #mobile-nav:not(.hidden)::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: -1;
+        backdrop-filter: blur(2px);
+    }
+}
+
+/* Ensure header doesn't interfere with existing page layouts */
+body.has-unified-header {
+    padding-top: 3.5rem; /* 14 * 0.25rem = 3.5rem */
+}
+
+/* Special handling for pages with existing fixed headers */
+.page-has-existing-header #unified-header {
+    display: none;
+}
+
+/* Print styles - hide header when printing */
+@media print {
+    #unified-header,
+    #header-spacer {
+        display: none !important;
+    }
+    
+    body.has-unified-header {
+        padding-top: 0 !important;
+    }
+}

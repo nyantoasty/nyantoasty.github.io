@@ -22,6 +22,7 @@
 @import './components/modals.css';
 @import './components/tabs.css';
 @import './components/sidebar.css';
+@import './components/enhanced-header.css';
 
 /* === UTILITY LAYER === */
 /* Essential utilities that don't interfere with theming */

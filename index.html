@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Version: v2025-10-04-  -->
+<!-- Version: v2025-10-06-unified-header -->
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stitch Witch - v2025-10-04</title>
+    <title>Stitch Witch - Pattern Viewer</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
@@ -16,12 +16,15 @@
     <!-- Main Application Stylesheet - Three-Tier Token System -->
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body class="bg-primary text-secondary antialiased">
+<body class="bg-primary text-secondary antialiased has-unified-header">
 
-    <!-- Sidebar Toggle Button -->
-    <button id="sidebar-toggle" title="Toggle pattern tools sidebar" class="fixed top-4 left-4 z-70 bg-secondary text-primary p-3 rounded-full shadow-lg border border-primary btn-secondary transition-colors">
+    <!-- Unified Header Component -->
+    <div id="header-placeholder"></div>
+
+    <!-- Sidebar Toggle Button (now integrates with header hamburger menu) -->
+    <button id="sidebar-toggle" title="Toggle pattern tools sidebar" class="fixed top-16 left-4 z-40 bg-secondary text-primary p-3 rounded-full shadow-lg border border-primary btn-secondary transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
         </svg>
     </button>
 
@@ -295,6 +298,16 @@
     </div>
 
 <script type="module">
+    // Load unified header first
+    fetch('/components/unified-header.html')
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('header-placeholder').outerHTML = html;
+            // Initialize header functionality
+            import('./js/unified-header.js');
+        })
+        .catch(err => console.warn('Header load failed:', err));
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";

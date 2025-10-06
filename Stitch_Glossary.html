@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiber Art Stitch Glossary</title>
+    <title>Stitch Glossary - Pattern Hub</title>
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -79,14 +79,11 @@
         }
     </style>
 </head>
-<body class="bg-amber-50 text-stone-800">
+<body class="bg-amber-50 text-stone-800 has-unified-header">
+    <!-- Unified header will be loaded here -->
+    <div id="unified-header"></div>
 
     <div id="app" class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-stone-700">Fiber Art Stitch Glossary</h1>
-            <p class="text-lg text-stone-500 mt-2">Your personal dictionary of stitches and tools.</p>
-        </header>
-
         <div class="text-center mb-8 flex flex-wrap justify-center gap-4">
             <button id="show-form-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
                 Add New Entry
@@ -169,6 +166,9 @@
 
     <!-- Message Modal -->
     <div id="message-modal" class="modal-backdrop hidden"><div class="modal-content"><h3 id="modal-title" class="text-lg leading-6 font-medium text-stone-900"></h3><div class="mt-2"><p id="modal-message" class="text-sm text-stone-500"></p></div><div class="mt-4 text-right"><button id="modal-close-btn" type="button" class="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2">Got it!</button></div></div></div>
+
+    <!-- Load unified header -->
+    <script src="js/header-loader.js"></script>
 
     <script type="module">
         // Import our existing enhanced GlobalLivingGlossary system

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Pattern - Stitch Witch</title>
+    <title>Upload Pattern - Pattern Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="theme-color" content="#1f2937">
     
@@ -20,23 +20,11 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="bg-gray-900 text-white min-h-screen has-unified-header">
+    <!-- Unified Header Component -->
+    <div id="header-placeholder"></div>
+    
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- Header matching the main Pattern Hub -->
-        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-gray-700 pb-4">
-            <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <h1 class="text-3xl font-bold text-white">Pattern Hub</h1>
-                <p class="text-sm text-gray-400">AI Pattern Generator</p>
-                <p class="text-xs text-gray-500">v2025-10-02 - Upload & Convert Patterns</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <nav class="flex items-center space-x-2 bg-gray-800 p-1 rounded-lg">
-                    <a href="/" class="tab-button">Viewer</a>
-                    <span class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg text-sm">Generator</span>
-                </nav>
-            </div>
-        </header>
-
         <!-- Generator Section Header -->
         <div class="text-center mb-8">
             <h2 class="text-4xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
@@ -361,6 +349,16 @@ The AI will convert this into structured JSON following our pattern format."></t
 
     <!-- Firebase and App Scripts -->
     <script type="module">
+        // Load unified header first
+        fetch('/components/unified-header.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('header-placeholder').outerHTML = html;
+                // Initialize header functionality
+                import('./js/unified-header.js');
+            })
+            .catch(err => console.warn('Header load failed:', err));
+
         import { auth, db, app } from './js/firebase-config.js';
         import { initializeOCRIntegration, initializeJSONFileUpload } from './js/pattern-ocr-integration.js';
         import { 

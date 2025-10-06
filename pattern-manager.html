@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Manager - Upload & Preview</title>
+    <title>Pattern Manager - Pattern Hub</title>
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
     <link rel="stylesheet" href="css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,9 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+        }
+        body.has-unified-header {
+            padding-top: 3.5rem;
         }
         .json-editor {
             font-family: 'Roboto Mono', monospace;
@@ -48,27 +51,11 @@
         .status-warning { background-color: #f59e0b; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800">
-    <!-- Header -->
-    <div class="bg-white bg-opacity-10 backdrop-blur-md border-b border-white border-opacity-20">
-        <div class="max-w-6xl mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold text-white">Pattern Manager</h1>
-                <div class="flex items-center space-x-4">
-                    <div id="auth-status" class="text-white text-sm">
-                        <span class="opacity-75">Not signed in</span>
-                    </div>
-                    <button id="sign-in-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all">
-                        Sign In
-                    </button>
-                    <a href="index.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all">
-                        Back to Patterns
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+<body class="bg-gradient-to-br from-purple-600 via-purple-700 to-blue-800 has-unified-header">
+    <!-- Unified Header Component -->
+    <div id="header-placeholder"></div>
 
+    <!-- Main Content -->
     <div class="max-w-6xl mx-auto px-6 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
@@ -155,6 +142,9 @@
 
     <!-- Toast Notifications -->
     <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+    <!-- Load unified header -->
+    <script src="js/header-loader.js"></script>
 
     <script type="module">
         // Firebase imports

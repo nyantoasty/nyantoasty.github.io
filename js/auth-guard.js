@@ -38,36 +38,54 @@ const DEFAULT_REDIRECT = '/index.html';
  */
 export function requireAuth() {
     return new Promise((resolve, reject) => {
+        console.log('🔍 requireAuth called from:', window.location.href);
+        
         // Check if we're already on the login page
         if (window.location.pathname === LOGIN_PAGE) {
+            console.log('❌ Already on login page, rejecting');
             reject(new Error('Already on login page'));
             return;
         }
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log('🔍 Auth state changed, user:', user ? user.email : 'null');
             unsubscribe(); // Clean up listener
             
             if (user) {
                 // User is authenticated
                 console.log('✅ Authentication verified:', user.email);
+                console.log('✅ User details:', {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    emailVerified: user.emailVerified
+                });
                 resolve(user);
             } else {
                 // User is not authenticated - redirect to login
                 console.log('❌ Authentication required, redirecting to login');
+                console.log('🔍 Current path:', window.location.pathname + window.location.search);
                 
                 // Store the intended destination for post-login redirect
                 const currentPath = window.location.pathname + window.location.search;
                 if (currentPath !== LOGIN_PAGE) {
                     sessionStorage.setItem('auth_redirect_url', currentPath);
+                    console.log('💾 Stored redirect URL:', currentPath);
                 }
                 
                 // Redirect to login page
+                console.log('🔄 Redirecting to:', LOGIN_PAGE);
                 window.location.replace(LOGIN_PAGE);
                 reject(new Error('Authentication required'));
             }
         }, (error) => {
             // Authentication error
             console.error('🚨 Authentication error:', error);
+            console.error('🚨 Error details:', {
+                code: error.code,
+                message: error.message,
+                stack: error.stack
+            });
             window.location.replace(LOGIN_PAGE);
             reject(error);
         });

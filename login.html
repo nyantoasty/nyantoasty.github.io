@@ -209,10 +209,16 @@
     async function checkRedirectResult() {
         try {
             console.log('🔍 Checking for redirect result...');
+            console.log('🔍 Auth object:', auth);
+            console.log('🔍 Current user before getRedirectResult:', auth.currentUser);
+            
             const result = await getRedirectResult(auth);
+            console.log('🔍 getRedirectResult returned:', result);
+            
             if (result) {
                 // Sign in was successful
                 console.log('✅ Sign in successful:', result.user.email);
+                console.log('✅ Full result object:', result);
                 showLoading();
                 
                 // Give Firebase a moment to update auth state
@@ -224,10 +230,15 @@
                     window.location.replace(redirectUrl);
                 }, 500);
                 return true;
+            } else {
+                console.log('ℹ️ No redirect result found');
+                return false;
             }
-            return false;
         } catch (error) {
             console.error('❌ Redirect result error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+            console.error('❌ Error stack:', error.stack);
             showError('Authentication failed. Please try again.');
             return false;
         }
@@ -281,20 +292,42 @@
     // Initialize page
     async function initializePage() {
         console.log('🔐 Initializing login page...');
+        console.log('🔍 Current URL:', window.location.href);
+        console.log('🔍 Session storage auth_redirect_url:', sessionStorage.getItem('auth_redirect_url'));
         
-        // First check for redirect result (this is most important after OAuth return)
-        const hadRedirectResult = await checkRedirectResult();
-        
-        // Only check if user is already authenticated if we didn't handle a redirect
-        if (!hadRedirectResult) {
-            await redirectIfAuthenticated();
+        try {
+            // First check for redirect result (this is most important after OAuth return)
+            const hadRedirectResult = await checkRedirectResult();
+            
+            // Only check if user is already authenticated if we didn't handle a redirect
+            if (!hadRedirectResult) {
+                console.log('🔍 No redirect result, checking if already authenticated...');
+                await redirectIfAuthenticated();
+            }
+            
+            console.log('🔐 Login page initialized successfully');
+        } catch (error) {
+            console.error('❌ Login page initialization error:', error);
+            console.error('❌ Error stack:', error.stack);
         }
-        
-        console.log('🔐 Login page initialized');
     }
 
     // Start initialization
     initializePage();
+
+    // Add global error handlers to catch any errors we might miss
+    window.addEventListener('error', (event) => {
+        console.error('🚨 GLOBAL ERROR CAUGHT:', event.error);
+        console.error('🚨 Error message:', event.message);
+        console.error('🚨 Error filename:', event.filename);
+        console.error('🚨 Error line:', event.lineno);
+        console.error('🚨 Error column:', event.colno);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('🚨 UNHANDLED PROMISE REJECTION:', event.reason);
+        console.error('🚨 Promise:', event.promise);
+    });
 </script>
 
 </body>

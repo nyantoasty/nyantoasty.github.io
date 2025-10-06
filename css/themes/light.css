@@ -4,16 +4,16 @@
  */
 
 [data-theme="light"] {
-  /* Primary Palette - Pure white backgrounds with very dark blues */
-  --palette-primary-100: #ffffff;  /* Pure white for e-ink */
-  --palette-primary-200: #f8fafc;  /* Near white */
-  --palette-primary-300: #e2e8f0;  /* Light gray */
-  --palette-primary-400: #94a3b8;  /* Medium gray */
-  --palette-primary-500: #1e3a8a;  /* Very dark blue for maximum contrast */
-  --palette-primary-600: #172554;  /* Darker blue */
-  --palette-primary-700: #0f172a;  /* Very dark */
-  --palette-primary-800: #020617;  /* Near black */
-  --palette-primary-900: #000000;  /* Pure black */
+  /* Primary Palette - Warm slate blues for main UI */
+  --palette-primary-100: #fbf5cb;  /* Warm cream background */
+  --palette-primary-200: #fef3e7;  /* Light warm cream */
+  --palette-primary-300: #f4f1eb;  /* Soft warm gray */
+  --palette-primary-400: #a8a29e;  /* Medium warm gray */
+  --palette-primary-500: #57534e;  /* Warm dark slate for main elements */
+  --palette-primary-600: #44403c;  /* Darker warm slate */
+  --palette-primary-700: #292524;  /* Deep warm brown */
+  --palette-primary-800: #1c1917;  /* Very dark warm brown */
+  --palette-primary-900: #0c0a09;  /* Near black warm */
 
   /* Secondary Palette - Pure white backgrounds with very dark purples */
   --palette-secondary-100: #ffffff;
@@ -37,67 +37,75 @@
   --palette-accent-800: #001212;
   --palette-accent-900: #000000;
 
-  /* Success Palette - Pure white backgrounds with very dark greens */
-  --palette-success-100: #ffffff;
-  --palette-success-200: #f0fdf4;
-  --palette-success-300: #dcfce7;
-  --palette-success-400: #86efac;
-  --palette-success-500: #14532d;  /* Very dark green for maximum contrast */
-  --palette-success-600: #052e16;
-  --palette-success-700: #022c22;
-  --palette-success-800: #001a0d;
-  --palette-success-900: #000000;
+  /* Success Palette - Warm sage greens for increases */
+  --palette-success-100: #fefffe;
+  --palette-success-200: #f6f7f6;
+  --palette-success-300: #e8f0e8;
+  --palette-success-400: #84c584;
+  --palette-success-500: #4f7c59;  /* Warm sage green for good contrast */
+  --palette-success-600: #3d5940;
+  --palette-success-700: #2d3f2f;
+  --palette-success-800: #1e2a20;
+  --palette-success-900: #0f1510;
 
-  /* Danger Palette - Pure white backgrounds with very dark reds */
-  --palette-danger-100: #ffffff;
-  --palette-danger-200: #fef2f2;
-  --palette-danger-300: #fecaca;
-  --palette-danger-400: #f87171;
-  --palette-danger-500: #7f1d1d;  /* Very dark red for maximum contrast */
-  --palette-danger-600: #450a0a;
-  --palette-danger-700: #2d0a0a;
-  --palette-danger-800: #1a0505;
-  --palette-danger-900: #000000;
+  /* Danger Palette - Warm terracotta reds for decreases */
+  --palette-danger-100: #fffffe;
+  --palette-danger-200: #fef6f5;
+  --palette-danger-300: #fde8e6;
+  --palette-danger-400: #f48778;
+  --palette-danger-500: #a0544f;  /* Warm terracotta for good contrast */
+  --palette-danger-600: #7c3f3a;
+  --palette-danger-700: #5a2f2b;
+  --palette-danger-800: #3a201d;
+  --palette-danger-900: #1d100f;
 
-  /* Warning Palette - Pure white backgrounds with very dark oranges */
-  --palette-warning-100: #ffffff;
-  --palette-warning-200: #fff7ed;
-  --palette-warning-300: #fed7aa;
-  --palette-warning-400: #fb923c;
-  --palette-warning-500: #9a3412;  /* Very dark orange for maximum contrast */
-  --palette-warning-600: #7c2d12;
-  --palette-warning-700: #431407;
-  --palette-warning-800: #1f0d07;
-  --palette-warning-900: #000000;
+  /* Warning Palette - Warm amber for markers */
+  --palette-warning-100: #fffffe;
+  --palette-warning-200: #fef8f3;
+  --palette-warning-300: #fde8d3;
+  --palette-warning-400: #f4a261;
+  --palette-warning-500: #8b5a2b;  /* Warm amber brown for good contrast */
+  --palette-warning-600: #6d4423;
+  --palette-warning-700: #4f321a;
+  --palette-warning-800: #332112;
+  --palette-warning-900: #1a110a;
 
-  /* Info Palette - Pure white backgrounds with very dark cyans */
-  --palette-info-100: #ffffff;
-  --palette-info-200: #f0fdfa;
-  --palette-info-300: #ccfbf1;
-  --palette-info-400: #2dd4bf;
-  --palette-info-500: #134e4a;  /* Very dark teal for maximum contrast */
-  --palette-info-600: #042f2e;
-  --palette-info-700: #022220;
-  --palette-info-800: #001212;
-  --palette-info-900: #000000;
+  /* Info Palette - Warm teal for notes */
+  --palette-info-100: #fefffe;
+  --palette-info-200: #f5f9f8;
+  --palette-info-300: #e6f1f0;
+  --palette-info-400: #7bb3b0;
+  --palette-info-500: #4a6c6a;  /* Warm teal for good contrast */
+  --palette-info-600: #3a524f;
+  --palette-info-700: #2a3b39;
+  --palette-info-800: #1c2726;
+  --palette-info-900: #0e1413;
 
-  /* Tertiary Palette - Pure white backgrounds with very dark magentas */
-  --palette-tertiary-100: #ffffff;
-  --palette-tertiary-200: #fce7f3;
-  --palette-tertiary-300: #fbcfe8;
-  --palette-tertiary-400: #f472b6;
-  --palette-tertiary-500: #831843;  /* Very dark magenta for maximum contrast */
-  --palette-tertiary-600: #6b1037;
-  --palette-tertiary-700: #4a0e2b;
-  --palette-tertiary-800: #2d0a1a;
-  --palette-tertiary-900: #000000;
+  /* Tertiary Palette - Warm lavender for overflow */
+  --palette-tertiary-100: #fffffe;
+  --palette-tertiary-200: #f9f7f8;
+  --palette-tertiary-300: #f0ebef;
+  --palette-tertiary-400: #c19bb7;
+  --palette-tertiary-500: #7d5a73;  /* Warm lavender for good contrast */
+  --palette-tertiary-600: #614758;
+  --palette-tertiary-700: #463340;
+  --palette-tertiary-800: #2e222a;
+  --palette-tertiary-900: #171115;
 
-  /* Neutral Palette - Proper light mode colors */
-  --palette-neutral-50: #ffffff;
-  --palette-neutral-100: #f8fafc;
-  --palette-neutral-200: #f1f5f9;
-  --palette-neutral-300: #e2e8f0;
-  --palette-neutral-400: #cbd5e1;
+  /* Neutral Palette - Warm grays for text and backgrounds */
+  --palette-neutral-50: #fff0d1;   /* Warm cream white */
+  --palette-neutral-100: #d5cfc3;  /* Very light warm gray */
+  --palette-neutral-200: #c6c1b0;  /* Light warm gray */
+  --palette-neutral-300: #a39f96;  /* Medium light warm gray */
+  --palette-neutral-400: #b0a998;  /* Medium warm gray */
+  --palette-neutral-500: #918780;  /* Medium warm gray */
+  --palette-neutral-600: #73655b;  /* Dark warm gray */
+  --palette-neutral-700: #57534e;  /* Darker warm gray */
+  --palette-neutral-750: #44403c;  /* Very dark warm gray */
+  --palette-neutral-800: #292524;  /* Deep warm brown */
+  --palette-neutral-850: #1c1917;  /* Very deep warm brown */
+  --palette-neutral-900: #0c0a09;  /* Near black warm */
+  --palette-neutral-950: #000000;  /* Pure black */
   --palette-neutral-500: #94a3b8;
   --palette-neutral-600: #64748b;
   --palette-neutral-700: #475569;

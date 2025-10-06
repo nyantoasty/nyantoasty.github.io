@@ -105,34 +105,34 @@
  * Override the thematic variables for light mode
  */
 [data-theme="light"] {
-  /* Background and Surface Colors - Override to light theme */
-  --theme-bg-primary: var(--palette-neutral-50);     /* White background */
-  --theme-bg-secondary: var(--palette-neutral-100);  /* Very light gray */
-  --theme-bg-tertiary: var(--palette-neutral-200);   /* Light gray */
-  --theme-surface: var(--palette-neutral-100);       /* Very light gray surface */
+  /* Background and Surface Colors - Warm cream backgrounds */
+  --theme-bg-primary: var(--palette-neutral-50);     /* Warm cream background */
+  --theme-bg-secondary: var(--palette-neutral-100);  /* Very light warm gray */
+  --theme-bg-tertiary: var(--palette-neutral-200);   /* Light warm gray */
+  --theme-surface: var(--palette-neutral-100);       /* Very light warm gray surface */
 
-  /* Text Colors - Override to dark text on light background */
-  --theme-text-primary: var(--palette-neutral-900);    /* Dark text */
-  --theme-text-secondary: var(--palette-neutral-700);  /* Medium dark text */
-  --theme-text-tertiary: var(--palette-neutral-600);   /* Medium text */
+  /* Text Colors - Warm grays instead of harsh black */
+  --theme-text-primary: var(--palette-neutral-700);    /* Warm dark gray (not black) */
+  --theme-text-secondary: var(--palette-neutral-600);  /* Medium warm gray */
+  --theme-text-tertiary: var(--palette-neutral-500);   /* Medium gray */
   --theme-text-disabled: var(--palette-neutral-400);   /* Light gray text */
 
-  /* Border Colors - Override for light theme */
-  --theme-border-primary: var(--palette-neutral-300);   /* Light border */
-  --theme-border-secondary: var(--palette-neutral-200); /* Very light border */
-  --theme-border-focus: var(--palette-primary-500);     /* Keep focus color */
+  /* Border Colors - Soft warm borders */
+  --theme-border-primary: var(--palette-neutral-300);   /* Light warm border */
+  --theme-border-secondary: var(--palette-neutral-200); /* Very light warm border */
+  --theme-border-focus: var(--palette-primary-500);     /* Warm slate focus */
 
-  /* Interactive States - Adjust for light theme */
-  --theme-color-hover: var(--palette-primary-700);      /* Darker hover */
-  --theme-color-active: var(--palette-primary-800);     /* Darker active */
-  --theme-color-focus: var(--palette-primary-600);      /* Darker focus */
+  /* Interactive States - Moderate contrast */
+  --theme-color-hover: var(--palette-primary-600);      /* Warm slate hover */
+  --theme-color-active: var(--palette-primary-700);     /* Warm slate active */
+  --theme-color-focus: var(--palette-primary-500);      /* Warm slate focus */
 
-  /* Component-Specific Overrides */
-  --theme-current-step-bg: var(--palette-primary-100);      /* Very light blue */
-  --theme-current-step-border: var(--palette-primary-400);  /* Medium blue */
-  --theme-previous-step-border: var(--palette-primary-300); /* Light blue */
-  --theme-highlight-bg: var(--palette-primary-100);         /* Light highlight */
-  --theme-highlight-text: var(--palette-neutral-900);       /* Dark text on light */
+  /* Component-Specific Overrides - Subtle highlights */
+  --theme-current-step-bg: var(--palette-primary-200);      /* Very light warm cream */
+  --theme-current-step-border: var(--palette-primary-400);  /* Medium warm gray */
+  --theme-previous-step-border: var(--palette-primary-300); /* Light warm gray */
+  --theme-highlight-bg: var(--palette-primary-200);         /* Light warm highlight */
+  --theme-highlight-text: var(--palette-neutral-700);       /* Warm dark gray text */
 }
 
 /* Pattern text styling */

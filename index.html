@@ -1,1806 +1,341 @@
-<!DOCTYPE html><!DOCTYPE html>
-
-<html lang="en" class="dark"><!-- Version: v2025-10-06-unified-header -->
-
-<head><html lang="en" class="dark">
-
-    <meta charset="UTF-8"><head>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta charset="UTF-8">
-
-    <title>Stitch Witch - Pattern Viewer</title>    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">    <title>Stitch Witch - Pattern Viewer</title>
-
-    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
-
-    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
-
-    <meta name="theme-color" content="#8b5cf6">    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
-
+<!DOCTYPE html>
+<!-- 
+    STITCH WITCH PAGE TEMPLATE v2025-10-06
+    
+    This template provides a standardized foundation for all Stitch Witch pages.
+    Copy this file and customize the sections marked with "TODO" comments.
+    
+    FEATURES INCLUDED:
+    - Unified header component system
+    - Three-tier CSS token system (tokens.css → thematic-mapping.css → dark/light.css)
+    - Semantic classes for consistent theming
+    - Firebase v9+ modular setup with proper imports
+    - Authentication state management
+    - Mobile-responsive design
+    - Proper meta tags and PWA support
+    
+    ARCHITECTURE:
+    - All styling uses semantic classes (bg-primary, text-secondary, btn-accent, etc.)
+    - No hard-coded Tailwind colors (bg-gray-800, text-blue-500, etc.)
+    - Firebase imports are modular and follow v9+ patterns
+    - CSS follows three-tier token system for theme consistency
+    
+    USAGE:
+    1. Copy this file to your new page name
+    2. Update the title, meta description, and page-specific content
+    3. Customize the main content area
+    4. Add page-specific JavaScript modules as needed
+    5. Test authentication flow and responsive design
+-->
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TODO: Update title for your specific page -->
+        <title>Stitch Witch - Pattern Viewer</title>
+    
+    <!-- TODO: Update meta description for SEO -->
+    <meta name="description" content="Stitch Witch - Your page description for SEO">
+    
+    <!-- Progressive Web App Meta Tags -->
+    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
     <meta name="theme-color" content="#8b5cf6">
-
+    
+    <!-- Preconnect to External Resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 
+        MAIN STYLESHEET - Three-Tier Token System
+        
+        Structure:
+        1. css/base/ - Reset, typography, base styles
+        2. css/themes/tokens.css - Raw design tokens
+        3. css/themes/thematic-mapping.css - Token assignments
+        4. css/themes/dark.css & light.css - Theme implementations
+        5. css/components/ - Component-specific styles
+        6. css/semantic-classes.css - Utility classes using CSS custom properties
+        
+        This ensures consistent theming across all pages and easy theme switching.
+    -->
+    <link rel="stylesheet" href="/css/main.css">
+</head>
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Main Application Stylesheet - Three-Tier Token System -->    
-
-    <link rel="stylesheet" href="/css/main.css">    <!-- Main Application Stylesheet - Three-Tier Token System -->
-
-</head>    <link rel="stylesheet" href="/css/main.css">
-
-<body class="bg-primary text-secondary antialiased has-unified-header"></head>
-
+<!-- 
+    BODY CLASSES:
+    - bg-primary: Uses theme-aware background color
+    - text-secondary: Uses theme-aware text color
+    - antialiased: Smooth font rendering
+    - has-unified-header: Indicates this page uses the unified header component
+-->
 <body class="bg-primary text-secondary antialiased has-unified-header">
 
-    <!-- Unified Header Component -->
-
-    <div id="header-placeholder"></div>    <!-- Unified Header Component -->
-
+    <!-- 
+        UNIFIED HEADER COMPONENT
+        
+        This placeholder gets replaced with the actual header content via JavaScript.
+        The header provides:
+        - Consistent navigation across all pages
+        - Theme toggle functionality
+        - User authentication status
+        - Mobile-responsive menu
+        
+        IMPORTANT: Keep this div with the exact ID "header-placeholder"
+    -->
     <div id="header-placeholder"></div>
 
-    <!-- Sidebar Overlay -->
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-surface bg-opacity-20 z-50 hidden"></div>    <!-- Sidebar Overlay -->
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-surface bg-opacity-20 z-50 hidden"></div>
-
-    <!-- Pattern Tools Sidebar -->
-
-    <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-secondary border-r border-primary p-6 z-60 overflow-y-auto">    <!-- Pattern Tools Sidebar -->
-
-        <div class="flex justify-between items-center mb-6">    <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-secondary border-r border-primary p-6 z-60 overflow-y-auto">
-
-            <h2 class="text-2xl font-bold text-primary">Pattern Tools</h2>        <div class="flex justify-between items-center mb-6">
-
-            <button id="sidebar-close" class="text-tertiary hover:text-primary text-2xl btn-icon">&times;</button>            <h2 class="text-2xl font-bold text-primary">Pattern Tools</h2>
-
-        </div>            <button id="sidebar-close" class="text-tertiary hover:text-primary text-2xl btn-icon">&times;</button>
-
-                </div>
-
-        <div class="space-y-6">        
-
-            <!-- Return to Current Row -->        <div class="space-y-6">
-
-            <div>            <!-- Return to Current Row -->
-
-                <button id="return-to-row" class="w-full btn-accent font-medium py-2 px-4 rounded-lg transition-colors">            <div>
-
-                    Return to Current Row                <button id="return-to-row" class="w-full btn-accent font-medium py-2 px-4 rounded-lg transition-colors">
-
-                </button>                    Return to Current Row
-
-            </div>                </button>
-
+    <!-- 
+        MAIN APPLICATION CONTAINER
+        
+        This page is protected by auth-guard.js - only authenticated users can access it.
+        No need for auth containers or login forms - that's handled by login.html.
+    -->
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- 
+            PAGE HEADER
+            
+            Standard header for all authenticated pages.
+            Includes user info and logout button.
+        -->
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-primary pb-4">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <!-- TODO: Update page title and description -->
+                <h1 class="text-3xl font-bold text-primary">Page Title</h1>
+                <p id="user-display" class="text-sm text-tertiary">Welcome!</p>
+                <p class="text-xs text-muted">v2025-10-06 Template</p>
             </div>
-
-            <!-- Jump to Section -->
-
-            <div>            <!-- Jump to Section -->
-
-                <h3 class="text-lg font-semibold text-secondary mb-3">Jump to Section</h3>            <div>
-
-                <div class="space-y-2 text-sm">                <h3 class="text-lg font-semibold text-secondary mb-3">Jump to Section</h3>
-
-                    <div class="sidebar-links">                <div class="space-y-2 text-sm">
-
-                        <a href="#" data-section="section1" class="block text-accent hover:text-accent-hover py-1 link-primary">Section 1: Increasing</a>                    <div class="sidebar-links">
-
-                        <a href="#" data-section="section2" class="block text-accent hover:text-accent-hover py-1 link-primary">Section 2: Decreasing</a>                        <a href="#" data-section="section1" class="block text-accent hover:text-accent-hover py-1 link-primary">Section 1: Increasing</a>
-
-                    </div>                        <a href="#" data-section="section2" class="block text-accent hover:text-accent-hover py-1 link-primary">Section 2: Decreasing</a>
-
-                </div>                    </div>
-
-            </div>                </div>
-
+            <div class="flex items-center space-x-4">
+                <!-- TODO: Add page-specific navigation or controls here -->
+                <nav class="flex items-center space-x-2">
+                    <a href="index.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Viewer</a>
+                    <a href="pattern-upload.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Generator</a>
+                    <a href="glossary-manager.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Glossary</a>
+                </nav>
+                <button id="logout-btn" class="btn-danger font-medium py-2 px-4 rounded-lg transition-colors text-sm">Sign Out</button>
             </div>
-
-            <!-- Materials & Notes -->
-
-            <div>            <!-- Materials & Notes -->
-
-                <h3 class="text-lg font-semibold text-secondary mb-3">Materials & Notes</h3>            <div>
-
-                <div id="sidebar-materials" class="text-sm text-tertiary space-y-1">                <h3 class="text-lg font-semibold text-secondary mb-3">Materials & Notes</h3>
-
-                    <!-- Will be populated dynamically from pattern data -->                <div id="sidebar-materials" class="text-sm text-tertiary space-y-1">
-
-                </div>                    <!-- Will be populated dynamically from pattern data -->
-
-            </div>                </div>
-
-            </div>
-
-            <!-- Stitch Glossary -->
-
-            <div>            <!-- Stitch Glossary -->
-
-                <h3 class="text-lg font-semibold text-secondary mb-3">Stitch Glossary</h3>            <div>
-
-                <div id="sidebar-glossary" class="text-sm space-y-2">                <h3 class="text-lg font-semibold text-secondary mb-3">Stitch Glossary</h3>
-
-                    <!-- Will be populated by JavaScript -->                <div id="sidebar-glossary" class="text-sm space-y-2">
-
-                </div>                    <!-- Will be populated by JavaScript -->
-
-            </div>                </div>
-
-        </div>            </div>
-
-    </aside>        </div>
-
-    </aside>
-
-    <!-- Main App Container: Protected page content -->
-
-    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">    <!-- Auth Container: Shown when logged out -->
-
-            <div id="auth-container" class="hidden min-h-screen flex items-center justify-center">
-
-        <!-- Pattern Viewer Section -->        <div class="text-center p-8 bg-secondary rounded-xl shadow-2xl border border-primary max-w-md mx-auto">
-
-        <div id="viewer-section">            <div class="mb-6">
-
-            <!-- Project Selection Header -->                <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-
-            <header class="mb-8 border-b border-primary pb-4">                    <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20">
-
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-
-                    <div>                    </svg>
-
-                        <h1 class="text-3xl font-bold text-primary mb-2">Pattern Viewer</h1>                </div>
-
-                        <p class="text-sm text-tertiary">Select a project to continue or create a new one</p>                <h1 class="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
-
-                    </div>                <p class="text-tertiary">Sign in to access your pattern library</p>
-
-                                </div>
-
-                    <!-- Project Management Controls -->            
-
-                    <div class="flex flex-col sm:flex-row gap-3">            <button id="login-btn" class="w-full btn-accent font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center">
-
-                        <div class="flex items-center gap-2">                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
-
-                            <label for="project-selector" class="text-sm font-medium text-secondary whitespace-nowrap">Current Project:</label>                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
-
-                            <select id="project-selector" class="flex-1 input-primary text-sm">                    <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
-
-                                <option value="">Select a project...</option>                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
-
-                            </select>                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
-
-                        </div>                </svg>
-
-                                        Continue with Google
-
-                        <div class="flex gap-2">            </button>
-
-                            <button id="new-project-btn" class="btn-accent text-sm px-3 py-2 rounded-lg transition-colors whitespace-nowrap">            
-
-                                New Project            <div class="mt-6 pt-6 border-t border-primary">
-
-                            </button>                <p class="text-xs text-muted">
-
-                            <button id="delete-project-btn" class="btn-danger text-sm px-3 py-2 rounded-lg transition-colors whitespace-nowrap">                    By signing in, you agree to our terms of service and privacy policy
-
-                                Archive                </p>
-
-                            </button>            </div>
-
-                            <button id="show-archived-btn" class="btn-secondary text-sm px-3 py-2 rounded-lg transition-colors whitespace-nowrap">        </div>
-
-                                Show Archived    </div>
-
-                            </button>
-
-                        </div>    <!-- App Container: Shown when logged in -->
-
-                    </div>    <div id="app-container" class="hidden max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
-
-                </div>        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-primary pb-4">
-
-            </header>            <div class="text-center sm:text-left mb-4 sm:mb-0">
-
-                <h1 class="text-3xl font-bold text-primary">Pattern Hub</h1>
-
-            <!-- Welcome State for New Users -->                <p id="user-display" class="text-sm text-tertiary">Welcome!</p>
-
-            <div id="welcome-state" class="text-center py-12 bg-secondary rounded-xl border border-primary">                <p class="text-xs text-muted">v2025-10-04 CSS Migration</p>
-
-                <div class="max-w-md mx-auto">            </div>
-
-                    <h2 class="text-2xl font-bold text-primary mb-4">Welcome to Pattern Viewer!</h2>            <div class="flex items-center space-x-4">
-
-                    <p class="text-tertiary mb-6">Create your first project to start tracking your knitting progress.</p>                 <nav id="app-nav" class="flex items-center space-x-2 bg-secondary p-1 rounded-lg">
-
-                    <button id="welcome-new-project-btn" class="btn-accent font-medium py-3 px-6 rounded-lg transition-colors">                    <button data-view="viewer" class="tab-button active">Viewer</button>
-
-                        Create Your First Project                    <a href="pattern-upload.html" class="btn-accent font-medium py-2 px-4 rounded-lg transition-colors text-sm">Generator</a>
-
-                    </button>                </nav>
-
-                </div>                <button id="logout-btn" class="btn-danger font-medium py-2 px-4 rounded-lg transition-colors text-sm">Sign Out</button>
-
-            </div>            </div>
-
         </header>
 
-            <!-- Pattern Display Area -->
-
-            <div id="pattern-display" class="hidden">        <!-- VIEWER SECTION -->
-
-                <!-- Pattern Header -->        <div id="viewer-section">
-
-                <header class="mb-6 bg-secondary p-6 rounded-xl border border-primary">            <header class="text-center mb-8">
-
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">                <!-- PROJECT MANAGER -->
-
-                        <div class="flex-1">                <div class="mb-6">
-
-                            <h3 id="pattern-name" class="text-2xl font-bold special-accent mb-1">Pattern Name</h3>                    <div class="flex items-center justify-center space-x-4 mb-4">
-
-                            <p id="pattern-author" class="text-lg text-secondary">by Pattern Author</p>                        <div class="flex-1 max-w-lg">
-
-                            <div class="flex items-center gap-4 mt-3 text-sm text-tertiary">                            <label for="project-selector" class="block text-sm font-medium text-secondary mb-2">My Projects:</label>
-
-                                <span>Current Step: <span id="current-step-display" class="font-medium">1</span> of <span id="max-steps-display" class="font-medium">1</span></span>                            <select id="project-selector" class="w-full bg-secondary border border-primary text-primary rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent focus:border-accent">
-
-                                <button id="toggle-notes-sidebar" class="link-primary hover:text-accent">                                <option value="">Loading your projects...</option>
-
-                                    Notes & Photos                            </select>
-
-                                </button>                        </div>
-
-                            </div>                        <div class="flex space-x-2">
-
-                        </div>                            <button id="new-project-btn" class="btn-success px-4 py-2 rounded-lg text-sm transition-colors" title="Start New Project">
-
-                                                        ➕ New
-
-                        <div class="flex items-center gap-3">                            </button>
-
-                            <button id="sidebar-toggle" class="btn-secondary p-2 rounded-lg transition-colors">                            <button id="delete-project-btn" class="btn-warning px-4 py-2 rounded-lg text-sm transition-colors" disabled title="Archive or Permanently Delete Project">
-
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">                                🗃️ Archive
-
-                                    <path d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>                            </button>
-
-                                </svg>                            <button id="show-archived-btn" class="btn-secondary px-4 py-2 rounded-lg text-sm transition-colors" title="View Archived Projects">
-
-                            </button>                                📦 Archived
-
-                        </div>                            </button>
-
-                    </div>                        </div>
-
-                </header>                    </div>
-
-                    
-
-                <!-- Pattern Glossary -->                    <!-- PROJECT INFO DISPLAY -->
-
-                <section id="pattern-glossary" class="mb-6 bg-secondary p-4 rounded-lg border border-primary">                    <div id="project-info" class="hidden">
-
-                    <h3 class="text-lg font-semibold text-primary mb-3">Pattern Glossary</h3>                        <h2 id="project-name" class="text-3xl font-bold text-primary mb-2"></h2>
-
-                    <div id="main-glossary-content" class="grid gap-3 text-sm grid-cols-2 md:grid-cols-3 lg:grid-cols-4">                        <p id="project-pattern-info" class="text-lg pattern-accent mb-2"></p>
-
-                        <!-- Will be populated by JavaScript -->                        
-
-                    </div>                        <!-- PATTERN INFORMATION -->
-
-                </section>                        <div class="mb-4 text-center">
-
-                            <h3 id="pattern-name" class="text-2xl font-bold special-accent mb-1">Pattern Name</h3>
-
-                <!-- Pattern Content -->                            <p id="pattern-author" class="text-lg text-secondary">by Pattern Author</p>
-
-                <main id="pattern-content" class="space-y-8 overflow-y-auto pb-8">                        </div>
-
-                    <!-- Pattern instructions will be populated here -->                        
-
-                </main>                        <div id="project-details" class="mt-3 p-4 bg-secondary rounded-lg border border-primary">
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-
-                <!-- Stitch Definition Popup -->                                <div><span class="text-tertiary">Pattern:</span> <span id="project-pattern-name" class="text-primary"></span></div>
-
-                <div id="stitch-popup" class="hidden fixed bg-tertiary p-6 rounded-lg shadow-2xl z-50 border border-accent w-11/12 max-w-md">                                <div><span class="text-tertiary">Started:</span> <span id="project-start-date" class="text-primary"></span></div>
-
-                    <h4 class="font-bold text-primary mb-2"></h4>                                <div><span class="text-tertiary">Last Updated:</span> <span id="project-last-update" class="text-primary"></span></div>
-
-                    <p class="text-secondary text-sm"></p>                            </div>
-
-                    <button class="mt-4 text-accent text-sm hover:underline">Close</button>                            <div class="mt-3 pt-3 border-t border-secondary">
-
-                </div>                                <div class="text-sm text-tertiary">Progress: <span id="project-progress-summary" class="pattern-accent"></span></div>
-
-            </div>                            </div>
-
-        </div>                        </div>
-
-                    </div>
-
-        <!-- Notes Sidebar -->                    
-
-        <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-primary border-l border-primary transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">                    <!-- NO PROJECT STATE -->
-
-            <div class="p-6">                    <div id="no-project-state" class="text-center py-8">
-
-                <div class="flex items-center justify-between mb-6">                        <h2 class="text-3xl font-bold text-primary mb-4">Welcome to Stitch Witch! ✨</h2>
-
-                    <h3 class="text-xl font-bold text-primary">Project Notes</h3>                        <p class="text-lg text-secondary mb-6">Create your first project to start tracking your crafting journey with patterns from our Firestore database</p>
-
-                    <button id="close-notes-sidebar" class="text-tertiary hover:text-primary text-2xl btn-icon">&times;</button>                        <button id="welcome-new-project-btn" class="btn-success px-6 py-3 rounded-lg text-lg transition-colors">
-
-                </div>                            ➕ Start Your First Project
-
-                                        </button>
-
-                <!-- Current Row Note -->                    </div>
-
-                <div class="mb-6">                </div>
-
-                    <div class="flex items-center justify-between mb-3">            </header>
-
-                        <h4 class="font-semibold text-secondary">Current Row Note</h4>            
-
-                        <span id="current-row-indicator" class="text-sm text-tertiary">Row 1</span>            <!-- PATTERN GLOSSARY SECTION -->
-
-                    </div>            <section id="pattern-glossary" class="mb-6 bg-secondary p-4 rounded-lg border border-primary">
-
-                    <textarea id="current-row-note" class="w-full input-primary text-sm" rows="3" placeholder="Add a note for this row..."></textarea>                <h2 class="text-xl font-bold text-primary mb-4">Stitch Glossary</h2>
-
-                    <button id="save-row-note" class="mt-2 btn-accent text-sm px-3 py-1 rounded">Save Note</button>                <div id="main-glossary-content" class="grid gap-3 text-sm grid-cols-2 md:grid-cols-3 lg:grid-cols-4" style="display: grid !important;">
-
-                </div>                    <!-- Will be populated dynamically from pattern data -->
-
-                                </div>
-
-                <!-- Quick Actions -->            </section>
-
-                <div class="mb-6">            
-
-                    <h4 class="font-semibold text-secondary mb-3">Quick Actions</h4>            <main id="pattern-content" class="space-y-8 overflow-y-auto pb-8" data-height="calc-with-glossary"></main>
-
-                    <div class="space-y-2">            <div id="stitch-popup" class="hidden fixed bg-tertiary p-6 rounded-lg shadow-2xl z-50 border border-accent w-11/12 max-w-md">
-
-                        <button id="add-note-btn" class="w-full btn-secondary text-sm py-2 rounded">Add Note to Current Row</button>                <button id="close-popup-btn" class="absolute top-2 right-3 text-2xl text-tertiary hover:text-primary btn-icon">&times;</button>
-
-                        <button id="jump-to-start-btn" class="w-full btn-secondary text-sm py-2 rounded">Jump to Start</button>                <div id="popup-content"></div>
-
-                        <button id="save-all-notes" class="w-full btn-accent text-sm py-2 rounded">Save All Notes</button>            </div>
-
-                    </div>        </div>
-
-                </div>        
-
-                        <!-- PROJECT NOTES SIDEBAR -->
-
-                <!-- Row Notes List -->        <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-primary border-l border-primary transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
-
-                <div>            <div class="p-4">
-
-                    <h4 class="font-semibold text-secondary mb-3">Row Notes</h4>                <div class="flex items-center justify-between mb-4">
-
-                    <div id="row-notes-list" class="space-y-2 text-sm">                    <h3 class="text-lg font-bold text-primary">Project Notes</h3>
-
-                        <!-- Will be populated by JavaScript -->                    <button id="close-notes-sidebar" title="Close notes sidebar" class="text-tertiary hover:text-primary btn-icon">
-
-                    </div>                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                </div>                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-
-            </div>                        </svg>
-
-        </div>                    </button>
-
-    </div>                </div>
-
-                
-
-    <!-- Bottom Controls Overlay -->                <!-- General Notes -->
-
-    <div id="bottom-controls-overlay" class="fixed bottom-0 left-0 right-0 bg-secondary border-t border-primary p-3 z-50">                <div class="mb-6">
-
-        <div class="max-w-5xl mx-auto flex items-center justify-between">                    <label class="block text-sm font-medium text-secondary mb-2">General Notes</label>
-
-            <div class="flex items-center gap-4">                    <textarea id="general-notes" class="w-full h-24 bg-secondary border border-primary text-primary rounded px-3 py-2 resize-none" placeholder="General project notes..."></textarea>
-
-                <div class="flex items-center gap-2">                </div>
-
-                    <label for="current-step-input" class="text-sm font-medium text-secondary">Step:</label>                
-
-                    <input type="number" id="current-step-input" min="1" value="1" class="w-16 input-primary text-sm text-center">                <!-- Current Row Note -->
-
-                    <span class="text-sm text-tertiary">of <span id="max-steps-bottom">1</span></span>                <div class="mb-6">
-
-                </div>                    <label class="block text-sm font-medium text-secondary mb-2">Row <span id="current-row-note-label">1</span> Note</label>
-
-                                    <textarea id="current-row-note" class="w-full h-20 bg-secondary border border-primary text-primary rounded px-3 py-2 resize-none" placeholder="Note for current row..."></textarea>
-
-                <div class="flex gap-2">                    <button id="save-row-note" class="mt-2 btn-accent px-3 py-1 rounded text-sm">Save Row Note</button>
-
-                    <button id="prev-step" class="btn-secondary text-sm px-3 py-1 rounded">← Prev</button>                </div>
-
-                    <button id="next-step" class="btn-secondary text-sm px-3 py-1 rounded">Next →</button>                
-
-                </div>                <!-- Yarn Details -->
-
-            </div>                <div class="mb-6">
-
-                                <h4 class="text-md font-medium text-secondary mb-3">Yarn & Materials</h4>
-
-            <div class="flex items-center gap-2">                    <div class="space-y-3">
-
-                <button id="stitch-locator-btn" class="btn-accent text-sm px-3 py-1 rounded">Stitch Finder</button>                        <div>
-
-                <button id="reset-progress-btn" class="btn-danger text-sm px-3 py-1 rounded">Reset</button>                            <label class="block text-xs text-tertiary mb-1">Yarn Brand & Color</label>
-
-            </div>                            <input id="yarn-info" type="text" class="w-full bg-secondary border border-primary text-primary rounded px-2 py-1 text-sm" placeholder="e.g., Red Heart Soft Navy">
-
-        </div>                        </div>
-
-    </div>                        <div>
-
-                            <label class="block text-xs text-tertiary mb-1">Needle/Hook Size</label>
-
-    <!-- Stitch Definition Modal -->                            <input id="tool-info" type="text" class="w-full bg-secondary border border-primary text-primary rounded px-2 py-1 text-sm" placeholder="e.g., US 6 (4.0mm)">
-
-    <div id="stitch-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-start justify-center p-4 pt-16 z-50 hidden">                        </div>
-
-        <div class="bg-secondary p-6 rounded-xl shadow-2xl border border-primary max-w-2xl w-full max-h-[80vh] overflow-y-auto">                        <div>
-
-            <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-primary"></h3>                            <label class="block text-xs text-tertiary mb-1">Modifications</label>
-
-            <div id="stitch-modal-definition" class="text-secondary whitespace-pre-line"></div>                            <textarea id="modifications" class="w-full h-16 bg-secondary border border-primary text-primary rounded px-2 py-1 text-sm resize-none" placeholder="Pattern modifications..."></textarea>
-
-                                    </div>
-
-            <div class="mt-6 pt-4 border-t border-primary flex justify-between items-center">                    </div>
-
-                <button id="add-to-global-glossary" class="btn-accent text-sm px-4 py-2 rounded-lg">                </div>
-
-                    Add to Global Glossary                
-
-                </button>                <!-- Row Notes List -->
-
-                <button id="close-stitch-modal" class="btn-secondary text-sm px-4 py-2 rounded-lg">                <div class="mb-6">
-
-                    Close                    <h4 class="text-md font-medium text-secondary mb-3">All Row Notes</h4>
-
-                </button>                    <div id="row-notes-list" class="space-y-2 max-h-40 overflow-y-auto">
-
-            </div>                        <!-- Row notes will be populated here -->
-
-        </div>                    </div>
-
-    </div>                </div>
-
-                
-
-    <!-- Add to Global Glossary Modal -->                <button id="save-all-notes" class="w-full btn-success py-2 rounded">Save All Notes</button>
-
-    <div id="add-to-glossary-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-center justify-center p-4 z-50 hidden">            </div>
-
-        <div class="bg-secondary p-6 rounded-xl shadow-2xl border border-primary max-w-md w-full">        </div>
-
-            <h3 class="text-xl font-bold mb-4 text-primary">Add to Global Glossary</h3>    </div>
-
+        <!-- 
+            MAIN CONTENT AREA
             
-
-            <form id="add-to-global-form">    <!-- BOTTOM CONTROLS OVERLAY -->
-
-                <div class="space-y-4">    <div id="bottom-controls-overlay" class="fixed bottom-0 left-0 right-0 bg-secondary border-t border-primary p-3 z-50" style="display: block !important;">
-
-                    <div>        <div class="flex items-center justify-between max-w-6xl mx-auto">
-
-                        <label for="stitch-name-input" class="block text-sm font-medium text-secondary mb-2">Stitch Name:</label>            <!-- Left: Theme Toggle -->
-
-                        <input type="text" id="stitch-name-input" class="w-full input-primary" required>            <button id="theme-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
-
-                    </div>                <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-
-                                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-
-                    <div>                </svg>
-
-                        <label for="stitch-definition-input" class="block text-sm font-medium text-secondary mb-2">Definition:</label>                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
-
-                        <textarea id="stitch-definition-input" class="w-full input-primary" rows="4" required></textarea>                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
-
-                    </div>                </svg>
-
-                                </button>
-
-                    <div>            
-
-                        <label for="stitch-category-input" class="block text-sm font-medium text-secondary mb-2">Category:</label>            <!-- Center: Row Navigation -->
-
-                        <select id="stitch-category-input" class="w-full input-primary" required>            <div class="flex items-center space-x-4">
-
-                            <option value="">Select category...</option>                <button id="prev-step" class="w-12 h-12 bg-accent text-primary font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">-</button>
-
-                            <option value="basic">Basic Stitches</option>                
-
-                            <option value="increases">Increases</option>                <div class="text-center">
-
-                            <option value="decreases">Decreases</option>                    <div class="text-xs text-tertiary">ROW</div>
-
-                            <option value="cables">Cables</option>                    <input type="number" id="current-step-input" min="1" title="Current step number" class="text-2xl font-bold text-primary bg-transparent text-center w-20 focus:outline-none focus:ring-2 focus:ring-accent rounded border border-primary px-2 py-1">
-
-                            <option value="lace">Lace</option>                </div>
-
-                            <option value="colorwork">Colorwork</option>                
-
-                            <option value="special">Special Techniques</option>                <button id="next-step" class="w-12 h-12 bg-accent text-primary font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">+</button>
-
-                        </select>            </div>
-
-                    </div>            
-
-                                <!-- Right: Sidebar, Notes and Jump -->
-
-                    <div>            <div class="flex items-center space-x-2">
-
-                        <label for="craft-hobby-input" class="block text-sm font-medium text-secondary mb-2">Craft:</label>                <button id="sidebar-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors" title="Toggle pattern tools sidebar">⚙️</button>
-
-                        <select id="craft-hobby-input" class="w-full input-primary" required>                <button id="jump-to-start" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Jump to row 1">⏮️</button>
-
-                            <option value="">Select craft...</option>                <button id="add-note" class="btn-warning font-bold py-2 px-3 rounded-lg transition-colors" title="Add note">📝</button>
-
-                            <option value="Knitting">Knitting</option>                <button id="toggle-notes-sidebar" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Notes">📋</button>
-
-                            <option value="Crochet">Crochet</option>            </div>
-
-                            <option value="Finishing">Finishing</option>        </div>
-
-                        </select>    </div>
-
+            TODO: Replace this section with your page-specific content.
+            
+            GUIDELINES:
+            - Use semantic classes (bg-secondary, text-primary, etc.)
+            - Maintain consistent spacing with mb-6, p-4, etc.
+            - Use btn-* classes for buttons
+            - Follow responsive design patterns
+        -->
+        <main class="space-y-6">
+            <section class="bg-secondary p-6 rounded-lg border border-primary">
+                <h2 class="text-2xl font-bold text-primary mb-4">Main Content Section</h2>
+                <p class="text-secondary mb-4">
+                    This is where your page-specific content goes. Replace this entire main section
+                    with your actual page content while maintaining the semantic class usage.
+                </p>
+                
+                <!-- Example form with semantic classes -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-secondary mb-2">Example Input</label>
+                        <input type="text" class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent" placeholder="Example placeholder">
                     </div>
-
-                </div>    <!-- Stitch Definition Modal -->
-
-                    <div id="stitch-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-start justify-center p-4 pt-16 z-50 hidden">
-
-                <div class="mt-6 flex gap-3">        <div class="bg-secondary text-secondary rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content mx-4">
-
-                    <button type="submit" class="btn-accent px-4 py-2 rounded-lg">Add to Glossary</button>            <button id="close-stitch-modal" class="absolute top-2 right-3 text-tertiary hover:text-primary text-2xl font-bold btn-icon">&times;</button>
-
-                    <button type="button" id="cancel-add-glossary" class="btn-secondary px-4 py-2 rounded-lg">Cancel</button>            <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-primary"></h3>
-
-                </div>            <div id="stitch-modal-definition" class="text-secondary whitespace-pre-line"></div>
-
-            </form>        </div>
-
-        </div>    </div>
-
+                    <div class="flex gap-3">
+                        <button class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">Save</button>
+                        <button class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Add to Global Glossary Modal -->
-
-    <!-- New Project Modal -->    <div id="add-to-glossary-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-start justify-center p-4 pt-8 z-50 hidden">
-
-    <div id="new-project-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-center justify-center p-4 z-50 hidden">        <div class="bg-secondary text-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl relative modal-content mx-4 max-h-screen overflow-y-auto">
-
-        <div class="bg-secondary p-6 rounded-xl shadow-2xl border border-primary max-w-md w-full">            <button id="close-add-modal" class="absolute top-2 right-3 text-tertiary hover:text-primary text-2xl font-bold btn-icon">&times;</button>
-
-            <h3 class="text-xl font-bold mb-4 text-primary">Create New Project</h3>            
-
-                        <h3 class="text-2xl font-bold mb-4 text-primary">Add to Global Glossary</h3>
-
-            <form id="new-project-form">            <p class="text-secondary mb-6">This will add the stitch definition to your global <code>stitchWitch_Glossary</code> for reuse across all patterns.</p>
-
-                <div class="space-y-4">            
-
-                    <div>            <form id="add-to-global-form" class="space-y-4">
-
-                        <label for="pattern-selector-modal" class="block text-sm font-medium text-secondary mb-2">Select Pattern:</label>                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                        <select id="pattern-selector-modal" class="w-full input-primary" required>                    <div>
-
-                            <option value="">Choose a pattern...</option>                        <label for="global-stitch-name" class="block text-sm font-medium text-secondary mb-1">Stitch Name</label>
-
-                        </select>                        <input type="text" id="global-stitch-name" required 
-
-                    </div>                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
-
-                                        </div>
-
-                    <div>                    <div>
-
-                        <label for="project-name-input" class="block text-sm font-medium text-secondary mb-2">Project Name:</label>                        <label for="global-stitch-shorthand" class="block text-sm font-medium text-secondary mb-1">Shorthand/Abbreviation</label>
-
-                        <input type="text" id="project-name-input" class="w-full input-primary" placeholder="e.g., My Blue Shawl" required>                        <input type="text" id="global-stitch-shorthand" required 
-
-                    </div>                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
-
-                                        </div>
-
-                    <div>                </div>
-
-                        <label for="project-notes-input" class="block text-sm font-medium text-secondary mb-2">Initial Notes (optional):</label>                
-
-                        <textarea id="project-notes-input" class="w-full input-primary" rows="3" placeholder="Yarn details, modifications, etc..."></textarea>                <div>
-
-                    </div>                    <label for="global-stitch-craft" class="block text-sm font-medium text-secondary mb-1">Craft Type</label>
-
-                </div>                    <select id="global-stitch-craft" required 
-
-                                            class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent">
-
-                <div class="mt-6 flex gap-3">                        <option value="">Select craft type...</option>
-
-                    <button type="submit" class="btn-accent px-4 py-2 rounded-lg">Create Project</button>                        <option value="Knitting">Knitting</option>
-
-                    <button type="button" id="cancel-new-project" class="btn-secondary px-4 py-2 rounded-lg">Cancel</button>                        <option value="Crochet">Crochet</option>
-
-                </div>                        <option value="Finishing">Finishing</option>
-
-            </form>                    </select>
-
-        </div>                </div>
-
-    </div>                
-
-                <div>
-
-<script type="module">                    <label for="global-stitch-description" class="block text-sm font-medium text-secondary mb-1">Description/Instructions</label>
-
-    /*                    <textarea id="global-stitch-description" required rows="4"
-
-        STITCH WITCH - PATTERN VIEWER                              class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent resize-vertical"
-
-        Authentication-First Architecture using centralized auth-guard                              placeholder="Step-by-step instructions for this stitch..."></textarea>
-
-                        </div>
-
-        This page is protected and requires authentication.                
-
-        Unauthenticated users are automatically redirected to /login.html                <div>
-
-    */                    <label for="global-stitch-notes" class="block text-sm font-medium text-secondary mb-1">Notes (Optional)</label>
-
-                        <textarea id="global-stitch-notes" rows="2"
-
-    // Centralized authentication guard                              class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent resize-vertical"
-
-    import { requireAuth, signOutUser } from './js/auth-guard.js';                              placeholder="Additional tips, variations, or notes..."></textarea>
-
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";                </div>
-
-                    
-
-    // Import our modular functions                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-    import { getInstructionCategory } from "./js/utils.js";                    <div>
-
-    import { generateInstructions, generatePatternTheme, updateSidebarColorKey, populateSidebarMaterials, generateMainGlossary } from "./js/pattern-functions.js";                        <label for="global-stitch-video" class="block text-sm font-medium text-secondary mb-1">Video URL (Optional)</label>
-
-    import { globalGlossary } from "./js/global-glossary.js";                        <input type="url" id="global-stitch-video" 
-
-    import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent"
-
-    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore, setupInteractiveFeatures, scrollToCurrentRow, updateCurrentStepDisplay, showStitchDefinition, hideStitchDefinition, setupPatternSidebar, populateSidebarGlossary } from "./js/viewer-logic.js";                               placeholder="https://...">
-
-    import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";                    </div>
-
-    import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";                    <div>
-
-    import {                         <label for="global-stitch-picture" class="block text-sm font-medium text-secondary mb-1">Picture URL (Optional)</label>
-
-        toggleNotesSidebar,                        <input type="url" id="global-stitch-picture" 
-
-        loadProjectNotes,                               class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent"
-
-        saveCurrentRowNote,                               placeholder="https://...">
-
-        addRowNoteIndicator,                    </div>
-
-        loadRowNoteIndicators,                </div>
-
-        goToRowWithNote,                
-
-        loadSelectedPattern,                <!-- Action Buttons -->
-
-        updateRowNotesList,                <div class="flex gap-3 justify-end pt-4 border-t border-primary">
-
-        saveAllProjectNotes,                    <button type="button" id="cancel-global-add-btn" class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">
-
-        showSection,                        Cancel
-
-        initThemeToggle,                    </button>
-
-        populateProjectSelector,                    <button type="submit" class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">
-
-        showNewProjectModal,                        Add to Global Glossary
-
-        toggleArchivedProjects,                    </button>
-
-        unarchiveProject,                </div>
-
-        loadUserProjects,            </form>
-
-        loadSelectedProject,        </div>
-
-        resetViewer    </div>
-
-    } from "./js/app-main.js";
-
-    <script type="module">
-
-    // Global variables    // Load unified header first
-
-    let auth, db;    fetch('/components/unified-header.html')
-
-    let PATTERN_DATA = null;        .then(r => r.text())
-
-    let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';        .then(html => {
-
-    let currentPatternId = null;            document.getElementById('header-placeholder').outerHTML = html;
-
-    let isStitchLocatorMode = false;            // Initialize header functionality
-
-    let stitchCountsCache = {};            import('./js/unified-header.js');
-
-    let showArchivedProjects = false;        })
-
-    window.showArchivedProjects = showArchivedProjects;        .catch(err => console.warn('Header load failed:', err));
-
-
-
-    // Theme initialization    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-
-    initThemeToggle();    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // Main Authentication Flow - REQUIRED FOR ALL PROTECTED PAGES    
-
-    requireAuth().then(user => {    // Import our modular functions
-
-        // User is authenticated - initialize Firebase services and app    import { getInstructionCategory } from "./js/utils.js";
-
-        auth = user.auth || user;    import { generateInstructions, generatePatternTheme, updateSidebarColorKey, populateSidebarMaterials, generateMainGlossary } from "./js/pattern-functions.js";
-
-        db = getFirestore(auth.app);    import { globalGlossary } from "./js/global-glossary.js";
-
-            import { logStitchWitchQuery, createStitchFinderQuery, createNavigationQuery, getStitchContext } from "./js/stitch-witch.js";
-
-        // Make available globally    import { loadProgress, saveProgress, updateDisplay, findInstructionForStep, findStepElement, getStitchCount, loadProgressSimple, loadProgressFirestore, saveProgressFirestore, setupInteractiveFeatures, scrollToCurrentRow, updateCurrentStepDisplay, showStitchDefinition, hideStitchDefinition, setupPatternSidebar, populateSidebarGlossary } from "./js/viewer-logic.js";
-
-        window.auth = auth;    import { saveProjectProgress, getCurrentProject, getOrCreateProject } from "./js/progress-tracking.js";
-
-        window.db = db;    import { getCurrentStep, setCurrentStep, loadUserProgress, createNewProject } from "./js/progress-tracking.js";
-
-            import { 
-
-        // Load unified header component        signInWithGoogle, 
-
-        fetch('/components/unified-header.html')        signOutUser, 
-
-            .then(r => r.text())        toggleNotesSidebar,
-
-            .then(html => {        loadProjectNotes,
-
-                document.getElementById('header-placeholder').outerHTML = html;        saveCurrentRowNote,
-
-                // Initialize header functionality        addRowNoteIndicator,
-
-                import('./js/unified-header.js');        loadRowNoteIndicators,
-
-            })        goToRowWithNote,
-
-            .catch(err => console.warn('Header load failed:', err));        loadSelectedPattern,
-
-                updateRowNotesList,
-
-        // Initialize the main application        saveAllProjectNotes,
-
-        initializeApplication();        showSection,
-
-                initThemeToggle,
-
-        console.log('✅ Index page initialized for authenticated user:', user.email);        checkRedirectResult,
-
-                checkAuthState,
-
-    }).catch(error => {        populateProjectSelector,
-
-        // Authentication failed - user will be redirected to login        showNewProjectModal,
-
-        console.log('🔐 Authentication required, redirecting to login...');        toggleArchivedProjects,
-
-    });        unarchiveProject,
-
-            loadUserProjects,
-
-    // Application initialization function        loadSelectedProject,
-
-    function initializeApplication() {        resetViewer
-
-        // Get UI elements    } from "./js/app-main.js";
-
-        const newProjectBtn = document.getElementById('new-project-btn');
-
-        const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');    // --- CONFIG & STATE ---
-
-        const deleteProjectBtn = document.getElementById('delete-project-btn');    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
-        const showArchivedBtn = document.getElementById('show-archived-btn');    const firebaseConfig = {
-
-        const projectSelector = document.getElementById('project-selector');    apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
-
-            authDomain: "arachne-edda2.firebaseapp.com",
-
-        // Project management event handlers    projectId: "arachne-edda2",
-
-        newProjectBtn.addEventListener('click', showNewProjectModal);    storageBucket: "arachne-edda2.firebasestorage.app",
-
-        welcomeNewProjectBtn.addEventListener('click', showNewProjectModal);    messagingSenderId: "285468127259",
-
-            appId: "1:285468127259:web:9a1285684a1a6b9b1548be",
-
-        if (showArchivedBtn) {    measurementId: "G-208TQKEXGG"
-
-            showArchivedBtn.addEventListener('click', toggleArchivedProjects);    };
-
-        }
-
-            const app = initializeApp(firebaseConfig);
-
-        // Project selector change event listener    const auth = getAuth(app);
-
-        projectSelector.addEventListener('change', async (e) => {    const db = getFirestore(app);
-
-            const projectKey = e.target.value;    
-
-            if (projectKey) {    // Make db globally available for analytics
-
-                console.log('🎯 Project selected:', projectKey);    window.db = db;
-
-                try {    window.auth = auth;
-
-                    const userProjects = await loadUserProjects();    
-
-                    await loadSelectedProject(projectKey, userProjects);    let PATTERN_DATA = null;
-
-                } catch (error) {    let currentStep = 1, maxSteps = 1, progressKey = 'pattern-progress-default';
-
-                    console.error('❌ Error loading selected project:', error);    let currentPatternId = null;
-
-                    alert('Error loading project: ' + error.message);    let isStitchLocatorMode = false;
-
-                }    let stitchCountsCache = {};
-
-            } else {    let showArchivedProjects = false; // Track whether we're showing archived projects
-
-                // No project selected - reset viewer    window.showArchivedProjects = showArchivedProjects; // Make it globally accessible
-
-                resetViewer();
-
-            }    // --- UI ELEMENTS ---
-
-        });    const authContainer = document.getElementById('auth-container');
-
-            const appContainer = document.getElementById('app-container');
-
-        deleteProjectBtn.addEventListener('click', async () => {    const loginBtn = document.getElementById('login-btn');
-
-            const selector = document.getElementById('project-selector');    const logoutBtn = document.getElementById('logout-btn');
-
-            if (!selector.value) {    const userDisplay = document.getElementById('user-display');
-
-                alert('Please select a project to delete.');    const appNav = document.getElementById('app-nav');
-
-                return;    const viewerSection = document.getElementById('viewer-section');
-
-            }    const bottomControlsOverlay = document.getElementById('bottom-controls-overlay');
-
-                const patternSelector = document.getElementById('pattern-selector');
-
-            // Check if we're in archived view and this is an unarchive action    
-
-            if (showArchivedProjects) {    let availablePatterns = [];
-
-                // Unarchive the project
-
-                const confirmation = confirm('Restore this project to your active projects list?');    // --- AUTHENTICATION ---
-
-                if (!confirmation) return;    const provider = new GoogleAuthProvider();
-
-                    
-
-                await unarchiveProject(selector.value);    // Force account selection and ensure we get fresh tokens
-
-                return;    provider.setCustomParameters({
-
-            }        prompt: 'select_account'
-
-                });
-
-            // Show options for what to do with the project
-
-            const action = confirm('What would you like to do with this project?\\n\\nOK = Archive (hide from list, keep all data for analytics)\\nCancel = Permanently Delete (removes all historical data)');    
-
-                loginBtn.addEventListener('click', signInWithGoogle);
-
-            try {    
-
-                const userId = auth.currentUser.uid;    
-
-                    // PROJECT MANAGEMENT EVENT HANDLERS
-
-                // Get the current project details from our cached userProjects    const newProjectBtn = document.getElementById('new-project-btn');
-
-                const userProjects = await loadUserProjects();    const welcomeNewProjectBtn = document.getElementById('welcome-new-project-btn');
-
-                const selectedProject = userProjects.find(p => `${p.patternId}_${p.projectId}` === selector.value);    const deleteProjectBtn = document.getElementById('delete-project-btn');
-
-                    const showArchivedBtn = document.getElementById('show-archived-btn');
-
-                if (!selectedProject) {    const projectSelector = document.getElementById('project-selector');
-
-                    console.error('❌ Selected project not found in user projects list');    
-
-                    alert('Error: Selected project not found. Please refresh the page and try again.');    newProjectBtn.addEventListener('click', showNewProjectModal);
-
-                    return;    welcomeNewProjectBtn.addEventListener('click', showNewProjectModal);
-
-                }    
-
-                    if (showArchivedBtn) {
-
-                // Use the actual document ID from the project data        showArchivedBtn.addEventListener('click', toggleArchivedProjects);
-
-                const progressId = selectedProject.docId || `${userId}_${selectedProject.patternId}_${selectedProject.projectId}`;    }
-
-                    
-
-                console.log('🔮 Managing project:', {     // Project selector change event listener
-
-                    userId,         projectSelector.addEventListener('change', async (e) => {
-
-                    patternId: selectedProject.patternId,             const projectKey = e.target.value;
-
-                    projectId: selectedProject.projectId,             if (projectKey) {
-
-                    progressId,                console.log('🎯 Project selected:', projectKey);
-
-                    docId: selectedProject.docId,                try {
-
-                    action: action ? 'archive' : 'delete',                    const userProjects = await loadUserProjects();
-
-                    selectorValue: selector.value,                    await loadSelectedProject(projectKey, userProjects);
-
-                    selectedProject: selectedProject                } catch (error) {
-
-                });                    console.error('❌ Error loading selected project:', error);
-
-                                    alert('Error loading project: ' + error.message);
-
-                // Additional project management logic would go here...                }
-
-                            } else {
-
-            } catch (error) {                // No project selected - reset viewer
-
-                console.error('❌ Error managing project:', error);                resetViewer();
-
-                alert(`Error managing project: ${error.message}`);            }
-
-            }        });
-
-        });    
-
-    deleteProjectBtn.addEventListener('click', async () => {
-
-        // Initialize other components        const selector = document.getElementById('project-selector');
-
-        setupInteractiveFeatures();        if (!selector.value) {
-
-        populateProjectSelector();            alert('Please select a project to delete.');
-
-                    return;
-
-        // Set up global pattern setup function        }
-
-        window.setupViewer = function() {        
-
-            if (!window.PATTERN_DATA) {        // Check if we're in archived view and this is an unarchive action
-
-                console.error('❌ setupViewer called without PATTERN_DATA');        if (showArchivedProjects) {
-
-                return;            // Unarchive the project
-
-            }            const confirmation = confirm('Restore this project to your active projects list?');
-
-                        if (!confirmation) return;
-
-            console.log('🎯 Setting up viewer with pattern:', window.PATTERN_DATA);            
-
-                        await unarchiveProject(selector.value);
-
-            // Your existing setupViewer logic would go here...            return;
-
-            // This is where you'd call functions like:        }
-
-            // - generateInstructions        
-
-            // - generatePatternTheme        // Show options for what to do with the project
-
-            // - setupPatternSidebar        const action = confirm('What would you like to do with this project?\n\nOK = Archive (hide from list, keep all data for analytics)\nCancel = Permanently Delete (removes all historical data)');
-
-            // - etc.        
-
-        };        try {
-
-            const userId = auth.currentUser.uid;
-
-        // Add global error handlers            
-
-        window.addEventListener('error', (event) => {            // Get the current project details from our cached userProjects
-
-            console.log('🚨 GLOBAL ERROR CAUGHT:', event.error);            const userProjects = await loadUserProjects();
-
-            console.log('Error message:', event.message);            const selectedProject = userProjects.find(p => `${p.patternId}_${p.projectId}` === selector.value);
-
-            console.log('Error filename:', event.filename);            
-
-            console.log('Error line:', event.lineno);            if (!selectedProject) {
-
-        });                console.error('❌ Selected project not found in user projects list');
-
-                        alert('Error: Selected project not found. Please refresh the page and try again.');
-
-        window.addEventListener('unhandledrejection', (event) => {                return;
-
-            console.log('🚨 UNHANDLED PROMISE REJECTION:', event.reason);            }
-
-            console.log('Promise:', event.promise);            
-
-        });            // Use the actual document ID from the project data
-
-            const progressId = selectedProject.docId || `${userId}_${selectedProject.patternId}_${selectedProject.projectId}`;
-
-        // Setup additional event listeners for UI components            
-
-        setupUIEventListeners();            console.log('🔮 Managing project:', { 
-
-                        userId, 
-
-        console.log('✅ Application initialized successfully');                patternId: selectedProject.patternId, 
-
-    }                projectId: selectedProject.projectId, 
-
-                progressId,
-
-    // Setup UI event listeners                docId: selectedProject.docId,
-
-    function setupUIEventListeners() {                action: action ? 'archive' : 'delete',
-
-        // Sidebar toggle                selectorValue: selector.value,
-
-        const sidebarToggle = document.getElementById('sidebar-toggle');                selectedProject: selectedProject
-
-        const sidebar = document.getElementById('pattern-sidebar');            });
-
-        const sidebarOverlay = document.getElementById('sidebar-overlay');            
-
-        const sidebarClose = document.getElementById('sidebar-close');            // Check if document exists before trying to modify
-
-                    const docRef = doc(db, 'user_pattern_progress', progressId);
-
-        if (sidebarToggle) {            const docSnapshot = await getDoc(docRef);
-
-            sidebarToggle.addEventListener('click', () => {            
-
-                sidebar.classList.remove('hidden');            if (!docSnapshot.exists()) {
-
-                sidebarOverlay.classList.remove('hidden');                console.warn('⚠️ Document not found:', progressId);
-
-            });                console.log('🔍 Available projects:', userProjects.map(p => ({ 
-
-        }                    docId: p.docId, 
-
-                            patternId: p.patternId, 
-
-        if (sidebarClose) {                    projectId: p.projectId 
-
-            sidebarClose.addEventListener('click', () => {                })));
-
-                sidebar.classList.add('hidden');                alert('Project not found. It may have already been deleted.');
-
-                sidebarOverlay.classList.add('hidden');                await populateProjectSelector(); // Refresh to show current state
-
-            });                return;
-
-        }            }
-
-                    
-
-        if (sidebarOverlay) {            if (action) {
-
-            sidebarOverlay.addEventListener('click', () => {                // Archive - preserve all data but mark as archived
-
-                sidebar.classList.add('hidden');                console.log('🔒 Archiving project:', progressId);
-
-                sidebarOverlay.classList.add('hidden');                await updateDoc(docRef, {
-
-            });                    status: 'archived',
-
-        }                    archivedAt: serverTimestamp(),
-
-                    archivedReason: 'user_request',
-
-        // Notes sidebar                    lastUpdated: serverTimestamp()
-
-        const toggleNotesBtn = document.getElementById('toggle-notes-sidebar');                });
-
-        const closeNotesBtn = document.getElementById('close-notes-sidebar');                console.log('✅ Project archived successfully');
-
-                        alert('Project archived! All progress data preserved but hidden from active projects.');
-
-        if (toggleNotesBtn) {            } else {
-
-            toggleNotesBtn.addEventListener('click', () => {                // Permanent delete - remove all historical data
-
-                if (typeof toggleNotesSidebar === 'function') {                const confirmDelete = confirm('⚠️ PERMANENT DELETE WARNING ⚠️\n\nThis will permanently remove ALL progress data, notes, photos, and analytics for this project. This cannot be undone.\n\nAre you absolutely sure?');
-
-                    toggleNotesSidebar();                if (!confirmDelete) return;
-
-                }                
-
-            });                console.log('🗑️ Permanently deleting project:', progressId);
-
-        }                await deleteDoc(docRef);
-
-                        console.log('✅ Project permanently deleted');
-
-        if (closeNotesBtn) {                alert('Project permanently deleted.');
-
-            closeNotesBtn.addEventListener('click', () => {            }
-
-                const notesSidebar = document.getElementById('notes-sidebar');            console.log('✅ All documents deleted successfully');
-
-                notesSidebar.classList.add('translate-x-full');            
-
-            });            // Clear current project selection
-
-        }            window.currentProject = null;
-
-            
-
-        // Pattern navigation            // Refresh project list
-
-        const prevStepBtn = document.getElementById('prev-step');            await populateProjectSelector();
-
-        const nextStepBtn = document.getElementById('next-step');            
-
-        const currentStepInput = document.getElementById('current-step-input');            console.log('✅ Project deleted and UI refreshed:', projectId);
-
-                    alert('Project deleted successfully!');
-
-        if (prevStepBtn) {        } catch (error) {
-
-            prevStepBtn.addEventListener('click', () => {            console.error('❌ Error deleting project:', error);
-
-                if (currentStep > 1) {            console.error('❌ Error details:', error.message, error.stack);
-
-                    currentStep--;            alert(`Error deleting project: ${error.message}`);
-
-                    updateDisplay();        }
-
-                }    });
-
-            });
-
-        }    logoutBtn.addEventListener('click', () => {
-
-                signOut(auth).catch(error => console.error("Sign out error", error));
-
-        if (nextStepBtn) {    });
-
-            nextStepBtn.addEventListener('click', () => {
-
-                if (currentStep < maxSteps) {    // GLOBAL PATTERN SETUP FUNCTION - moved outside initializeViewer for global access
-
-                    currentStep++;    window.setupViewer = function() {
-
-                    updateDisplay();        if (!window.PATTERN_DATA) {
-
-                }            console.error('❌ setupViewer called without PATTERN_DATA');
-
-            });            console.log('❌ window.PATTERN_DATA is:', window.PATTERN_DATA);
-
-        }            return;
-
-                }
-
-        if (currentStepInput) {        
-
-            currentStepInput.addEventListener('change', (e) => {        console.log('🔧 Setting up viewer with pattern:', window.PATTERN_DATA.metadata?.name);
-
-                const newStep = parseInt(e.target.value);        
-
-                if (newStep >= 1 && newStep <= maxSteps) {
-
-                    currentStep = newStep;        if (bottomControlsOverlay) {
-
-                    updateDisplay();            bottomControlsOverlay.style.display = 'block';
-
-                }        }
-
-            });        
-
-        }        const { name, author, maxSteps: max } = window.PATTERN_DATA.metadata;
-
+    <!-- 
+        THEME TOGGLE BUTTON (Optional)
         
+        Floating button for theme switching. Remove if not needed.
+    -->
+    <button id="theme-toggle" class="fixed bottom-4 right-4 btn-secondary p-3 rounded-full shadow-lg transition-colors z-50" title="Toggle light/dark mode">
+        <svg id="theme-icon-dark" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+        </svg>
+    </button>
 
-        // Modal handling        // Update pattern display elements (now visible in project view)
-
-        setupModalEventListeners();        const patternNameEl = document.getElementById('pattern-name');
-
-    }        const patternAuthorEl = document.getElementById('pattern-author');
-
+<script type="module">
+    /*
+        AUTHENTICATION-FIRST ARCHITECTURE
         
-
-    // Setup modal event listeners        if (patternNameEl) patternNameEl.textContent = name;
-
-    function setupModalEventListeners() {        if (patternAuthorEl) patternAuthorEl.textContent = `by ${author}`;
-
-        // Stitch modal        
-
-        const stitchModal = document.getElementById('stitch-modal');        // Set global variables
-
-        const closeStitchModal = document.getElementById('close-stitch-modal');        window.maxSteps = max;
-
-                maxSteps = max;
-
-        if (closeStitchModal) {        
-
-            closeStitchModal.addEventListener('click', () => {        const stepInput = document.getElementById('current-step-input');
-
-                hideStitchDefinition();        if (stepInput) {
-
-            });            stepInput.max = maxSteps;
-
-        }            // Initialize with current project step if available
-
-                    if (window.currentProject && window.currentProject.currentStep) {
-
-        if (stitchModal) {                currentStep = window.currentProject.currentStep;
-
-            stitchModal.addEventListener('click', (e) => {                window.currentStep = currentStep;
-
-                if (e.target === stitchModal) {                stepInput.value = currentStep;
-
-                    hideStitchDefinition();                console.log('🔧 Set initial step from project:', currentStep);
-
-                }            } else {
-
-            });                // Default to step 1
-
-        }                currentStep = 1;
-
-                window.currentStep = currentStep;
-
-        // Add to glossary modal                stepInput.value = currentStep;
-
-        const addToGlossaryModal = document.getElementById('add-to-glossary-modal');                console.log('🔧 Set default step:', currentStep);
-
-        const addToGlobalForm = document.getElementById('add-to-global-form');            }
-
-        const cancelAddGlossary = document.getElementById('cancel-add-glossary');        }
-
-                
-
-        if (cancelAddGlossary) {        progressKey = `pattern-progress-${name.replace(/\s+/g, '-')}`;
-
-            cancelAddGlossary.addEventListener('click', () => {        
-
-                addToGlossaryModal.classList.add('hidden');        // Update footer metadata with actual pattern name immediately
-
-            });        const currentPatternName = document.getElementById('current-pattern-name');
-
-        }        if (currentPatternName) {
-
-                    currentPatternName.textContent = name;
-
-        if (addToGlossaryModal) {            console.log('🏷️ Footer pattern name updated to:', name);
-
-            addToGlossaryModal.addEventListener('click', (e) => {        }
-
-                if (e.target === addToGlossaryModal) {        
-
-                    addToGlossaryModal.classList.add('hidden');        // Generate pattern content
-
-                }        const patternContentEl = document.getElementById('pattern-content');
-
-            });        patternContentEl.innerHTML = '';
-
-        }        
-
-                // Show and populate the main glossary section
-
-        if (addToGlobalForm) {        const patternGlossary = document.getElementById('pattern-glossary');
-
-            addToGlobalForm.addEventListener('submit', async (e) => {        if (patternGlossary) {
-
-                e.preventDefault();            patternGlossary.classList.remove('hidden');
-
-                        }
-
-                const stitchName = document.getElementById('stitch-name-input').value;        
-
-                const definition = document.getElementById('stitch-definition-input').value;        // Generate dynamic color theme based on pattern data
-
-                const category = document.getElementById('stitch-category-input').value;        // This replaces hardcoded CSS colors with pattern-specific colors
-
-                const hobby = document.getElementById('craft-hobby-input').value;        generatePatternTheme(window.PATTERN_DATA);
-
-                        
-
-                try {        // Make color key function globally available
-
-                    await globalGlossary.addStitch({        window.updateSidebarColorKey = updateSidebarColorKey;
-
-                        name: stitchName,        
-
-                        definition: definition,        // Populate materials from pattern data
-
-                        category: category,        populateSidebarMaterials(window.PATTERN_DATA);
-
-                        hobby: hobby        
-
-                    });        // Generate glossary for both sidebar and main section
-
-                            generateMainGlossary(window.PATTERN_DATA);
-
-                    addToGlossaryModal.classList.add('hidden');        generateInstructions(window.PATTERN_DATA);
-
-                    alert('Stitch added to global glossary successfully!');        
-
-                } catch (error) {        // Populate sidebar with pattern-specific content
-
-                    console.error('Error adding stitch to global glossary:', error);        populateSidebarGlossary();
-
-                    alert('Error adding stitch to global glossary: ' + error.message);        
-
-                }        // Setup sidebar toggle functionality
-
-            });        setupPatternSidebar();
-
-        }        
-
-        // Update footer metadata after content is generated
-
-        // Escape key handling        updateFooterMetadata();
-
-        document.addEventListener('keydown', (e) => {        
-
-            if (e.key === 'Escape') {        // Load progress and setup interactions
-
-                const stitchModal = document.getElementById('stitch-modal');        const currentStepInput = document.getElementById('current-step-input');
-
-                if (!stitchModal.classList.contains('hidden')) {        if (currentStepInput && window.currentProject) {
-
-                    hideStitchDefinition();            currentStepInput.value = window.currentProject.currentStep || 1;
-
-                }            
-
-                            // Add event listener for manual step changes
-
-                const addToGlossaryModal = document.getElementById('add-to-glossary-modal');            currentStepInput.addEventListener('change', (e) => {
-
-                if (!addToGlossaryModal.classList.contains('hidden')) {                const newStep = parseInt(e.target.value);
-
-                    addToGlossaryModal.classList.add('hidden');                if (newStep >= 1 && newStep <= maxSteps) {
-
-                }                    currentStep = newStep;
-
-            }                    window.currentStep = newStep;
-
-        });                    if (window.currentProject) window.currentProject.currentStep = newStep;
-
-    }                    
-
-                    // Save to localStorage immediately
-
-    // Helper functions for form processing                    localStorage.setItem(progressKey, newStep);
-
-    function mapHobbyToCategory(hobby) {                    
-
-        const mapping = {                    // Save to Firestore
-
-            'Knitting': 'basic',                    if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-
-            'Crochet': 'crochet',                         saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
-
-            'Finishing': 'special'                            currentStep: newStep
-
-        };                        }).catch(err => console.warn('Failed to save step change:', err));
-
-        return mapping[hobby] || 'basic';                    }
-
-    }                    
-
-                        // Update display
-
-    function getCraftPrefix(hobby) {                    if (typeof updateDisplay === 'function') {
-
-        const mapping = {                        updateDisplay(newStep, true);
-
-            'Knitting': 'K',                    }
-
-            'Crochet': 'C',                    
-
-            'Finishing': 'F'                    // Update notes label to show current row
-
-        };                    const noteLabel = document.getElementById('current-row-note-label');
-
-        return mapping[hobby] || 'K';                    if (noteLabel) {
-
-    }                        noteLabel.textContent = newStep;
-
-                    }
-
-    // Script initialization complete                    
-
-</script>                    console.log('💾 Step manually changed to:', newStep);
-
-</body>                }
-
-</html>            });
-        }
-        setupInteractiveFeatures();
+        This template uses a centralized auth guard system:
+        1. All pages require authentication by default
+        2. Unauthenticated users are redirected to /login.html
+        3. No mixed auth/app UI - clean separation
+        4. Automatic session persistence and redirect handling
+    */
+    
+    // Import centralized auth guard
+    import { requireAuth, signOutUser } from './js/auth-guard.js';
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
+    // TODO: Import your page-specific modules
+    // Example:
+    // import { yourPageFunctions } from "./js/your-page-module.js";
+    
+    // Global variables (auth and db provided by auth-guard)
+    let auth, db;
+    
+    // UI Elements
+    const logoutBtn = document.getElementById('logout-btn');
+    const userDisplay = document.getElementById('user-display');
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Authentication Event Handlers
+    logoutBtn?.addEventListener('click', () => {
+        signOutUser(); // Uses centralized sign out from auth-guard
+    });
+    
+    // Theme Toggle Functionality - STANDARD ACROSS ALL PAGES
+    themeToggle?.addEventListener('click', () => {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
         
-        // Update notes label to show current row initially
-        const noteLabel = document.getElementById('current-row-note-label');
-        if (noteLabel) {
-            noteLabel.textContent = window.currentProject?.currentStep || currentStep || 1;
+        if (isDark) {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.remove('light');
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
         }
         
-        console.log('✅ Viewer setup complete for:', name);
-        console.log('✅ Current step:', currentStep, 'Max steps:', maxSteps);
+        // Update theme toggle icons
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const lightIcon = document.getElementById('theme-icon-light');
+        
+        if (darkIcon && lightIcon) {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+        }
+    });
+    
+    // Initialize theme from localStorage - STANDARD ACROSS ALL PAGES
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.className = savedTheme;
+        
+        // Update theme toggle icons
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const lightIcon = document.getElementById('theme-icon-light');
+        
+        if (darkIcon && lightIcon) {
+            if (savedTheme === 'light') {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            }
+        }
     }
-
-    // --- INITIALIZATION ---
-    console.log('Script loaded, initializing app...');
-    console.log('Current URL:', window.location.href);
-    console.log('URL params:', window.location.search);
     
-    // Initialize theme toggle 
-    initThemeToggle();
+    // Initialize theme from localStorage - STANDARD ACROSS ALL PAGES
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.className = savedTheme;
+            
+            // Update theme toggle icons
+            const darkIcon = document.getElementById('theme-icon-dark');
+            const lightIcon = document.getElementById('theme-icon-light');
+            
+            if (darkIcon && lightIcon) {
+                if (savedTheme === 'light') {
+                    darkIcon.classList.add('hidden');
+                    lightIcon.classList.remove('hidden');
+                } else {
+                    darkIcon.classList.remove('hidden');
+                    lightIcon.classList.add('hidden');
+                }
+            }
+        }
+    }
     
-    // Check for redirect result first (for mobile compatibility)
-    checkRedirectResult();
+    // Initialize theme immediately
+    initializeTheme();
     
-    // Add global error handlers to catch any errors we might miss
+    // Main Authentication Flow - REQUIRED FOR ALL PROTECTED PAGES
+    requireAuth().then(user => {
+        // User is authenticated - safe to initialize Firebase services and page content
+        auth = user.auth;
+        db = getFirestore(user.auth.app);
+        
+        // Make available globally for debugging (optional)
+        window.auth = auth;
+        window.db = db;
+        
+        // Update user display
+        if (userDisplay) {
+            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+        }
+        
+        // Load unified header component
+        fetch('/components/unified-header.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('header-placeholder').outerHTML = html;
+                // Initialize header functionality
+                import('./js/unified-header.js');
+            })
+            .catch(err => console.warn('Header load failed:', err));
+        
+        // Initialize page-specific functionality
+        initializePageContent();
+        
+        console.log('✅ Page initialized for authenticated user:', user.email);
+        
+    }).catch(error => {
+        // Authentication failed - user will be redirected to login
+        console.log('🔐 Authentication required, redirecting...');
+    });
+    
+    // Page-Specific Initialization Function
+    function initializePageContent() {
+        /*
+            TODO: Add your page-specific initialization code here
+            
+            This function is called after the user is authenticated and Firebase is ready.
+            Use this to:
+            - Load data from Firestore using the `db` instance
+            - Set up page-specific event listeners
+            - Initialize page-specific UI components
+            - Load user-specific content
+            
+            Example:
+            loadUserData();
+            setupPageEventListeners();
+            initializePageComponents();
+        */
+        
+        console.log('🚀 Page content initialized for authenticated user');
+    }
+    
+    // Global Error Handlers - STANDARD ACROSS ALL PAGES
     window.addEventListener('error', (event) => {
-        console.log('🚨 GLOBAL ERROR CAUGHT:', event.error);
-        console.log('Error message:', event.message);
-        console.log('Error filename:', event.filename);
-        console.log('Error line:', event.lineno);
+        console.error('🚨 Global error:', event.error);
     });
     
     window.addEventListener('unhandledrejection', (event) => {
-        console.log('🚨 UNHANDLED PROMISE REJECTION:', event.reason);
-        console.log('Promise:', event.promise);
+        console.error('🚨 Unhandled promise rejection:', event.reason);
     });
     
-    // Check if we just came back from a redirect (Google referrer is key indicator)
-    const hasGoogleReferrer = document.referrer.includes('accounts.google.com') || 
-                             document.referrer.includes('google.com');
-    const hasAuthParams = window.location.search.includes('code') || 
-                         window.location.search.includes('state') || 
-                         window.location.hash.includes('access_token');
-    
-    console.log('Google referrer detected:', hasGoogleReferrer);
-    console.log('Auth URL params detected:', hasAuthParams);
-    console.log('Document referrer:', document.referrer);
-    
-    // If we have any indication we came from Google auth, check immediately
-    if (hasGoogleReferrer || hasAuthParams) {
-        console.log('🔄 DETECTED RETURN FROM GOOGLE - checking auth immediately (no delay)');
-        checkAuthState();
-    } else {
-        console.log('🔍 Normal page load - checking auth with small delay');
-        setTimeout(() => {
-            checkAuthState();
-        }, 500);
-    }
-
-    // --- MAIN APP NAVIGATION ---
-    appNav.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            const view = e.target.dataset.view;
-            appNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            
-            // Analytics: Track section navigation
-            if (auth.currentUser) {
-                logStitchWitchQuery({
-                    type: 'navigation',
-                    action: 'section_switch',
-                    section: view,
-                    patternId: window.PATTERN_DATA?.id || 'unknown'
-                }, db, auth);
-            }
-            
-            if (view === 'viewer') {
-                viewerSection.classList.remove('hidden');
-                // Footer controls are now always visible via overlay
-            }
-        }
-    });
-    // Setup notes sidebar event listeners
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggleNotesBtn = document.getElementById('toggle-notes-sidebar');
-        const closeNotesBtn = document.getElementById('close-notes-sidebar');
-        const saveRowNoteBtn = document.getElementById('save-row-note');
-        const saveAllNotesBtn = document.getElementById('save-all-notes');
-        
-        if (toggleNotesBtn) {
-            toggleNotesBtn.addEventListener('click', () => {
-                if (typeof toggleNotesSidebar === 'function') {
-                    toggleNotesSidebar();
-                }
-            });
-        }
-        
-        if (closeNotesBtn) {
-            closeNotesBtn.addEventListener('click', () => {
-                const sidebar = document.getElementById('notes-sidebar');
-                sidebar.classList.add('translate-x-full');
-            });
-        }
-        
-        if (saveRowNoteBtn) {
-            saveRowNoteBtn.addEventListener('click', async () => {
-                await saveCurrentRowNote();
-            });
-        }
-        
-        if (saveAllNotesBtn) {
-            saveAllNotesBtn.addEventListener('click', async () => {
-                await saveAllProjectNotes();
-            });
-        }
-    });
-        // Setup Jump to Start button
-        const jumpToStartBtn = document.getElementById('jump-to-start');
-        if (jumpToStartBtn && !jumpToStartBtn.hasAttribute('data-listener-added')) {
-            jumpToStartBtn.setAttribute('data-listener-added', 'true');
-            jumpToStartBtn.addEventListener('click', () => {
-                currentStep = 1;
-                stepInput.value = 1;
-                // Save immediately to localStorage for instant response
-                localStorage.setItem(progressKey, currentStep);
-                if (window.currentProject) window.currentProject.currentStep = currentStep;
-                
-                // Save to Firestore in background (non-blocking)
-                if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                    saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
-                        currentStep: currentStep
-                    }).catch(err => console.warn('Background save failed:', err));
-                }
-                updateDisplay(currentStep, true);
-            });
-        }
-        
-        // Setup Add Note button  
-        const addNoteBtn = document.getElementById('add-note');
-        if (addNoteBtn && !addNoteBtn.hasAttribute('data-listener-added')) {
-            addNoteBtn.setAttribute('data-listener-added', 'true');
-            addNoteBtn.addEventListener('click', () => {
-                const note = prompt(`Add a note for row ${currentStep}:`);
-                if (note && note.trim()) {
-                    console.log('📝 Adding note for row', currentStep, ':', note.trim());
-                    // Store note in localStorage for now
-                    const notes = JSON.parse(localStorage.getItem('pattern-notes') || '{}');
-                    const patternKey = window.PATTERN_DATA?.metadata?.title || 'unknown-pattern';
-                    if (!notes[patternKey]) notes[patternKey] = {};
-                    notes[patternKey][currentStep] = note.trim();
-                    localStorage.setItem('pattern-notes', JSON.stringify(notes));
-                    
-                    // Show confirmation
-                    const originalText = addNoteBtn.innerHTML;
-                    addNoteBtn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg><span class="hidden lg:inline text-xs ml-1">Saved!</span>';
-                    setTimeout(() => {
-                        addNoteBtn.innerHTML = originalText;
-                    }, 2000);
-                }
-            });
-        }
-        
-        // Keyboard navigation - avoid calling button.click() to prevent double triggers
-        if (!window.keyboardNavSetup) {
-            window.keyboardNavSetup = true;
-            document.addEventListener('keydown', (e) => {
-                // Get stepInput reference each time to ensure it exists
-                const stepInput = document.getElementById('current-step-input');
-                
-                // Skip if user is typing in an input field
-                if (document.activeElement === stepInput || document.activeElement.tagName === 'INPUT') {
-                    return;
-                }
-                
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    if (currentStep < maxSteps) {
-                        currentStep++;
-                        if (stepInput) stepInput.value = currentStep;
-                        // Save immediately to localStorage for instant response
-                        localStorage.setItem(progressKey, currentStep);
-                        if (window.currentProject) window.currentProject.currentStep = currentStep;
-                        
-                        // Save to Firestore in background (non-blocking)
-                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
-                                currentStep: currentStep
-                            }).catch(err => console.warn('Background save failed:', err));
-                        }
-                        updateDisplay(currentStep, true);
-                        
-                        // Update notes label to show current row
-                        const noteLabel = document.getElementById('current-row-note-label');
-                        if (noteLabel) {
-                            noteLabel.textContent = currentStep;
-                        }
-                    }
-                }
-                
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    if (currentStep > 1) {
-                        currentStep--;
-                        if (stepInput) stepInput.value = currentStep;
-                        // Save immediately to localStorage for instant response
-                        localStorage.setItem(progressKey, currentStep);
-                        if (window.currentProject) window.currentProject.currentStep = currentStep;
-                        
-                        // Save to Firestore in background (non-blocking)
-                        if (typeof saveProjectProgress === 'function' && window.currentProject && auth.currentUser) {
-                            saveProjectProgress(db, auth.currentUser.uid, window.currentProject.patternId, window.currentProject.projectId, {
-                                currentStep: currentStep
-                            }).catch(err => console.warn('Background save failed:', err));
-                        }
-                        updateDisplay(currentStep, true);
-                        
-                        // Update notes label to show current row
-                        const noteLabel = document.getElementById('current-row-note-label');
-                        if (noteLabel) {
-                            noteLabel.textContent = currentStep;
-                        }
-                    }
-                }
-            });
-        }
-
-    // --- STITCH MODAL FUNCTIONALITY ---
-    const stitchModal = document.getElementById('stitch-modal');
-    const stitchModalTitle = document.getElementById('stitch-modal-title');
-    const stitchModalDefinition = document.getElementById('stitch-modal-definition');
-    const closeStitchModal = document.getElementById('close-stitch-modal');
-    
-    // Event listeners for stitch interactions
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('stitch-clickable')) {
-            e.preventDefault();
-            const stitchCode = e.target.dataset.stitch || e.target.textContent.trim();
-            showStitchDefinition(stitchCode);
-        }
-    });
-    
-    closeStitchModal.addEventListener('click', hideStitchDefinition);
-    stitchModal.addEventListener('click', (e) => {
-        if (e.target === stitchModal) {
-            hideStitchDefinition();
-        }
-    });
-    
-    // --- ADD TO GLOSSARY MODAL FUNCTIONALITY ---
-    const addToGlossaryModal = document.getElementById('add-to-glossary-modal');
-    const closeAddModal = document.getElementById('close-add-modal');
-    const cancelGlobalAddBtn = document.getElementById('cancel-global-add-btn');
-    const addToGlobalForm = document.getElementById('add-to-global-form');
-    
-    closeAddModal.addEventListener('click', hideAddToGlossaryModal);
-    cancelGlobalAddBtn.addEventListener('click', hideAddToGlossaryModal);
-    addToGlossaryModal.addEventListener('click', (e) => {
-        if (e.target === addToGlossaryModal) {
-            hideAddToGlossaryModal();
-        }
-    });
-    
-    // Handle form submission
-    addToGlobalForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = {
-            name: document.getElementById('global-stitch-name').value.trim(),
-            shorthand: document.getElementById('global-stitch-shorthand').value.trim(),
-            hobby: document.getElementById('global-stitch-craft').value,
-            description: document.getElementById('global-stitch-description').value.trim(),
-            notes: document.getElementById('global-stitch-notes').value.trim(),
-            videoLink: document.getElementById('global-stitch-video').value.trim(),
-            pictureLink: document.getElementById('global-stitch-picture').value.trim()
-        };
-        
-        if (!formData.name || !formData.shorthand || !formData.hobby || !formData.description) {
-            alert('Please fill in all required fields.');
-            return;
-        }
-        
-        try {
-            // Import the globalGlossary functions
-            const { globalGlossary, getInstructionCategory } = await import('./js/global-glossary.js');
-            
-            // Add the stitch to the global glossary
-            const stitchKey = await globalGlossary.addStitch(
-                formData.name,
-                {
-                    description: formData.description,
-                    category: mapHobbyToCategory(formData.hobby),
-                    cssToken: getInstructionCategory(formData.name, window.PATTERN_DATA),
-                    videoLink: formData.videoLink,
-                    pictureLink: formData.pictureLink,
-                    notes: formData.notes,
-                    shorthand: formData.shorthand,
-                    craft: getCraftPrefix(formData.hobby)
-                }
-            );
-            
-            // Sync to Firestore
-            await globalGlossary.syncToFirestore();
-            
-            // Show success message
-            alert(`Successfully added "${formData.name}" to the global glossary with ID: ${stitchKey}`);
-            
-            // Close modal
-            hideAddToGlossaryModal();
-            
-        } catch (error) {
-            console.error('Error adding stitch to global glossary:', error);
-            alert('There was an error adding the stitch to the global glossary. Please try again.');
-        }
-    });
-    
-    // Helper functions for form processing
-    function mapHobbyToCategory(hobby) {
-        const mapping = {
-            'Knitting': 'basic',
-            'Crochet': 'crochet', 
-            'Finishing': 'special'
-        };
-        return mapping[hobby] || 'basic';
-    }
-    
-    function getCraftPrefix(hobby) {
-        const mapping = {
-            'Knitting': 'K',
-            'Crochet': 'C',
-            'Finishing': 'F'
-        };
-        return mapping[hobby] || 'K';
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !stitchModal.classList.contains('hidden')) {
-            hideStitchDefinition();
-        }
-    });
-
-    // Script initialization complete
+    console.log('📄 Page template loaded successfully');
 </script>
+
 </body>
 </html>

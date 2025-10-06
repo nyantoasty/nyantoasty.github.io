@@ -118,12 +118,8 @@
         </section>
         
         <!-- Main Pattern Content -->
-        <main id="pattern-content" class="pattern-content max-w-6xl mx-auto p-6 space-y-8 overflow-y-auto pb-32">
+        <main id="pattern-content" class="pattern-content max-w-6xl mx-auto p-6 space-y-8 overflow-y-auto">
             <!-- Pattern instructions will be loaded here -->
-            <div class="text-center py-12">
-                <div class="animate-spin w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p class="text-muted">Loading pattern...</p>
-            </div>
         </main>
     </div>
 
@@ -253,6 +249,7 @@
     
     // Import centralized auth guard and Firebase modules
     import { requireAuth, signOutUser } from './js/auth-guard.js';
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { initUnifiedHeader } from './js/unified-header.js';
     import { loadProgressFirestore, saveProgressFirestore } from './js/viewer-logic.js';
@@ -278,10 +275,10 @@
         
         try {
             // Initialize authentication
-            const authResult = await requireAuth();
-            auth = authResult.auth;
+            const user = await requireAuth();
+            auth = getAuth();
             db = getFirestore();
-            currentUser = authResult.user;
+            currentUser = user;
             
             console.log('✅ Authentication verified:', currentUser.email);
             

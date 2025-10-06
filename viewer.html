@@ -254,7 +254,7 @@
     // Import centralized auth guard and Firebase modules
     import { requireAuth, signOutUser } from './js/auth-guard.js';
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { initializeUnifiedHeader } from './js/unified-header.js';
+    import { initUnifiedHeader } from './js/unified-header.js';
     import { loadProgressFirestore, saveProgressFirestore } from './js/viewer-logic.js';
     import { getOrCreateProject, saveProjectProgress } from './js/progress-tracking.js';
     
@@ -286,7 +286,7 @@
             console.log('✅ Authentication verified:', currentUser.email);
             
             // Initialize unified header
-            await initializeUnifiedHeader();
+            await initUnifiedHeader();
             console.log('✅ Unified header initialized');
             
             // Setup event listeners

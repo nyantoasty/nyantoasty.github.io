@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<!-- 
+    STITCH WITCH PATTERN VIEWER v2025-10-06
+    
+    Advanced pattern viewer with:
+    - Pattern tools sidebar (glossary, materials, navigation)
+    - Bottom row overlay with step navigation
+    - Scrollable pattern content area
+    - Notes sidebar for project tracking
+    - Integration with existing progress tracking system
+-->
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Stitch Witch - Pattern Viewer</title>
+    <meta name="description" content="Advanced pattern viewer for tracking knitting and crochet projects">
+    
+    <!-- Progressive Web App Meta Tags -->
+    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
+    <meta name="theme-color" content="#8b5cf6">
+    
+    <!-- Preconnect to External Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Main Stylesheet - Three-Tier Token System -->
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body class="bg-primary text-secondary antialiased has-unified-header">
+
+    <!-- Unified Header Component -->
+    <div id="header-placeholder"></div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-surface bg-opacity-20 z-50 hidden"></div>
+
+    <!-- Pattern Tools Sidebar -->
+    <aside id="pattern-sidebar" class="fixed top-0 left-0 h-full w-80 bg-secondary border-r border-primary p-6 z-60 overflow-y-auto transform -translate-x-full transition-transform duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-primary">Pattern Tools</h2>
+            <button id="sidebar-close" class="text-tertiary hover:text-primary text-2xl btn-icon">&times;</button>
+        </div>
+        
+        <div class="space-y-6">
+            <!-- Return to Current Row -->
+            <div>
+                <button id="return-to-row" class="w-full btn-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                    Return to Current Row
+                </button>
+            </div>
+
+            <!-- Jump to Section -->
+            <div>
+                <h3 class="text-lg font-semibold text-secondary mb-3">Jump to Section</h3>
+                <div class="space-y-2 text-sm">
+                    <div id="sidebar-sections" class="sidebar-links">
+                        <!-- Will be populated dynamically from pattern data -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials & Notes -->
+            <div>
+                <h3 class="text-lg font-semibold text-secondary mb-3">Materials & Notes</h3>
+                <div id="sidebar-materials" class="text-sm text-tertiary space-y-1">
+                    <!-- Will be populated dynamically from pattern data -->
+                </div>
+            </div>
+
+            <!-- Stitch Glossary -->
+            <div>
+                <h3 class="text-lg font-semibold text-secondary mb-3">Stitch Glossary</h3>
+                <div id="sidebar-glossary" class="text-sm space-y-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="viewer-layout">
+        
+        <!-- Pattern Information Header -->
+        <header class="pattern-header bg-secondary p-6 border-b border-primary">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-4">
+                    <h1 id="pattern-name" class="text-3xl font-bold text-primary mb-2">Loading Pattern...</h1>
+                    <p id="pattern-author" class="text-lg text-secondary">by Pattern Author</p>
+                </div>
+                
+                <!-- Project Information -->
+                <div id="project-info" class="mt-4 p-4 bg-tertiary rounded-lg border border-primary">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div><span class="text-muted">Project:</span> <span id="project-name" class="text-primary font-medium"></span></div>
+                        <div><span class="text-muted">Started:</span> <span id="project-start-date" class="text-primary"></span></div>
+                        <div><span class="text-muted">Last Updated:</span> <span id="project-last-update" class="text-primary"></span></div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-muted">
+                        <div class="text-sm text-muted">Progress: <span id="project-progress-summary" class="text-accent font-medium"></span></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Pattern Glossary Section -->
+        <section id="pattern-glossary" class="bg-secondary border-b border-primary p-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-xl font-bold text-primary mb-4">Stitch Glossary</h2>
+                <div id="main-glossary-content" class="grid gap-3 text-sm grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <!-- Will be populated dynamically from pattern data -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Main Pattern Content -->
+        <main id="pattern-content" class="pattern-content max-w-6xl mx-auto p-6 space-y-8 overflow-y-auto pb-32">
+            <!-- Pattern instructions will be loaded here -->
+            <div class="text-center py-12">
+                <div class="animate-spin w-8 h-8 border-2 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p class="text-muted">Loading pattern...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notes Sidebar -->
+    <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-secondary border-l border-primary transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-primary">Project Notes</h3>
+                <button id="close-notes-sidebar" title="Close notes sidebar" class="text-muted hover:text-primary btn-icon">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- General Notes -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-secondary mb-2">General Notes</label>
+                <textarea id="general-notes" class="w-full h-24 bg-tertiary border border-primary text-primary rounded px-3 py-2 resize-none" placeholder="General project notes..."></textarea>
+            </div>
+            
+            <!-- Current Row Note -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-secondary mb-2">Row <span id="current-row-note-label">1</span> Note</label>
+                <textarea id="current-row-note" class="w-full h-20 bg-tertiary border border-primary text-primary rounded px-3 py-2 resize-none" placeholder="Note for current row..."></textarea>
+                <button id="save-row-note" class="mt-2 btn-accent px-3 py-1 rounded text-sm">Save Row Note</button>
+            </div>
+            
+            <!-- Yarn Details -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium text-secondary mb-3">Yarn & Materials</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs text-muted mb-1">Yarn Brand & Color</label>
+                        <input id="yarn-info" type="text" class="w-full bg-tertiary border border-primary text-primary rounded px-2 py-1 text-sm" placeholder="e.g., Red Heart Soft Navy">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-muted mb-1">Needle/Hook Size</label>
+                        <input id="tool-info" type="text" class="w-full bg-tertiary border border-primary text-primary rounded px-2 py-1 text-sm" placeholder="e.g., US 6 (4.0mm)">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-muted mb-1">Modifications</label>
+                        <textarea id="modifications" class="w-full h-16 bg-tertiary border border-primary text-primary rounded px-2 py-1 text-sm resize-none" placeholder="Pattern modifications..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Row Notes List -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium text-secondary mb-3">All Row Notes</h4>
+                <div id="row-notes-list" class="space-y-2 max-h-40 overflow-y-auto">
+                    <!-- Row notes will be populated here -->
+                </div>
+            </div>
+            
+            <button id="save-all-notes" class="w-full btn-success py-2 rounded">Save All Notes</button>
+        </div>
+    </div>
+
+    <!-- Bottom Controls Overlay -->
+    <div id="bottom-controls-overlay" class="fixed bottom-0 left-0 right-0 bg-secondary border-t border-primary p-3 z-50">
+        <div class="flex items-center justify-between max-w-6xl mx-auto">
+            <!-- Left: Theme Toggle & Back -->
+            <div class="flex items-center space-x-2">
+                <button id="back-to-library" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Back to Pattern Library">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Library
+                </button>
+                <button id="theme-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors flex items-center" title="Toggle light/dark mode">
+                    <svg id="theme-icon-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Center: Row Navigation -->
+            <div class="flex items-center space-x-4">
+                <button id="prev-step" class="w-12 h-12 bg-accent text-primary font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">-</button>
+                
+                <div class="text-center">
+                    <div class="text-xs text-muted">ROW</div>
+                    <input type="number" id="current-step-input" min="1" title="Current step number" class="text-2xl font-bold text-primary bg-transparent text-center w-20 focus:outline-none focus:ring-2 focus:ring-accent rounded border border-primary px-2 py-1">
+                </div>
+                
+                <button id="next-step" class="w-12 h-12 bg-accent text-primary font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">+</button>
+            </div>
+            
+            <!-- Right: Sidebar, Notes and Jump -->
+            <div class="flex items-center space-x-2">
+                <button id="sidebar-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors" title="Toggle pattern tools sidebar">⚙️</button>
+                <button id="jump-to-start" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Jump to row 1">⏮️</button>
+                <button id="add-note" class="btn-warning font-bold py-2 px-3 rounded-lg transition-colors" title="Add note">📝</button>
+                <button id="toggle-notes-sidebar" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Notes">📋</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stitch Definition Modal -->
+    <div id="stitch-modal" class="fixed inset-0 bg-surface bg-opacity-40 flex items-start justify-center p-4 pt-16 z-50 hidden">
+        <div class="bg-secondary text-secondary rounded-lg shadow-xl p-6 w-full max-w-md relative modal-content mx-4">
+            <button id="close-stitch-modal" class="absolute top-2 right-3 text-muted hover:text-primary text-2xl font-bold btn-icon">&times;</button>
+            <h3 id="stitch-modal-title" class="text-2xl font-bold mb-4 text-primary"></h3>
+            <div id="stitch-modal-definition" class="text-secondary whitespace-pre-line"></div>
+        </div>
+    </div>
+
+    <!-- Stitch Popup (quick hover definitions) -->
+    <div id="stitch-popup" class="hidden fixed bg-tertiary p-4 rounded-lg shadow-2xl z-50 border border-accent max-w-md">
+        <div id="popup-content"></div>
+    </div>
+
+<script type="module">
+    /*
+        PATTERN VIEWER JavaScript
+        
+        This page integrates with the existing Stitch Witch system:
+        - Uses auth-guard for authentication
+        - Loads patterns from user_pattern_progress collection
+        - Integrates with progress-tracking.js for state management
+        - Uses unified-header.js for navigation
+    */
+    
+    // Import centralized auth guard and Firebase modules
+    import { requireAuth, signOutUser } from './js/auth-guard.js';
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeUnifiedHeader } from './js/unified-header.js';
+    import { loadProgressFirestore, saveProgressFirestore } from './js/viewer-logic.js';
+    import { getOrCreateProject, saveProjectProgress } from './js/progress-tracking.js';
+    
+    // Global variables
+    let auth, db, currentUser;
+    let currentProject = null;
+    let PATTERN_DATA = null;
+    let currentStep = 1;
+    let maxSteps = 1;
+    
+    // DOM Elements
+    const patternSidebar = document.getElementById('pattern-sidebar');
+    const notesSidebar = document.getElementById('notes-sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const patternContent = document.getElementById('pattern-content');
+    const currentStepInput = document.getElementById('current-step-input');
+    
+    // Initialize page
+    async function initializeViewer() {
+        console.log('🚀 Pattern Viewer initializing...');
+        
+        try {
+            // Initialize authentication
+            const authResult = await requireAuth();
+            auth = authResult.auth;
+            db = getFirestore();
+            currentUser = authResult.user;
+            
+            console.log('✅ Authentication verified:', currentUser.email);
+            
+            // Initialize unified header
+            await initializeUnifiedHeader();
+            console.log('✅ Unified header initialized');
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Check for pattern/project data in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const patternId = urlParams.get('pattern');
+            const projectId = urlParams.get('project');
+            
+            if (patternId && projectId) {
+                await loadPatternForProject(patternId, projectId);
+            } else {
+                showPatternSelectionPrompt();
+            }
+            
+            console.log('✅ Pattern Viewer initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize Pattern Viewer:', error);
+            // If auth fails, user will be redirected to login automatically
+        }
+    }
+    
+    function setupEventListeners() {
+        // Sidebar toggles
+        document.getElementById('sidebar-toggle')?.addEventListener('click', togglePatternSidebar);
+        document.getElementById('sidebar-close')?.addEventListener('click', closePatternSidebar);
+        document.getElementById('toggle-notes-sidebar')?.addEventListener('click', toggleNotesSidebar);
+        document.getElementById('close-notes-sidebar')?.addEventListener('click', closeNotesSidebar);
+        
+        // Row navigation
+        document.getElementById('prev-step')?.addEventListener('click', () => changeStep(-1));
+        document.getElementById('next-step')?.addEventListener('click', () => changeStep(1));
+        document.getElementById('jump-to-start')?.addEventListener('click', () => goToStep(1));
+        document.getElementById('return-to-row')?.addEventListener('click', returnToCurrentRow);
+        
+        // Step input
+        currentStepInput?.addEventListener('change', (e) => {
+            const newStep = parseInt(e.target.value);
+            if (newStep >= 1 && newStep <= maxSteps) {
+                goToStep(newStep);
+            }
+        });
+        
+        // Back to library
+        document.getElementById('back-to-library')?.addEventListener('click', () => {
+            window.close(); // Close tab if opened in new tab
+            // Fallback: redirect to index
+            window.location.href = '/index.html';
+        });
+        
+        // Theme toggle - handled by unified header
+        
+        // Notes
+        document.getElementById('save-row-note')?.addEventListener('click', saveCurrentRowNote);
+        document.getElementById('save-all-notes')?.addEventListener('click', saveAllNotes);
+    }
+    
+    async function loadPatternForProject(patternId, projectId) {
+        try {
+            console.log('🔍 Loading pattern for project:', { patternId, projectId });
+            
+            // Load project data from user_pattern_progress
+            currentProject = await getOrCreateProject(db, currentUser.uid, patternId, projectId);
+            console.log('📁 Project loaded:', currentProject);
+            
+            // Load pattern data from patterns collection
+            const patternDoc = await getDoc(doc(db, 'patterns', patternId));
+            if (!patternDoc.exists()) {
+                throw new Error('Pattern not found');
+            }
+            
+            PATTERN_DATA = patternDoc.data();
+            console.log('📄 Pattern loaded:', PATTERN_DATA.metadata?.name);
+            
+            // Setup viewer with pattern data
+            setupPatternViewer();
+            
+        } catch (error) {
+            console.error('❌ Error loading pattern:', error);
+            showError('Failed to load pattern: ' + error.message);
+        }
+    }
+    
+    function setupPatternViewer() {
+        if (!PATTERN_DATA) return;
+        
+        const { metadata } = PATTERN_DATA;
+        
+        // Update pattern information
+        document.getElementById('pattern-name').textContent = metadata.name;
+        document.getElementById('pattern-author').textContent = `by ${metadata.author}`;
+        
+        // Update project information
+        if (currentProject) {
+            const projectName = currentProject.projectDetails?.projectName || 'Unnamed Project';
+            document.getElementById('project-name').textContent = projectName;
+            document.getElementById('project-start-date').textContent = 
+                currentProject.createdAt?.toDate?.()?.toLocaleDateString() || 'Unknown';
+            document.getElementById('project-last-update').textContent = 
+                currentProject.lastUpdated?.toDate?.()?.toLocaleDateString() || 'Unknown';
+            
+            currentStep = currentProject.currentStep || 1;
+            maxSteps = metadata.maxSteps || 1;
+            
+            document.getElementById('project-progress-summary').textContent = 
+                `Row ${currentStep} of ${maxSteps} (${Math.round((currentStep / maxSteps) * 100)}%)`;
+        }
+        
+        // Setup step input
+        if (currentStepInput) {
+            currentStepInput.value = currentStep;
+            currentStepInput.max = maxSteps;
+        }
+        
+        // Generate pattern content
+        generatePatternContent();
+        
+        // Populate sidebars
+        populatePatternSidebar();
+        populateGlossary();
+    }
+    
+    function generatePatternContent() {
+        // TODO: Implement pattern content generation based on PATTERN_DATA
+        // This should create the scrollable instruction content with row highlighting
+        patternContent.innerHTML = `
+            <div class="text-center py-12">
+                <h2 class="text-2xl font-bold text-primary mb-4">Pattern Content Loading...</h2>
+                <p class="text-muted">Pattern rendering will be implemented here</p>
+                <p class="text-sm text-muted mt-4">Current Step: ${currentStep} / ${maxSteps}</p>
+            </div>
+        `;
+    }
+    
+    function populatePatternSidebar() {
+        // TODO: Populate sidebar with pattern-specific sections and materials
+        const sectionsContainer = document.getElementById('sidebar-sections');
+        const materialsContainer = document.getElementById('sidebar-materials');
+        
+        if (sectionsContainer) {
+            sectionsContainer.innerHTML = '<p class="text-muted text-sm">Pattern sections will be populated here</p>';
+        }
+        
+        if (materialsContainer) {
+            materialsContainer.innerHTML = '<p class="text-muted text-sm">Materials list will be populated here</p>';
+        }
+    }
+    
+    function populateGlossary() {
+        // TODO: Populate both sidebar and main glossary sections
+        const sidebarGlossary = document.getElementById('sidebar-glossary');
+        const mainGlossary = document.getElementById('main-glossary-content');
+        
+        if (sidebarGlossary) {
+            sidebarGlossary.innerHTML = '<p class="text-muted text-sm">Stitch definitions will be populated here</p>';
+        }
+        
+        if (mainGlossary) {
+            mainGlossary.innerHTML = '<p class="text-muted text-sm">Main glossary will be populated here</p>';
+        }
+    }
+    
+    // Sidebar functions
+    function togglePatternSidebar() {
+        const isOpen = !patternSidebar.classList.contains('-translate-x-full');
+        if (isOpen) {
+            closePatternSidebar();
+        } else {
+            openPatternSidebar();
+        }
+    }
+    
+    function openPatternSidebar() {
+        patternSidebar.classList.remove('-translate-x-full');
+        sidebarOverlay.classList.remove('hidden');
+    }
+    
+    function closePatternSidebar() {
+        patternSidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+    }
+    
+    function toggleNotesSidebar() {
+        const isOpen = !notesSidebar.classList.contains('translate-x-full');
+        if (isOpen) {
+            closeNotesSidebar();
+        } else {
+            openNotesSidebar();
+        }
+    }
+    
+    function openNotesSidebar() {
+        notesSidebar.classList.remove('translate-x-full');
+    }
+    
+    function closeNotesSidebar() {
+        notesSidebar.classList.add('translate-x-full');
+    }
+    
+    // Navigation functions
+    function changeStep(delta) {
+        const newStep = currentStep + delta;
+        if (newStep >= 1 && newStep <= maxSteps) {
+            goToStep(newStep);
+        }
+    }
+    
+    async function goToStep(step) {
+        currentStep = step;
+        currentStepInput.value = step;
+        
+        // Update progress in Firestore
+        if (currentProject) {
+            await saveProjectProgress(db, currentUser.uid, currentProject.patternId, currentProject.projectId, {
+                currentStep: step
+            });
+        }
+        
+        // TODO: Highlight current row in pattern content
+        updateRowHighlight();
+        
+        // Update notes sidebar
+        document.getElementById('current-row-note-label').textContent = step;
+    }
+    
+    function returnToCurrentRow() {
+        // TODO: Scroll to and highlight current row
+        updateRowHighlight();
+    }
+    
+    function updateRowHighlight() {
+        // TODO: Implement row highlighting in pattern content
+        console.log('🎯 Highlighting row:', currentStep);
+    }
+    
+    // Notes functions
+    function saveCurrentRowNote() {
+        // TODO: Save row-specific note
+        console.log('💾 Saving row note for step:', currentStep);
+    }
+    
+    function saveAllNotes() {
+        // TODO: Save all notes and project details
+        console.log('💾 Saving all project notes');
+    }
+    
+    function showPatternSelectionPrompt() {
+        patternContent.innerHTML = `
+            <div class="text-center py-12">
+                <h2 class="text-2xl font-bold text-primary mb-4">No Pattern Selected</h2>
+                <p class="text-muted mb-6">Please select a pattern from your project library to start viewing.</p>
+                <button onclick="window.location.href='/index.html'" class="btn-accent px-6 py-3 rounded-lg font-medium">
+                    Go to Pattern Library
+                </button>
+            </div>
+        `;
+    }
+    
+    function showError(message) {
+        patternContent.innerHTML = `
+            <div class="text-center py-12">
+                <h2 class="text-2xl font-bold text-error mb-4">Error</h2>
+                <p class="text-muted mb-6">${message}</p>
+                <button onclick="window.location.href='/index.html'" class="btn-accent px-6 py-3 rounded-lg font-medium">
+                    Return to Library
+                </button>
+            </div>
+        `;
+    }
+    
+    // Initialize the viewer
+    initializeViewer();
+</script>
+
+<style>
+/* Viewer-specific styles */
+.viewer-layout {
+    min-height: 100vh;
+    padding-bottom: 80px; /* Space for bottom controls */
+}
+
+.pattern-content {
+    max-height: calc(100vh - 300px); /* Account for header and controls */
+}
+
+/* Sidebar animations */
+.transform {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Current row highlighting */
+.current-row {
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    margin: 0.25rem 0;
+}
+
+/* Bottom controls styling */
+#bottom-controls-overlay {
+    backdrop-filter: blur(10px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #pattern-sidebar {
+        width: 100vw;
+    }
+    
+    #notes-sidebar {
+        width: 100vw;
+    }
+    
+    .pattern-content {
+        max-height: calc(100vh - 250px);
+    }
+}
+</style>
+
+</body>
+</html>

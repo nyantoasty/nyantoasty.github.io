@@ -136,26 +136,103 @@
                 </div>
             </section>
 
-            <!-- Pattern Viewer Section -->
-            <section id="pattern-viewer" class="bg-secondary p-6 rounded-lg border border-primary hidden">
+            <!-- Project Info Viewer Section -->
+            <section id="project-info-viewer" class="bg-secondary p-6 rounded-lg border border-primary hidden">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-primary">Pattern Viewer</h2>
-                        <p id="current-project-name" class="text-sm text-tertiary">No project selected</p>
+                        <h2 class="text-2xl font-bold text-primary">Project Details</h2>
+                        <p id="current-project-name" class="text-sm text-muted">No project selected</p>
                     </div>
                     <div class="flex items-center space-x-2 mt-4 sm:mt-0">
                         <button id="close-viewer-btn" class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors text-sm">
                             ← Back to Projects
                         </button>
-                        <button id="upload-pattern-btn" class="btn-accent px-4 py-2 rounded-lg font-medium transition-colors text-sm">
-                            + Add Pattern
+                        <button id="open-pattern-viewer-btn" class="btn-accent px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                            📖 Open in Viewer
                         </button>
                     </div>
                 </div>
                 
-                <!-- Pattern List -->
-                <div id="patterns-container" class="space-y-4">
-                    <!-- Patterns will be loaded here -->
+                <!-- Project Information Cards -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Project Overview -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-primary mb-4">Project Overview</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-muted">Pattern:</span>
+                                <span id="project-pattern-id" class="text-secondary font-medium"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Status:</span>
+                                <span id="project-status" class="px-2 py-1 rounded text-xs font-medium"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Progress:</span>
+                                <span id="project-progress" class="text-secondary font-medium"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Started:</span>
+                                <span id="project-started-date" class="text-secondary"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Last Updated:</span>
+                                <span id="project-updated-date" class="text-secondary"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Notes -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-primary mb-4">Project Notes</h3>
+                        <div id="project-notes-content" class="text-sm text-secondary">
+                            <p class="text-muted italic">No notes available</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Details -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-primary mb-4">Materials & Tools</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <span class="text-muted block">Yarn:</span>
+                                <span id="project-yarn" class="text-secondary"></span>
+                            </div>
+                            <div>
+                                <span class="text-muted block">Tools:</span>
+                                <span id="project-tools" class="text-secondary"></span>
+                            </div>
+                            <div>
+                                <span class="text-muted block">Modifications:</span>
+                                <span id="project-modifications" class="text-secondary"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Stats -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-primary mb-4">Project Statistics</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-muted">Total Steps:</span>
+                                <span id="project-total-steps" class="text-secondary"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Completed Steps:</span>
+                                <span id="project-completed-steps" class="text-secondary"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Time Invested:</span>
+                                <span id="project-time-spent" class="text-secondary"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">Difficulty:</span>
+                                <span id="project-difficulty" class="text-secondary"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
                     <div class="bg-tertiary border border-primary rounded-lg p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
@@ -276,13 +353,11 @@
     const newProjectForm = document.getElementById('new-project-form');
     const cancelProjectBtn = document.getElementById('cancel-project-btn');
     
-    // Pattern Viewer Elements
-    const patternViewer = document.getElementById('pattern-viewer');
+    // Project Info Viewer Elements
+    const projectInfoViewer = document.getElementById('project-info-viewer');
     const currentProjectName = document.getElementById('current-project-name');
     const closeViewerBtn = document.getElementById('close-viewer-btn');
-    const uploadPatternBtn = document.getElementById('upload-pattern-btn');
-    const patternsContainer = document.getElementById('patterns-container');
-    const patternsEmpty = document.getElementById('patterns-empty');
+    const openPatternViewerBtn = document.getElementById('open-pattern-viewer-btn');
     
     // Pattern Modal Elements
     const patternModal = document.getElementById('pattern-modal');
@@ -316,15 +391,13 @@
     
     closeViewerBtn?.addEventListener('click', () => {
         currentProject = null;
-        patternViewer.classList.add('hidden');
+        projectInfoViewer.classList.add('hidden');
         loadProjects();
     });
     
-    uploadPatternBtn?.addEventListener('click', () => {
-        // Redirect to pattern upload page with project context
+    openPatternViewerBtn?.addEventListener('click', () => {
         if (currentProject) {
-            sessionStorage.setItem('selectedProject', JSON.stringify(currentProject));
-            window.location.href = '/pattern-upload.html';
+            openInPatternViewer(currentProject);
         }
     });
     
@@ -430,11 +503,93 @@
     }
     
     async function openProject(project) {
+        // Show the project info viewer with project details
         currentProject = project;
         const projectName = project.projectDetails?.projectName || `${project.patternId} Project`;
         currentProjectName.textContent = projectName;
-        patternViewer.classList.remove('hidden');
-        await loadPatterns(project.projectId);
+        
+        // Populate project information
+        populateProjectInfo(project);
+        
+        // Show the project info viewer
+        projectInfoViewer.classList.remove('hidden');
+        
+        console.log('📋 Showing project info for:', projectName);
+    }
+    
+    function openInPatternViewer(project) {
+        // Open the pattern viewer in a new tab with the project data
+        const patternId = project.patternId;
+        const projectId = project.projectId;
+        
+        console.log('🔗 Opening project in pattern viewer:', { patternId, projectId });
+        
+        // Construct the viewer URL with parameters
+        const viewerUrl = `/viewer.html?pattern=${encodeURIComponent(patternId)}&project=${encodeURIComponent(projectId)}`;
+        
+        // Open in new tab
+        window.open(viewerUrl, '_blank');
+    }
+    
+    function populateProjectInfo(project) {
+        // Populate project overview
+        document.getElementById('project-pattern-id').textContent = project.patternId || 'Unknown';
+        
+        const status = project.status || 'not_started';
+        const statusElement = document.getElementById('project-status');
+        statusElement.textContent = status.replace('_', ' ');
+        statusElement.className = `px-2 py-1 rounded text-xs font-medium ${getStatusColor(status)}`;
+        
+        const currentStep = project.currentStep || 1;
+        const totalSteps = project.totalSteps || '?';
+        const progressPercent = totalSteps !== '?' ? Math.round((currentStep / totalSteps) * 100) : 0;
+        document.getElementById('project-progress').textContent = `${currentStep}/${totalSteps} (${progressPercent}%)`;
+        
+        const startDate = project.startDate || project.createdAt?.toDate?.() || new Date();
+        document.getElementById('project-started-date').textContent = formatDate(startDate);
+        
+        const updateDate = project.lastUpdate || project.lastUpdated?.toDate?.() || startDate;
+        document.getElementById('project-updated-date').textContent = formatDate(updateDate);
+        
+        // Populate project notes
+        const notesContent = document.getElementById('project-notes-content');
+        const generalNotes = project.notes?.general;
+        if (generalNotes && generalNotes.trim()) {
+            notesContent.innerHTML = `<p class="text-secondary">${escapeHtml(generalNotes)}</p>`;
+        } else {
+            notesContent.innerHTML = '<p class="text-muted italic">No notes available</p>';
+        }
+        
+        // Populate materials & tools
+        const projectDetails = project.projectDetails || {};
+        const tools = projectDetails.tools || {};
+        
+        document.getElementById('project-yarn').textContent = 
+            (projectDetails.yarns && projectDetails.yarns.length > 0) 
+                ? projectDetails.yarns.map(y => y.brand || y.name || 'Unknown').join(', ')
+                : 'Not specified';
+                
+        document.getElementById('project-tools').textContent = 
+            tools.toolSize || tools.hookSize || tools.originalToolSize || 'Not specified';
+            
+        document.getElementById('project-modifications').textContent = 
+            (projectDetails.modifications && projectDetails.modifications.length > 0)
+                ? projectDetails.modifications.join('; ')
+                : 'None';
+        
+        // Populate project stats
+        document.getElementById('project-total-steps').textContent = totalSteps;
+        document.getElementById('project-completed-steps').textContent = 
+            project.completedSteps ? project.completedSteps.length : 0;
+            
+        const experience = project.experience || {};
+        document.getElementById('project-time-spent').textContent = 
+            experience.timeSpent && experience.timeSpent.totalMinutes 
+                ? `${Math.round(experience.timeSpent.totalMinutes / 60)} hours`
+                : 'Not tracked';
+                
+        document.getElementById('project-difficulty').textContent = 
+            experience.skillLevel || experience.estimatedDifficulty || 'Not specified';
     }
     
     async function loadPatterns(projectId) {

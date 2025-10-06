@@ -123,21 +123,7 @@
   --palette-primary-500-alpha-50: rgba(124, 58, 237, 0.5);
 
   /* Light theme specific colors */
-  --palette-background: var(--palette-neutral-50);
-  --palette-surface: var(--palette-neutral-100);
-  --palette-text: var(--palette-neutral-900);
-
-  /* Override theme background variables for light mode */
-  --theme-bg-primary: var(--palette-neutral-50);     /* Pure white */
-  --theme-bg-secondary: var(--palette-neutral-100);  /* Near white */
-  --theme-bg-tertiary: var(--palette-neutral-200);   /* Light gray */
-
-  /* Override theme text colors for light mode */
-  --theme-text-primary: var(--palette-neutral-900);   /* Very dark text */
-  --theme-text-secondary: var(--palette-neutral-700); /* Dark gray text */
-  --theme-text-tertiary: var(--palette-neutral-600);  /* Medium gray text */
-
-  /* Override theme border colors for light mode */
-  --theme-border-primary: var(--palette-neutral-300);   /* Light border */
-  --theme-border-secondary: var(--palette-neutral-200); /* Very light border */
+  --palette-background: var(--palette-neutral-50);   /* Cream background */
+  --palette-surface: var(--palette-neutral-100);     /* Very light cream */
+  --palette-text: var(--palette-neutral-800);        /* Dark warm brown text */
 }

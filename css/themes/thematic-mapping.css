@@ -111,11 +111,11 @@
   --theme-bg-tertiary: var(--palette-neutral-200);   /* Light warm gray */
   --theme-surface: var(--palette-neutral-100);       /* Very light warm gray surface */
 
-  /* Text Colors - Warm grays instead of harsh black */
-  --theme-text-primary: var(--palette-neutral-700);    /* Warm dark gray (not black) */
-  --theme-text-secondary: var(--palette-neutral-600);  /* Medium warm gray */
-  --theme-text-tertiary: var(--palette-neutral-500);   /* Medium gray */
-  --theme-text-disabled: var(--palette-neutral-400);   /* Light gray text */
+  /* Text Colors - Warm medium browns instead of harsh black */
+  --theme-text-primary: var(--palette-neutral-800);    /* Dark warm brown (not black) */
+  --theme-text-secondary: var(--palette-neutral-700);  /* Medium dark warm brown */
+  --theme-text-tertiary: var(--palette-neutral-600);   /* Medium warm brown */
+  --theme-text-disabled: var(--palette-neutral-400);   /* Light warm gray */
 
   /* Border Colors - Soft warm borders */
   --theme-border-primary: var(--palette-neutral-300);   /* Light warm border */
@@ -133,6 +133,25 @@
   --theme-previous-step-border: var(--palette-primary-300); /* Light warm gray */
   --theme-highlight-bg: var(--palette-primary-200);         /* Light warm highlight */
   --theme-highlight-text: var(--palette-neutral-700);       /* Warm dark gray text */
+}
+
+/* Light Mode Stitch Token Overrides - Prevent link styling from making stitches black */
+[data-theme="light"] .stitch-clickable.token-special-01,
+[data-theme="light"] .stitch-clickable.token-special-02,
+[data-theme="light"] .stitch-clickable.token-special-03,
+[data-theme="light"] .stitch-clickable.token-special-04,
+[data-theme="light"] .stitch-clickable.token-special-05 {
+  color: var(--theme-color-special-primary) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-01 {
+  color: var(--theme-color-increase) !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-02 {
+  color: var(--theme-color-decrease) !important;
 }
 
 /* Pattern text styling */

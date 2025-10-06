@@ -34,7 +34,6 @@ class UnifiedHeader {
         const pageMap = {
             'index.html': 'viewer',
             '': 'viewer', // Root also goes to viewer
-            'generator.html': 'generator',
             'pattern-upload.html': 'upload',
             'pattern-manager.html': 'manager',
             'stitch_glossary.html': 'glossary'
@@ -49,6 +48,10 @@ class UnifiedHeader {
      * Integrates with existing theme system from app-main.js
      */
     initializeThemeToggle() {
+        // Load saved theme from localStorage first
+        const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         
         if (themeToggleBtn) {
@@ -59,6 +62,8 @@ class UnifiedHeader {
 
         // Apply current theme on load
         this.updateThemeDisplay();
+        
+        console.log(`🎨 Theme initialized to: ${savedTheme}`);
     }
 
     /**

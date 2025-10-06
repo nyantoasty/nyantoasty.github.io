@@ -4,6 +4,9 @@
 // Import the global living glossary system
 import { globalGlossary, getInstructionCategory as getInstructionCategoryFromGlossary } from './global-glossary.js';
 
+// Export globalGlossary for use in other modules
+export { globalGlossary };
+
 /**
  * Get instruction category/token using the global glossary system
  * @param {string} instruction - The stitch instruction

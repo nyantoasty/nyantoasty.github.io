@@ -57,12 +57,39 @@
 
     <!-- Main Content -->
     <div class="max-w-6xl mx-auto px-6 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-4">📋 Pattern Manager</h1>
+            <p class="text-white text-opacity-75">Manage your knitting and crochet patterns</p>
+        </div>
+
+        <!-- Pattern Library -->
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-white">Available Patterns</h2>
+                <button id="add-pattern-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    ➕ Add New Pattern
+                </button>
+            </div>
             
-            <!-- Left Panel: JSON Input -->
-            <div class="space-y-6">
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20">
-                    <h2 class="text-xl font-semibold text-white mb-4">Upload Pattern JSON</h2>
+            <div id="patterns-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Patterns will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Pattern Editor (hidden by default) -->
+        <div id="pattern-editor" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Left Panel: JSON Input -->
+                <div class="space-y-6">
+                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-white" id="editor-title">Edit Pattern JSON</h2>
+                            <button id="back-to-library-btn" class="text-white hover:text-purple-300 transition-colors">
+                                ← Back to Library
+                            </button>
+                        </div>
                     
                     <div class="mb-4">
                         <label for="pattern-json" class="block text-sm font-medium text-white text-opacity-90 mb-2">
@@ -90,14 +117,14 @@
 }'></textarea>
                     </div>
 
-                    <div class="flex space-x-3">
-                        <button id="validate-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                            Validate JSON
-                        </button>
-                        <button id="clear-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                            Clear
-                        </button>
-                    </div>
+                        <div class="flex space-x-3">
+                            <button id="validate-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                Validate JSON
+                            </button>
+                            <button id="clear-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                Clear
+                            </button>
+                        </div>
                 </div>
 
                 <!-- Validation Status -->
@@ -135,6 +162,7 @@
                     <p class="text-white text-opacity-75 text-sm mt-3 text-center">
                         Pattern will be uploaded as private. You can share it later.
                     </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,6 +199,23 @@
         let currentUser = null;
         let validatedPattern = null;
         let uploadedPatternId = null;
+        let currentPatterns = [];
+
+        // Available patterns in the workspace
+        const availablePatterns = [
+            { id: 'bleuet-shawl', name: 'Bleuet Shawl', file: 'bleuetShawl.json' },
+            { id: 'colonnade-shawl', name: 'Colonnade Shawl', file: 'collonnadeShawl.json' },
+            { id: 'neon-sky-full', name: 'Neon Sky Full', file: 'neon-sky-full.json' },
+            { id: 'odyssey-shawl', name: 'Odyssey Shawl', file: 'OdysseyShawl.json' },
+            { id: 'sea-witch-shawl', name: 'Sea Witch Shawl', file: 'seawitchshawl.json' }
+        ];
+
+        // DOM elements
+        const patternsGrid = document.getElementById('patterns-grid');
+        const patternEditor = document.getElementById('pattern-editor');
+        const addPatternBtn = document.getElementById('add-pattern-btn');
+        const backToLibraryBtn = document.getElementById('back-to-library-btn');
+        const editorTitle = document.getElementById('editor-title');
 
         // DOM elements
         const patternJsonTextarea = document.getElementById('pattern-json');
@@ -184,6 +229,106 @@
         const validationMessages = document.getElementById('validation-messages');
         const patternPreview = document.getElementById('pattern-preview');
         const actionButtons = document.getElementById('action-buttons');
+
+        // Pattern Management Functions
+        async function loadPatternLibrary() {
+            patternsGrid.innerHTML = '<div class="col-span-full text-center text-white opacity-75">Loading patterns...</div>';
+            
+            for (const pattern of availablePatterns) {
+                try {
+                    const response = await fetch(`/patterns/${pattern.file}`);
+                    if (response.ok) {
+                        const patternData = await response.json();
+                        addPatternCard(pattern, patternData);
+                    } else {
+                        console.warn(`Failed to load ${pattern.file}`);
+                    }
+                } catch (error) {
+                    console.warn(`Error loading ${pattern.file}:`, error);
+                }
+            }
+            
+            // Remove loading message
+            const loadingMsg = patternsGrid.querySelector('.col-span-full');
+            if (loadingMsg) loadingMsg.remove();
+        }
+
+        function addPatternCard(pattern, patternData) {
+            const card = document.createElement('div');
+            card.className = 'bg-white bg-opacity-5 backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 hover:bg-opacity-10 transition-all cursor-pointer';
+            
+            card.innerHTML = `
+                <div class="mb-3">
+                    <h3 class="text-white font-semibold text-lg">${patternData.metadata?.name || pattern.name}</h3>
+                    <p class="text-white text-opacity-75 text-sm">by ${patternData.metadata?.author || 'Unknown'}</p>
+                </div>
+                <div class="flex items-center justify-between text-sm text-white text-opacity-60 mb-3">
+                    <span>📄 ${patternData.steps?.length || 0} steps</span>
+                    <span>🧶 ${patternData.metadata?.craft || 'Unknown'}</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="view-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded transition-colors">
+                        👁️ View
+                    </button>
+                    <button class="edit-btn flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 px-3 rounded transition-colors">
+                        ✏️ Edit
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners
+            card.querySelector('.view-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                viewPattern(pattern, patternData);
+            });
+            
+            card.querySelector('.edit-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                editPattern(pattern, patternData);
+            });
+            
+            patternsGrid.appendChild(card);
+        }
+
+        function viewPattern(pattern, patternData) {
+            // Navigate to viewer with this pattern
+            window.location.href = `/index.html?pattern=${pattern.id}`;
+        }
+
+        function editPattern(pattern, patternData) {
+            // Show the editor with the pattern loaded
+            document.querySelector('.max-w-6xl > div:first-child').style.display = 'none'; // Hide library
+            patternEditor.classList.remove('hidden');
+            editorTitle.textContent = `Edit ${patternData.metadata?.name || pattern.name}`;
+            
+            if (patternJsonTextarea) {
+                patternJsonTextarea.value = JSON.stringify(patternData, null, 2);
+            }
+        }
+
+        function showPatternLibrary() {
+            document.querySelector('.max-w-6xl > div:first-child').style.display = 'block'; // Show library
+            patternEditor.classList.add('hidden');
+        }
+
+        // Event listeners for navigation
+        if (addPatternBtn) {
+            addPatternBtn.addEventListener('click', () => {
+                document.querySelector('.max-w-6xl > div:first-child').style.display = 'none';
+                patternEditor.classList.remove('hidden');
+                editorTitle.textContent = 'Add New Pattern';
+                if (patternJsonTextarea) {
+                    patternJsonTextarea.value = '';
+                }
+            });
+        }
+
+        if (backToLibraryBtn) {
+            backToLibraryBtn.addEventListener('click', showPatternLibrary);
+        }
+
+        // Initialize the pattern library
+        loadPatternLibrary();
 
         // Auth state management
         onAuthStateChanged(auth, (user) => {

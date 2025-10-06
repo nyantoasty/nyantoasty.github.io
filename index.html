@@ -21,13 +21,6 @@
     <!-- Unified Header Component -->
     <div id="header-placeholder"></div>
 
-    <!-- Sidebar Toggle Button (now integrates with header hamburger menu) -->
-    <button id="sidebar-toggle" title="Toggle pattern tools sidebar" class="fixed top-16 left-4 z-40 bg-secondary text-primary p-3 rounded-full shadow-lg border border-primary btn-secondary transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-    </button>
-
     <!-- Sidebar Overlay -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-20 z-50 hidden"></div>
 
@@ -279,8 +272,9 @@
                 <button id="next-step" class="w-12 h-12 bg-accent text-white font-bold rounded-full text-2xl flex items-center justify-center shadow-lg hover:bg-accent-hover transition-transform transform active:scale-95">+</button>
             </div>
             
-            <!-- Right: Notes and Jump -->
+            <!-- Right: Sidebar, Notes and Jump -->
             <div class="flex items-center space-x-2">
+                <button id="sidebar-toggle" class="btn-secondary font-bold py-2 px-3 rounded-lg transition-colors" title="Toggle pattern tools sidebar">⚙️</button>
                 <button id="jump-to-start" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Jump to row 1">⏮️</button>
                 <button id="add-note" class="btn-warning font-bold py-2 px-3 rounded-lg transition-colors" title="Add note">📝</button>
                 <button id="toggle-notes-sidebar" class="btn-accent font-bold py-2 px-3 rounded-lg transition-colors" title="Notes">📋</button>

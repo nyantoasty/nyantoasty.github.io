@@ -267,6 +267,30 @@ export async function createNewProject(db, userId, patternId, projectName = null
 }
 
 /**
+ * Load a specific project by its ID
+ * @param {object} db - Firestore database instance
+ * @param {string} projectId - The project document ID to load
+ * @returns {object|null} Project data or null if not found
+ */
+export async function getProjectById(db, projectId) {
+    try {
+        const projectDoc = await getDoc(doc(db, 'user_pattern_progress', projectId));
+        
+        if (projectDoc.exists()) {
+            const projectData = projectDoc.data();
+            projectData.id = projectDoc.id;
+            return projectData;
+        } else {
+            console.log(`❌ Project not found: ${projectId}`);
+            return null;
+        }
+    } catch (error) {
+        console.error('❌ Error loading project:', error);
+        throw error;
+    }
+}
+
+/**
  * Get the user's current/active project for a pattern (most recently updated)
  * @param {Object} db - Firestore database instance
  * @param {string} userId - User ID
@@ -438,7 +462,7 @@ export async function saveProjectProgress(db, userId, patternId, projectId, prog
  * @param {string|null} projectName - Optional project name for new projects
  * @returns {Object} Project data
  */
-export async function getOrCreateProject(db, userId, patternId, projectName = null) {
+export async function getOrCreateProject(db, userId, patternId, projectName = null, user = null) {
     try {
         // Try to get current project first
         let currentProject = await getCurrentProject(db, userId, patternId);
@@ -446,7 +470,7 @@ export async function getOrCreateProject(db, userId, patternId, projectName = nu
         if (!currentProject) {
             // No existing project, create a new one
             console.log(`Creating new project for pattern ${patternId}`);
-            const result = await createNewProject(db, userId, patternId, projectName);
+            const result = await createNewProject(db, userId, patternId, projectName, 'personal', null, user);
             currentProject = result.projectData;
             currentProject.id = result.progressId;
             currentProject.projectId = result.projectId;

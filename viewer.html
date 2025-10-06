@@ -253,7 +253,7 @@
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { initUnifiedHeader } from './js/unified-header.js';
     import { loadProgressFirestore, saveProgressFirestore } from './js/viewer-logic.js';
-    import { getOrCreateProject, saveProjectProgress } from './js/progress-tracking.js';
+    import { getOrCreateProject, saveProjectProgress, getProjectById } from './js/progress-tracking.js';
     
     // Global variables
     let auth, db, currentUser;
@@ -347,8 +347,13 @@
         try {
             console.log('🔍 Loading pattern for project:', { patternId, projectId });
             
-            // Load project data from user_pattern_progress
-            currentProject = await getOrCreateProject(db, currentUser.uid, patternId, projectId);
+            // Load existing project data directly by ID
+            currentProject = await getProjectById(db, projectId);
+            
+            if (!currentProject) {
+                throw new Error(`Project not found: ${projectId}`);
+            }
+            
             console.log('📁 Project loaded:', currentProject);
             
             // Load pattern data from patterns collection

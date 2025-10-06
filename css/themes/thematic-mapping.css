@@ -133,21 +133,89 @@
   --theme-previous-step-border: var(--palette-primary-300); /* Light warm gray */
   --theme-highlight-bg: var(--palette-primary-200);         /* Light warm highlight */
   --theme-highlight-text: var(--palette-neutral-700);       /* Warm dark gray text */
+
+  /* Special Colors for Light Mode - Better contrast for special stitches */
+  --theme-color-special-primary: var(--palette-accent-400);    /* Medium teal, visible on light */
+  --theme-color-special-secondary: var(--palette-secondary-500); /* Dark purple, visible on light */
+  --theme-color-special-tertiary: var(--palette-primary-600);   /* Warm slate */
+  --theme-color-special-quaternary: var(--palette-success-500); /* Sage green */
+  --theme-color-special-quinary: var(--palette-danger-500);     /* Terracotta red */
 }
 
-/* Light Mode Stitch Token Overrides - Prevent link styling from making stitches black */
+/* Light Mode Text and Element Overrides */
+[data-theme="light"] .text-white {
+  color: var(--theme-text-primary) !important;
+}
+
+/* Light Mode Stitch Token Overrides - Preserve semantic colors */
 [data-theme="light"] .stitch-clickable.token-special-01,
-[data-theme="light"] .stitch-clickable.token-special-02,
-[data-theme="light"] .stitch-clickable.token-special-03,
-[data-theme="light"] .stitch-clickable.token-special-04,
-[data-theme="light"] .stitch-clickable.token-special-05 {
-  color: var(--theme-color-special-primary) !important;
+[data-theme="light"] .token-special-01.stitch-clickable {
+  color: var(--token-special-01) !important;
   text-decoration: underline !important;
   text-decoration-style: dotted !important;
 }
 
-[data-theme="light"] .stitch-clickable.token-stitch-01 {
-  color: var(--theme-color-increase) !important;
+[data-theme="light"] .stitch-clickable.token-special-02,
+[data-theme="light"] .token-special-02.stitch-clickable {
+  color: var(--token-special-02) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-special-03,
+[data-theme="light"] .token-special-03.stitch-clickable {
+  color: var(--token-special-03) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-special-04,
+[data-theme="light"] .token-special-04.stitch-clickable {
+  color: var(--token-special-04) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-special-05,
+[data-theme="light"] .token-special-05.stitch-clickable {
+  color: var(--token-special-05) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-01,
+[data-theme="light"] .token-stitch-01.stitch-clickable {
+  color: var(--token-stitch-01) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-02,
+[data-theme="light"] .token-stitch-02.stitch-clickable {
+  color: var(--token-stitch-02) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-03,
+[data-theme="light"] .token-stitch-03.stitch-clickable {
+  color: var(--token-stitch-03) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-04,
+[data-theme="light"] .token-stitch-04.stitch-clickable {
+  color: var(--token-stitch-04) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+}
+
+[data-theme="light"] .stitch-clickable.token-stitch-05,
+[data-theme="light"] .token-stitch-05.stitch-clickable {
+  color: var(--token-stitch-05) !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
 }
 
 [data-theme="light"] .stitch-clickable.token-stitch-02 {

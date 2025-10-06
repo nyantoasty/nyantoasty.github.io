@@ -6,6 +6,7 @@
 
 /* Background Colors */
 .bg-primary { background-color: var(--theme-bg-primary) !important; }
+.bg-primary-600 { background-color: var(--palette-primary-600) !important; }
 .bg-secondary { background-color: var(--theme-bg-secondary) !important; }
 .bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
 .bg-accent { background-color: var(--theme-color-special-primary) !important; }
@@ -15,6 +16,7 @@
 .text-secondary { color: var(--theme-text-secondary) !important; }
 .text-tertiary { color: var(--theme-text-tertiary) !important; }
 .text-white { color: #ffffff !important; }
+.text-on-primary { color: var(--theme-bg-primary) !important; } /* High contrast text on primary backgrounds */
 
 /* Border Colors */
 .border-primary { border-color: var(--theme-border-primary) !important; }

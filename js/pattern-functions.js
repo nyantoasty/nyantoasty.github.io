@@ -495,7 +495,7 @@ export function generateInstructions(PATTERN_DATA) {
     const patternContentEl = document.getElementById('pattern-content');
     const section = document.createElement('section');
     section.className = 'bg-gray-800 p-6 rounded-lg shadow-lg pattern-text';
-    section.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-4">Instructions</h2>';
+    section.innerHTML = '<h2 class="text-2xl font-semibold text-primary mb-4">Instructions</h2>';
     
     // Handle NEW Firestore schema format with steps array
     if (PATTERN_DATA.steps && Array.isArray(PATTERN_DATA.steps)) {
@@ -611,7 +611,7 @@ export function generateDisplayText(step, PATTERN_DATA) {
     
     if (step.section) text += `<em class="text-gray-400">[${step.section}] </em>`;
     if (step.subsection) text += `<em class="text-gray-500">${step.subsection} </em>`;
-    if (step.side) text += `<span class="text-xs bg-blue-600 text-white px-1 rounded">${step.side.toUpperCase()}</span> `;
+    if (step.side) text += `<span class="text-xs bg-primary-600 text-on-primary px-1 rounded">${step.side.toUpperCase()}</span> `;
     
     // Handle NEW simple instruction format (Firestore schema)
     if (step.instruction) {

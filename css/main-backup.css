@@ -1,4 +1,17 @@
 /* 
+ * ARCHIVED FILE - main-backup.css
+ * Date Archived: October 6, 2025
+ * Reason: This was a backup copy of main.css during CSS architecture cleanup.
+ * Status: No longer needed - main.css has been properly organized.
+ * 
+ * This file contained 524 lines of mixed CSS that was used as a safety backup
+ * during the migration to the clean 3-tier theming system. The content has been
+ * properly organized into modular files and imported in main.css.
+ * 
+ * If restoration is needed, refer to git history for the working main.css state.
+ */
+
+/* 
  * Main Stylesheet - Stitch Witch Application
  * Imports all modular CSS files in the correct order
  * 

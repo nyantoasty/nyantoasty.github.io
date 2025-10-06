@@ -1,4 +1,18 @@
 /* 
+ * ARCHIVED FILE - legacy-compatibility.css
+ * Date Archived: October 6, 2025
+ * Reason: This was an attempt to recreate Tailwind-style utility classes.
+ * Status: Replaced with clean semantic class system.
+ * 
+ * This file was created to provide Tailwind-style classes like bg-gray-900, 
+ * text-white, etc. However, this approach was counter to our goal of building
+ * a clean, custom CSS system without external framework dependencies.
+ * 
+ * Replacement: semantic-classes.css now provides clean bg-primary, text-primary
+ * classes that map directly to our 3-tier theming system.
+ */
+
+/* 
  * Legacy Compatibility Layer
  * Maintains backward compatibility with existing hardcoded class names
  * while transitioning to the new semantic token system.

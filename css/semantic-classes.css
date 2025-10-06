@@ -1,0 +1,37 @@
+/* 
+ * Semantic CSS Classes
+ * Simple semantic classes that map directly to theme variables
+ * No Tailwind recreation, no complex legacy compatibility
+ */
+
+/* Background Colors */
+.bg-primary { background-color: var(--theme-bg-primary) !important; }
+.bg-secondary { background-color: var(--theme-bg-secondary) !important; }
+.bg-tertiary { background-color: var(--theme-bg-tertiary) !important; }
+.bg-accent { background-color: var(--theme-color-special-primary) !important; }
+
+/* Text Colors */
+.text-primary { color: var(--theme-text-primary) !important; }
+.text-secondary { color: var(--theme-text-secondary) !important; }
+.text-tertiary { color: var(--theme-text-tertiary) !important; }
+.text-white { color: #ffffff !important; }
+
+/* Border Colors */
+.border-primary { border-color: var(--theme-border-primary) !important; }
+.border-accent { border-color: var(--theme-border-focus) !important; }
+
+/* Focus States */
+.focus\:ring-accent:focus { 
+  box-shadow: 0 0 0 2px var(--theme-border-focus) !important; 
+}
+.focus\:border-accent:focus { 
+  border-color: var(--theme-border-focus) !important; 
+}
+
+/* Hover States */
+.hover\:bg-accent-hover:hover { 
+  background-color: var(--theme-color-hover) !important; 
+}
+
+/* Opacity Utilities */
+.bg-opacity-20 { background-color: rgba(0, 0, 0, 0.2) !important; }

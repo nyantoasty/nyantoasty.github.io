@@ -27,7 +27,7 @@
     </div>
 
 <script type="module">
-    import { auth } from './js/auth-guard.js';
+    import { auth, redirectIfAuthenticated } from './js/auth-guard.js';
     import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     const provider = new GoogleAuthProvider();
@@ -60,6 +60,12 @@
         }
     });
 
+    // First check if user is already authenticated and redirect them away
+    redirectIfAuthenticated().then(() => {
+        // User is not authenticated, proceed with login page setup
+        checkRedirect();
+    });
+
     async function checkRedirect() {
         try {
             console.log('Checking for redirect result...');
@@ -77,8 +83,6 @@
             showError('Authentication failed');
         }
     }
-
-    checkRedirect();
 </script>
 </body>
 </html>

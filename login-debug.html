@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In Debug - Stitch Witch</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .debug-log {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #333;
+            z-index: 9999;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .info { color: #74c0fc; }
+    </style>
+</head>
+<body class="bg-primary text-secondary">
+    <div id="debug-log" class="debug-log"></div>
+    
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-card p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h1 class="text-3xl font-bold text-primary mb-6 text-center">Welcome to Stitch Witch (Debug)</h1>
+            <p class="text-secondary mb-8 text-center">Sign in to access your pattern library</p>
+            
+            <div id="error-message" class="hidden bg-error text-error-foreground p-4 rounded mb-4">
+                <p id="error-text">An error occurred</p>
+            </div>
+            
+            <div id="loading-message" class="hidden text-center mb-4">
+                <p>Signing you in...</p>
+            </div>
+            
+            <button id="google-login-btn" class="w-full btn-accent py-3 px-6 rounded font-bold">
+                Continue with Google
+            </button>
+            
+            <button id="clear-log" class="w-full btn-secondary py-2 px-6 rounded mt-4">
+                Clear Debug Log
+            </button>
+        </div>
+    </div>
+
+<script>
+    // Debug logging system
+    const debugLog = document.getElementById('debug-log');
+    let logCount = 0;
+    
+    function log(message, type = 'info') {
+        logCount++;
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = type;
+        logEntry.textContent = `[${logCount}] ${timestamp}: ${message}`;
+        debugLog.appendChild(logEntry);
+        debugLog.scrollTop = debugLog.scrollHeight;
+        console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+    
+    // Capture all errors
+    window.addEventListener('error', (event) => {
+        log(`GLOBAL ERROR: ${event.message} at ${event.filename}:${event.lineno}`, 'error');
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        log(`UNHANDLED PROMISE REJECTION: ${event.reason}`, 'error');
+    });
+    
+    document.getElementById('clear-log').addEventListener('click', () => {
+        debugLog.innerHTML = '';
+        logCount = 0;
+    });
+    
+    log('Debug page loaded', 'success');
+</script>
+
+<script type="module">
+    try {
+        log('Starting module script', 'info');
+        
+        log('Attempting to import auth-guard...', 'info');
+        const { auth } = await import('./js/auth-guard.js');
+        log('Auth-guard imported successfully', 'success');
+        
+        log('Attempting to import Firebase Auth...', 'info');
+        const { GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+        log('Firebase Auth imported successfully', 'success');
+
+        const provider = new GoogleAuthProvider();
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const loadingMessage = document.getElementById('loading-message');
+
+        function showError(message) {
+            log(`Showing error: ${message}`, 'error');
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            loadingMessage.classList.add('hidden');
+        }
+
+        function showLoading() {
+            log('Showing loading state', 'info');
+            loadingMessage.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+        }
+
+        googleLoginBtn.addEventListener('click', async () => {
+            try {
+                log('Google sign-in button clicked', 'info');
+                showLoading();
+                
+                log('Setting auth persistence...', 'info');
+                await setPersistence(auth, browserLocalPersistence);
+                log('Auth persistence set successfully', 'success');
+                
+                log('Starting redirect to Google...', 'info');
+                await signInWithRedirect(auth, provider);
+                log('Redirect initiated', 'success');
+            } catch (error) {
+                log(`Sign in error: ${error.message}`, 'error');
+                log(`Error code: ${error.code}`, 'error');
+                log(`Error stack: ${error.stack}`, 'error');
+                showError('Failed to sign in. Please try again.');
+            }
+        });
+
+        async function checkRedirect() {
+            try {
+                log('Checking for redirect result...', 'info');
+                const result = await getRedirectResult(auth);
+                
+                if (result) {
+                    log(`Sign in successful: ${result.user.email}`, 'success');
+                    log('Getting redirect URL from session storage...', 'info');
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    log(`Redirect URL: ${redirectUrl}`, 'info');
+                    sessionStorage.removeItem('auth_redirect_url');
+                    log('Redirecting...', 'info');
+                    window.location.replace(redirectUrl);
+                } else {
+                    log('No redirect result found', 'info');
+                    
+                    // Check if user is already signed in
+                    if (auth.currentUser) {
+                        log(`User already signed in: ${auth.currentUser.email}`, 'success');
+                    } else {
+                        log('No current user found', 'info');
+                    }
+                }
+            } catch (error) {
+                log(`Redirect check error: ${error.message}`, 'error');
+                log(`Error code: ${error.code}`, 'error');
+                log(`Error stack: ${error.stack}`, 'error');
+                showError('Authentication failed');
+            }
+        }
+
+        log('Starting redirect check...', 'info');
+        await checkRedirect();
+        log('Module script completed', 'success');
+        
+    } catch (error) {
+        log(`Module script error: ${error.message}`, 'error');
+        log(`Error stack: ${error.stack}`, 'error');
+    }
+</script>
+</body>
+</html>

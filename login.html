@@ -157,7 +157,7 @@
 
 <script type="module">
     import { redirectIfAuthenticated } from './js/auth-guard.js';
-    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { auth } from './js/auth-guard.js';
 
     // UI Elements
@@ -296,14 +296,32 @@
         console.log('🔍 Session storage auth_redirect_url:', sessionStorage.getItem('auth_redirect_url'));
         
         try {
-            // First check for redirect result (this is most important after OAuth return)
-            const hadRedirectResult = await checkRedirectResult();
+            // Set up an auth state listener to detect successful authentication
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                console.log('🔍 Auth state changed in login page, user:', user ? user.email : 'null');
+                
+                if (user) {
+                    // User is authenticated! Redirect them immediately
+                    console.log('✅ User authenticated, redirecting...');
+                    showLoading();
+                    
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    sessionStorage.removeItem('auth_redirect_url');
+                    console.log('� Redirecting to:', redirectUrl);
+                    
+                    // Clean up listener and redirect
+                    unsubscribe();
+                    window.location.replace(redirectUrl);
+                    return;
+                }
+                
+                console.log('ℹ️ User not authenticated, showing login form');
+            }, (error) => {
+                console.error('❌ Auth state listener error:', error);
+            });
             
-            // Only check if user is already authenticated if we didn't handle a redirect
-            if (!hadRedirectResult) {
-                console.log('🔍 No redirect result, checking if already authenticated...');
-                await redirectIfAuthenticated();
-            }
+            // Also check for redirect result (but don't rely on it solely)
+            const hadRedirectResult = await checkRedirectResult();
             
             console.log('🔐 Login page initialized successfully');
         } catch (error) {

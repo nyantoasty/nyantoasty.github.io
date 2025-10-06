@@ -34,7 +34,7 @@
 
 <script type="module">
     import { auth, redirectIfAuthenticated } from './js/auth-guard.js';
-    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     const provider = new GoogleAuthProvider();
     const googleLoginBtn = document.getElementById('google-login-btn');
@@ -69,23 +69,61 @@
     // First check if user is already authenticated and redirect them away
     redirectIfAuthenticated().then(() => {
         // User is not authenticated, proceed with login page setup
-        checkRedirect();
+        console.log('User not authenticated, setting up login page');
+        
+        // Add a small delay to let Firebase auth state settle
+        setTimeout(() => {
+            checkRedirect();
+            
+            // Also set up an auth state listener as backup
+            const unsubscribe = auth.onAuthStateChanged((user) => {
+                console.log('🔍 Auth state changed on login page:', user ? user.email : 'null');
+                if (user) {
+                    console.log('✅ User authenticated via state listener, redirecting...');
+                    unsubscribe(); // Clean up
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    sessionStorage.removeItem('auth_redirect_url');
+                    window.location.replace(redirectUrl);
+                }
+            });
+        }, 500);
+    }).catch((error) => {
+        console.log('redirectIfAuthenticated error:', error);
+        // Continue with login setup even if there's an error
+        setTimeout(() => checkRedirect(), 500);
     });
 
     async function checkRedirect() {
         try {
-            console.log('Checking for redirect result...');
+            console.log('🔍 Checking for redirect result...');
+            console.log('🔍 Current user before getRedirectResult:', auth.currentUser);
+            
             const result = await getRedirectResult(auth);
+            console.log('🔍 getRedirectResult returned:', result);
+            
             if (result) {
-                console.log('Sign in successful:', result.user.email);
+                console.log('✅ Sign in successful:', result.user.email);
                 const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
                 sessionStorage.removeItem('auth_redirect_url');
+                console.log('🔄 Redirecting to:', redirectUrl);
                 window.location.replace(redirectUrl);
             } else {
-                console.log('No redirect result found');
+                console.log('ℹ️ No redirect result found');
+                console.log('🔍 Current user after getRedirectResult:', auth.currentUser);
+                
+                // Check again if user is authenticated now
+                if (auth.currentUser) {
+                    console.log('✅ User is authenticated (currentUser):', auth.currentUser.email);
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    sessionStorage.removeItem('auth_redirect_url');
+                    console.log('🔄 Redirecting authenticated user to:', redirectUrl);
+                    window.location.replace(redirectUrl);
+                } else {
+                    console.log('ℹ️ No authenticated user found, staying on login page');
+                }
             }
         } catch (error) {
-            console.error('Redirect error:', error);
+            console.error('❌ Redirect error:', error);
             showError('Authentication failed');
         }
     }

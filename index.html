@@ -33,10 +33,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- TODO: Update title for your specific page -->
-        <title>Stitch Witch - Pattern Viewer</title>
+        <title>Stitch Witch - Pattern Library</title>
     
     <!-- TODO: Update meta description for SEO -->
-    <meta name="description" content="Stitch Witch - Your page description for SEO">
+    <meta name="description" content="Stitch Witch - Your personal knitting pattern library and project manager">
     
     <!-- Progressive Web App Meta Tags -->
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
@@ -103,16 +103,14 @@
         -->
         <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-primary pb-4">
             <div class="text-center sm:text-left mb-4 sm:mb-0">
-                <!-- TODO: Update page title and description -->
-                <h1 class="text-3xl font-bold text-primary">Page Title</h1>
+                <h1 class="text-3xl font-bold text-primary">Pattern Library</h1>
                 <p id="user-display" class="text-sm text-tertiary">Welcome!</p>
-                <p class="text-xs text-muted">v2025-10-06 Template</p>
+                <p class="text-xs text-muted">Manage your knitting projects and patterns</p>
             </div>
             <div class="flex items-center space-x-4">
-                <!-- TODO: Add page-specific navigation or controls here -->
                 <nav class="flex items-center space-x-2">
-                    <a href="index.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Viewer</a>
-                    <a href="pattern-upload.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Generator</a>
+                    <a href="index.html" class="btn-accent font-medium py-2 px-4 rounded-lg transition-colors text-sm">Library</a>
+                    <a href="pattern-upload.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Upload</a>
                     <a href="glossary-manager.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Glossary</a>
                 </nav>
                 <button id="logout-btn" class="btn-danger font-medium py-2 px-4 rounded-lg transition-colors text-sm">Sign Out</button>
@@ -131,25 +129,120 @@
             - Follow responsive design patterns
         -->
         <main class="space-y-6">
+            <!-- Project Selection Section -->
             <section class="bg-secondary p-6 rounded-lg border border-primary">
-                <h2 class="text-2xl font-bold text-primary mb-4">Main Content Section</h2>
-                <p class="text-secondary mb-4">
-                    This is where your page-specific content goes. Replace this entire main section
-                    with your actual page content while maintaining the semantic class usage.
-                </p>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary mb-2 sm:mb-0">Your Projects</h2>
+                    <button id="new-project-btn" class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">
+                        + New Project
+                    </button>
+                </div>
                 
-                <!-- Example form with semantic classes -->
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-secondary mb-2">Example Input</label>
-                        <input type="text" class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent" placeholder="Example placeholder">
-                    </div>
-                    <div class="flex gap-3">
-                        <button class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">Save</button>
-                        <button class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">Cancel</button>
+                <!-- Project Grid -->
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Projects will be loaded here -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4 text-center text-muted animate-pulse">
+                        <div class="h-4 bg-primary/20 rounded mb-2"></div>
+                        <div class="h-3 bg-primary/20 rounded w-3/4 mx-auto"></div>
                     </div>
                 </div>
+                
+                <!-- Empty State -->
+                <div id="projects-empty" class="hidden text-center py-8">
+                    <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-secondary mb-2">No projects yet</h3>
+                    <p class="text-muted mb-4">Create your first knitting project to get started</p>
+                    <button class="btn-accent px-6 py-2 rounded-lg font-medium transition-colors">Create Project</button>
+                </div>
             </section>
+
+            <!-- Pattern Viewer Section -->
+            <section id="pattern-viewer" class="bg-secondary p-6 rounded-lg border border-primary hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary">Pattern Viewer</h2>
+                        <p id="current-project-name" class="text-sm text-tertiary">No project selected</p>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                        <button id="close-viewer-btn" class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                            ← Back to Projects
+                        </button>
+                        <button id="upload-pattern-btn" class="btn-accent px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                            + Add Pattern
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pattern List -->
+                <div id="patterns-container" class="space-y-4">
+                    <!-- Patterns will be loaded here -->
+                    <div class="bg-tertiary border border-primary rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h3 class="font-medium text-primary mb-2">Loading patterns...</h3>
+                                <div class="h-3 bg-primary/20 rounded w-2/3 mb-2 animate-pulse"></div>
+                                <div class="h-3 bg-primary/20 rounded w-1/2 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patterns Empty State -->
+                <div id="patterns-empty" class="hidden text-center py-8">
+                    <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-secondary mb-2">No patterns yet</h3>
+                    <p class="text-muted mb-4">Add your first pattern to this project</p>
+                    <button class="btn-accent px-6 py-2 rounded-lg font-medium transition-colors">Add Pattern</button>
+                </div>
+            </section>
+
+            <!-- Pattern Detail Modal -->
+            <div id="pattern-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-secondary rounded-lg border border-primary max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div class="sticky top-0 bg-secondary border-b border-primary p-4 flex justify-between items-center">
+                            <h3 id="pattern-modal-title" class="text-xl font-bold text-primary">Pattern Details</h3>
+                            <button id="close-modal-btn" class="btn-secondary p-2 rounded-lg" title="Close pattern details">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="pattern-modal-content" class="p-6">
+                            <!-- Pattern details will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Project Modal -->
+            <div id="new-project-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-secondary rounded-lg border border-primary max-w-md w-full">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-primary mb-4">Create New Project</h3>
+                            <form id="new-project-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Project Name</label>
+                                    <input type="text" id="project-name-input" class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent" placeholder="My Awesome Sweater" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Description (optional)</label>
+                                    <textarea id="project-description-input" class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent" rows="3" placeholder="A cozy sweater for winter..."></textarea>
+                                </div>
+                                <div class="flex gap-3 pt-4">
+                                    <button type="submit" class="btn-success px-4 py-2 rounded-lg font-medium transition-colors flex-1">Create Project</button>
+                                    <button type="button" id="cancel-project-btn" class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -182,22 +275,290 @@
     import { requireAuth, signOutUser } from './js/auth-guard.js';
     import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
-    // TODO: Import your page-specific modules
-    // Example:
-    // import { yourPageFunctions } from "./js/your-page-module.js";
+    // Import centralized auth guard and Firebase modules
+    import { requireAuth, signOutUser } from './js/auth-guard.js';
+    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
-    // Global variables (auth and db provided by auth-guard)
-    let auth, db;
+    // Global variables
+    let auth, db, currentUser;
+    let currentProject = null;
     
     // UI Elements
     const logoutBtn = document.getElementById('logout-btn');
     const userDisplay = document.getElementById('user-display');
     const themeToggle = document.getElementById('theme-toggle');
     
+    // Project Management Elements
+    const newProjectBtn = document.getElementById('new-project-btn');
+    const projectsGrid = document.getElementById('projects-grid');
+    const projectsEmpty = document.getElementById('projects-empty');
+    const newProjectModal = document.getElementById('new-project-modal');
+    const newProjectForm = document.getElementById('new-project-form');
+    const cancelProjectBtn = document.getElementById('cancel-project-btn');
+    
+    // Pattern Viewer Elements
+    const patternViewer = document.getElementById('pattern-viewer');
+    const currentProjectName = document.getElementById('current-project-name');
+    const closeViewerBtn = document.getElementById('close-viewer-btn');
+    const uploadPatternBtn = document.getElementById('upload-pattern-btn');
+    const patternsContainer = document.getElementById('patterns-container');
+    const patternsEmpty = document.getElementById('patterns-empty');
+    
+    // Pattern Modal Elements
+    const patternModal = document.getElementById('pattern-modal');
+    const patternModalTitle = document.getElementById('pattern-modal-title');
+    const patternModalContent = document.getElementById('pattern-modal-content');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    
     // Authentication Event Handlers
     logoutBtn?.addEventListener('click', () => {
-        signOutUser(); // Uses centralized sign out from auth-guard
+        signOutUser();
     });
+    
+    // Project Management Event Handlers
+    newProjectBtn?.addEventListener('click', () => {
+        newProjectModal.classList.remove('hidden');
+    });
+    
+    cancelProjectBtn?.addEventListener('click', () => {
+        newProjectModal.classList.add('hidden');
+        newProjectForm.reset();
+    });
+    
+    newProjectForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await createProject();
+    });
+    
+    closeViewerBtn?.addEventListener('click', () => {
+        currentProject = null;
+        patternViewer.classList.add('hidden');
+        loadProjects();
+    });
+    
+    uploadPatternBtn?.addEventListener('click', () => {
+        // Redirect to pattern upload page with project context
+        if (currentProject) {
+            sessionStorage.setItem('selectedProject', JSON.stringify(currentProject));
+            window.location.href = '/pattern-upload.html';
+        }
+    });
+    
+    closeModalBtn?.addEventListener('click', () => {
+        patternModal.classList.add('hidden');
+    });
+    
+    // Project Functions
+    async function createProject() {
+        const nameInput = document.getElementById('project-name-input');
+        const descriptionInput = document.getElementById('project-description-input');
+        
+        const projectData = {
+            name: nameInput.value.trim(),
+            description: descriptionInput.value.trim() || '',
+            userId: currentUser.uid,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            patternCount: 0
+        };
+        
+        try {
+            const docRef = await addDoc(collection(db, 'projects'), projectData);
+            console.log('✅ Project created with ID:', docRef.id);
+            
+            newProjectModal.classList.add('hidden');
+            newProjectForm.reset();
+            await loadProjects();
+            
+        } catch (error) {
+            console.error('❌ Error creating project:', error);
+            alert('Failed to create project. Please try again.');
+        }
+    }
+    
+    async function loadProjects() {
+        try {
+            projectsGrid.innerHTML = '<div class="col-span-full text-center py-4"><div class="animate-spin w-6 h-6 border-2 border-accent border-t-transparent rounded-full mx-auto"></div><p class="text-muted mt-2">Loading projects...</p></div>';
+            
+            const q = query(
+                collection(db, 'projects'),
+                where('userId', '==', currentUser.uid),
+                orderBy('updatedAt', 'desc')
+            );
+            
+            const querySnapshot = await getDocs(q);
+            const projects = [];
+            
+            querySnapshot.forEach((doc) => {
+                projects.push({ id: doc.id, ...doc.data() });
+            });
+            
+            if (projects.length === 0) {
+                projectsGrid.classList.add('hidden');
+                projectsEmpty.classList.remove('hidden');
+            } else {
+                projectsGrid.classList.remove('hidden');
+                projectsEmpty.classList.add('hidden');
+                renderProjects(projects);
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading projects:', error);
+            projectsGrid.innerHTML = '<div class="col-span-full text-center py-4 text-error">Failed to load projects</div>';
+        }
+    }
+    
+    function renderProjects(projects) {
+        projectsGrid.innerHTML = projects.map(project => `
+            <div class="bg-tertiary border border-primary rounded-lg p-4 hover:border-accent transition-colors cursor-pointer" data-project-id="${project.id}">
+                <h3 class="font-medium text-primary mb-2">${escapeHtml(project.name)}</h3>
+                <p class="text-sm text-secondary mb-3 line-clamp-2">${escapeHtml(project.description) || 'No description'}</p>
+                <div class="flex justify-between items-center text-xs text-muted">
+                    <span>${project.patternCount || 0} patterns</span>
+                    <span>${formatDate(project.updatedAt)}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        // Add click handlers to project cards
+        projectsGrid.querySelectorAll('[data-project-id]').forEach(card => {
+            card.addEventListener('click', () => {
+                const projectId = card.dataset.projectId;
+                const project = projects.find(p => p.id === projectId);
+                if (project) {
+                    openProject(project);
+                }
+            });
+        });
+    }
+    
+    async function openProject(project) {
+        currentProject = project;
+        currentProjectName.textContent = project.name;
+        patternViewer.classList.remove('hidden');
+        await loadPatterns(project.id);
+    }
+    
+    async function loadPatterns(projectId) {
+        try {
+            patternsContainer.innerHTML = '<div class="text-center py-4"><div class="animate-spin w-6 h-6 border-2 border-accent border-t-transparent rounded-full mx-auto"></div><p class="text-muted mt-2">Loading patterns...</p></div>';
+            
+            const q = query(
+                collection(db, 'patterns'),
+                where('projectId', '==', projectId),
+                orderBy('createdAt', 'desc')
+            );
+            
+            const querySnapshot = await getDocs(q);
+            const patterns = [];
+            
+            querySnapshot.forEach((doc) => {
+                patterns.push({ id: doc.id, ...doc.data() });
+            });
+            
+            if (patterns.length === 0) {
+                patternsContainer.classList.add('hidden');
+                patternsEmpty.classList.remove('hidden');
+            } else {
+                patternsContainer.classList.remove('hidden');
+                patternsEmpty.classList.add('hidden');
+                renderPatterns(patterns);
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading patterns:', error);
+            patternsContainer.innerHTML = '<div class="text-center py-4 text-error">Failed to load patterns</div>';
+        }
+    }
+    
+    function renderPatterns(patterns) {
+        patternsContainer.innerHTML = patterns.map(pattern => `
+            <div class="bg-tertiary border border-primary rounded-lg p-4 hover:border-accent transition-colors cursor-pointer" data-pattern-id="${pattern.id}">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-primary mb-2">${escapeHtml(pattern.name || 'Untitled Pattern')}</h3>
+                        <p class="text-sm text-secondary mb-2">${escapeHtml(pattern.description || 'No description')}</p>
+                        <div class="flex flex-wrap gap-2 text-xs text-muted">
+                            <span>${formatDate(pattern.createdAt)}</span>
+                            ${pattern.difficulty ? `<span>• ${escapeHtml(pattern.difficulty)}</span>` : ''}
+                            ${pattern.type ? `<span>• ${escapeHtml(pattern.type)}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn-accent px-3 py-1 rounded text-sm font-medium" onclick="event.stopPropagation(); openPattern('${pattern.id}')">
+                        View
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    window.openPattern = async function(patternId) {
+        try {
+            const docRef = doc(db, 'patterns', patternId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const pattern = { id: docSnap.id, ...docSnap.data() };
+                displayPatternModal(pattern);
+            } else {
+                alert('Pattern not found');
+            }
+        } catch (error) {
+            console.error('❌ Error loading pattern:', error);
+            alert('Failed to load pattern');
+        }
+    };
+    
+    function displayPatternModal(pattern) {
+        patternModalTitle.textContent = pattern.name || 'Untitled Pattern';
+        
+        patternModalContent.innerHTML = `
+            <div class="space-y-6">
+                ${pattern.description ? `
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">Description</h4>
+                        <p class="text-secondary">${escapeHtml(pattern.description)}</p>
+                    </div>
+                ` : ''}
+                
+                ${pattern.instructions ? `
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">Instructions</h4>
+                        <div class="bg-tertiary rounded-lg p-4 whitespace-pre-wrap text-secondary">${escapeHtml(pattern.instructions)}</div>
+                    </div>
+                ` : ''}
+                
+                ${pattern.notes ? `
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">Notes</h4>
+                        <div class="bg-tertiary rounded-lg p-4 whitespace-pre-wrap text-secondary">${escapeHtml(pattern.notes)}</div>
+                    </div>
+                ` : ''}
+                
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    ${pattern.difficulty ? `<div><span class="text-muted">Difficulty:</span> <span class="text-secondary">${escapeHtml(pattern.difficulty)}</span></div>` : ''}
+                    ${pattern.type ? `<div><span class="text-muted">Type:</span> <span class="text-secondary">${escapeHtml(pattern.type)}</span></div>` : ''}
+                    ${pattern.gauge ? `<div><span class="text-muted">Gauge:</span> <span class="text-secondary">${escapeHtml(pattern.gauge)}</span></div>` : ''}
+                    ${pattern.yarn ? `<div><span class="text-muted">Yarn:</span> <span class="text-secondary">${escapeHtml(pattern.yarn)}</span></div>` : ''}
+                </div>
+            </div>
+        `;
+        
+        patternModal.classList.remove('hidden');
+    }
+    
+    // Utility Functions
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function formatDate(date) {
+        if (!date) return '';
+        const d = date.toDate ? date.toDate() : new Date(date);
+        return d.toLocaleDateString();
+    }
     
     // Theme Toggle Functionality - STANDARD ACROSS ALL PAGES
     themeToggle?.addEventListener('click', () => {
@@ -273,6 +634,7 @@
     requireAuth().then(user => {
         // User is authenticated - safe to initialize Firebase services and page content
         auth = user.auth;
+        currentUser = user;
         db = getFirestore(user.auth.app);
         
         // Make available globally for debugging (optional)
@@ -281,7 +643,7 @@
         
         // Update user display
         if (userDisplay) {
-            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+            userDisplay.textContent = `Welcome, ${user.displayName || user.email}!`;
         }
         
         // Load unified header component
@@ -306,23 +668,24 @@
     
     // Page-Specific Initialization Function
     function initializePageContent() {
-        /*
-            TODO: Add your page-specific initialization code here
-            
-            This function is called after the user is authenticated and Firebase is ready.
-            Use this to:
-            - Load data from Firestore using the `db` instance
-            - Set up page-specific event listeners
-            - Initialize page-specific UI components
-            - Load user-specific content
-            
-            Example:
-            loadUserData();
-            setupPageEventListeners();
-            initializePageComponents();
-        */
+        // Load user's projects
+        loadProjects();
         
-        console.log('🚀 Page content initialized for authenticated user');
+        // Close modals when clicking outside
+        newProjectModal?.addEventListener('click', (e) => {
+            if (e.target === newProjectModal) {
+                newProjectModal.classList.add('hidden');
+                newProjectForm.reset();
+            }
+        });
+        
+        patternModal?.addEventListener('click', (e) => {
+            if (e.target === patternModal) {
+                patternModal.classList.add('hidden');
+            }
+        });
+        
+        console.log('🚀 Pattern Library content initialized');
     }
     
     // Global Error Handlers - STANDARD ACROSS ALL PAGES

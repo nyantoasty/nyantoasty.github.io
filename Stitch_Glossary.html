@@ -172,18 +172,11 @@
 
     <script type="module">
         // Import our existing enhanced GlobalLivingGlossary system
-        import './js/firebase-config.js';
+        import { auth, db, app } from './js/firebase-config.js';
         import { globalGlossary } from './js/utils.js';
         
-        // Also import Firebase for direct operations when needed
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_FALLBACK_API_KEY", authDomain: "...", projectId: "..." };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        // Import specific Firebase functions when needed
+        import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
         const addStitchForm = document.getElementById('add-stitch-form');
         const glossaryContainer = document.getElementById('glossary-container');

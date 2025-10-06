@@ -111,16 +111,19 @@
                 console.log('ℹ️ No redirect result found');
                 console.log('🔍 Current user after getRedirectResult:', auth.currentUser);
                 
-                // Check again if user is authenticated now
-                if (auth.currentUser) {
-                    console.log('✅ User is authenticated (currentUser):', auth.currentUser.email);
-                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
-                    sessionStorage.removeItem('auth_redirect_url');
-                    console.log('🔄 Redirecting authenticated user to:', redirectUrl);
-                    window.location.replace(redirectUrl);
-                } else {
-                    console.log('ℹ️ No authenticated user found, staying on login page');
-                }
+                // Wait a bit longer for auth state to settle
+                setTimeout(() => {
+                    console.log('🔍 Delayed check - Current user:', auth.currentUser);
+                    if (auth.currentUser) {
+                        console.log('✅ User is authenticated (delayed check):', auth.currentUser.email);
+                        const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                        sessionStorage.removeItem('auth_redirect_url');
+                        console.log('🔄 Redirecting authenticated user to:', redirectUrl);
+                        window.location.replace(redirectUrl);
+                    } else {
+                        console.log('ℹ️ No authenticated user found, staying on login page');
+                    }
+                }, 2000); // Wait 2 seconds for auth state to settle
             }
         } catch (error) {
             console.error('❌ Redirect error:', error);

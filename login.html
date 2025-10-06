@@ -208,16 +208,28 @@
     // Check for redirect result (when user returns from Google)
     async function checkRedirectResult() {
         try {
+            console.log('🔍 Checking for redirect result...');
             const result = await getRedirectResult(auth);
             if (result) {
                 // Sign in was successful
                 console.log('✅ Sign in successful:', result.user.email);
                 showLoading();
-                // redirectIfAuthenticated will handle the redirect
+                
+                // Give Firebase a moment to update auth state
+                setTimeout(() => {
+                    // Get intended redirect URL or default to index
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    sessionStorage.removeItem('auth_redirect_url');
+                    console.log('🔄 Redirecting to:', redirectUrl);
+                    window.location.replace(redirectUrl);
+                }, 500);
+                return true;
             }
+            return false;
         } catch (error) {
             console.error('❌ Redirect result error:', error);
             showError('Authentication failed. Please try again.');
+            return false;
         }
     }
 
@@ -268,11 +280,15 @@
 
     // Initialize page
     async function initializePage() {
-        // Check if user is already authenticated (will redirect if so)
-        await redirectIfAuthenticated();
+        console.log('🔐 Initializing login page...');
         
-        // Check for redirect result from Google OAuth
-        await checkRedirectResult();
+        // First check for redirect result (this is most important after OAuth return)
+        const hadRedirectResult = await checkRedirectResult();
+        
+        // Only check if user is already authenticated if we didn't handle a redirect
+        if (!hadRedirectResult) {
+            await redirectIfAuthenticated();
+        }
         
         console.log('🔐 Login page initialized');
     }

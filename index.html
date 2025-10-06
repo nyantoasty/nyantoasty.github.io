@@ -1,32 +1,5 @@
 <!DOCTYPE html>
-<!-- 
-    STITCH WITCH PAGE TEMPLATE v2025-10-06
-    
-    This template provides a standardized foundation for all Stitch Witch pages.
-    Copy this file and customize the sections marked with "TODO" comments.
-    
-    FEATURES INCLUDED:
-    - Unified header component system
-    - Three-tier CSS token system (tokens.css → thematic-mapping.css → dark/light.css)
-    - Semantic classes for consistent theming
-    - Firebase v9+ modular setup with proper imports
-    - Authentication state management
-    - Mobile-responsive design
-    - Proper meta tags and PWA support
-    
-    ARCHITECTURE:
-    - All styling uses semantic classes (bg-primary, text-secondary, btn-accent, etc.)
-    - No hard-coded Tailwind colors (bg-gray-800, text-blue-500, etc.)
-    - Firebase imports are modular and follow v9+ patterns
-    - CSS follows three-tier token system for theme consistency
-    
-    USAGE:
-    1. Copy this file to your new page name
-    2. Update the title, meta description, and page-specific content
-    3. Customize the main content area
-    4. Add page-specific JavaScript modules as needed
-    5. Test authentication flow and responsive design
--->
+
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -270,10 +243,6 @@
         3. No mixed auth/app UI - clean separation
         4. Automatic session persistence and redirect handling
     */
-    
-    // Import centralized auth guard
-    import { requireAuth, signOutUser } from './js/auth-guard.js';
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // Import centralized auth guard and Firebase modules
     import { requireAuth, signOutUser } from './js/auth-guard.js';

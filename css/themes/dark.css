@@ -5,93 +5,93 @@
 
 :root,
 [data-theme="dark"] {
-  /* Primary Palette - Main brand colors */
-  --palette-primary-100: #f3e8ff;
-  --palette-primary-200: #e9d5ff;
-  --palette-primary-300: #d8b4fe;
-  --palette-primary-400: #c084fc;
-  --palette-primary-500: #a855f7;
-  --palette-primary-600: #9333ea;
-  --palette-primary-700: #7c3aed;
-  --palette-primary-800: #6b21a8;
-  --palette-primary-900: #581c87;
+  /* Primary Palette - Deep Blue for main UI elements */
+  --palette-primary-100: #e0f2fe;
+  --palette-primary-200: #bae6fd;
+  --palette-primary-300: #7dd3fc;
+  --palette-primary-400: #38bdf8;
+  --palette-primary-500: #0ea5e9;
+  --palette-primary-600: #0284c7;
+  --palette-primary-700: #0369a1;
+  --palette-primary-800: #075985;
+  --palette-primary-900: #0c4a6e;
 
-  /* Secondary Palette - Purple/violet accent */
-  --palette-secondary-100: #ede9fe;
-  --palette-secondary-200: #ddd6fe;
-  --palette-secondary-300: #c4b5fd;
-  --palette-secondary-400: #a78bfa;
-  --palette-secondary-500: #8b5cf6;
-  --palette-secondary-600: #7c3aed;
-  --palette-secondary-700: #6d28d9;
-  --palette-secondary-800: #5b21b6;
-  --palette-secondary-900: #4c1d95;
+  /* Secondary Palette - Bold Purple family */
+  --palette-secondary-100: #c084fc;
+  --palette-secondary-200: #a855f7;
+  --palette-secondary-300: #9333ea;
+  --palette-secondary-400: #7c3aed;
+  --palette-secondary-500: #6d28d9;
+  --palette-secondary-600: #5b21b6;
+  --palette-secondary-700: #4c1d95;
+  --palette-secondary-800: #3b1764;
+  --palette-secondary-900: #1e1065;
 
-  /* Accent Palette - Blue for special elements */
-  --palette-accent-100: #dbeafe;
-  --palette-accent-200: #bfdbfe;
-  --palette-accent-300: #93c5fd;
-  --palette-accent-400: #60a5fa;
-  --palette-accent-500: #3b82f6;
-  --palette-accent-600: #2563eb;
-  --palette-accent-700: #1d4ed8;
-  --palette-accent-800: #1e40af;
-  --palette-accent-900: #1e3a8a;
+  /* Accent Palette - Bold Cyan family */
+  --palette-accent-100: #22d3ee;
+  --palette-accent-200: #06b6d4;
+  --palette-accent-300: #0891b2;
+  --palette-accent-400: #0e7490;
+  --palette-accent-500: #155e75;
+  --palette-accent-600: #164e63;
+  --palette-accent-700: #083344;
+  --palette-accent-800: #042f2e;
+  --palette-accent-900: #0f172a;
 
-  /* Success Palette - Green for increases */
-  --palette-success-100: #dcfce7;
-  --palette-success-200: #bbf7d0;
-  --palette-success-300: #86efac;
-  --palette-success-400: #4ade80;
-  --palette-success-500: #22c55e;
-  --palette-success-600: #16a34a;
-  --palette-success-700: #15803d;
-  --palette-success-800: #166534;
-  --palette-success-900: #14532d;
+  /* Success Palette - Bold Green family for increases */
+  --palette-success-100: #4ade80;
+  --palette-success-200: #22c55e;
+  --palette-success-300: #16a34a;
+  --palette-success-400: #15803d;
+  --palette-success-500: #166534;
+  --palette-success-600: #14532d;
+  --palette-success-700: #052e16;
+  --palette-success-800: #022c22;
+  --palette-success-900: #001a0d;
 
-  /* Danger Palette - Red for decreases */
-  --palette-danger-100: #fee2e2;
-  --palette-danger-200: #fecaca;
-  --palette-danger-300: #fca5a5;
-  --palette-danger-400: #f87171;
-  --palette-danger-500: #ef4444;
-  --palette-danger-600: #dc2626;
-  --palette-danger-700: #b91c1c;
-  --palette-danger-800: #991b1b;
-  --palette-danger-900: #7f1d1d;
+  /* Danger Palette - Bold Red family for decreases */
+  --palette-danger-100: #f87171;
+  --palette-danger-200: #ef4444;
+  --palette-danger-300: #dc2626;
+  --palette-danger-400: #b91c1c;
+  --palette-danger-500: #991b1b;
+  --palette-danger-600: #7f1d1d;
+  --palette-danger-700: #450a0a;
+  --palette-danger-800: #2d0a0a;
+  --palette-danger-900: #1a0505;
 
-  /* Warning Palette - Orange for markers */
-  --palette-warning-100: #fed7aa;
-  --palette-warning-200: #fdba74;
-  --palette-warning-300: #fb923c;
-  --palette-warning-400: #f97316;
-  --palette-warning-500: #ea580c;
-  --palette-warning-600: #dc2626;
-  --palette-warning-700: #c2410c;
-  --palette-warning-800: #9a3412;
-  --palette-warning-900: #7c2d12;
+  /* Warning Palette - Bold Orange family for markers */
+  --palette-warning-100: #fb923c;
+  --palette-warning-200: #f97316;
+  --palette-warning-300: #ea580c;
+  --palette-warning-400: #dc2626;
+  --palette-warning-500: #c2410c;
+  --palette-warning-600: #9a3412;
+  --palette-warning-700: #7c2d12;
+  --palette-warning-800: #431407;
+  --palette-warning-900: #1f0d07;
 
-  /* Info Palette - Cyan for notes */
-  --palette-info-100: #cffafe;
-  --palette-info-200: #a5f3fc;
-  --palette-info-300: #67e8f9;
-  --palette-info-400: #22d3ee;
-  --palette-info-500: #06b6d4;
-  --palette-info-600: #0891b2;
-  --palette-info-700: #0e7490;
-  --palette-info-800: #155e75;
-  --palette-info-900: #164e63;
+  /* Info Palette - Bold Teal family for notes */
+  --palette-info-100: #2dd4bf;
+  --palette-info-200: #14b8a6;
+  --palette-info-300: #0d9488;
+  --palette-info-400: #0f766e;
+  --palette-info-500: #115e59;
+  --palette-info-600: #134e4a;
+  --palette-info-700: #042f2e;
+  --palette-info-800: #022220;
+  --palette-info-900: #001212;
 
-  /* Tertiary Palette - Pink for overflow */
-  --palette-tertiary-100: #fce7f3;
-  --palette-tertiary-200: #fbcfe8;
-  --palette-tertiary-300: #f9a8d4;
-  --palette-tertiary-400: #f472b6;
-  --palette-tertiary-500: #ec4899;
-  --palette-tertiary-600: #db2777;
-  --palette-tertiary-700: #be185d;
-  --palette-tertiary-800: #9d174d;
-  --palette-tertiary-900: #831843;
+  /* Tertiary Palette - Bold Magenta family for overflow */
+  --palette-tertiary-100: #f472b6;
+  --palette-tertiary-200: #ec4899;
+  --palette-tertiary-300: #db2777;
+  --palette-tertiary-400: #be185d;
+  --palette-tertiary-500: #9d174d;
+  --palette-tertiary-600: #831843;
+  --palette-tertiary-700: #6b1037;
+  --palette-tertiary-800: #4a0e2b;
+  --palette-tertiary-900: #2d0a1a;
 
   /* Neutral Palette - Grays for text and backgrounds */
   --palette-neutral-50: #f8fafc;

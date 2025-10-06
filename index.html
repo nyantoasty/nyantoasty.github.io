@@ -1011,14 +1011,8 @@
         }
         
         try {
-            // Import the globalGlossary functions and ensure Firebase is available
+            // Import the globalGlossary functions
             const { globalGlossary, getInstructionCategory } = await import('./js/global-glossary.js');
-            const { db } = await import('./js/firebase-config.js');
-            
-            // Ensure Firebase is initialized
-            if (!db) {
-                throw new Error('Firebase not initialized');
-            }
             
             // Add the stitch to the global glossary
             const stitchKey = await globalGlossary.addStitch(

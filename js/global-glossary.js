@@ -1,6 +1,10 @@
 // global-glossary.js - Living Glossary System
 // A persistent, global stitch glossary that grows and improves over time
 
+// Firebase v9+ modular imports
+import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { db } from './firebase-config.js';
+
 /**
  * Global Living Glossary System
  * - Persists across sessions using localStorage
@@ -364,16 +368,16 @@ class GlobalLivingGlossary {
         let baseId = `${craftPrefix}_${cleanStitchKey}_${timestamp}`;
         
         // Check for collision and add counter if needed
-        if (window.db) {
+        if (db) {
             let collision = 0;
             let finalId = baseId;
             
             while (collision < 10) { // Limit collision attempts
                 try {
-                    const docRef = window.db.collection('stitchWitch_Glossary').doc(finalId);
-                    const docSnap = await docRef.get();
+                    const docRef = doc(db, 'stitchWitch_Glossary', finalId);
+                    const docSnap = await getDoc(docRef);
                     
-                    if (!docSnap.exists) {
+                    if (!docSnap.exists()) {
                         return finalId; // Found unique ID
                     }
                     
@@ -395,7 +399,7 @@ class GlobalLivingGlossary {
      * Upload local glossary to Firestore with craft-prefixed IDs and timestamps
      */
     async syncToFirestore() {
-        if (!window.db) {
+        if (!db) {
             console.warn('⚠️ Firestore not available for sync');
             return false;
         }
@@ -413,7 +417,7 @@ class GlobalLivingGlossary {
                     
                     console.log(`📝 Creating Firestore document: ${docId}`);
                     
-                    const docRef = window.db.collection('stitchWitch_Glossary').doc(docId);
+                    const docRef = doc(db, 'stitchWitch_Glossary', docId);
                     
                     // Prepare Firestore document
                     const firestoreDoc = {
@@ -446,7 +450,7 @@ class GlobalLivingGlossary {
                         version: this.CURRENT_VERSION
                     };
                     
-                    await docRef.set(firestoreDoc);
+                    await setDoc(docRef, firestoreDoc);
                     results.push({ success: true, docId, stitchKey });
                 } catch (stitchError) {
                     console.error(`❌ Failed to sync stitch ${stitchKey}:`, stitchError);
@@ -470,13 +474,14 @@ class GlobalLivingGlossary {
      * Merge Firestore data with local glossary
      */
     async syncFromFirestore() {
-        if (!window.db) {
+        if (!db) {
             console.warn('⚠️ Firestore not available for sync');
             return false;
         }
 
         try {
-            const snapshot = await window.db.collection('stitchWitch_Glossary').get();
+            const collectionRef = collection(db, 'stitchWitch_Glossary');
+            const snapshot = await getDocs(collectionRef);
             let loaded = 0;
 
             snapshot.forEach(doc => {

@@ -3,389 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Stitch Witch</t    // Google Sign In
-    loginBtn.addEventListener('click', async () => {
-        try {
-            console.log('🔄 Starting Google sign in...');
-            showLoading();
-            
-            // Set persistence to LOCAL to ensure auth state survives redirects
-            await setPersistence(auth, browserLocalPersistence);
-            console.log('✅ Auth persistence set to LOCAL');
-            
-            // Start the redirect flow
-            await signInWithRedirect(auth, provider);
-        } catch (error) {
-            console.error('❌ Sign in error:', error);
-            console.error('❌ Error code:', error.code);
-            console.error('❌ Error message:', error.message);
-            showError('Failed to sign in. Please try again.');
-        }
-    }); <meta name="description" content="Sign in to access your Stitch Witch pattern library and projects">
-    
-    <!-- Progressive Web App Meta Tags -->
-    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
-    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
-    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
-    <meta name="theme-color" content="#8b5cf6">
-    
-    <!-- Preconnect to External Resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Main Application Stylesheet -->
+    <title>Sign In - Stitch Witch</title>
     <link rel="stylesheet" href="/css/main.css">
-    
-    <style>
-        /* Login-specific styles */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 1rem;
-        }
-        
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .dark .login-card {
-            background: rgba(17, 24, 39, 0.95);
-            border: 1px solid rgba(55, 65, 81, 0.3);
-        }
-        
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        
-        .error-message {
-            color: #ef4444;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-        
-        .dark .error-message {
-            background: #3f1f1f;
-            border-color: #7f1d1d;
-        }
-    </style>
 </head>
-
-<body class="bg-primary text-secondary antialiased">
-    <div class="login-container">
-        <div class="login-card">
-            <!-- App Logo and Title -->
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-primary mb-2">Welcome to Stitch Witch</h1>
-                <p class="text-secondary">Sign in to access your pattern library and projects</p>
+<body class="bg-primary text-secondary">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-card p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h1 class="text-3xl font-bold text-primary mb-6 text-center">Welcome to Stitch Witch</h1>
+            <p class="text-secondary mb-8 text-center">Sign in to access your pattern library</p>
+            
+            <div id="error-message" class="hidden bg-error text-error-foreground p-4 rounded mb-4">
+                <p id="error-text">An error occurred</p>
             </div>
             
-            <!-- Error Message (Hidden by default) -->
-            <div id="error-message" class="error-message">
-                <p id="error-text">An error occurred. Please try again.</p>
-            </div>
-            
-            <!-- Loading State (Hidden by default) -->
-            <div id="loading-message" class="text-center text-secondary mb-6" style="display: none;">
-                <div class="animate-spin w-6 h-6 border-2 border-accent border-t-transparent rounded-full mx-auto mb-2"></div>
+            <div id="loading-message" class="hidden text-center mb-4">
                 <p>Signing you in...</p>
             </div>
             
-            <!-- Login Form -->
-            <div id="login-form">
-                <!-- Google Sign In Button -->
-                <button id="google-login-btn" class="w-full btn-accent font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48">
-                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
-                        <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
-                        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.222 0-9.618-3.317-11.28-7.962l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
-                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C44.572 36.801 48 30.853 48 24c0-1.341-.138-2.65-.389-3.917z"></path>
-                    </svg>
-                    Continue with Google
-                </button>
-                
-                <!-- Divider -->
-                <div class="text-center text-tertiary text-sm mb-4">
-                    <span class="bg-primary px-2">Secure authentication</span>
-                </div>
-                
-                <!-- Features List -->
-                <div class="space-y-2 text-sm text-secondary">
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        Access your personal pattern library
-                    </div>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        Track project progress across devices
-                    </div>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-accent mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        Manage your global stitch glossary
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="mt-8 pt-6 border-t border-secondary text-center">
-                <p class="text-xs text-tertiary">
-                    By signing in, you agree to our 
-                    <a href="#" class="text-accent hover:underline">terms of service</a> and 
-                    <a href="#" class="text-accent hover:underline">privacy policy</a>
-                </p>
-            </div>
+            <button id="google-login-btn" class="w-full btn-accent py-3 px-6 rounded font-bold">
+                Continue with Google
+            </button>
         </div>
     </div>
 
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle" class="fixed top-4 right-4 btn-secondary p-3 rounded-full shadow-lg transition-colors z-50" title="Toggle light/dark mode">
-        <svg id="theme-icon-dark" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-        </svg>
-        <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
-        </svg>
-    </button>
-
 <script type="module">
-    import { redirectIfAuthenticated } from './js/auth-guard.js';
-    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { auth } from './js/auth-guard.js';
+    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    // UI Elements
+    const provider = new GoogleAuthProvider();
     const googleLoginBtn = document.getElementById('google-login-btn');
-    const loginForm = document.getElementById('login-form');
-    const loadingMessage = document.getElementById('loading-message');
     const errorMessage = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
-    const themeToggle = document.getElementById('theme-toggle');
+    const loadingMessage = document.getElementById('loading-message');
 
-    // Google Auth Provider
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({
-        prompt: 'select_account'
-    });
-
-    // Show error message
     function showError(message) {
         errorText.textContent = message;
-        errorMessage.style.display = 'block';
-        hideLoading();
+        errorMessage.classList.remove('hidden');
+        loadingMessage.classList.add('hidden');
     }
 
-    // Show loading state
     function showLoading() {
-        loginForm.style.display = 'none';
-        loadingMessage.style.display = 'block';
-        errorMessage.style.display = 'none';
+        loadingMessage.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
     }
 
-    // Hide loading state
-    function hideLoading() {
-        loginForm.style.display = 'block';
-        loadingMessage.style.display = 'none';
-    }
-
-    // Handle Google Sign In
     googleLoginBtn.addEventListener('click', async () => {
         try {
-            console.log('🔄 Setting up Google sign-in...');
+            console.log('Starting Google sign-in...');
             showLoading();
-            
-            // Set persistence before redirect
-            console.log('🔧 Setting auth persistence to LOCAL...');
             await setPersistence(auth, browserLocalPersistence);
-            console.log('✅ Auth persistence set successfully');
-            
-            console.log('🔄 Starting Google sign-in redirect...');
+            console.log('Auth persistence set');
             await signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error('❌ Sign in error:', error);
-            console.error('❌ Error code:', error.code);
-            console.error('❌ Error message:', error.message);
+            console.error('Sign in error:', error);
             showError('Failed to sign in. Please try again.');
         }
     });
 
-    // Check for redirect result (when user returns from Google)
-    async function checkRedirectResult() {
+    async function checkRedirect() {
         try {
-            console.log('🔍 Checking for redirect result...');
-            console.log('🔍 Auth object:', auth);
-            console.log('🔍 Current user before getRedirectResult:', auth.currentUser);
-            
+            console.log('Checking for redirect result...');
             const result = await getRedirectResult(auth);
-            console.log('🔍 getRedirectResult returned:', result);
-            
             if (result) {
-                // Sign in was successful
-                console.log('✅ Sign in successful:', result.user.email);
-                console.log('✅ Full result object:', result);
-                showLoading();
-                
-                // Give Firebase a moment to update auth state
-                setTimeout(() => {
-                    // Get intended redirect URL or default to index
-                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
-                    sessionStorage.removeItem('auth_redirect_url');
-                    console.log('🔄 Redirecting to:', redirectUrl);
-                    window.location.replace(redirectUrl);
-                }, 500);
-                return true;
+                console.log('Sign in successful:', result.user.email);
+                const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                sessionStorage.removeItem('auth_redirect_url');
+                window.location.replace(redirectUrl);
             } else {
-                console.log('ℹ️ No redirect result found');
-                
-                // Check if user is already authenticated (might be signed in from another tab/session)
-                if (auth.currentUser) {
-                    console.log('✅ User already authenticated:', auth.currentUser.email);
-                    showLoading();
-                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
-                    sessionStorage.removeItem('auth_redirect_url');
-                    console.log('🔄 Redirecting authenticated user to:', redirectUrl);
-                    window.location.replace(redirectUrl);
-                    return true;
-                }
-                
-                return false;
+                console.log('No redirect result found');
             }
         } catch (error) {
-            console.error('❌ Redirect result error:', error);
-            console.error('❌ Error code:', error.code);
-            console.error('❌ Error message:', error.message);
-            console.error('❌ Error stack:', error.stack);
-            showError('Authentication failed. Please try again.');
-            return false;
+            console.error('Redirect error:', error);
+            showError('Authentication failed');
         }
     }
 
-    // Theme Toggle Functionality
-    themeToggle.addEventListener('click', () => {
-        const html = document.documentElement;
-        const isDark = html.classList.contains('dark');
-        
-        if (isDark) {
-            html.classList.remove('dark');
-            html.classList.add('light');
-            localStorage.setItem('theme', 'light');
-        } else {
-            html.classList.remove('light');
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        }
-        
-        // Update theme toggle icons
-        const darkIcon = document.getElementById('theme-icon-dark');
-        const lightIcon = document.getElementById('theme-icon-light');
-        
-        if (darkIcon && lightIcon) {
-            darkIcon.classList.toggle('hidden');
-            lightIcon.classList.toggle('hidden');
-        }
-    });
-
-    // Initialize theme from localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        document.documentElement.className = savedTheme;
-        
-        // Update theme toggle icons
-        const darkIcon = document.getElementById('theme-icon-dark');
-        const lightIcon = document.getElementById('theme-icon-light');
-        
-        if (darkIcon && lightIcon) {
-            if (savedTheme === 'light') {
-                darkIcon.classList.add('hidden');
-                lightIcon.classList.remove('hidden');
-            } else {
-                darkIcon.classList.remove('hidden');
-                lightIcon.classList.add('hidden');
-            }
-        }
-    }
-
-    // Initialize page
-    async function initializePage() {
-        console.log('🔐 Initializing login page...');
-        console.log('🔍 Current URL:', window.location.href);
-        console.log('🔍 Session storage auth_redirect_url:', sessionStorage.getItem('auth_redirect_url'));
-        
-        try {
-            // Set up an auth state listener to detect successful authentication
-            const unsubscribe = onAuthStateChanged(auth, (user) => {
-                console.log('🔍 Auth state changed in login page, user:', user ? user.email : 'null');
-                
-                if (user) {
-                    // User is authenticated! Redirect them immediately
-                    console.log('✅ User authenticated, redirecting...');
-                    showLoading();
-                    
-                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
-                    sessionStorage.removeItem('auth_redirect_url');
-                    console.log('� Redirecting to:', redirectUrl);
-                    
-                    // Clean up listener and redirect
-                    unsubscribe();
-                    window.location.replace(redirectUrl);
-                    return;
-                }
-                
-                console.log('ℹ️ User not authenticated, showing login form');
-            }, (error) => {
-                console.error('❌ Auth state listener error:', error);
-            });
-            
-            // Also check for redirect result (but don't rely on it solely)
-            const hadRedirectResult = await checkRedirectResult();
-            
-            console.log('🔐 Login page initialized successfully');
-        } catch (error) {
-            console.error('❌ Login page initialization error:', error);
-            console.error('❌ Error stack:', error.stack);
-        }
-    }
-
-    // Start initialization
-    initializePage();
-
-    // Add global error handlers to catch any errors we might miss
-    window.addEventListener('error', (event) => {
-        console.error('🚨 GLOBAL ERROR CAUGHT:', event.error);
-        console.error('🚨 Error message:', event.message);
-        console.error('🚨 Error filename:', event.filename);
-        console.error('🚨 Error line:', event.lineno);
-        console.error('🚨 Error column:', event.colno);
-    });
-    
-    window.addEventListener('unhandledrejection', (event) => {
-        console.error('🚨 UNHANDLED PROMISE REJECTION:', event.reason);
-        console.error('🚨 Promise:', event.promise);
-    });
+    checkRedirect();
 </script>
-
 </body>
 </html>

@@ -7,7 +7,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 // Firebase configuration - consistent across all pages
 const firebaseConfig = {
     apiKey: "AIzaSyBmI_9qHr18VWclwzomAUElLTmgJ_MCI3g",
-    authDomain: "arachne-edda2.firebaseapp.com",
+    authDomain: "nyantoasty.github.io",
     projectId: "arachne-edda2",
     storageBucket: "arachne-edda2.firebasestorage.app",
     messagingSenderId: "285468127259",

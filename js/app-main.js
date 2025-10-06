@@ -1422,6 +1422,15 @@ export function showSection(sectionName) {
 
 // Force overlay controls to be visible always
 function initializeOverlayControls() {
+    // Only initialize overlay controls if we're on a page that should have them
+    const isViewerPage = window.location.pathname.includes('viewer.html') || 
+                        document.getElementById('pattern-content') !== null;
+    
+    if (!isViewerPage) {
+        console.log('📄 Skipping overlay controls - not on viewer page');
+        return;
+    }
+    
     const overlay = document.getElementById('bottom-controls-overlay');
     const glossary = document.getElementById('main-glossary-content');
     

@@ -12,6 +12,7 @@ import {
     where, 
     getDocs,
     orderBy,
+    limit,
     FieldValue,
     arrayUnion
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -267,21 +268,31 @@ export async function createNewProject(db, userId, patternId, projectName = null
 }
 
 /**
- * Load a specific project by its ID
+ * Load a specific project by its projectId field value
  * @param {object} db - Firestore database instance
- * @param {string} projectId - The project document ID to load
+ * @param {string} projectId - The projectId field value to search for
  * @returns {object|null} Project data or null if not found
  */
 export async function getProjectById(db, projectId) {
     try {
-        const projectDoc = await getDoc(doc(db, 'user_pattern_progress', projectId));
+        console.log(`🔍 Searching for document with projectId field: ${projectId}`);
         
-        if (projectDoc.exists()) {
-            const projectData = projectDoc.data();
-            projectData.id = projectDoc.id;
+        const q = query(
+            collection(db, 'user_pattern_progress'),
+            where('projectId', '==', projectId),
+            limit(1)
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const projectData = doc.data();
+            projectData.id = doc.id;
+            console.log(`✅ Found project document: ${doc.id}`);
             return projectData;
         } else {
-            console.log(`❌ Project not found: ${projectId}`);
+            console.log(`❌ No document found with projectId: ${projectId}`);
             return null;
         }
     } catch (error) {

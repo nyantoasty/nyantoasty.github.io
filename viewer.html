@@ -347,11 +347,11 @@
         try {
             console.log('🔍 Loading pattern for project:', { patternId, projectId });
             
-            // Load existing project data directly by ID
+            // Load existing project data by projectId (searches for document containing this projectId)
             currentProject = await getProjectById(db, projectId);
             
             if (!currentProject) {
-                throw new Error(`Project not found: ${projectId}`);
+                throw new Error(`Project not found with projectId: ${projectId}`);
             }
             
             console.log('📁 Project loaded:', currentProject);

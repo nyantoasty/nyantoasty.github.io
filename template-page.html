@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!-- 
+    STITCH WITCH PAGE TEMPLATE v2025-10-06
+    
+    This template provides a standardized foundation for all Stitch Witch pages.
+    Copy this file and customize the sections marked with "TODO" comments.
+    
+    FEATURES INCLUDED:
+    - Unified header component system
+    - Three-tier CSS token system (tokens.css → thematic-mapping.css → dark/light.css)
+    - Semantic classes for consistent theming
+    - Firebase v9+ modular setup with proper imports
+    - Authentication state management
+    - Mobile-responsive design
+    - Proper meta tags and PWA support
+    
+    ARCHITECTURE:
+    - All styling uses semantic classes (bg-primary, text-secondary, btn-accent, etc.)
+    - No hard-coded Tailwind colors (bg-gray-800, text-blue-500, etc.)
+    - Firebase imports are modular and follow v9+ patterns
+    - CSS follows three-tier token system for theme consistency
+    
+    USAGE:
+    1. Copy this file to your new page name
+    2. Update the title, meta description, and page-specific content
+    3. Customize the main content area
+    4. Add page-specific JavaScript modules as needed
+    5. Test authentication flow and responsive design
+-->
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TODO: Update title for your specific page -->
+    <title>Stitch Witch - Page Title</title>
+    
+    <!-- TODO: Update meta description for SEO -->
+    <meta name="description" content="Stitch Witch - Your page description for SEO">
+    
+    <!-- Progressive Web App Meta Tags -->
+    <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
+    <link rel="apple-touch-icon" href="/assets/icons/yarn-ball-icon.png">
+    <meta name="theme-color" content="#8b5cf6">
+    
+    <!-- Preconnect to External Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 
+        MAIN STYLESHEET - Three-Tier Token System
+        
+        Structure:
+        1. css/base/ - Reset, typography, base styles
+        2. css/themes/tokens.css - Raw design tokens
+        3. css/themes/thematic-mapping.css - Token assignments
+        4. css/themes/dark.css & light.css - Theme implementations
+        5. css/components/ - Component-specific styles
+        6. css/semantic-classes.css - Utility classes using CSS custom properties
+        
+        This ensures consistent theming across all pages and easy theme switching.
+    -->
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<!-- 
+    BODY CLASSES:
+    - bg-primary: Uses theme-aware background color
+    - text-secondary: Uses theme-aware text color
+    - antialiased: Smooth font rendering
+    - has-unified-header: Indicates this page uses the unified header component
+-->
+<body class="bg-primary text-secondary antialiased has-unified-header">
+
+    <!-- 
+        UNIFIED HEADER COMPONENT
+        
+        This placeholder gets replaced with the actual header content via JavaScript.
+        The header provides:
+        - Consistent navigation across all pages
+        - Theme toggle functionality
+        - User authentication status
+        - Mobile-responsive menu
+        
+        IMPORTANT: Keep this div with the exact ID "header-placeholder"
+    -->
+    <div id="header-placeholder"></div>
+
+    <!-- 
+        MAIN APPLICATION CONTAINER
+        
+        This page is protected by auth-guard.js - only authenticated users can access it.
+        No need for auth containers or login forms - that's handled by login.html.
+    -->
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- 
+            PAGE HEADER
+            
+            Standard header for all authenticated pages.
+            Includes user info and logout button.
+        -->
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-primary pb-4">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <!-- TODO: Update page title and description -->
+                <h1 class="text-3xl font-bold text-primary">Page Title</h1>
+                <p id="user-display" class="text-sm text-tertiary">Welcome!</p>
+                <p class="text-xs text-muted">v2025-10-06 Template</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- TODO: Add page-specific navigation or controls here -->
+                <nav class="flex items-center space-x-2">
+                    <a href="index.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Viewer</a>
+                    <a href="pattern-upload.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Generator</a>
+                    <a href="glossary-manager.html" class="btn-secondary font-medium py-2 px-4 rounded-lg transition-colors text-sm">Glossary</a>
+                </nav>
+                <button id="logout-btn" class="btn-danger font-medium py-2 px-4 rounded-lg transition-colors text-sm">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- 
+            MAIN CONTENT AREA
+            
+            TODO: Replace this section with your page-specific content.
+            
+            GUIDELINES:
+            - Use semantic classes (bg-secondary, text-primary, etc.)
+            - Maintain consistent spacing with mb-6, p-4, etc.
+            - Use btn-* classes for buttons
+            - Follow responsive design patterns
+        -->
+        <main class="space-y-6">
+            <section class="bg-secondary p-6 rounded-lg border border-primary">
+                <h2 class="text-2xl font-bold text-primary mb-4">Main Content Section</h2>
+                <p class="text-secondary mb-4">
+                    This is where your page-specific content goes. Replace this entire main section
+                    with your actual page content while maintaining the semantic class usage.
+                </p>
+                
+                <!-- Example form with semantic classes -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-secondary mb-2">Example Input</label>
+                        <input type="text" class="w-full px-3 py-2 bg-tertiary border border-primary rounded-lg text-primary focus:ring-2 focus:ring-accent focus:border-accent" placeholder="Example placeholder">
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="btn-success px-4 py-2 rounded-lg font-medium transition-colors">Save</button>
+                        <button class="btn-secondary px-4 py-2 rounded-lg font-medium transition-colors">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 
+        THEME TOGGLE BUTTON (Optional)
+        
+        Floating button for theme switching. Remove if not needed.
+    -->
+    <button id="theme-toggle" class="fixed bottom-4 right-4 btn-secondary p-3 rounded-full shadow-lg transition-colors z-50" title="Toggle light/dark mode">
+        <svg id="theme-icon-dark" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+        </svg>
+    </button>
+
+<script type="module">
+    /*
+        AUTHENTICATION-FIRST ARCHITECTURE
+        
+        This template uses a centralized auth guard system:
+        1. All pages require authentication by default
+        2. Unauthenticated users are redirected to /login.html
+        3. No mixed auth/app UI - clean separation
+        4. Automatic session persistence and redirect handling
+    */
+    
+    // Import centralized auth guard
+    import { requireAuth, signOutUser } from './js/auth-guard.js';
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
+    // TODO: Import your page-specific modules
+    // Example:
+    // import { yourPageFunctions } from "./js/your-page-module.js";
+    
+    // Global variables (auth and db provided by auth-guard)
+    let auth, db;
+    
+    // UI Elements
+    const logoutBtn = document.getElementById('logout-btn');
+    const userDisplay = document.getElementById('user-display');
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Authentication Event Handlers
+    logoutBtn?.addEventListener('click', () => {
+        signOutUser(); // Uses centralized sign out from auth-guard
+    });
+    
+    // Theme Toggle Functionality - STANDARD ACROSS ALL PAGES
+    themeToggle?.addEventListener('click', () => {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+        
+        if (isDark) {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.remove('light');
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        // Update theme toggle icons
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const lightIcon = document.getElementById('theme-icon-light');
+        
+        if (darkIcon && lightIcon) {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+        }
+    });
+    
+    // Initialize theme from localStorage - STANDARD ACROSS ALL PAGES
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.className = savedTheme;
+        
+        // Update theme toggle icons
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const lightIcon = document.getElementById('theme-icon-light');
+        
+        if (darkIcon && lightIcon) {
+            if (savedTheme === 'light') {
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            }
+        }
+    }
+    
+    // Initialize theme from localStorage - STANDARD ACROSS ALL PAGES
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.className = savedTheme;
+            
+            // Update theme toggle icons
+            const darkIcon = document.getElementById('theme-icon-dark');
+            const lightIcon = document.getElementById('theme-icon-light');
+            
+            if (darkIcon && lightIcon) {
+                if (savedTheme === 'light') {
+                    darkIcon.classList.add('hidden');
+                    lightIcon.classList.remove('hidden');
+                } else {
+                    darkIcon.classList.remove('hidden');
+                    lightIcon.classList.add('hidden');
+                }
+            }
+        }
+    }
+    
+    // Initialize theme immediately
+    initializeTheme();
+    
+    // Main Authentication Flow - REQUIRED FOR ALL PROTECTED PAGES
+    requireAuth().then(user => {
+        // User is authenticated - safe to initialize Firebase services and page content
+        auth = user.auth;
+        db = getFirestore(user.auth.app);
+        
+        // Make available globally for debugging (optional)
+        window.auth = auth;
+        window.db = db;
+        
+        // Update user display
+        if (userDisplay) {
+            userDisplay.textContent = `Signed in as ${user.displayName || user.email}`;
+        }
+        
+        // Load unified header component
+        fetch('/components/unified-header.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('header-placeholder').outerHTML = html;
+                // Initialize header functionality
+                import('./js/unified-header.js');
+            })
+            .catch(err => console.warn('Header load failed:', err));
+        
+        // Initialize page-specific functionality
+        initializePageContent();
+        
+        console.log('✅ Page initialized for authenticated user:', user.email);
+        
+    }).catch(error => {
+        // Authentication failed - user will be redirected to login
+        console.log('🔐 Authentication required, redirecting...');
+    });
+    
+    // Page-Specific Initialization Function
+    function initializePageContent() {
+        /*
+            TODO: Add your page-specific initialization code here
+            
+            This function is called after the user is authenticated and Firebase is ready.
+            Use this to:
+            - Load data from Firestore using the `db` instance
+            - Set up page-specific event listeners
+            - Initialize page-specific UI components
+            - Load user-specific content
+            
+            Example:
+            loadUserData();
+            setupPageEventListeners();
+            initializePageComponents();
+        */
+        
+        console.log('🚀 Page content initialized for authenticated user');
+    }
+    
+    // Global Error Handlers - STANDARD ACROSS ALL PAGES
+    window.addEventListener('error', (event) => {
+        console.error('🚨 Global error:', event.error);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+        console.error('🚨 Unhandled promise rejection:', event.reason);
+    });
+    
+    console.log('📄 Page template loaded successfully');
+</script>
+
+</body>
+</html>

@@ -427,7 +427,7 @@ export function generateMainGlossary(PATTERN_DATA) {
     let glossaryHTML = '';
     
     sortedStitches.forEach(stitchDef => {
-        const { key, name, description, token, category, metadata } = stitchDef;
+        const { key, name, description, token, category, metadata, videoLink, pictureLink, notes } = stitchDef;
         
         // Use stitchesCreated info if available from pattern data
         const patternItem = PATTERN_DATA?.glossary?.[key];
@@ -437,6 +437,20 @@ export function generateMainGlossary(PATTERN_DATA) {
         const formattedDescription = description
             .replace(/\\n/g, '<br>')
             .replace(/\n/g, '<br>');
+            
+        // Create multimedia elements if available
+        let mediaHtml = '';
+        if (videoLink) {
+            const isYoutube = /youtube\.com|youtu\.be/.test(videoLink);
+            const linkText = isYoutube ? '📹 Video Tutorial' : '📹 Video';
+            mediaHtml += `<a href="${videoLink}" target="_blank" class="text-blue-400 hover:text-blue-300 text-xs mr-3">${linkText}</a>`;
+        }
+        if (pictureLink) {
+            mediaHtml += `<a href="${pictureLink}" target="_blank" class="text-green-400 hover:text-green-300 text-xs mr-3">🖼️ Diagram</a>`;
+        }
+        
+        // Add notes if available
+        const notesHtml = notes ? `<p class="text-xs text-yellow-400 mt-1 italic">${notes}</p>` : '';
         
         glossaryHTML += `
             <div class="cursor-pointer hover:bg-tertiary p-3 rounded border border-primary transition-colors" data-stitch="${key}">
@@ -444,6 +458,8 @@ export function generateMainGlossary(PATTERN_DATA) {
                     ${name} (${key})${stitchInfo}
                 </h4>
                 <p class="text-xs text-tertiary leading-relaxed">${formattedDescription}</p>
+                ${mediaHtml ? `<div class="mt-2">${mediaHtml}</div>` : ''}
+                ${notesHtml}
             </div>
         `;
     });

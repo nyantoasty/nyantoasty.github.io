@@ -179,9 +179,29 @@ class GlobalLivingGlossary {
             definition.token = this.getToken(stitchKey, definition.category);
         }
 
+        // Prepare enhanced definition with new fields
+        const enhancedDefinition = {
+            name: definition.name || stitchKey.toUpperCase(),
+            description: definition.description || '',
+            category: definition.category || 'basic',
+            // New multimedia fields
+            videoLink: definition.videoLink || '',
+            pictureLink: definition.pictureLink || '',
+            alternateVideos: definition.alternateVideos || [],
+            // Technical fields  
+            stitchesCreated: definition.stitchesCreated || 1,
+            difficulty: definition.difficulty || 'beginner',
+            tags: definition.tags || [],
+            // Existing fields
+            token: definition.token,
+            stitchesUsed: definition.stitchesUsed,
+            needlePosition: definition.needlePosition,
+            ...definition
+        };
+
         // Add metadata
         const fullDefinition = {
-            ...definition,
+            ...enhancedDefinition,
             metadata: {
                 ...metadata,
                 lastUpdated: new Date().toISOString(),
@@ -192,7 +212,7 @@ class GlobalLivingGlossary {
         this.glossary.set(stitchKey, fullDefinition);
         this.save();
         
-        console.log(`✅ Added stitch: ${stitchKey} -> ${definition.token}`);
+        console.log(`✅ Added stitch: ${stitchKey} -> ${enhancedDefinition.token}`);
         return true;
     }
 
@@ -212,7 +232,21 @@ class GlobalLivingGlossary {
         // For now, prefer more detailed definitions
         if (newDef.description && newDef.description.length > (existing.description?.length || 0)) {
             console.log(`🔄 Updating ${stitchKey} with better definition`);
-            return this.addStitch(stitchKey, { ...existing, ...newDef }, metadata);
+            
+            // Directly update without calling addStitch to avoid recursion
+            const updatedDef = {
+                ...existing,
+                ...newDef,
+                metadata: {
+                    ...metadata,
+                    lastUpdated: new Date().toISOString(),
+                    version: this.CURRENT_VERSION
+                }
+            };
+            
+            this.glossary.set(stitchKey, updatedDef);
+            this.save();
+            return true;
         }
         
         // Keep existing if no improvement
@@ -311,6 +345,210 @@ class GlobalLivingGlossary {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Generate a unique document ID with collision handling
+     * @param {string} stitchKey - The stitch key
+     * @param {string} craftPrefix - The craft prefix (K, C, T, F)
+     * @returns {Promise<string>} Unique document ID
+     */
+    async generateUniqueDocId(stitchKey, craftPrefix) {
+        // Generate base timestamp with milliseconds for better uniqueness
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[-:.]/g, '').slice(0, 17); // YYYYMMDDTHHMMSSSS (includes milliseconds)
+        
+        // Clean stitch key to ensure Firestore compatibility
+        const cleanStitchKey = stitchKey.replace(/[^a-zA-Z0-9_]/g, '_');
+        
+        let baseId = `${craftPrefix}_${cleanStitchKey}_${timestamp}`;
+        
+        // Check for collision and add counter if needed
+        if (window.db) {
+            let collision = 0;
+            let finalId = baseId;
+            
+            while (collision < 10) { // Limit collision attempts
+                try {
+                    const docRef = window.db.collection('stitchWitch_Glossary').doc(finalId);
+                    const docSnap = await docRef.get();
+                    
+                    if (!docSnap.exists) {
+                        return finalId; // Found unique ID
+                    }
+                    
+                    // Collision detected, increment counter
+                    collision++;
+                    finalId = `${baseId}_${collision.toString().padStart(2, '0')}`;
+                } catch (error) {
+                    console.warn(`⚠️ Error checking document existence for ${finalId}:`, error);
+                    break;
+                }
+            }
+        }
+        
+        return baseId; // Fallback if collision checking fails
+    }
+
+    /**
+     * Sync glossary with Firestore
+     * Upload local glossary to Firestore with craft-prefixed IDs and timestamps
+     */
+    async syncToFirestore() {
+        if (!window.db) {
+            console.warn('⚠️ Firestore not available for sync');
+            return false;
+        }
+
+        try {
+            const stitches = Array.from(this.glossary.entries());
+            const results = [];
+
+            // Process each stitch individually to handle unique ID generation
+            for (const [stitchKey, definition] of stitches) {
+                try {
+                    // Create craft-prefixed ID with enhanced collision handling
+                    const craftPrefix = this.getCraftPrefix(definition.category);
+                    const docId = await this.generateUniqueDocId(stitchKey, craftPrefix);
+                    
+                    console.log(`📝 Creating Firestore document: ${docId}`);
+                    
+                    const docRef = window.db.collection('stitchWitch_Glossary').doc(docId);
+                    
+                    // Prepare Firestore document
+                    const firestoreDoc = {
+                        id: docId,
+                        stitchKey: stitchKey,
+                        name: definition.name,
+                        description: definition.description,
+                        category: definition.category,
+                        craft: craftPrefix,
+                        
+                        // Multimedia fields
+                        videoLink: definition.videoLink || '',
+                        pictureLink: definition.pictureLink || '',
+                        alternateVideos: definition.alternateVideos || [],
+                        
+                        // Technical fields
+                        stitchesCreated: definition.stitchesCreated || 1,
+                        difficulty: definition.difficulty || 'beginner',
+                        tags: definition.tags || [],
+                        
+                        // CSS theming integration
+                        cssToken: definition.token,
+                        tokenCategory: this.getTokenCategory(definition.token),
+                        tokenLevel: this.getTokenLevel(definition.token),
+                        
+                        // Metadata
+                        source: definition.metadata?.source || 'global-glossary',
+                        createdAt: definition.metadata?.addedAt || new Date().toISOString(),
+                        lastUpdated: new Date().toISOString(),
+                        version: this.CURRENT_VERSION
+                    };
+                    
+                    await docRef.set(firestoreDoc);
+                    results.push({ success: true, docId, stitchKey });
+                } catch (stitchError) {
+                    console.error(`❌ Failed to sync stitch ${stitchKey}:`, stitchError);
+                    results.push({ success: false, stitchKey, error: stitchError.message });
+                }
+            }
+            
+            const successful = results.filter(r => r.success).length;
+            const failed = results.filter(r => !r.success).length;
+            
+            console.log(`🔄 Sync complete: ${successful} successful, ${failed} failed`);
+            return failed === 0;
+        } catch (error) {
+            console.error('❌ Failed to sync to Firestore:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Load glossary from Firestore 
+     * Merge Firestore data with local glossary
+     */
+    async syncFromFirestore() {
+        if (!window.db) {
+            console.warn('⚠️ Firestore not available for sync');
+            return false;
+        }
+
+        try {
+            const snapshot = await window.db.collection('stitchWitch_Glossary').get();
+            let loaded = 0;
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                
+                // Convert Firestore document back to local format
+                const definition = {
+                    name: data.name,
+                    description: data.description,
+                    category: data.category,
+                    token: data.cssToken,
+                    
+                    // New multimedia fields
+                    videoLink: data.videoLink || '',
+                    pictureLink: data.pictureLink || '',
+                    alternateVideos: data.alternateVideos || [],
+                    
+                    // Technical fields
+                    stitchesCreated: data.stitchesCreated || 1,
+                    difficulty: data.difficulty || 'beginner',
+                    tags: data.tags || [],
+                    
+                    metadata: {
+                        source: data.source || 'firestore',
+                        addedAt: data.createdAt,
+                        lastUpdated: data.lastUpdated,
+                        version: data.version || '1.0'
+                    }
+                };
+
+                // Use original stitch key, not the prefixed document ID
+                this.glossary.set(data.stitchKey, definition);
+                loaded++;
+            });
+
+            this.save(); // Save to localStorage
+            console.log(`🔄 Loaded ${loaded} stitches from Firestore`);
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to load from Firestore:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Get craft prefix based on stitch category
+     */
+    getCraftPrefix(category) {
+        const categoryMap = {
+            'increase': 'K', 'decrease': 'K', 'basic': 'K', 'cable': 'K', 'lace': 'K',
+            'crochet': 'C', 'single-crochet': 'C', 'double-crochet': 'C',
+            'tunisian': 'T', 'tunisian-knit': 'T', 'tunisian-purl': 'T'
+        };
+        return categoryMap[category] || 'K'; // Default to knitting
+    }
+
+    /**
+     * Extract token category from token string
+     */
+    getTokenCategory(token) {
+        if (!token) return 'stitch';
+        const match = token.match(/token-(\w+)-/);
+        return match ? match[1] : 'stitch';
+    }
+
+    /**
+     * Extract token level from token string  
+     */
+    getTokenLevel(token) {
+        if (!token) return '01';
+        const match = token.match(/token-\w+-(\d+)/);
+        return match ? match[1] : '01';
     }
 
     /**

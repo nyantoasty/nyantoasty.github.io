@@ -379,6 +379,8 @@ Our primary objective is to create a complete and reliable digital companion for
 
 The glossary is the foundation of all automation. By defining the `stitchesUsed` and `stitchesCreated` for every term in a pattern's lexicon, we give the system the mathematical certainty needed to validate stitch counts, resolve variables, and expand repeats. An accurate and complete glossary is the most critical component of a successful translation.
 
+**Implementation Note:** The current system features an enhanced GlobalLivingGlossary that automatically maintains consistent stitch definitions across all patterns. This global system supplements pattern-specific glossaries with multimedia resources (video tutorials, diagrams) and ensures consistent CSS token assignment. While patterns should still include their own glossary for mathematical accuracy, the global system provides rich metadata and cross-pattern consistency. See `js/global-glossary.js` and the `stitchWitch_Glossary` Firestore collection for implementation details.
+
 ### 3. The Method: Full Enumeration
 
 Human-written patterns use shorthand like "repeat rows 3-4" or "(k2, p2) to end." Our system translates this into an explicit, fully enumerated list of actions where every single row is a unique step. This involves three key transformations:

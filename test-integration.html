@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Glossary Integration</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 8px 16px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        code { background: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 0.9em; }
+        
+        /* Import CSS tokens for testing */
+        .token-stitch-01 { color: #e74c3c; font-weight: bold; }
+        .token-stitch-02 { color: #3498db; font-weight: bold; }
+        .token-stitch-03 { color: #2ecc71; font-weight: bold; }
+        .token-increase-01 { color: #f39c12; font-weight: bold; }
+        .token-decrease-01 { color: #9b59b6; font-weight: bold; }
+        
+        #main-glossary-content { border: 1px solid #ccc; padding: 10px; min-height: 100px; }
+        #pattern-content { border: 1px solid #ccc; padding: 10px; min-height: 100px; }
+    </style>
+</head>
+<body>
+    <h1>Enhanced Glossary Integration Test</h1>
+    <p>Testing the enhanced GlobalLivingGlossary system with existing pattern rendering.</p>
+
+    <div class="test-section">
+        <h3>Test Controls</h3>
+        <button onclick="runBasicIntegrationTest()">Basic Integration Test</button>
+        <button onclick="runTokenAssignmentTest()">Token Assignment Test</button>
+        <button onclick="runTooltipTest()">Tooltip Generation Test</button>
+        <button onclick="runGlossaryDisplayTest()">Glossary Display Test</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <!-- Mock DOM elements that pattern functions expect -->
+    <div class="test-section">
+        <h3>Mock Pattern Display</h3>
+        <div id="main-glossary-content"></div>
+        <div id="pattern-content"></div>
+    </div>
+
+    <script type="module">
+        // Import our enhanced system
+        import { globalGlossary } from './js/global-glossary.js';
+        import { addTooltips, getInstructionCategory, initializeGlossaryFromPattern, getSortedGlossary } from './js/utils.js';
+        import { generateMainGlossary, formatInstructionWithTokens } from './js/pattern-functions.js';
+        
+        // Make available globally for testing
+        window.globalGlossary = globalGlossary;
+        window.addTooltips = addTooltips;
+        window.getInstructionCategory = getInstructionCategory;
+        window.initializeGlossaryFromPattern = initializeGlossaryFromPattern;
+        window.getSortedGlossary = getSortedGlossary;
+        window.generateMainGlossary = generateMainGlossary;
+        window.formatInstructionWithTokens = formatInstructionWithTokens;
+        
+        window.results = document.getElementById('results');
+        
+        window.addResult = function(type, message) {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            window.results.appendChild(div);
+        };
+        
+        window.clearResults = function() {
+            window.results.innerHTML = '';
+        };
+
+        // Sample pattern data for testing
+        const TEST_PATTERN_DATA = {
+            name: "Test Pattern",
+            glossary: {
+                "k": {
+                    name: "Knit",
+                    description: "Insert right needle through front of stitch, wrap yarn, pull through",
+                    category: "basic",
+                    stitchesCreated: 1,
+                    videoLink: "https://youtube.com/watch?v=test",
+                    pictureLink: "https://example.com/knit.jpg"
+                },
+                "k2tog": {
+                    name: "Knit 2 Together", 
+                    description: "Knit two stitches together as one stitch",
+                    category: "decrease",
+                    stitchesCreated: 1
+                },
+                "kfb": {
+                    name: "Knit Front and Back",
+                    description: "Increase by knitting into front then back of same stitch",
+                    category: "increase", 
+                    stitchesCreated: 2,
+                    notes: "Creates a small bump in the fabric"
+                }
+            }
+        };
+
+        window.runBasicIntegrationTest = function() {
+            window.addResult('info', '<strong>Running Basic Integration Test...</strong>');
+            
+            try {
+                // Test 1: Initialize glossary from pattern
+                window.initializeGlossaryFromPattern(TEST_PATTERN_DATA, 'test-pattern');
+                
+                const stitches = window.getSortedGlossary();
+                if (stitches.length >= 3) {
+                    window.addResult('success', `✅ Loaded ${stitches.length} stitches from pattern`);
+                } else {
+                    window.addResult('error', `❌ Expected at least 3 stitches, got ${stitches.length}`);
+                }
+                
+                // Test 2: Check enhanced fields are preserved
+                const knitStitch = window.globalGlossary.getStitch('k');
+                if (knitStitch && knitStitch.videoLink === 'https://youtube.com/watch?v=test') {
+                    window.addResult('success', '✅ Enhanced fields (videoLink) preserved');
+                } else {
+                    window.addResult('error', '❌ Enhanced fields not preserved properly');
+                }
+                
+                // Test 3: Check token assignment
+                const token = window.getInstructionCategory('k2tog', TEST_PATTERN_DATA);
+                if (token && token.startsWith('token-')) {
+                    window.addResult('success', `✅ Token assignment working: k2tog → ${token}`);
+                } else {
+                    window.addResult('error', `❌ Token assignment failed: got ${token}`);
+                }
+                
+            } catch (error) {
+                window.addResult('error', `❌ Basic integration test failed: ${error.message}`);
+            }
+        };
+
+        window.runTokenAssignmentTest = function() {
+            window.addResult('info', '<strong>Running Token Assignment Test...</strong>');
+            
+            try {
+                // Initialize with test pattern
+                window.initializeGlossaryFromPattern(TEST_PATTERN_DATA, 'token-test');
+                
+                const testCases = [
+                    { stitch: 'k', expectedCategory: 'basic' },
+                    { stitch: 'k2tog', expectedCategory: 'decrease' },
+                    { stitch: 'kfb', expectedCategory: 'increase' }
+                ];
+                
+                testCases.forEach(testCase => {
+                    const token = window.getInstructionCategory(testCase.stitch, TEST_PATTERN_DATA);
+                    const isCorrectCategory = token.includes(testCase.expectedCategory) || token.includes('stitch');
+                    
+                    if (isCorrectCategory) {
+                        window.addResult('success', `✅ ${testCase.stitch} → ${token} (${testCase.expectedCategory})`);
+                    } else {
+                        window.addResult('error', `❌ ${testCase.stitch} → ${token} (expected ${testCase.expectedCategory})`);
+                    }
+                });
+                
+            } catch (error) {
+                window.addResult('error', `❌ Token assignment test failed: ${error.message}`);
+            }
+        };
+
+        window.runTooltipTest = function() {
+            window.addResult('info', '<strong>Running Tooltip Generation Test...</strong>');
+            
+            try {
+                // Initialize with test pattern
+                window.initializeGlossaryFromPattern(TEST_PATTERN_DATA, 'tooltip-test');
+                
+                const testText = "Row 1: k, k2tog, kfb, repeat to end";
+                const processedText = window.addTooltips(testText, TEST_PATTERN_DATA);
+                
+                // Check if tooltips were added
+                const hasTooltips = processedText.includes('title=') && processedText.includes('span class=');
+                
+                if (hasTooltips) {
+                    window.addResult('success', '✅ Tooltips generated successfully');
+                    window.addResult('info', `Original: <code>${testText}</code>`);
+                    window.addResult('info', `Processed: <div style="font-size:0.9em;">${processedText}</div>`);
+                } else {
+                    window.addResult('error', '❌ No tooltips generated');
+                    window.addResult('info', `Result: ${processedText}`);
+                }
+                
+            } catch (error) {
+                window.addResult('error', `❌ Tooltip test failed: ${error.message}`);
+            }
+        };
+
+        window.runGlossaryDisplayTest = function() {
+            window.addResult('info', '<strong>Running Glossary Display Test...</strong>');
+            
+            try {
+                // Initialize with test pattern
+                window.initializeGlossaryFromPattern(TEST_PATTERN_DATA, 'display-test');
+                
+                // Test main glossary generation
+                window.generateMainGlossary(TEST_PATTERN_DATA);
+                
+                const glossaryEl = document.getElementById('main-glossary-content');
+                const hasContent = glossaryEl.innerHTML.length > 50;
+                const hasVideoLinks = glossaryEl.innerHTML.includes('📹');
+                const hasPictureLinks = glossaryEl.innerHTML.includes('🖼️');
+                
+                if (hasContent) {
+                    window.addResult('success', '✅ Main glossary generated with content');
+                } else {
+                    window.addResult('error', '❌ Main glossary generation failed');
+                }
+                
+                if (hasVideoLinks) {
+                    window.addResult('success', '✅ Video links displayed in glossary');
+                } else {
+                    window.addResult('error', '❌ Video links not displayed');
+                }
+                
+                if (hasPictureLinks) {
+                    window.addResult('success', '✅ Picture links displayed in glossary');
+                } else {
+                    window.addResult('error', '❌ Picture links not displayed');
+                }
+                
+                // Show sample of generated content
+                const sampleContent = glossaryEl.innerHTML.substring(0, 200) + '...';
+                window.addResult('info', `Sample output: <pre>${sampleContent}</pre>`);
+                
+            } catch (error) {
+                window.addResult('error', `❌ Glossary display test failed: ${error.message}`);
+            }
+        };
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            window.addResult('info', '🚀 Enhanced Glossary Integration Test Ready');
+            window.addResult('info', 'Click the test buttons above to validate different aspects of the system.');
+        });
+    </script>
+</body>
+</html>

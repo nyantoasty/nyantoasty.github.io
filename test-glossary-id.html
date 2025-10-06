@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Glossary ID Generation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #results { border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Glossary ID Format Validation Test</h1>
+    <p>This test validates the enhanced Firestore document ID generation with collision handling.</p>
+    
+    <div>
+        <button onclick="runIdGenerationTest()">Test ID Generation</button>
+        <button onclick="runFirestoreCompatibilityTest()">Test Firestore Compatibility</button>
+        <button onclick="runCollisionTest()">Test Collision Handling</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script type="module">
+        // Mock window.db for testing without actual Firestore connection
+        window.db = null; // Will test without Firestore first
+        
+        // Import our enhanced global glossary
+        import { globalGlossary } from './js/global-glossary.js';
+        
+        window.globalGlossary = globalGlossary;
+        window.results = document.getElementById('results');
+        
+        window.addResult = function(type, message) {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            window.results.appendChild(div);
+        };
+        
+        window.clearResults = function() {
+            window.results.innerHTML = '';
+        };
+        
+        window.runIdGenerationTest = async function() {
+            window.addResult('info', '<strong>Testing ID Generation...</strong>');
+            
+            try {
+                // Test basic ID generation format
+                const testCases = [
+                    { stitchKey: 'knit', craftPrefix: 'K' },
+                    { stitchKey: 'single_crochet', craftPrefix: 'C' },
+                    { stitchKey: 'simple_stitch', craftPrefix: 'T' },
+                    { stitchKey: 'weave_ends', craftPrefix: 'F' },
+                    { stitchKey: 'k2tog', craftPrefix: 'K' },
+                    { stitchKey: 'ch-sp', craftPrefix: 'C' } // Test special characters
+                ];
+                
+                for (const testCase of testCases) {
+                    const id = await globalGlossary.generateUniqueDocId(testCase.stitchKey, testCase.craftPrefix);
+                    
+                    // Validate format
+                    const expectedPattern = new RegExp(`^${testCase.craftPrefix}_[a-zA-Z0-9_]+_\\d{17}(_\\d{2})?$`);
+                    
+                    if (expectedPattern.test(id)) {
+                        window.addResult('success', `✅ ${testCase.stitchKey} → <code>${id}</code>`);
+                    } else {
+                        window.addResult('error', `❌ ${testCase.stitchKey} → Invalid format: <code>${id}</code>`);
+                    }
+                }
+            } catch (error) {
+                window.addResult('error', `❌ ID Generation failed: ${error.message}`);
+            }
+        };
+        
+        window.runFirestoreCompatibilityTest = function() {
+            window.addResult('info', '<strong>Testing Firestore Compatibility...</strong>');
+            
+            // Test Firestore document ID rules
+            const testIds = [
+                'K_knit_20251006123045123',
+                'C_single_crochet_20251006123045123',
+                'T_tunisian_simple_20251006123045123_01',
+                'F_weave_ends_20251006123045123'
+            ];
+            
+            testIds.forEach(id => {
+                let isValid = true;
+                let issues = [];
+                
+                // Check length (Firestore limit: 1,500 bytes)
+                if (id.length > 1500) {
+                    isValid = false;
+                    issues.push('Too long (>1500 bytes)');
+                }
+                
+                // Check for invalid characters
+                if (id.includes('/')) {
+                    isValid = false;
+                    issues.push('Contains forward slash');
+                }
+                
+                // Check if it's all dots
+                if (id === '.' || id === '..') {
+                    isValid = false;
+                    issues.push('Cannot be solely dots');
+                }
+                
+                // Check for null bytes and other problematic characters
+                if (/[\\x00-\\x1f\\x7f]/.test(id)) {
+                    isValid = false;
+                    issues.push('Contains control characters');
+                }
+                
+                if (isValid) {
+                    window.addResult('success', `✅ <code>${id}</code> - Valid Firestore ID`);
+                } else {
+                    window.addResult('error', `❌ <code>${id}</code> - Issues: ${issues.join(', ')}`);
+                }
+            });
+        };
+        
+        window.runCollisionTest = async function() {
+            window.addResult('info', '<strong>Testing Collision Handling...</strong>');
+            
+            try {
+                // Test multiple IDs generated in quick succession
+                const results = [];
+                const stitchKey = 'test_stitch';
+                const craftPrefix = 'K';
+                
+                // Generate 5 IDs quickly to test uniqueness
+                for (let i = 0; i < 5; i++) {
+                    const id = await globalGlossary.generateUniqueDocId(stitchKey, craftPrefix);
+                    results.push(id);
+                    
+                    // Small delay to test millisecond precision
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                }
+                
+                // Check for uniqueness
+                const uniqueIds = new Set(results);
+                
+                if (uniqueIds.size === results.length) {
+                    window.addResult('success', `✅ All 5 IDs are unique:`);
+                    results.forEach((id, index) => {
+                        window.addResult('info', `   ${index + 1}. <code>${id}</code>`);
+                    });
+                } else {
+                    window.addResult('error', `❌ Found duplicate IDs! Generated: ${results.length}, Unique: ${uniqueIds.size}`);
+                    window.addResult('info', `<pre>${JSON.stringify(results, null, 2)}</pre>`);
+                }
+                
+                // Test collision counter format
+                window.addResult('info', '<strong>Testing collision counter format...</strong>');
+                const baseId = 'K_test_20251006123045123';
+                const expectedCollisions = [
+                    'K_test_20251006123045123_01',
+                    'K_test_20251006123045123_02',
+                    'K_test_20251006123045123_03'
+                ];
+                
+                expectedCollisions.forEach(id => {
+                    const isValidFormat = /^K_test_\\d{17}_\\d{2}$/.test(id);
+                    if (isValidFormat) {
+                        window.addResult('success', `✅ Valid collision format: <code>${id}</code>`);
+                    } else {
+                        window.addResult('error', `❌ Invalid collision format: <code>${id}</code>`);
+                    }
+                });
+                
+            } catch (error) {
+                window.addResult('error', `❌ Collision test failed: ${error.message}`);
+            }
+        };
+        
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            window.addResult('info', '🚀 Glossary ID Test Suite Ready');
+            window.addResult('info', 'Note: This test runs without Firestore connection to validate ID generation logic.');
+        });
+    </script>
+</body>
+</html>

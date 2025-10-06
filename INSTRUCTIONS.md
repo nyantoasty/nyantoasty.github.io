@@ -94,7 +94,50 @@ This separation allows:
 }
 ```
 
-### 3. Enhanced Progress Tracking
+### 3. Enhanced Global Living Glossary System
+
+The application features a unified stitch glossary system that integrates multimedia resources with consistent token assignment:
+
+**Centralized Glossary Management** (`js/global-glossary.js`)
+- **GlobalLivingGlossary** class manages all stitch definitions
+- **Persistent Storage**: Local storage + Firestore synchronization
+- **Conflict Resolution**: Handles duplicate stitch definitions intelligently
+- **Cross-Pattern Consistency**: Same stitches get consistent tokens across all patterns
+
+**Enhanced Stitch Definitions** (Firestore `stitchWitch_Glossary` collection)
+```javascript
+{
+  // Basic stitch information
+  name: "Knit Stitch",
+  description: "Insert right needle through front...",
+  category: "basic", // basic, increase, decrease, special, crochet
+  
+  // Multimedia resources (NEW)
+  videoLink: "https://youtube.com/watch?v=...",
+  pictureLink: "https://example.com/diagram.jpg",
+  notes: "Keep tension consistent...",
+  
+  // CSS theming integration
+  cssToken: "token-stitch-01",
+  
+  // Document ID format: craft_stitchName_timestamp
+  // Examples: "K_Knit_20251006123045123", "C_SingleCrochet_20251006123050456"
+}
+```
+
+**Integration Points**
+- **Pattern Rendering**: Video/picture links displayed in main glossary
+- **Tooltips**: Rich descriptions with multimedia references
+- **User Interface**: `Stitch_Glossary.html` provides CRUD operations
+- **Backwards Compatibility**: Legacy token registries still supported through compatibility layer
+
+**ID Generation with Collision Handling**
+- **Millisecond Precision**: Timestamps include milliseconds for uniqueness
+- **Collision Detection**: Checks existing Firestore documents before creation
+- **Collision Counters**: Adds `_01`, `_02` suffixes when needed
+- **Craft Prefixes**: `K_` (knitting), `C_` (crochet), `T_` (Tunisian), `F_` (finishing)
+
+### 4. Enhanced Progress Tracking
 - **Multi-Project Support**: Users can work on multiple instances of the same pattern
 - **Rich Metadata**: Yarn details, tools, modifications, notes, timestamps
 - **Progress Photos**: Firebase Storage integration (planned)

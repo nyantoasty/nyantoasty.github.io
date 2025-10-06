@@ -101,12 +101,25 @@
             <div class="form-content">
                 <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-stone-600">Add a New Stitch or Technique</h2><button id="close-form-btn" title="Close form" class="text-stone-400 hover:text-stone-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
                 <form id="add-stitch-form" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="stitch-name" class="block text-sm font-medium text-stone-700">Name</label><input type="text" id="stitch-name" placeholder="e.g., Knit Stitch" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div><div><label for="stitch-shorthand" class="block text-sm font-medium text-stone-700">Shorthand</label><input type="text" id="stitch-shorthand" placeholder="e.g., k" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div></div>
-                    <div><label for="stitch-hobby" class="block text-sm font-medium text-stone-700">Category</label><select id="stitch-hobby" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required><option value="Knitting">Knitting</option><option value="Crochet">Crochet</option><option value="Finishing">Finishing</option></select></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label for="stitch-name" class="block text-sm font-medium text-stone-700">Name</label><input type="text" id="stitch-name" placeholder="e.g., Knit Stitch" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div>
+                        <div><label for="stitch-shorthand" class="block text-sm font-medium text-stone-700">Shorthand</label><input type="text" id="stitch-shorthand" placeholder="e.g., k" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label for="stitch-category" class="block text-sm font-medium text-stone-700">Category</label><select id="stitch-category" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required><option value="basic">Basic</option><option value="increase">Increase</option><option value="decrease">Decrease</option><option value="special">Special</option><option value="cable">Cable</option><option value="lace">Lace</option><option value="crochet">Crochet</option><option value="tunisian">Tunisian</option></select></div>
+                        <div><label for="stitch-difficulty" class="block text-sm font-medium text-stone-700">Difficulty</label><select id="stitch-difficulty" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="expert">Expert</option></select></div>
+                    </div>
                     <div><label for="stitch-description" class="block text-sm font-medium text-stone-700">Description</label><textarea id="stitch-description" rows="4" placeholder="How to perform the stitch..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500" required></textarea></div>
-                    <div><label for="stitch-notes" class="block text-sm font-medium text-stone-700">Notes & Tips</label><textarea id="stitch-notes" rows="3" placeholder="e.g., US vs UK terms, tension tips..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></textarea></div>
-                    <div><label for="stitch-media-url" class="block text-sm font-medium text-stone-700">Image/Video URL</label><input type="url" id="stitch-media-url" placeholder="YouTube or image link" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
-                    <div class="text-right"><button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">Add to Glossary</button></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label for="stitch-video-url" class="block text-sm font-medium text-stone-700">Video Tutorial URL</label><input type="url" id="stitch-video-url" placeholder="YouTube, Vimeo, etc." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
+                        <div><label for="stitch-picture-url" class="block text-sm font-medium text-stone-700">Picture/Diagram URL</label><input type="url" id="stitch-picture-url" placeholder="Image link" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
+                    </div>
+                    <div><label for="stitch-tags" class="block text-sm font-medium text-stone-700">Tags (comma-separated)</label><input type="text" id="stitch-tags" placeholder="e.g., decreases, shaping, beginner-friendly" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label for="stitch-count" class="block text-sm font-medium text-stone-700">Stitches Created</label><input type="number" id="stitch-count" min="0" max="10" value="1" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div>
+                        <div><label for="css-token-display" class="block text-sm font-medium text-stone-700">CSS Token (auto-assigned)</label><input type="text" id="css-token-display" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-stone-300 rounded-md shadow-sm" placeholder="Will be assigned automatically"></div>
+                    </div>
+                    <div class="text-right"><button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">Add to Global Glossary</button></div>
                 </form>
             </div>
         </div>
@@ -141,7 +154,7 @@
 
         <!-- Controls: Filters, Search, Sort -->
         <div class="bg-white p-4 rounded-lg shadow-sm mb-8 space-y-4">
-             <div><h3 class="text-sm font-medium text-stone-500 mb-2">Filter by Category</h3><div id="filter-tabs" class="flex flex-wrap gap-2"><button class="filter-tab active py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="All">All</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Knitting">Knitting</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Crochet">Crochet</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="Finishing">Finishing</button></div></div>
+             <div><h3 class="text-sm font-medium text-stone-500 mb-2">Filter by Category</h3><div id="filter-tabs" class="flex flex-wrap gap-2"><button class="filter-tab active py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="All">All</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="basic">Basic</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="increase">Increases</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="decrease">Decreases</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="special">Special</button><button class="filter-tab py-1 px-3 text-sm font-medium rounded-full bg-stone-100 text-stone-700 hover:bg-stone-200" data-filter="crochet">Crochet</button></div></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="search-input" class="block text-sm font-medium text-stone-500">Search</label><input type="text" id="search-input" placeholder="e.g., k2tog, cable..." class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"></div><div><label for="sort-select" class="block text-sm font-medium text-stone-500">Sort By</label><select id="sort-select" class="mt-1 block w-full px-3 py-2 bg-white border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"><option value="name-asc">Name (A-Z)</option><option value="name-desc">Name (Z-A)</option><option value="category">Category</option></select></div></div>
         </div>
 
@@ -158,12 +171,16 @@
     <div id="message-modal" class="modal-backdrop hidden"><div class="modal-content"><h3 id="modal-title" class="text-lg leading-6 font-medium text-stone-900"></h3><div class="mt-2"><p id="modal-message" class="text-sm text-stone-500"></p></div><div class="mt-4 text-right"><button id="modal-close-btn" type="button" class="inline-flex justify-center rounded-md border border-transparent bg-orange-100 px-4 py-2 text-sm font-medium text-orange-900 hover:bg-orange-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2">Got it!</button></div></div></div>
 
     <script type="module">
+        // Import our existing enhanced GlobalLivingGlossary system
+        import './js/firebase-config.js';
+        import { globalGlossary } from './js/utils.js';
+        
+        // Also import Firebase for direct operations when needed
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_FALLBACK_API_KEY", authDomain: "...", projectId: "..." };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-stitch-glossary';
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -187,7 +204,6 @@
         const noResultsMessage = document.getElementById('no-results-message');
 
         let userId = null;
-        let unsubscribeGlossary = null;
         let allStitches = [];
         let currentFilter = 'All';
         let currentSort = 'name-asc';
@@ -196,15 +212,10 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
-                await populateInitialData();
-                await setupGlossaryListener();
+                await loadGlossaryData();
             } else {
                 try {
-                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                     } else {
-                        await signInAnonymously(auth);
-                     }
+                    await signInAnonymously(auth);
                 } catch (error) {
                     console.error("Error during sign-in:", error);
                     showMessage('Authentication Error', 'Could not sign in. Please refresh to try again.');
@@ -212,69 +223,150 @@
             }
         });
 
-        async function setupGlossaryListener() {
-            if (!userId) return;
-            if(unsubscribeGlossary) unsubscribeGlossary(); 
-            const glossaryCollectionPath = `/artifacts/${appId}/public/data/stitchGlossary`;
-            const q = query(collection(db, glossaryCollectionPath));
-            unsubscribeGlossary = onSnapshot(q, (querySnapshot) => {
-                allStitches = [];
-                querySnapshot.forEach((doc) => {
-                    allStitches.push({ id: doc.id, ...doc.data() });
-                });
+        async function loadGlossaryData() {
+            try {
+                loader.classList.remove('hidden');
+                
+                // Use our enhanced GlobalLivingGlossary to sync with Firestore
+                await globalGlossary.syncFromFirestore();
+                
+                // Get all stitches from the enhanced glossary
+                const glossaryData = globalGlossary.getAllStitches();
+                allStitches = Object.entries(glossaryData).map(([key, data]) => ({
+                    id: key,
+                    ...data
+                }));
+                
                 displayFilteredStitches();
                 loader.classList.add('hidden');
-            }, (error) => {
-                console.error("Error fetching glossary:", error);
+            } catch (error) {
+                console.error('Error loading glossary:', error);
                 showMessage('Database Error', 'Could not fetch your stitch glossary.');
                 loader.classList.add('hidden');
-            });
+            }
         }
-        
+
         async function addStitch(stitchData) {
             try {
-                const glossaryCollectionPath = `/artifacts/${appId}/public/data/stitchGlossary`;
-                await addDoc(collection(db, glossaryCollectionPath), stitchData);
-                showMessage('Success!', `"${stitchData.name}" has been added to your glossary.`);
+                // Use enhanced GlobalLivingGlossary to add stitch with proper ID format
+                const stitchKey = await globalGlossary.addStitch(
+                    stitchData.name,
+                    {
+                        description: stitchData.description,
+                        category: mapHobbyToCategory(stitchData.hobby),
+                        cssToken: stitchData.cssToken || globalGlossary.getInstructionCategory(stitchData.name),
+                        videoLink: stitchData.videoLink || '',
+                        pictureLink: stitchData.pictureLink || '',
+                        notes: stitchData.notes || '',
+                        shorthand: stitchData.shorthand || '',
+                        craft: getCraftPrefix(stitchData.hobby)
+                    }
+                );
+                
+                // Sync to Firestore
+                await globalGlossary.syncToFirestore();
+                
+                // Reload the display
+                await loadGlossaryData();
+                
+                showMessage('Success!', `"${stitchData.name}" has been added to your glossary with ID: ${stitchKey}`);
                 return true;
             } catch (error) {
-                console.error("Error adding document: ", error);
+                console.error("Error adding stitch: ", error);
                 showMessage('Error', 'There was a problem adding the stitch.');
                 return false;
             }
+        }
+        
+        function mapHobbyToCategory(hobby) {
+            const mapping = {
+                'Knitting': 'basic',
+                'Crochet': 'crochet', 
+                'Finishing': 'special'
+            };
+            return mapping[hobby] || 'basic';
+        }
+        
+        function getCraftPrefix(hobby) {
+            const mapping = {
+                'Knitting': 'K',
+                'Crochet': 'C',
+                'Tunisian Crochet': 'T',
+                'Finishing': 'F'
+            };
+            return mapping[hobby] || 'K';
         }
 
         function displayFilteredStitches() {
             let filtered = [...allStitches];
 
             if (currentFilter !== 'All') {
-                filtered = filtered.filter(stitch => stitch.hobby === currentFilter);
+                // Map filter to category or craft
+                if (['basic', 'increase', 'decrease', 'special', 'crochet'].includes(currentFilter)) {
+                    filtered = filtered.filter(stitch => stitch.category === currentFilter);
+                } else {
+                    // Filter by craft prefix
+                    filtered = filtered.filter(stitch => stitch.craft === currentFilter);
+                }
             }
 
             if (currentSearchTerm) {
                 const lowerCaseSearch = currentSearchTerm.toLowerCase();
                 filtered = filtered.filter(stitch => 
-                    stitch.name.toLowerCase().includes(lowerCaseSearch) ||
-                    stitch.shorthand.toLowerCase().includes(lowerCaseSearch)
+                    stitch.name?.toLowerCase().includes(lowerCaseSearch) ||
+                    stitch.shorthand?.toLowerCase().includes(lowerCaseSearch) ||
+                    stitch.description?.toLowerCase().includes(lowerCaseSearch)
                 );
             }
             
             switch (currentSort) {
                 case 'name-asc':
-                    filtered.sort((a, b) => a.name.localeCompare(b.name));
+                    filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
                     break;
                 case 'name-desc':
-                    filtered.sort((a, b) => b.name.localeCompare(a.name));
+                    filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
                     break;
                 case 'category':
-                    filtered.sort((a, b) => a.hobby.localeCompare(b.hobby) || a.name.localeCompare(b.name));
+                    filtered.sort((a, b) => (a.category || '').localeCompare(b.category || '') || (a.name || '').localeCompare(b.name || ''));
                     break;
             }
 
             renderGlossary(filtered);
         }
 
-        function createMediaElement(url) {
+        function createMediaElements(stitch) {
+            let mediaHtml = '';
+            
+            // Handle video link
+            if (stitch.videoLink) {
+                const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                const youtubeMatch = stitch.videoLink.match(youtubeRegex);
+                if (youtubeMatch && youtubeMatch[1]) {
+                    const videoId = youtubeMatch[1];
+                    mediaHtml += `<div class="media-container"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                } else {
+                    mediaHtml += `<div class="media-container"><a href="${stitch.videoLink}" target="_blank" class="text-blue-600 hover:text-blue-800">📹 Video Tutorial</a></div>`;
+                }
+            }
+            
+            // Handle picture link
+            if (stitch.pictureLink) {
+                if (/\.(jpeg|jpg|gif|png|webp)$/i.test(stitch.pictureLink)) {
+                    mediaHtml += `<div class="media-container"><img src="${stitch.pictureLink}" alt="${stitch.name} visualization" class="max-w-full h-auto rounded"></div>`;
+                } else {
+                    mediaHtml += `<div class="media-container"><a href="${stitch.pictureLink}" target="_blank" class="text-blue-600 hover:text-blue-800">🖼️ View Image</a></div>`;
+                }
+            }
+            
+            // Fallback to old mediaUrl if present
+            if (!mediaHtml && stitch.mediaUrl) {
+                mediaHtml = createLegacyMediaElement(stitch.mediaUrl);
+            }
+            
+            return mediaHtml;
+        }
+        
+        function createLegacyMediaElement(url) {
             if (!url) return '';
             const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
             const youtubeMatch = url.match(youtubeRegex);
@@ -295,14 +387,54 @@
             stitches.forEach(stitch => {
                 const card = document.createElement('div');
                 card.className = 'stitch-card bg-white p-6 rounded-lg shadow-md';
+                
+                // Determine tag class based on category/craft
                 let tagClass = '';
-                if (stitch.hobby === 'Knitting') tagClass = 'knitting-tag';
-                else if (stitch.hobby === 'Crochet') tagClass = 'crochet-tag';
-                else if (stitch.hobby === 'Finishing') tagClass = 'finishing-tag';
+                const craft = stitch.craft || 'K';
+                if (craft === 'K') tagClass = 'knitting-tag';
+                else if (craft === 'C') tagClass = 'crochet-tag';
+                else if (craft === 'T') tagClass = 'finishing-tag';
+                else if (craft === 'F') tagClass = 'finishing-tag';
+                
+                // Create CSS token display
+                const tokenDisplay = stitch.cssToken ? 
+                    `<span class="inline-block px-2 py-1 text-xs font-mono bg-gray-100 rounded ${stitch.cssToken}" title="CSS Token: ${stitch.cssToken}">${stitch.cssToken}</span>` : '';
 
-                card.innerHTML = `<div class="flex justify-between items-start"><div><h3 class="text-xl font-bold text-stone-800">${stitch.name} (${stitch.shorthand})</h3><span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${tagClass} last:mr-0 mr-1">${stitch.hobby}</span></div></div>${createMediaElement(stitch.mediaUrl)}<div class="mt-4 space-y-2"><div><h4 class="font-semibold text-stone-600">How-To:</h4><p class="text-stone-600 whitespace-pre-wrap">${stitch.description}</p></div>${stitch.notes ? `<div><h4 class="font-semibold text-stone-600">Notes:</h4><p class="text-stone-600 whitespace-pre-wrap">${stitch.notes}</p></div>` : ''}</div>`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-800">${stitch.name || 'Unnamed Stitch'}</h3>
+                            ${stitch.shorthand ? `<p class="text-sm text-stone-600 font-mono">(${stitch.shorthand})</p>` : ''}
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${tagClass}">${getCraftName(craft)}</span>
+                                ${stitch.category ? `<span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-stone-200 text-stone-700">${stitch.category}</span>` : ''}
+                                ${tokenDisplay}
+                            </div>
+                        </div>
+                        <div class="text-xs text-stone-400 font-mono">${stitch.id || ''}</div>
+                    </div>
+                    ${createMediaElements(stitch)}
+                    <div class="mt-4 space-y-2">
+                        <div>
+                            <h4 class="font-semibold text-stone-600">How-To:</h4>
+                            <p class="text-stone-600 whitespace-pre-wrap">${stitch.description || 'No description available.'}</p>
+                        </div>
+                        ${stitch.notes ? `<div><h4 class="font-semibold text-stone-600">Notes:</h4><p class="text-stone-600 whitespace-pre-wrap">${stitch.notes}</p></div>` : ''}
+                        ${stitch.lastModified ? `<div class="text-xs text-stone-400">Last updated: ${new Date(stitch.lastModified).toLocaleDateString()}</div>` : ''}
+                    </div>
+                `;
                 glossaryContainer.appendChild(card);
             });
+        }
+        
+        function getCraftName(craftPrefix) {
+            const mapping = {
+                'K': 'Knitting',
+                'C': 'Crochet',
+                'T': 'Tunisian',
+                'F': 'Finishing'
+            };
+            return mapping[craftPrefix] || 'Unknown';
         }
 
         addStitchForm.addEventListener('submit', async (e) => {
@@ -313,15 +445,21 @@
                 hobby: document.getElementById('stitch-hobby').value,
                 description: document.getElementById('stitch-description').value,
                 notes: document.getElementById('stitch-notes').value,
-                mediaUrl: document.getElementById('stitch-media-url').value,
+                videoLink: document.getElementById('stitch-video-url')?.value || '',
+                pictureLink: document.getElementById('stitch-picture-url')?.value || '',
+                cssToken: document.getElementById('stitch-css-token')?.value || '',
+                // Legacy support
+                mediaUrl: document.getElementById('stitch-media-url')?.value || '',
                 createdAt: new Date()
             };
-            if (stitchData.name && stitchData.shorthand && stitchData.hobby && stitchData.description) {
+            if (stitchData.name && stitchData.hobby && stitchData.description) {
                 const success = await addStitch(stitchData);
                 if (success) {
                     addStitchForm.reset();
                     formModal.classList.add('hidden');
                 }
+            } else {
+                showMessage('Missing Information', 'Please fill in at least the name, craft type, and description.');
             }
         });
 

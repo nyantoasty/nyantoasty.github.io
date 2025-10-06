@@ -612,3 +612,116 @@ service cloud.firestore {
 ✅ **Analytics ready** - Built-in usage tracking
 
 This schema will handle everything from private patterns to large-scale pattern sharing communities!
+
+## Global Stitch Glossary Collection
+
+### stitchWitch_Glossary/{stitchId}
+**Global stitch definition database with enhanced multimedia and theming support**
+
+**Migration Note**: This collection replaces the previous `/artifacts/${appId}/public/data/stitchGlossary` structure. All interfaces now use this standardized collection for consistency.
+
+```javascript
+{
+  // Document ID format: "{craft}_{stitchName}_{timestamp}"
+  // Examples: "K_Knit_20251006123045", "C_SingleCrochet_20251006124230"
+  // This allows multiple definitions of the same stitch with version tracking
+  
+  // Basic stitch information
+  name: "Knit",                          // Display name
+  abbreviation: "k",                     // Common abbreviation
+  craft: "knitting",                     // knitting, crochet, tunisian_crochet
+  craftPrefix: "K",                      // K_, C_, T_ for document ID
+  
+  // Stitch mechanics
+  description: "Insert right needle through front of stitch, wrap yarn counterclockwise, pull through",
+  stitchesUsed: 1,                       // How many stitches this consumes
+  stitchesCreated: 1,                    // How many stitches this creates
+  difficulty: "beginner",                // beginner, intermediate, advanced, expert
+  
+  // Multimedia resources
+  videoLink: "https://youtube.com/watch?v=example",      // Optional tutorial video
+  pictureLink: "https://example.com/images/knit.jpg",    // Optional diagram/photo
+  alternateVideos: [                     // Additional video resources
+    {
+      url: "https://vimeo.com/example",
+      title: "Slow motion tutorial",
+      source: "craftsy"
+    }
+  ],
+  
+  // CSS theming integration
+  cssToken: "token-stitch-03",           // Maps to semantic token in tokens.css
+  tokenCategory: "stitch",               // stitch, special, header, designerNote, generic
+  tokenLevel: "03",                      // 01-05 for each category
+  semanticRole: "neutral",               // increase, decrease, neutral, edge, marker, special
+  
+  // Metadata
+  createdAt: timestamp,
+  createdBy: "userId",                   // Who added this definition
+  lastModified: timestamp,
+  modifiedBy: "userId",
+  version: 1,                            // For tracking edits to same stitch
+  
+  // Usage and validation
+  isVerified: true,                      // Reviewed and approved
+  usageCount: 127,                       // How often used in patterns
+  tags: ["basic", "knit_stitch", "foundation"],
+  
+  // Alternative names and variations
+  aliases: ["knit stitch", "plain knit"], // Other names for same stitch
+  relatedStitches: [                     // Similar or related stitches
+    "K_PurlStitch_20251006123100",
+    "K_KnitThroughBackLoop_20251006123200"
+  ],
+  
+  // Pattern context (optional)
+  commonUses: [                          // Where this stitch typically appears
+    "stockinette fabric",
+    "garter stitch borders",
+    "ribbing patterns"
+  ]
+}
+```
+
+### CSS Token Integration
+
+The `cssToken` field maps directly to the semantic token system in `css/themes/tokens.css`:
+
+- **Token Categories**: `stitch`, `special`, `header`, `designerNote`, `generic`
+- **Token Levels**: `01` through `05` for each category
+- **Full Token Format**: `token-{category}-{level}` (e.g., `token-stitch-03`)
+
+**Semantic Role Mapping**:
+```javascript
+{
+  "increase": "token-stitch-01",    // Always for stitches that increase count
+  "decrease": "token-stitch-02",    // Always for stitches that decrease count  
+  "neutral": "token-stitch-03",     // Basic fabric-forming stitches
+  "edge": "token-stitch-04",        // Border and edge stitches
+  "marker": "token-stitch-05",      // Placement markers and guides
+  "special": "token-special-01"     // Feature stitches (cables, bobbles, etc.)
+}
+```
+
+### Document ID Structure
+
+**Format**: `{craftPrefix}_{stitchName}_{timestamp}`
+
+**Craft Prefixes**:
+- `K_` - Knitting
+- `C_` - Crochet  
+- `T_` - Tunisian Crochet
+
+**Timestamp Format**: `YYYYMMDDHHMMSS` (e.g., `20251006123045`)
+
+**Examples**:
+- `K_Knit_20251006123045`
+- `C_SingleCrochet_20251006124230`
+- `T_TunisianSimpleStitch_20251006125115`
+- `K_Knit_20251007083022` (newer version of knit stitch)
+
+This structure allows:
+- Multiple definitions of the same stitch
+- Version tracking with timestamps
+- Clear craft categorization
+- Unique identification across the entire system

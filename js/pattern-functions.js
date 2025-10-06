@@ -1,7 +1,8 @@
 // pattern-functions.js - Pattern rendering and generation functions
-// Version: v2025-09-29-steprange-interpreter
+// Version: v2025-10-06-global-glossary
 
-import { getInstructionCategory, addTooltips } from './utils.js';
+import { addTooltips, expandPattern, getInstructionCategory, initializeGlossaryFromPattern, getSortedGlossary } from './utils.js';
+import { globalGlossary } from './global-glossary.js';
 
 // Helper function to get display name for tool types
 function getToolDisplayName(toolType) {
@@ -408,78 +409,46 @@ export function populateSidebarMaterials(PATTERN_DATA) {
 // New function to populate the main glossary section with multi-column layout
 export function generateMainGlossary(PATTERN_DATA) {
     const mainGlossaryEl = document.getElementById('main-glossary-content');
-    if (!mainGlossaryEl || !PATTERN_DATA || !PATTERN_DATA.glossary || Object.keys(PATTERN_DATA.glossary).length === 0) {
+    if (!mainGlossaryEl) return;
+    
+    // Initialize global glossary from pattern data
+    if (PATTERN_DATA?.glossary) {
+        initializeGlossaryFromPattern(PATTERN_DATA, PATTERN_DATA.name || 'current-pattern');
+    }
+    
+    // Get sorted glossary entries from global system
+    const sortedStitches = getSortedGlossary();
+    
+    if (sortedStitches.length === 0) {
+        mainGlossaryEl.innerHTML = '<p class="text-secondary">No stitches defined in glossary.</p>';
         return;
     }
     
     let glossaryHTML = '';
     
-    // Track assigned tokens per stitch to maintain consistency with instructions
-    const stitchTokenMap = {};
-    const tokenCounters = {
-        increase: 1,
-        decrease: 1,
-        special: 1,
-        basic: 1,
-        generic: 1
-    };
+    sortedStitches.forEach(stitchDef => {
+        const { key, name, description, token, category, metadata } = stitchDef;
+        
+        // Use stitchesCreated info if available from pattern data
+        const patternItem = PATTERN_DATA?.glossary?.[key];
+        const stitchInfo = patternItem?.stitchesCreated !== undefined ? ` (${patternItem.stitchesCreated} st)` : '';
+        
+        // Preserve newlines in description
+        const formattedDescription = description
+            .replace(/\\n/g, '<br>')
+            .replace(/\n/g, '<br>');
+        
+        glossaryHTML += `
+            <div class="cursor-pointer hover:bg-tertiary p-3 rounded border border-primary transition-colors" data-stitch="${key}">
+                <h4 class="font-bold ${token} text-base mb-1">
+                    ${name} (${key})${stitchInfo}
+                </h4>
+                <p class="text-xs text-tertiary leading-relaxed">${formattedDescription}</p>
+            </div>
+        `;
+    });
     
-    for (const key in PATTERN_DATA.glossary) {
-        const item = PATTERN_DATA.glossary[key];
-        if (item && item.name && item.description) {
-            // Assign semantic token based on category (same logic as formatInstructionWithTokens)
-            let semanticToken = 'token-basic-01'; // fallback
-            if (item.category) {
-                const category = item.category;
-                const counter = tokenCounters[category] || 1;
-                const counterStr = String(counter).padStart(2, '0');
-                
-                switch (category) {
-                    case 'increase':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.increase++;
-                        break;
-                    case 'decrease':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.decrease++;
-                        break;
-                    case 'special':
-                        semanticToken = `token-special-${counterStr}`;
-                        tokenCounters.special++;
-                        break;
-                    case 'basic':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.basic++;
-                        break;
-                    default:
-                        semanticToken = `token-generic-${counterStr}`;
-                        tokenCounters.generic++;
-                }
-            }
-            
-            // Store the assigned token for this stitch
-            stitchTokenMap[key] = semanticToken;
-            
-            // Use stitchesCreated for the new format
-            const stitchInfo = item.stitchesCreated !== undefined ? ` (${item.stitchesCreated} st)` : '';
-            
-            // Preserve newlines in description by replacing \n with <br>
-            const formattedDescription = item.description
-                .replace(/\\n/g, '<br>')
-                .replace(/\n/g, '<br>');
-            
-            glossaryHTML += `
-                <div class="cursor-pointer hover:bg-tertiary p-3 rounded border border-primary transition-colors" data-stitch="${key}">
-                    <h4 class="font-bold ${semanticToken} text-base mb-1">
-                        ${item.name} (${key})${stitchInfo}
-                    </h4>
-                    <p class="text-xs text-tertiary leading-relaxed">${formattedDescription}</p>
-                </div>
-            `;
-        }
-    }
-    
-    mainGlossaryEl.innerHTML = glossaryHTML;
+    mainGlossaryEl.innerHTML = glossaryHTML;    mainGlossaryEl.innerHTML = glossaryHTML;
     
     // Add click handlers for main glossary items to show modal
     mainGlossaryEl.addEventListener('click', (e) => {
@@ -682,6 +651,11 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         return formatInstructionForDisplay(instruction, PATTERN_DATA);
     }
     
+    // Initialize global glossary from pattern data if not already done
+    if (PATTERN_DATA?.glossary) {
+        initializeGlossaryFromPattern(PATTERN_DATA, PATTERN_DATA.name || 'current-pattern');
+    }
+    
     let result = instruction;
     
     // Sort tokens by position in text (if they have positions) or by length (longest first)
@@ -693,77 +667,36 @@ export function formatInstructionWithTokens(instruction, highlightTokens, PATTER
         return b.text.length - a.text.length;
     });
     
-    // Track token counters for each category to assign unique semantic tokens
-    const tokenCounters = {
-        increase: 1,
-        decrease: 1,
-        special: 1,
-        basic: 1,
-        generic: 1
-    };
-    
-    // Track assigned tokens per stitch to maintain consistency
-    const stitchTokenMap = {};
-    
-    // Apply highlighting tokens
+    // Apply highlighting tokens using global glossary
     sortedTokens.forEach(tokenData => {
         const { text, glossaryKey } = tokenData;
         if (!text || !glossaryKey) return;
         
-        // Get stitch information from glossary
-        const stitchInfo = PATTERN_DATA.glossary && PATTERN_DATA.glossary[glossaryKey];
-        if (!stitchInfo) return;
+        // Get stitch definition from global glossary
+        let stitchDef = globalGlossary.getStitch(glossaryKey);
         
-        // Check if we already assigned a token for this specific stitch
-        let semanticToken;
-        if (stitchTokenMap[glossaryKey]) {
-            semanticToken = stitchTokenMap[glossaryKey];
-        } else {
-            // Determine semantic token based on category
-            semanticToken = 'token-basic-01'; // fallback
-            if (stitchInfo.category) {
-                const category = stitchInfo.category;
-                const counter = tokenCounters[category] || 1;
-                const counterStr = String(counter).padStart(2, '0');
-                
-                switch (category) {
-                    case 'increase':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.increase++;
-                        break;
-                    case 'decrease':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.decrease++;
-                        break;
-                    case 'special':
-                        semanticToken = `token-special-${counterStr}`;
-                        tokenCounters.special++;
-                        break;
-                    case 'basic':
-                        semanticToken = `token-stitch-${counterStr}`;
-                        tokenCounters.basic++;
-                        break;
-                    default:
-                        semanticToken = `token-generic-${counterStr}`;
-                        tokenCounters.generic++;
-                }
+        if (!stitchDef) {
+            // Try to get from pattern glossary as fallback and add to global
+            const patternStitch = PATTERN_DATA?.glossary?.[glossaryKey];
+            if (patternStitch) {
+                globalGlossary.addStitch(glossaryKey, patternStitch, { 
+                    source: 'pattern-fallback', 
+                    patternId: PATTERN_DATA.name || 'current-pattern' 
+                });
+                stitchDef = globalGlossary.getStitch(glossaryKey);
             }
-            
-            // Store the assigned token for this stitch
-            stitchTokenMap[glossaryKey] = semanticToken;
         }
         
-        // Get tooltip from glossary
-        let tooltip = '';
-        let clickableClass = '';
-        if (stitchInfo.description) {
-            tooltip = ` title="${stitchInfo.description}"`;
-            clickableClass = ' stitch-clickable'; // Make it clickable if it has a glossary entry
-        }
+        if (!stitchDef) return; // Still no definition found
+        
+        // Get tooltip and classes
+        const tooltip = stitchDef.description ? ` title="${stitchDef.name}: ${stitchDef.description}"` : '';
+        const clickableClass = stitchDef.description ? ' stitch-clickable' : '';
+        const token = stitchDef.token || 'token-stitch-03';
         
         // Use global replace to handle multiple occurrences of the same text
         const regex = new RegExp(`\\b${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
-        result = result.replace(regex, `<span class="${semanticToken}${clickableClass}"${tooltip}>${text}</span>`);
+        result = result.replace(regex, `<span class="${token}${clickableClass}"${tooltip}>${text}</span>`);
     });
     
     return result;

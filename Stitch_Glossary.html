@@ -177,6 +177,7 @@
         
         // Import specific Firebase functions when needed
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { collection, query, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         const addStitchForm = document.getElementById('add-stitch-form');
         const glossaryContainer = document.getElementById('glossary-container');
@@ -229,6 +230,19 @@
                     id: key,
                     ...data
                 }));
+                
+                // If no stitches found, populate initial data
+                if (allStitches.length === 0) {
+                    console.log('No stitches found, populating initial data...');
+                    await populateInitialData();
+                    // Re-sync after populating
+                    await globalGlossary.syncFromFirestore();
+                    const newGlossaryData = globalGlossary.getAllStitches();
+                    allStitches = Object.entries(newGlossaryData).map(([key, data]) => ({
+                        id: key,
+                        ...data
+                    }));
+                }
                 
                 displayFilteredStitches();
                 loader.classList.add('hidden');
@@ -489,8 +503,7 @@
         closeReferenceBtn.addEventListener('click', () => referenceModal.classList.add('hidden'));
 
         async function populateInitialData() {
-            const path = `/artifacts/${appId}/public/data/stitchGlossary`;
-            const collectionRef = collection(db, path);
+            const collectionRef = collection(db, 'stitchWitch_Glossary');
             const q = query(collectionRef);
             try {
                 const querySnapshot = await getDocs(q);

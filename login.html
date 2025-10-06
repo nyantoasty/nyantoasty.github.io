@@ -3,8 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Stitch Witch</title>
-    <meta name="description" content="Sign in to access your Stitch Witch pattern library and projects">
+    <title>Sign In - Stitch Witch</t    // Google Sign In
+    loginBtn.addEventListener('click', async () => {
+        try {
+            console.log('🔄 Starting Google sign in...');
+            showLoading();
+            
+            // Set persistence to LOCAL to ensure auth state survives redirects
+            await setPersistence(auth, browserLocalPersistence);
+            console.log('✅ Auth persistence set to LOCAL');
+            
+            // Start the redirect flow
+            await signInWithRedirect(auth, provider);
+        } catch (error) {
+            console.error('❌ Sign in error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+            showError('Failed to sign in. Please try again.');
+        }
+    }); <meta name="description" content="Sign in to access your Stitch Witch pattern library and projects">
     
     <!-- Progressive Web App Meta Tags -->
     <link rel="icon" type="image/png" href="/assets/icons/yarn-ball-icon.png">
@@ -157,7 +174,7 @@
 
 <script type="module">
     import { redirectIfAuthenticated } from './js/auth-guard.js';
-    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { auth } from './js/auth-guard.js';
 
     // UI Elements
@@ -197,10 +214,20 @@
     // Handle Google Sign In
     googleLoginBtn.addEventListener('click', async () => {
         try {
+            console.log('🔄 Setting up Google sign-in...');
             showLoading();
+            
+            // Set persistence before redirect
+            console.log('🔧 Setting auth persistence to LOCAL...');
+            await setPersistence(auth, browserLocalPersistence);
+            console.log('✅ Auth persistence set successfully');
+            
+            console.log('🔄 Starting Google sign-in redirect...');
             await signInWithRedirect(auth, provider);
         } catch (error) {
             console.error('❌ Sign in error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
             showError('Failed to sign in. Please try again.');
         }
     });
@@ -232,6 +259,18 @@
                 return true;
             } else {
                 console.log('ℹ️ No redirect result found');
+                
+                // Check if user is already authenticated (might be signed in from another tab/session)
+                if (auth.currentUser) {
+                    console.log('✅ User already authenticated:', auth.currentUser.email);
+                    showLoading();
+                    const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/index.html';
+                    sessionStorage.removeItem('auth_redirect_url');
+                    console.log('🔄 Redirecting authenticated user to:', redirectUrl);
+                    window.location.replace(redirectUrl);
+                    return true;
+                }
+                
                 return false;
             }
         } catch (error) {

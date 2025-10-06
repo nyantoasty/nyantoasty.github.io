@@ -68,9 +68,11 @@ export function requireAuth() {
                 
                 // Store the intended destination for post-login redirect
                 const currentPath = window.location.pathname + window.location.search;
-                if (currentPath !== LOGIN_PAGE) {
-                    sessionStorage.setItem('auth_redirect_url', currentPath);
-                    console.log('💾 Stored redirect URL:', currentPath);
+                // Normalize root path to index.html
+                const normalizedPath = currentPath === '/' ? '/index.html' : currentPath;
+                if (normalizedPath !== LOGIN_PAGE) {
+                    sessionStorage.setItem('auth_redirect_url', normalizedPath);
+                    console.log('💾 Stored redirect URL:', normalizedPath);
                 }
                 
                 // Redirect to login page

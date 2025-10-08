@@ -160,27 +160,27 @@ export async function createNewProject(db, userId, patternId, projectName = null
                 purpose,
                 recipient,
                 deadline: null,
-                yarns: [],
+                yarns: patternData?.materials?.yarns || patternData?.yarns || [],
                 tools: {
-                    toolSize: null,
-                    originalToolSize: null,
-                    hookSize: null,
-                    otherTools: []
+                    toolSize: patternData?.materials?.tools?.hookSize || patternData?.materials?.tools?.needleSize || null,
+                    originalToolSize: patternData?.materials?.tools?.hookSize || patternData?.materials?.tools?.needleSize || null,
+                    hookSize: patternData?.materials?.tools?.hookSize || null,
+                    otherTools: patternData?.materials?.tools?.other || []
                 },
                 modifications: [],
                 targetSize: {
-                    width: null,
-                    length: null
+                    width: patternData?.metadata?.dimensions?.width || null,
+                    length: patternData?.metadata?.dimensions?.length || null
                 },
                 gauge: {
-                    stitchesPerInch: null,
-                    rowsPerInch: null,
+                    stitchesPerInch: patternData?.gauge?.stitchesPerInch || null,
+                    rowsPerInch: patternData?.gauge?.rowsPerInch || null,
                     measuredOn: null
                 }
             },
             
             notes: {
-                general: "",
+                general: patternData?.notes?.general || patternData?.description || "",
                 stepNotes: {},
                 milestones: []
             },
@@ -218,10 +218,12 @@ export async function createNewProject(db, userId, patternId, projectName = null
             },
             
             patternMetadata: {
-                version: null,
-                source: "created",
+                name: patternData?.metadata?.name || patternData?.name || patternId,
+                author: patternData?.metadata?.author || patternData?.author || 'Unknown',
+                version: patternData?.metadata?.version || null,
+                source: "firestore",
                 sharedBy: null,
-                tags: [],
+                tags: patternData?.metadata?.tags || [],
                 personalRating: null,
                 wouldRecommend: null,
                 publicReview: null

@@ -27,6 +27,9 @@ import {
 import { loadProgressFirestore, saveProgressFirestore } from './viewer-logic.js';
 import { getOrCreateProject, saveProjectProgress, getCurrentProject, createNewProject } from './progress-tracking.js';
 
+// Global variables
+let availablePatterns = [];
+
 // Google Sign-In
 export async function signInWithGoogle() {
     try {

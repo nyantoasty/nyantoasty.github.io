@@ -498,22 +498,61 @@
         projectsGrid.innerHTML = projects.map(project => {
             // Extract data from user_pattern_progress structure
             const projectName = project.projectDetails?.projectName || `${project.patternId} Project`;
-            const description = project.notes?.general || `Pattern: ${project.patternId}`;
+            const description = project.notes?.general || project.projectDetails?.patternInfo?.description || `Pattern: ${project.patternId}`;
             const lastUpdate = project.lastUpdate || project.createdAt?.toDate?.() || new Date();
             const currentStep = project.currentStep || 1;
-            const totalSteps = project.totalSteps || '?';
+            const totalSteps = project.totalSteps || project.patternMetadata?.maxSteps || '?';
             const status = project.status || 'not_started';
+            
+            // Rich pattern information
+            const patternName = project.patternMetadata?.name || project.projectDetails?.patternInfo?.name || 'Unknown Pattern';
+            const author = project.patternMetadata?.author || project.projectDetails?.patternInfo?.author || 'Unknown';
+            const difficulty = project.patternMetadata?.difficultyLevel || project.projectDetails?.patternInfo?.difficultyLevel || 'intermediate';
+            const category = project.patternMetadata?.category || project.projectDetails?.patternInfo?.category || '';
+            const craft = project.patternMetadata?.craft || 'knitting';
+            
+            // Materials information
+            const primaryYarn = project.projectDetails?.yarns?.[0];
+            const primaryTool = project.projectDetails?.tools?.primary;
+            
+            // Gauge information
+            const gauge = project.projectDetails?.gauge;
             
             return `
                 <div class="bg-tertiary border border-primary rounded-lg p-4 hover:border-accent transition-colors cursor-pointer" 
                      data-project-id="${project.projectId}" 
                      data-pattern-id="${project.patternId}"
                      data-doc-id="${project.docId}">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-medium text-primary">${escapeHtml(projectName)}</h3>
-                        <span class="text-xs px-2 py-1 rounded ${getStatusColor(status)}">${status.replace('_', ' ')}</span>
+                    
+                    <!-- Header with project name and status -->
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <h3 class="font-medium text-primary text-lg mb-1">${escapeHtml(projectName)}</h3>
+                            <p class="text-sm text-accent font-medium">${escapeHtml(patternName)} by ${escapeHtml(author)}</p>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded ${getStatusColor(status)} ml-2">${status.replace('_', ' ')}</span>
                     </div>
+                    
+                    <!-- Pattern details -->
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${craft}</span>
+                        ${category ? `<span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${category}</span>` : ''}
+                        <span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${difficulty}</span>
+                    </div>
+                    
+                    <!-- Materials preview -->
+                    ${primaryYarn || primaryTool ? `
+                        <div class="text-xs text-muted mb-3 space-y-1">
+                            ${primaryYarn ? `<div><strong>Yarn:</strong> ${primaryYarn.brand || 'Unknown'} ${primaryYarn.name || ''} (${primaryYarn.weight || 'unknown weight'})</div>` : ''}
+                            ${primaryTool ? `<div><strong>Tools:</strong> ${primaryTool.type || 'needle'} size ${primaryTool.size || primaryTool.sizeMetric || 'unknown'}</div>` : ''}
+                            ${gauge?.stitchesPerInch ? `<div><strong>Gauge:</strong> ${gauge.stitchesPerInch} sts/inch</div>` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <!-- Description -->
                     <p class="text-sm text-secondary mb-3 line-clamp-2">${escapeHtml(description)}</p>
+                    
+                    <!-- Progress and date -->
                     <div class="flex justify-between items-center text-xs text-muted">
                         <span>Step ${currentStep}/${totalSteps}</span>
                         <span>${formatDate(lastUpdate)}</span>
@@ -585,9 +624,13 @@
         console.log('📛 Setting project name to:', projectName);
         document.getElementById('current-project-name').textContent = projectName;
         
-        // Populate project overview
+        // Populate project overview with rich pattern info
         const patternDisplay = project.patternMetadata?.name || project.patternName || project.patternId || 'Unknown';
         const authorDisplay = project.patternMetadata?.author || project.patternAuthor || 'Unknown Author';
+        const difficulty = project.patternMetadata?.difficultyLevel || 'intermediate';
+        const category = project.patternMetadata?.category || '';
+        const craft = project.patternMetadata?.craft || 'knitting';
+        
         document.getElementById('project-pattern-id').textContent = `${patternDisplay} by ${authorDisplay}`;
         
         const status = project.status || 'not_started';
@@ -596,7 +639,7 @@
         statusElement.className = `px-2 py-1 rounded text-xs font-medium ${getStatusColor(status)}`;
         
         const currentStep = project.currentStep || 1;
-        const totalSteps = project.totalSteps || '?';
+        const totalSteps = project.totalSteps || project.patternMetadata?.maxSteps || '?';
         const progressPercent = totalSteps !== '?' ? Math.round((currentStep / totalSteps) * 100) : 0;
         document.getElementById('project-progress').textContent = `${currentStep}/${totalSteps} (${progressPercent}%)`;
         
@@ -606,27 +649,102 @@
         const updateDate = project.lastUpdate || project.lastUpdated?.toDate?.() || startDate;
         document.getElementById('project-updated-date').textContent = formatDate(updateDate);
         
-        // Populate project notes
+        // Enhanced project notes with pattern info
         const notesContent = document.getElementById('project-notes-content');
+        let notesHtml = '';
+        
+        // Pattern description
+        const patternDescription = project.patternMetadata?.description || project.projectDetails?.patternInfo?.description;
+        if (patternDescription) {
+            notesHtml += `<div class="mb-4"><h4 class="font-medium text-primary mb-2">Pattern Description</h4><p class="text-secondary">${escapeHtml(patternDescription)}</p></div>`;
+        }
+        
+        // Pattern details
+        if (difficulty || category || craft) {
+            notesHtml += `<div class="mb-4"><h4 class="font-medium text-primary mb-2">Pattern Details</h4>`;
+            notesHtml += `<div class="flex flex-wrap gap-2">`;
+            notesHtml += `<span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${craft}</span>`;
+            if (category) notesHtml += `<span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${category}</span>`;
+            notesHtml += `<span class="text-xs px-2 py-1 rounded bg-secondary text-secondary">${difficulty}</span>`;
+            notesHtml += `</div></div>`;
+        }
+        
+        // Techniques used
+        const techniques = project.projectDetails?.techniques;
+        if (techniques && techniques.length > 0) {
+            notesHtml += `<div class="mb-4"><h4 class="font-medium text-primary mb-2">Techniques Used</h4>`;
+            notesHtml += `<div class="flex flex-wrap gap-1">${techniques.map(t => `<span class="text-xs px-2 py-1 rounded bg-tertiary text-primary">${escapeHtml(t)}</span>`).join('')}</div></div>`;
+        }
+        
+        // Special instructions
+        const specialInstructions = project.projectDetails?.specialInstructions;
+        if (specialInstructions?.blocking || specialInstructions?.castOn || specialInstructions?.bindOff) {
+            notesHtml += `<div class="mb-4"><h4 class="font-medium text-primary mb-2">Special Instructions</h4>`;
+            if (specialInstructions.blocking) notesHtml += `<p class="text-sm text-secondary mb-2"><strong>Blocking:</strong> ${escapeHtml(specialInstructions.blocking)}</p>`;
+            if (specialInstructions.castOn) notesHtml += `<p class="text-sm text-secondary mb-2"><strong>Cast On:</strong> ${escapeHtml(specialInstructions.castOn)}</p>`;
+            if (specialInstructions.bindOff) notesHtml += `<p class="text-sm text-secondary mb-2"><strong>Bind Off:</strong> ${escapeHtml(specialInstructions.bindOff)}</p>`;
+            notesHtml += `</div>`;
+        }
+        
+        // General notes
         const generalNotes = project.notes?.general;
         if (generalNotes && generalNotes.trim()) {
-            notesContent.innerHTML = `<p class="text-secondary">${escapeHtml(generalNotes)}</p>`;
+            notesHtml += `<div class="mb-4"><h4 class="font-medium text-primary mb-2">Project Notes</h4><p class="text-secondary">${escapeHtml(generalNotes)}</p></div>`;
+        }
+        
+        if (notesHtml) {
+            notesContent.innerHTML = notesHtml;
         } else {
             notesContent.innerHTML = '<p class="text-muted italic">No notes available</p>';
         }
         
-        // Populate materials & tools
+        // Enhanced materials & tools display
         const projectDetails = project.projectDetails || {};
-        const tools = projectDetails.tools || {};
         
-        document.getElementById('project-yarn').textContent = 
-            (projectDetails.yarns && projectDetails.yarns.length > 0) 
-                ? projectDetails.yarns.map(y => y.brand || y.name || 'Unknown').join(', ')
-                : 'Not specified';
-                
-        document.getElementById('project-tools').textContent = 
-            tools.toolSize || tools.hookSize || tools.originalToolSize || 'Not specified';
-            
+        // Yarn information
+        const yarns = projectDetails.yarns || [];
+        if (yarns.length > 0) {
+            const yarnInfo = yarns.map(yarn => {
+                let info = [];
+                if (yarn.brand) info.push(yarn.brand);
+                if (yarn.name) info.push(yarn.name);
+                if (yarn.weight) info.push(`(${yarn.weight})`);
+                if (yarn.yardageNeeded) info.push(`${yarn.yardageNeeded} yards`);
+                return info.join(' ');
+            }).join(', ');
+            document.getElementById('project-yarn').textContent = yarnInfo;
+        } else {
+            document.getElementById('project-yarn').textContent = 'Not specified';
+        }
+        
+        // Tools information
+        const tools = projectDetails.tools || {};
+        let toolInfo = '';
+        if (tools.primary) {
+            const tool = tools.primary;
+            toolInfo = `${tool.type || 'needle'} ${tool.size || tool.sizeMetric || 'unknown size'}`;
+            if (tool.brand) toolInfo += ` (${tool.brand})`;
+        } else if (tools.toolSize || tools.hookSize) {
+            toolInfo = tools.toolSize || tools.hookSize;
+        }
+        document.getElementById('project-tools').textContent = toolInfo || 'Not specified';
+        
+        // Gauge information
+        const gauge = projectDetails.gauge;
+        let gaugeInfo = 'Not specified';
+        if (gauge?.stitchesPerInch || gauge?.rowsPerInch) {
+            gaugeInfo = '';
+            if (gauge.stitchesPerInch) gaugeInfo += `${gauge.stitchesPerInch} sts/inch`;
+            if (gauge.rowsPerInch) {
+                if (gaugeInfo) gaugeInfo += ', ';
+                gaugeInfo += `${gauge.rowsPerInch} rows/inch`;
+            }
+            if (gauge.toolSize) gaugeInfo += ` with ${gauge.toolSize}`;
+        }
+        if (document.getElementById('project-gauge')) {
+            document.getElementById('project-gauge').textContent = gaugeInfo;
+        }
+        
         document.getElementById('project-modifications').textContent = 
             (projectDetails.modifications && projectDetails.modifications.length > 0)
                 ? projectDetails.modifications.join('; ')
@@ -637,7 +755,7 @@
         document.getElementById('project-completed-steps').textContent = 
             project.completedSteps ? project.completedSteps.length : 0;
             
-        const timeSpent = project.timeSpent || {};
+        const timeSpent = project.experience?.timeSpent || project.timeSpent || {};
         const totalMinutes = timeSpent.totalMinutes || 0;
         const sessionsCount = timeSpent.sessionsCount || 0;
         document.getElementById('project-time-spent').textContent = 
@@ -647,7 +765,7 @@
                 
         const experience = project.experience || {};
         document.getElementById('project-difficulty').textContent = 
-            experience.skillLevel || experience.estimatedDifficulty || 'Not specified';
+            experience.skillLevel || experience.estimatedDifficulty || difficulty || 'Not specified';
     }
     
     async function loadPatterns(projectId) {

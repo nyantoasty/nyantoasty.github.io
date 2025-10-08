@@ -532,11 +532,14 @@
     }
     
     function populateProjectInfo(project) {
+        console.log('🔧 populateProjectInfo called with:', project);
+        
         // Populate project name in header
         const projectName = project.projectDetails?.projectName || 
                            project.patternMetadata?.name || 
                            project.patternName || 
                            'Unnamed Project';
+        console.log('📛 Setting project name to:', projectName);
         document.getElementById('current-project-name').textContent = projectName;
         
         // Populate project overview

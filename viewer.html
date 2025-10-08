@@ -257,6 +257,7 @@
     import { initUnifiedHeader } from './js/unified-header.js';
     import { loadProgressFirestore, saveProgressFirestore } from './js/viewer-logic.js';
     import { getOrCreateProject, saveProjectProgress, getProjectById } from './js/progress-tracking.js';
+    import { generateInstructions, generatePatternTheme, updateSidebarColorKey, populateSidebarMaterials, generateMainGlossary } from "./js/pattern-functions.js";
     
     // Global variables
     let auth, db, currentUser;
@@ -398,22 +399,36 @@
             currentStep = currentProject.currentStep || 1;
             maxSteps = metadata.maxSteps || 1;
             
+            // Update step input
+            if (currentStepInput) {
+                currentStepInput.value = currentStep;
+                currentStepInput.max = maxSteps;
+            }
+            
+            // Update progress summary
             document.getElementById('project-progress-summary').textContent = 
                 `Row ${currentStep} of ${maxSteps} (${Math.round((currentStep / maxSteps) * 100)}%)`;
         }
         
-        // Setup step input
-        if (currentStepInput) {
-            currentStepInput.value = currentStep;
-            currentStepInput.max = maxSteps;
+        // Clear and populate the main pattern content
+        const patternContentEl = document.getElementById('pattern-content');
+        if (patternContentEl) {
+            patternContentEl.innerHTML = '';
+            
+            // Generate dynamic color theme based on pattern data
+            generatePatternTheme(PATTERN_DATA);
+            
+            // Populate materials from pattern data
+            populateSidebarMaterials(PATTERN_DATA);
+            
+            // Generate glossary for both sidebar and main section
+            generateMainGlossary(PATTERN_DATA);
+            generateInstructions(PATTERN_DATA);
+            
+            // Populate sidebar with pattern-specific content
+            populateGlossary();
         }
-        
-        // Generate pattern content
-        generatePatternContent();
-        
-        // Populate sidebars
-        populatePatternSidebar();
-        populateGlossary();
+    }
     }
     
     function generatePatternContent() {

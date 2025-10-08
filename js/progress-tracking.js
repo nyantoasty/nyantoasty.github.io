@@ -160,30 +160,87 @@ export async function createNewProject(db, userId, patternId, projectName = null
                 purpose,
                 recipient,
                 deadline: null,
-                yarns: patternData?.materials?.yarns || patternData?.yarns || [],
+                
+                // Copy yarn information from pattern
+                yarns: patternData?.materials?.yarn ? Object.values(patternData.materials.yarn).filter(Boolean) : [],
+                
+                // Copy tool information from pattern
                 tools: {
-                    toolSize: patternData?.materials?.tools?.hookSize || patternData?.materials?.tools?.needleSize || null,
-                    originalToolSize: patternData?.materials?.tools?.hookSize || patternData?.materials?.tools?.needleSize || null,
-                    hookSize: patternData?.materials?.tools?.hookSize || null,
-                    otherTools: patternData?.materials?.tools?.other || []
+                    primary: patternData?.materials?.tools?.primary || null,
+                    alternative: patternData?.materials?.tools?.alternative || null,
+                    notions: patternData?.materials?.notions || []
                 },
-                modifications: [],
-                targetSize: {
-                    width: patternData?.metadata?.dimensions?.width || null,
-                    length: patternData?.metadata?.dimensions?.length || null
+                
+                // Copy pattern metadata
+                patternInfo: {
+                    name: patternData?.metadata?.name || 'Unknown Pattern',
+                    author: patternData?.metadata?.author || 'Unknown',
+                    description: patternData?.metadata?.description || '',
+                    difficultyLevel: patternData?.metadata?.difficultyLevel || 'intermediate',
+                    category: patternData?.metadata?.category || '',
+                    tags: patternData?.metadata?.tags || [],
+                    version: patternData?.metadata?.version || null,
+                    dateCreated: patternData?.metadata?.dateCreated || null
                 },
+                
+                // Copy gauge information
                 gauge: {
                     stitchesPerInch: patternData?.gauge?.stitchesPerInch || null,
                     rowsPerInch: patternData?.gauge?.rowsPerInch || null,
-                    measuredOn: null
+                    stitchesIn4Inches: patternData?.gauge?.stitchesIn4Inches || null,
+                    rowsIn4Inches: patternData?.gauge?.rowsIn4Inches || null,
+                    toolSize: patternData?.gauge?.toolSize || null,
+                    stitch: patternData?.gauge?.stitch || null,
+                    notes: patternData?.gauge?.notes || null
+                },
+                
+                // Copy sizing information
+                sizing: {
+                    type: patternData?.sizing?.type || null,
+                    sizes: patternData?.sizing?.sizes || [],
+                    dimensions: patternData?.sizing?.dimensions || {},
+                    adjustable: patternData?.sizing?.adjustable || false,
+                    notes: patternData?.sizing?.notes || null
+                },
+                
+                // Copy colorwork information
+                colorwork: {
+                    type: patternData?.colorwork?.type || 'single-color',
+                    numberOfColors: patternData?.colorwork?.numberOfColors || 1,
+                    palettes: patternData?.colorwork?.palettes || [],
+                    colorMap: patternData?.colorwork?.colorMap || {}
+                },
+                
+                // Copy techniques
+                techniques: patternData?.techniques || [],
+                
+                // Copy special instructions
+                specialInstructions: {
+                    castOn: patternData?.specialInstructions?.castOn || null,
+                    bindOff: patternData?.specialInstructions?.bindOff || null,
+                    blocking: patternData?.specialInstructions?.blocking || null,
+                    modifications: patternData?.specialInstructions?.modifications || null,
+                    troubleshooting: patternData?.specialInstructions?.troubleshooting || null
+                },
+                
+                modifications: [],
+                targetSize: {
+                    width: patternData?.sizing?.dimensions?.width?.[0] || null,
+                    length: patternData?.sizing?.dimensions?.length?.[0] || null
                 }
             },
             
             notes: {
                 general: patternData?.notes?.general || patternData?.description || "",
+                designNotes: patternData?.notes?.designNotes || "",
+                yarnNotes: patternData?.notes?.yarnNotes || "",
+                modifications: patternData?.notes?.modifications || "",
                 stepNotes: {},
                 milestones: []
             },
+            
+            // Copy pattern glossary for reference
+            patternGlossary: patternData?.glossary || {},
             
             images: [],
             
@@ -220,10 +277,21 @@ export async function createNewProject(db, userId, patternId, projectName = null
             patternMetadata: {
                 name: patternData?.metadata?.name || patternData?.name || patternId,
                 author: patternData?.metadata?.author || patternData?.author || 'Unknown',
+                publisher: patternData?.metadata?.publisher || null,
                 version: patternData?.metadata?.version || null,
+                craft: patternData?.metadata?.craft || 'knitting',
+                category: patternData?.metadata?.category || null,
+                difficultyLevel: patternData?.metadata?.difficultyLevel || 'intermediate',
+                maxSteps: patternData?.metadata?.maxSteps || null,
+                description: patternData?.metadata?.description || '',
+                tags: patternData?.metadata?.tags || [],
+                dateCreated: patternData?.metadata?.dateCreated || null,
+                language: patternData?.metadata?.language || 'en',
+                copyright: patternData?.metadata?.copyright || null,
+                patternSource: patternData?.metadata?.patternSource || null,
+                pdfUrl: patternData?.metadata?.pdfUrl || null,
                 source: "firestore",
                 sharedBy: null,
-                tags: patternData?.metadata?.tags || [],
                 personalRating: null,
                 wouldRecommend: null,
                 publicReview: null

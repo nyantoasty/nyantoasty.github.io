@@ -507,68 +507,80 @@
         const sectionsContainer = document.getElementById('sidebar-sections');
         const materialsContainer = document.getElementById('sidebar-materials');
         
-        if (PATTERN_DATA && sectionsContainer) {
-            // Populate pattern sections/steps
-            if (PATTERN_DATA.steps && PATTERN_DATA.steps.length > 0) {
-                const sectionsHtml = PATTERN_DATA.steps.map((step, index) => {
-                    const stepNumber = index + 1;
-                    const stepTitle = step.title || step.instruction?.substring(0, 30) || `Step ${stepNumber}`;
-                    return `
-                        <button class="w-full text-left p-2 hover:bg-tertiary rounded transition-colors text-sm" 
-                                onclick="scrollToStep(${stepNumber})">
-                            <span class="text-accent">${stepNumber}.</span> ${stepTitle.length > 25 ? stepTitle.substring(0, 25) + '...' : stepTitle}
-                        </button>
-                    `;
-                }).join('');
-                sectionsContainer.innerHTML = sectionsHtml;
-            } else {
-                sectionsContainer.innerHTML = '<p class="text-muted text-sm">No pattern sections available</p>';
-            }
-        }
-        
-        if (PATTERN_DATA && materialsContainer) {
-            // Populate materials from pattern data
-            let materialsHtml = '';
-            
-            // Yarn information
-            if (PATTERN_DATA.materials?.yarn) {
-                materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Yarn</h4>';
-                const yarns = Object.values(PATTERN_DATA.materials.yarn).filter(Boolean);
-                yarns.forEach(yarn => {
-                    materialsHtml += `<div class="text-xs text-tertiary mb-1">`;
-                    if (yarn.brand && yarn.name) materialsHtml += `${yarn.brand} ${yarn.name}`;
-                    if (yarn.weight) materialsHtml += ` (${yarn.weight})`;
-                    if (yarn.yardageNeeded) materialsHtml += ` - ${yarn.yardageNeeded} yards`;
-                    materialsHtml += `</div>`;
-                });
-                materialsHtml += '</div>';
-            }
-            
-            // Tools information
-            if (PATTERN_DATA.materials?.tools) {
-                materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Tools</h4>';
-                const tools = PATTERN_DATA.materials.tools;
-                if (tools.primary) {
-                    materialsHtml += `<div class="text-xs text-tertiary">${tools.primary.type || 'Needle'} ${tools.primary.size || tools.primary.sizeMetric || ''}</div>`;
+        try {
+            if (PATTERN_DATA && sectionsContainer) {
+                // Populate pattern sections/steps
+                if (PATTERN_DATA.steps && PATTERN_DATA.steps.length > 0) {
+                    const sectionsHtml = PATTERN_DATA.steps.map((step, index) => {
+                        const stepNumber = index + 1;
+                        const stepTitle = step?.title || step?.instruction?.substring(0, 30) || `Step ${stepNumber}`;
+                        return `
+                            <button class="w-full text-left p-2 hover:bg-tertiary rounded transition-colors text-sm" 
+                                    onclick="scrollToStep(${stepNumber})">
+                                <span class="text-accent">${stepNumber}.</span> ${stepTitle.length > 25 ? stepTitle.substring(0, 25) + '...' : stepTitle}
+                            </button>
+                        `;
+                    }).join('');
+                    sectionsContainer.innerHTML = sectionsHtml;
+                } else {
+                    sectionsContainer.innerHTML = '<p class="text-muted text-sm">No pattern sections available</p>';
                 }
-                materialsHtml += '</div>';
             }
             
-            // Gauge information
-            if (PATTERN_DATA.gauge) {
-                materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Gauge</h4>';
-                const gauge = PATTERN_DATA.gauge;
-                if (gauge.stitchesPerInch || gauge.rowsPerInch) {
-                    materialsHtml += `<div class="text-xs text-tertiary">`;
-                    if (gauge.stitchesPerInch) materialsHtml += `${gauge.stitchesPerInch} sts/inch`;
-                    if (gauge.rowsPerInch) materialsHtml += `, ${gauge.rowsPerInch} rows/inch`;
-                    materialsHtml += `</div>`;
+            if (PATTERN_DATA && materialsContainer) {
+                // Populate materials from pattern data
+                let materialsHtml = '';
+                
+                // Yarn information
+                if (PATTERN_DATA.materials?.yarn) {
+                    materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Yarn</h4>';
+                    const yarns = Object.values(PATTERN_DATA.materials.yarn).filter(Boolean);
+                    yarns.forEach(yarn => {
+                        if (yarn) {
+                            materialsHtml += `<div class="text-xs text-tertiary mb-1">`;
+                            if (yarn.brand && yarn.name) materialsHtml += `${yarn.brand} ${yarn.name}`;
+                            if (yarn.weight) materialsHtml += ` (${yarn.weight})`;
+                            if (yarn.yardageNeeded) materialsHtml += ` - ${yarn.yardageNeeded} yards`;
+                            materialsHtml += `</div>`;
+                        }
+                    });
+                    materialsHtml += '</div>';
                 }
-                if (gauge.notes) materialsHtml += `<div class="text-xs text-muted mt-1">${gauge.notes}</div>`;
-                materialsHtml += '</div>';
+                
+                // Tools information
+                if (PATTERN_DATA.materials?.tools) {
+                    materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Tools</h4>';
+                    const tools = PATTERN_DATA.materials.tools;
+                    if (tools?.primary) {
+                        materialsHtml += `<div class="text-xs text-tertiary">${tools.primary.type || 'Needle'} ${tools.primary.size || tools.primary.sizeMetric || ''}</div>`;
+                    }
+                    materialsHtml += '</div>';
+                }
+                
+                // Gauge information
+                if (PATTERN_DATA.gauge) {
+                    materialsHtml += '<div class="mb-3"><h4 class="font-medium text-secondary mb-1">Gauge</h4>';
+                    const gauge = PATTERN_DATA.gauge;
+                    if (gauge.stitchesPerInch || gauge.rowsPerInch) {
+                        materialsHtml += `<div class="text-xs text-tertiary">`;
+                        if (gauge.stitchesPerInch) materialsHtml += `${gauge.stitchesPerInch} sts/inch`;
+                        if (gauge.rowsPerInch) materialsHtml += `, ${gauge.rowsPerInch} rows/inch`;
+                        materialsHtml += `</div>`;
+                    }
+                    if (gauge.notes) materialsHtml += `<div class="text-xs text-muted mt-1">${gauge.notes}</div>`;
+                    materialsHtml += '</div>';
+                }
+                
+                materialsContainer.innerHTML = materialsHtml || '<p class="text-muted text-sm">No materials information available</p>';
             }
-            
-            materialsContainer.innerHTML = materialsHtml || '<p class="text-muted text-sm">No materials information available</p>';
+        } catch (error) {
+            console.error('❌ Error populating pattern sidebar:', error);
+            if (sectionsContainer) {
+                sectionsContainer.innerHTML = '<p class="text-muted text-sm">Error loading pattern sections</p>';
+            }
+            if (materialsContainer) {
+                materialsContainer.innerHTML = '<p class="text-muted text-sm">Error loading materials</p>';
+            }
         }
     }
     
@@ -576,85 +588,104 @@
         const sidebarGlossary = document.getElementById('sidebar-glossary');
         const mainGlossary = document.getElementById('main-glossary-content');
         
-        // Load pattern-specific glossary into global system if we have pattern data
-        if (PATTERN_DATA?.glossary) {
-            globalGlossary.loadPatternGlossary(PATTERN_DATA.glossary, PATTERN_DATA.metadata?.name || 'current-pattern');
-        }
-        
-        // Get all stitches from the global glossary
-        const allStitches = globalGlossary.getAllStitches();
-        
-        if (sidebarGlossary) {
-            if (allStitches.length > 0) {
-                // Create compact glossary for sidebar
-                const sidebarHtml = allStitches.slice(0, 8).map(stitch => {
-                    const category = stitch.definition.category || 'basic';
-                    const categoryColor = getCategoryColor(category);
-                    return `
-                        <div class="glossary-item mb-2 p-2 bg-tertiary rounded border border-primary hover:border-accent transition-colors cursor-pointer"
-                             onclick="showGlossaryDetail('${stitch.key}')">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-medium text-primary text-sm">${stitch.key}</span>
-                                <span class="text-xs px-2 py-1 rounded ${categoryColor}">${category}</span>
-                            </div>
-                            <p class="text-xs text-secondary line-clamp-2">${stitch.definition.description || stitch.definition.name}</p>
-                        </div>
-                    `;
-                }).join('');
-                
-                sidebarGlossary.innerHTML = sidebarHtml + 
-                    (allStitches.length > 8 ? `<button class="w-full text-xs text-accent hover:text-primary mt-2" onclick="showFullGlossary()">View all ${allStitches.length} stitches →</button>` : '');
-            } else {
-                sidebarGlossary.innerHTML = '<p class="text-muted text-sm">No stitch definitions available</p>';
+        try {
+            // Load pattern-specific glossary into global system if we have pattern data
+            if (PATTERN_DATA?.glossary) {
+                globalGlossary.loadPatternGlossary(PATTERN_DATA.glossary, PATTERN_DATA.metadata?.name || 'current-pattern');
             }
-        }
-        
-        if (mainGlossary) {
-            if (allStitches.length > 0) {
-                // Create full glossary for main content
-                const categorizedStitches = {};
-                allStitches.forEach(stitch => {
-                    const category = stitch.definition.category || 'basic';
-                    if (!categorizedStitches[category]) categorizedStitches[category] = [];
-                    categorizedStitches[category].push(stitch);
-                });
-                
-                let mainHtml = '';
-                Object.entries(categorizedStitches).forEach(([category, stitches]) => {
-                    const categoryColor = getCategoryColor(category);
-                    mainHtml += `
-                        <div class="glossary-category mb-6">
-                            <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
-                                <span class="mr-2">${category.charAt(0).toUpperCase() + category.slice(1)} Stitches</span>
-                                <span class="text-xs px-2 py-1 rounded ${categoryColor}">${stitches.length}</span>
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                ${stitches.map(stitch => `
-                                    <div class="glossary-item p-4 bg-tertiary rounded border border-primary">
-                                        <h4 class="font-medium text-primary mb-2">${stitch.key}</h4>
-                                        <p class="text-sm text-secondary mb-2">${stitch.definition.description || stitch.definition.name}</p>
-                                        ${stitch.definition.stitchesUsed || stitch.definition.stitchesCreated ? `
-                                            <div class="text-xs text-muted">
-                                                ${stitch.definition.stitchesUsed ? `Uses: ${stitch.definition.stitchesUsed} st(s)` : ''}
-                                                ${stitch.definition.stitchesCreated ? ` → Creates: ${stitch.definition.stitchesCreated} st(s)` : ''}
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `).join('')}
+            
+            // Get all stitches from the global glossary
+            const allStitches = globalGlossary.getAllStitches();
+            
+            if (sidebarGlossary) {
+                if (allStitches && allStitches.length > 0) {
+                    // Create compact glossary for sidebar
+                    const sidebarHtml = allStitches.slice(0, 8).map(stitch => {
+                        const definition = stitch.definition || {};
+                        const category = definition.category || 'basic';
+                        const categoryColor = getCategoryColor(category);
+                        const description = definition.description || definition.name || 'No description available';
+                        return `
+                            <div class="glossary-item mb-2 p-2 bg-tertiary rounded border border-primary hover:border-accent transition-colors cursor-pointer"
+                                 onclick="showGlossaryDetail('${stitch.key}')">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-primary text-sm">${stitch.key}</span>
+                                    <span class="text-xs px-2 py-1 rounded ${categoryColor}">${category}</span>
+                                </div>
+                                <p class="text-xs text-secondary line-clamp-2">${description}</p>
                             </div>
-                        </div>
-                    `;
-                });
-                
-                mainGlossary.innerHTML = mainHtml;
-            } else {
-                mainGlossary.innerHTML = '<p class="text-muted text-center py-8">No stitch definitions available</p>';
+                        `;
+                    }).join('');
+                    
+                    sidebarGlossary.innerHTML = sidebarHtml + 
+                        (allStitches.length > 8 ? `<button class="w-full text-xs text-accent hover:text-primary mt-2" onclick="showFullGlossary()">View all ${allStitches.length} stitches →</button>` : '');
+                } else {
+                    sidebarGlossary.innerHTML = '<p class="text-muted text-sm">No stitch definitions available</p>';
+                }
+            }
+            
+            if (mainGlossary) {
+                if (allStitches && allStitches.length > 0) {
+                    // Create full glossary for main content
+                    const categorizedStitches = {};
+                    allStitches.forEach(stitch => {
+                        const definition = stitch.definition || {};
+                        const category = definition.category || 'basic';
+                        if (!categorizedStitches[category]) categorizedStitches[category] = [];
+                        categorizedStitches[category].push(stitch);
+                    });
+                    
+                    let mainHtml = '';
+                    Object.entries(categorizedStitches).forEach(([category, stitches]) => {
+                        const categoryColor = getCategoryColor(category);
+                        mainHtml += `
+                            <div class="glossary-category mb-6">
+                                <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                                    <span class="mr-2">${category.charAt(0).toUpperCase() + category.slice(1)} Stitches</span>
+                                    <span class="text-xs px-2 py-1 rounded ${categoryColor}">${stitches.length}</span>
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    ${stitches.map(stitch => {
+                                        const definition = stitch.definition || {};
+                                        const description = definition.description || definition.name || 'No description available';
+                                        return `
+                                            <div class="glossary-item p-4 bg-tertiary rounded border border-primary">
+                                                <h4 class="font-medium text-primary mb-2">${stitch.key}</h4>
+                                                <p class="text-sm text-secondary mb-2">${description}</p>
+                                                ${definition.stitchesUsed || definition.stitchesCreated ? `
+                                                    <div class="text-xs text-muted">
+                                                        ${definition.stitchesUsed ? `Uses: ${definition.stitchesUsed} st(s)` : ''}
+                                                        ${definition.stitchesCreated ? ` → Creates: ${definition.stitchesCreated} st(s)` : ''}
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    mainGlossary.innerHTML = mainHtml;
+                } else {
+                    mainGlossary.innerHTML = '<p class="text-muted text-center py-8">No stitch definitions available</p>';
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error populating glossary:', error);
+            if (sidebarGlossary) {
+                sidebarGlossary.innerHTML = '<p class="text-muted text-sm">Error loading glossary</p>';
+            }
+            if (mainGlossary) {
+                mainGlossary.innerHTML = '<p class="text-muted text-center py-8">Error loading glossary</p>';
             }
         }
     }
     
     // Helper function to get category colors
     function getCategoryColor(category) {
+        if (!category) return 'bg-gray-100 text-gray-800';
+        
         const colors = {
             'basic': 'bg-blue-100 text-blue-800',
             'increase': 'bg-green-100 text-green-800', 

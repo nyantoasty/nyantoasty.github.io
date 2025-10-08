@@ -419,8 +419,8 @@
             // Generate dynamic color theme based on pattern data
             generatePatternTheme(PATTERN_DATA);
             
-            // Generate main pattern content
-            generatePatternContent();
+            // Generate main pattern content with proper color coding
+            generateInstructions(PATTERN_DATA);
             
             // Populate materials from pattern data
             populateSidebarMaterials(PATTERN_DATA);
@@ -428,78 +428,8 @@
             // Populate sidebar with pattern-specific content
             populatePatternSidebar();
             
-            // Generate glossary for both sidebar and main section
+            // Generate glossary for both sidebar and main section with proper color coding
             generateMainGlossary(PATTERN_DATA);
-            generateInstructions(PATTERN_DATA);
-            populateGlossary();
-        }
-    }
-    
-    function generatePatternContent() {
-        if (!PATTERN_DATA) {
-            patternContent.innerHTML = '<div class="text-center py-12 text-muted">No pattern data available</div>';
-            return;
-        }
-        
-        let contentHtml = '';
-        
-        // Pattern header with metadata
-        if (PATTERN_DATA.metadata) {
-            const meta = PATTERN_DATA.metadata;
-            contentHtml += `
-                <div class="pattern-header-content mb-8 p-6 bg-tertiary rounded border border-primary">
-                    <h2 class="text-2xl font-bold text-primary mb-2">${meta.name || 'Untitled Pattern'}</h2>
-                    <p class="text-secondary mb-4">${meta.description || 'No description available'}</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div><span class="text-muted">Difficulty:</span> <span class="text-primary">${meta.difficultyLevel || 'Unknown'}</span></div>
-                        <div><span class="text-muted">Category:</span> <span class="text-primary">${meta.category || 'Unknown'}</span></div>
-                        <div><span class="text-muted">Steps:</span> <span class="text-primary">${meta.maxSteps || 'Unknown'}</span></div>
-                        <div><span class="text-muted">Craft:</span> <span class="text-primary">${meta.craft || 'Unknown'}</span></div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Pattern steps/instructions
-        if (PATTERN_DATA.steps && PATTERN_DATA.steps.length > 0) {
-            contentHtml += '<div class="pattern-steps">';
-            PATTERN_DATA.steps.forEach((step, index) => {
-                const stepNumber = index + 1;
-                const isCurrentStep = stepNumber === currentStep;
-                contentHtml += `
-                    <div class="step-container mb-6 p-4 rounded border transition-colors ${isCurrentStep ? 'border-accent bg-accent/10' : 'border-primary bg-tertiary'}" 
-                         data-step="${stepNumber}">
-                        <div class="flex items-center mb-3">
-                            <span class="step-number text-lg font-bold text-accent mr-3">${stepNumber}.</span>
-                            ${step.title ? `<h3 class="text-lg font-medium text-primary">${step.title}</h3>` : ''}
-                        </div>
-                        <div class="step-content text-secondary">
-                            ${step.instruction ? `<p class="mb-2">${step.instruction}</p>` : ''}
-                            ${step.notes ? `<div class="text-sm text-muted mt-2 p-2 bg-secondary rounded">${step.notes}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            contentHtml += '</div>';
-        } else {
-            contentHtml += '<div class="text-center py-12 text-muted">No pattern steps available</div>';
-        }
-        
-        // Pattern notes
-        if (PATTERN_DATA.notes?.general) {
-            contentHtml += `
-                <div class="pattern-notes mt-8 p-6 bg-tertiary rounded border border-primary">
-                    <h3 class="text-lg font-medium text-primary mb-3">Pattern Notes</h3>
-                    <p class="text-secondary">${PATTERN_DATA.notes.general}</p>
-                </div>
-            `;
-        }
-        
-        patternContent.innerHTML = contentHtml;
-        
-        // Scroll to current step if it exists
-        if (currentStep > 1) {
-            setTimeout(() => scrollToStep(currentStep), 100);
         }
     }
     
@@ -581,136 +511,6 @@
             if (materialsContainer) {
                 materialsContainer.innerHTML = '<p class="text-muted text-sm">Error loading materials</p>';
             }
-        }
-    }
-    
-    function populateGlossary() {
-        const sidebarGlossary = document.getElementById('sidebar-glossary');
-        const mainGlossary = document.getElementById('main-glossary-content');
-        
-        try {
-            // Load pattern-specific glossary into global system if we have pattern data
-            if (PATTERN_DATA?.glossary) {
-                globalGlossary.loadPatternGlossary(PATTERN_DATA.glossary, PATTERN_DATA.metadata?.name || 'current-pattern');
-            }
-            
-            // Get all stitches from the global glossary
-            const allStitches = globalGlossary.getAllStitches();
-            
-            if (sidebarGlossary) {
-                if (allStitches && allStitches.length > 0) {
-                    // Create compact glossary for sidebar
-                    const sidebarHtml = allStitches.slice(0, 8).map(stitch => {
-                        const definition = stitch.definition || {};
-                        const category = definition.category || 'basic';
-                        const categoryColor = getCategoryColor(category);
-                        const description = definition.description || definition.name || 'No description available';
-                        return `
-                            <div class="glossary-item mb-2 p-2 bg-tertiary rounded border border-primary hover:border-accent transition-colors cursor-pointer"
-                                 onclick="showGlossaryDetail('${stitch.key}')">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="font-medium text-primary text-sm">${stitch.key}</span>
-                                    <span class="text-xs px-2 py-1 rounded ${categoryColor}">${category}</span>
-                                </div>
-                                <p class="text-xs text-secondary line-clamp-2">${description}</p>
-                            </div>
-                        `;
-                    }).join('');
-                    
-                    sidebarGlossary.innerHTML = sidebarHtml + 
-                        (allStitches.length > 8 ? `<button class="w-full text-xs text-accent hover:text-primary mt-2" onclick="showFullGlossary()">View all ${allStitches.length} stitches →</button>` : '');
-                } else {
-                    sidebarGlossary.innerHTML = '<p class="text-muted text-sm">No stitch definitions available</p>';
-                }
-            }
-            
-            if (mainGlossary) {
-                if (allStitches && allStitches.length > 0) {
-                    // Create full glossary for main content
-                    const categorizedStitches = {};
-                    allStitches.forEach(stitch => {
-                        const definition = stitch.definition || {};
-                        const category = definition.category || 'basic';
-                        if (!categorizedStitches[category]) categorizedStitches[category] = [];
-                        categorizedStitches[category].push(stitch);
-                    });
-                    
-                    let mainHtml = '';
-                    Object.entries(categorizedStitches).forEach(([category, stitches]) => {
-                        const categoryColor = getCategoryColor(category);
-                        mainHtml += `
-                            <div class="glossary-category mb-6">
-                                <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
-                                    <span class="mr-2">${category.charAt(0).toUpperCase() + category.slice(1)} Stitches</span>
-                                    <span class="text-xs px-2 py-1 rounded ${categoryColor}">${stitches.length}</span>
-                                </h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    ${stitches.map(stitch => {
-                                        const definition = stitch.definition || {};
-                                        const description = definition.description || definition.name || 'No description available';
-                                        return `
-                                            <div class="glossary-item p-4 bg-tertiary rounded border border-primary">
-                                                <h4 class="font-medium text-primary mb-2">${stitch.key}</h4>
-                                                <p class="text-sm text-secondary mb-2">${description}</p>
-                                                ${definition.stitchesUsed || definition.stitchesCreated ? `
-                                                    <div class="text-xs text-muted">
-                                                        ${definition.stitchesUsed ? `Uses: ${definition.stitchesUsed} st(s)` : ''}
-                                                        ${definition.stitchesCreated ? ` → Creates: ${definition.stitchesCreated} st(s)` : ''}
-                                                    </div>
-                                                ` : ''}
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    mainGlossary.innerHTML = mainHtml;
-                } else {
-                    mainGlossary.innerHTML = '<p class="text-muted text-center py-8">No stitch definitions available</p>';
-                }
-            }
-        } catch (error) {
-            console.error('❌ Error populating glossary:', error);
-            if (sidebarGlossary) {
-                sidebarGlossary.innerHTML = '<p class="text-muted text-sm">Error loading glossary</p>';
-            }
-            if (mainGlossary) {
-                mainGlossary.innerHTML = '<p class="text-muted text-center py-8">Error loading glossary</p>';
-            }
-        }
-    }
-    
-    // Helper function to get category colors
-    function getCategoryColor(category) {
-        if (!category) return 'bg-gray-100 text-gray-800';
-        
-        const colors = {
-            'basic': 'bg-blue-100 text-blue-800',
-            'increase': 'bg-green-100 text-green-800', 
-            'decrease': 'bg-red-100 text-red-800',
-            'special': 'bg-purple-100 text-purple-800',
-            'cable': 'bg-yellow-100 text-yellow-800',
-            'lace': 'bg-pink-100 text-pink-800'
-        };
-        return colors[category] || 'bg-gray-100 text-gray-800';
-    }
-    
-    // Show full glossary (can be used to toggle main glossary view)
-    function showFullGlossary() {
-        const mainGlossary = document.getElementById('main-glossary-content');
-        if (mainGlossary) {
-            mainGlossary.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-    
-    // Show detailed view of a specific stitch (future enhancement)
-    function showGlossaryDetail(stitchKey) {
-        const stitch = globalGlossary.getStitch(stitchKey);
-        if (stitch) {
-            // For now, just scroll to main glossary
-            showFullGlossary();
         }
     }
     

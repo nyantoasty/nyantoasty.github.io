@@ -437,7 +437,7 @@
             // Call the real createNewProject function from progress-tracking.js
             const result = await createNewProject(db, currentUser.uid, selectedPatternId, projectName, 'personal', null, currentUser);
             
-            if (result.success) {
+            if (result && result.projectId) {
                 console.log('✅ Project created successfully:', result.projectId);
                 alert(`Project "${projectName}" created successfully!`);
                 
@@ -448,8 +448,8 @@
                 // Reload projects to show the new one
                 await loadProjects();
             } else {
-                console.error('❌ Project creation failed:', result.error);
-                alert('Failed to create project: ' + (result.error || 'Unknown error'));
+                console.error('❌ Project creation failed: No project ID returned');
+                alert('Failed to create project: No project ID returned');
             }
             
         } catch (error) {

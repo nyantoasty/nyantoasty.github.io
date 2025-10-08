@@ -418,6 +418,38 @@ export async function discoverPatterns() {
     }
 }
 
+// Populate pattern selector dropdown with available patterns
+function populatePatternSelector() {
+    const patternSelect = document.getElementById('pattern-select');
+    if (!patternSelect) {
+        console.log('🔍 Pattern selector not found on this page');
+        return;
+    }
+    
+    // Clear existing options except the first placeholder
+    while (patternSelect.children.length > 1) {
+        patternSelect.removeChild(patternSelect.lastChild);
+    }
+    
+    // Add patterns to dropdown
+    if (availablePatterns.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No patterns available - upload some first!';
+        option.disabled = true;
+        patternSelect.appendChild(option);
+    } else {
+        availablePatterns.forEach(pattern => {
+            const option = document.createElement('option');
+            option.value = pattern.id;
+            option.textContent = `${pattern.name}${pattern.author ? ` by ${pattern.author}` : ''}`;
+            patternSelect.appendChild(option);
+        });
+    }
+    
+    console.log(`📝 Populated pattern selector with ${availablePatterns.length} patterns`);
+}
+
 export async function loadUserProjects() {
     console.log('🔍 loadUserProjects called');
     console.log('🔍 auth.currentUser:', auth.currentUser?.email);

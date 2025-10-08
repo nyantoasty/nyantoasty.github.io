@@ -140,12 +140,14 @@
 /* Z-index */
 .z-40 { z-index: 40 !important; }
 .z-50 { z-index: 50 !important; }
+.z-55 { z-index: 55 !important; }
 .z-60 { z-index: 60 !important; }
 .z-70 { z-index: 70 !important; }
 
 /* Transform (for debugging) */
 .translate-x-0 { transform: translateX(0) !important; }
 .translate-x-full { transform: translateX(100%) !important; }
+.-translate-x-full { transform: translateX(-100%) !important; }
 .translate-y-0 { transform: translateY(0) !important; }
 
 /* Overflow */

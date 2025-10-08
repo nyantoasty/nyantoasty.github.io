@@ -124,7 +124,7 @@
     </div>
 
     <!-- Notes Sidebar -->
-    <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-secondary border-l border-primary transform translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
+    <div id="notes-sidebar" class="fixed right-0 top-0 h-full w-96 bg-secondary border-l border-primary transform translate-x-full transition-transform duration-300 ease-in-out z-55 overflow-y-auto">
         <div class="p-4">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-primary">Project Notes</h3>
@@ -294,6 +294,9 @@
             // Setup event listeners
             setupEventListeners();
             
+            // Initialize theme
+            initializeTheme();
+            
             // Check for pattern/project data in URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const patternId = urlParams.get('pattern');
@@ -320,6 +323,9 @@
         document.getElementById('toggle-notes-sidebar')?.addEventListener('click', toggleNotesSidebar);
         document.getElementById('close-notes-sidebar')?.addEventListener('click', closeNotesSidebar);
         
+        // Sidebar overlay click to close
+        document.getElementById('sidebar-overlay')?.addEventListener('click', closePatternSidebar);
+        
         // Row navigation
         document.getElementById('prev-step')?.addEventListener('click', () => changeStep(-1));
         document.getElementById('next-step')?.addEventListener('click', () => changeStep(1));
@@ -341,7 +347,21 @@
             window.location.href = '/index.html';
         });
         
-        // Theme toggle - handled by unified header
+        // Theme toggle
+        document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+        
+        // Add note button
+        document.getElementById('add-note')?.addEventListener('click', () => {
+            // Open notes sidebar and focus on the current row note input
+            toggleNotesSidebar();
+            // Small delay to allow sidebar animation, then focus
+            setTimeout(() => {
+                const currentRowNote = document.querySelector('#current-row-note');
+                if (currentRowNote) {
+                    currentRowNote.focus();
+                }
+            }, 300);
+        });
         
         // Notes
         document.getElementById('save-row-note')?.addEventListener('click', saveCurrentRowNote);
@@ -527,6 +547,49 @@
             updateCurrentRow();
         } else {
             console.log(`Step ${stepNumber} not found in pattern content`);
+        }
+    }
+    
+    // Theme initialization function
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
+        const html = document.documentElement;
+        
+        // Apply the saved theme
+        html.classList.remove('dark', 'light');
+        html.classList.add(savedTheme);
+        
+        // Update icon visibility based on current theme
+        if (savedTheme === 'dark') {
+            document.getElementById('theme-icon-dark').classList.remove('hidden');
+            document.getElementById('theme-icon-light').classList.add('hidden');
+        } else {
+            document.getElementById('theme-icon-dark').classList.add('hidden');
+            document.getElementById('theme-icon-light').classList.remove('hidden');
+        }
+    }
+    
+    // Theme toggle function
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+        
+        if (isDark) {
+            // Switch to light mode
+            html.classList.remove('dark');
+            html.classList.add('light');
+            localStorage.setItem('theme', 'light');
+            // Update icon visibility
+            document.getElementById('theme-icon-dark').classList.add('hidden');
+            document.getElementById('theme-icon-light').classList.remove('hidden');
+        } else {
+            // Switch to dark mode
+            html.classList.remove('light');
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            // Update icon visibility
+            document.getElementById('theme-icon-dark').classList.remove('hidden');
+            document.getElementById('theme-icon-light').classList.add('hidden');
         }
     }
     

@@ -268,31 +268,24 @@ export async function createNewProject(db, userId, patternId, projectName = null
 }
 
 /**
- * Load a specific project by its projectId field value
+ * Load a specific project by its document ID
  * @param {object} db - Firestore database instance
- * @param {string} projectId - The projectId field value to search for
+ * @param {string} docId - The document ID to load
  * @returns {object|null} Project data or null if not found
  */
-export async function getProjectById(db, projectId) {
+export async function getProjectById(db, docId) {
     try {
-        console.log(`🔍 Searching for document with projectId field: ${projectId}`);
+        console.log(`🔍 Loading project document: ${docId}`);
         
-        const q = query(
-            collection(db, 'user_pattern_progress'),
-            where('projectId', '==', projectId),
-            limit(1)
-        );
+        const projectDoc = await getDoc(doc(db, 'user_pattern_progress', docId));
         
-        const snapshot = await getDocs(q);
-        
-        if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
-            const projectData = doc.data();
-            projectData.id = doc.id;
-            console.log(`✅ Found project document: ${doc.id}`);
+        if (projectDoc.exists()) {
+            const projectData = projectDoc.data();
+            projectData.id = projectDoc.id;
+            console.log(`✅ Found project document: ${projectDoc.id}`);
             return projectData;
         } else {
-            console.log(`❌ No document found with projectId: ${projectId}`);
+            console.log(`❌ Document not found: ${docId}`);
             return null;
         }
     } catch (error) {

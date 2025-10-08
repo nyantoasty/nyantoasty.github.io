@@ -520,12 +520,12 @@
     function openInPatternViewer(project) {
         // Open the pattern viewer in a new tab with the project data
         const patternId = project.patternId;
-        const projectId = project.projectId;
+        const docId = project.docId; // Use the actual document ID
         
-        console.log('🔗 Opening project in pattern viewer:', { patternId, projectId });
+        console.log('🔗 Opening project in pattern viewer:', { patternId, docId });
         
         // Construct the viewer URL with parameters
-        const viewerUrl = `/viewer.html?pattern=${encodeURIComponent(patternId)}&project=${encodeURIComponent(projectId)}`;
+        const viewerUrl = `/viewer.html?pattern=${encodeURIComponent(patternId)}&project=${encodeURIComponent(docId)}`;
         
         // Open in new tab
         window.open(viewerUrl, '_blank');

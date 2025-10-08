@@ -346,15 +346,15 @@
         document.getElementById('save-all-notes')?.addEventListener('click', saveAllNotes);
     }
     
-    async function loadPatternForProject(patternId, projectId) {
+    async function loadPatternForProject(patternId, docId) {
         try {
-            console.log('🔍 Loading pattern for project:', { patternId, projectId });
+            console.log('🔍 Loading pattern for project:', { patternId, docId });
             
-            // Load existing project data by projectId (searches for document containing this projectId)
-            currentProject = await getProjectById(db, projectId);
+            // Load existing project data by document ID
+            currentProject = await getProjectById(db, docId);
             
             if (!currentProject) {
-                throw new Error(`Project not found with projectId: ${projectId}`);
+                throw new Error(`Project document not found: ${docId}`);
             }
             
             console.log('📁 Project loaded:', currentProject);

@@ -434,8 +434,20 @@
         try {
             console.log('🎯 Creating project with pattern:', selectedPatternId);
             
-            // Call the real createNewProject function from progress-tracking.js
-            const result = await createNewProject(db, currentUser.uid, selectedPatternId, projectName, 'personal', null, currentUser);
+            // First, get the pattern data so we can copy it to the project
+            const patternDoc = await getDoc(doc(db, 'patterns', selectedPatternId));
+            const patternData = patternDoc.exists() ? patternDoc.data() : null;
+            
+            if (!patternData) {
+                console.error('❌ Pattern not found:', selectedPatternId);
+                alert('Error: Selected pattern not found. Please try again.');
+                return;
+            }
+            
+            console.log('📋 Found pattern data:', patternData);
+            
+            // Call the real createNewProject function from progress-tracking.js with pattern data
+            const result = await createNewProject(db, currentUser.uid, selectedPatternId, projectName, 'personal', null, currentUser, patternData);
             
             if (result && result.projectId) {
                 console.log('✅ Project created successfully:', result.projectId);
